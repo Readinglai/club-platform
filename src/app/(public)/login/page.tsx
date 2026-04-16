@@ -9,6 +9,8 @@
  */
 
 import Image from "next/image";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { SignInButton } from "./SignInButton";
 
 interface LoginPageProps {
@@ -32,9 +34,15 @@ function getErrorMessage(error: string | undefined): string | null {
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
+  /* 已登入的使用者直接導向儀表板，不顯示登入頁 */
+  const session = await auth();
+  if (session?.user) {
+    redirect("/dashboard");
+  }
+
   const params = await searchParams;
   const errorMessage = getErrorMessage(params.error);
-  const callbackUrl = params.callbackUrl ?? "/";
+  const callbackUrl = params.callbackUrl ?? "/dashboard";
 
   return (
     /* 全螢幕置中容器，使用主色深藍作為背景 */

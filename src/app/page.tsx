@@ -1,65 +1,66 @@
-import Image from "next/image";
+/**
+ * page.tsx — 首頁（Server Component）
+ *
+ * ROCSAUT 社團管理平台的對外首頁。
+ * 點擊「進入平台」導向 /login 頁面。
+ * 主色調：#1a2744（深藍）、#c9b99a（米色）
+ */
 
-export default function Home() {
+import Link from "next/link";
+
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    /* 全螢幕置中容器，深藍背景 */
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4"
+      style={{ backgroundColor: "#1a2744" }}
+    >
+      {/* 主卡片 */}
+      <div className="flex flex-col items-center gap-8 text-center">
+
+        {/* 社團名稱 */}
+        <div className="flex flex-col items-center gap-2">
+          <h1
+            className="text-5xl font-bold tracking-[0.2em]"
+            style={{ color: "#c9b99a" }}
+          >
+            ROCSAUT
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          {/* 副標題 */}
+          <p className="text-base tracking-wide" style={{ color: "#c9b99a99" }}>
+            社團管理平台
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+        {/* 裝飾分隔線 */}
+        <div
+          className="w-16 h-px"
+          style={{ backgroundColor: "#c9b99a66" }}
+        />
+
+        {/* 簡短說明 */}
+        <p className="text-sm leading-relaxed max-w-xs" style={{ color: "#c9b99acc" }}>
+          成員管理、活動報名、任務追蹤——<br />
+          一站式社團行政系統。
+        </p>
+
+        {/* 進入平台按鈕 */}
+        <Link
+          href="/login"
+          className="px-8 py-3 rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 hover:opacity-90 active:scale-95"
+          style={{ backgroundColor: "#c9b99a", color: "#1a2744" }}
+        >
+          進入平台
+        </Link>
+      </div>
+
+      {/* 頁腳 */}
+      <p
+        className="absolute bottom-6 text-xs"
+        style={{ color: "#c9b99a55" }}
+      >
+        © {new Date().getFullYear()} ROCSAUT
+      </p>
     </div>
   );
 }
