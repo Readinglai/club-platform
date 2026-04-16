@@ -80,7 +80,16 @@ export const authConfig: NextAuthConfig = {
       const userEmail = user.email ?? "";
       const domain = userEmail.split("@")[1] ?? "";
       console.log("[signIn callback] domain:", domain, "allowed:", ALLOWED_DOMAINS.includes(domain));
-      return ALLOWED_DOMAINS.includes(domain);
+
+      const devAllowedEmails = process.env.DEV_ALLOWED_EMAILS?.split(",") ?? [];
+      const isDevAllowed =
+        process.env.NODE_ENV === "development" && devAllowedEmails.includes(userEmail);
+      console.log("[signIn callback] DEV_ALLOWED_EMAILS:", process.env.DEV_ALLOWED_EMAILS);
+      console.log("[signIn callback] NODE_ENV:", process.env.NODE_ENV);
+      console.log("[signIn callback] userEmail:", userEmail);
+      console.log("[signIn callback] isDevAllowed:", isDevAllowed);
+
+      return isDevAllowed || ALLOWED_DOMAINS.includes(domain);
     },
 
     /**
