@@ -1,0 +1,131 @@
+club:
+  name: "ROCSAUT"
+  slug: "rocsaut"
+  tagline: ""
+  description: ""
+  founded_year: 2020
+  logo: "/assets/logo.png"
+  contact_email: ""
+  social:
+    instagram: ""
+    facebook: ""
+    linkedin: ""
+  location:
+    address: ""
+    city: "Toronto"
+    province: "Ontario"
+    country: "Canada"
+    coordinates:
+      lat: 43.6629
+      lng: -79.3957
+
+theme:
+  primary: "#1a2744"
+  secondary: "#c9b99a"
+  background: "#ffffff"
+  text: "#1a1a1a"
+  font_sans: "Inter"
+  font_display: "Inter"
+
+teams:
+  - id: "event"
+    name: "Event"
+    description: "負責活動規劃與執行"
+  - id: "marketing"
+    name: "Marketing"
+    description: "負責宣傳與社群媒體"
+  - id: "operation"
+    name: "Operation"
+    description: "負責贊助與對外聯絡"
+
+roles:
+  - id: "super_admin"
+    label: "Super Admin"
+    level: 5
+  - id: "exec"
+    label: "Executive"
+    level: 4
+  - id: "team_lead"
+    label: "Team Lead"
+    level: 3
+  - id: "member"
+    label: "Member"
+    level: 2
+  - id: "public"
+    label: "Public"
+    level: 1
+
+sponsor_tiers:
+  - id: "platinum"
+    label: "Platinum"
+    order: 1
+  - id: "gold"
+    label: "Gold"
+    order: 2
+  - id: "silver"
+    label: "Silver"
+    order: 3
+  - id: "bronze"
+    label: "Bronze"
+    order: 4
+
+infrastructure:
+  database:
+    provider: "supabase"
+    url: "${DATABASE_URL}"
+  storage:
+    provider: "supabase"
+    url: "${STORAGE_URL}"
+  auth:
+    provider: "nextauth"
+    google_client_id: "${GOOGLE_CLIENT_ID}"
+    google_client_secret: "${GOOGLE_CLIENT_SECRET}"
+    nextauth_secret: "${NEXTAUTH_SECRET}"
+    nextauth_url: "${NEXTAUTH_URL}"
+    allowed_email_domains:
+      - "mail.utoronto.ca"
+      - "utoronto.ca"
+  deployment:
+    provider: "vercel"
+  email:
+    provider: "resend"
+    from: "noreply@rocsaut.ca"
+    api_key: "${EMAIL_API_KEY}"
+
+executors:
+  local_ai:
+    provider: "ollama"
+    base_url: "http://localhost:11434"
+    default_model: "qwen3:1.7b"
+    code_model: "qwen2.5-coder:14b"
+  kaggle:
+    api_key: "${KAGGLE_API_KEY}"
+    username: "${KAGGLE_USERNAME}"
+  colab:
+    endpoint: "${COLAB_ENDPOINT}"
+
+modules:
+  sponsors:
+    enabled: true
+  alumni:
+    enabled: true
+  finance:
+    enabled: true
+  merch:
+    enabled: false
+    provider: "shopify"
+    storefront_token: "${SHOPIFY_TOKEN}"
+    store_domain: "${SHOPIFY_DOMAIN}"
+  analytics:
+    enabled: true
+  multi_club:
+    enabled: false
+
+registration:
+  allow_waitlist: true
+  max_waitlist_size: 20
+  reminder_hours_before: 24
+
+multi_tenant:
+  isolation: "schema"
+  super_admin_email: ""
