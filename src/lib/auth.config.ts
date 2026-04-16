@@ -72,9 +72,14 @@ export const authConfig: NextAuthConfig = {
      * signIn callback — 驗證 email 網域
      * 不符合白名單的 email 拒絕登入。
      */
-    signIn({ user }) {
-      const email = user.email ?? "";
-      const domain = email.split("@")[1] ?? "";
+    signIn({ user, account, profile, email, credentials }) {
+      console.log("[signIn callback] user:", user);
+      console.log("[signIn callback] account:", account);
+      console.log("[signIn callback] profile:", profile);
+      console.log("[signIn callback] email:", email);
+      const userEmail = user.email ?? "";
+      const domain = userEmail.split("@")[1] ?? "";
+      console.log("[signIn callback] domain:", domain, "allowed:", ALLOWED_DOMAINS.includes(domain));
       return ALLOWED_DOMAINS.includes(domain);
     },
 

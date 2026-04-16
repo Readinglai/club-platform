@@ -24,6 +24,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   // 合併 edge-safe 設定（providers、callbacks、pages）
   ...authConfig,
 
+  // 暫時加入 debug 模式，把所有 NextAuth 內部錯誤印到 server console
+  logger: {
+    error(error) {
+      console.error("[NextAuth][error]", error);
+    },
+    warn(code) {
+      console.warn("[NextAuth][warn]", code);
+    },
+    debug(message, metadata) {
+      console.log("[NextAuth][debug]", message, metadata);
+    },
+  },
+
   /**
    * Prisma Adapter：讓 NextAuth 使用 Supabase 資料庫儲存
    * User 和 Account 記錄（OAuth 憑證）。
