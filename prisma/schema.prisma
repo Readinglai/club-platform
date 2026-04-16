@@ -61,12 +61,58 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  /// NextAuth：OAuth 帳號關聯（一個使用者可連結多個 OAuth provider）
+  accounts      Account[]
+  /// NextAuth：資料庫 session（使用資料庫 session 策略時使用）
+  sessions      Session[]
   /// 該使用者的所有活動報名記錄
   registrations Registration[]
   /// 該使用者被指派的任務
   tasks         Task[]          @relation("AssignedTasks")
   /// 該使用者在討論區發表的留言（匿名留言時 authorId 為 null）
   comments      Comment[]
+}
+
+/// NextAuth：OAuth 帳號表
+/// 儲存每個 OAuth provider 的 access_token / refresh_token 等憑證
+/// 一個 User 可擁有多個 Account（例如同時連結 Google 和 GitHub）
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// 同一 provider 下每個帳號 ID 唯一
+  @@unique([provider, providerAccountId])
+}
+
+/// NextAuth：資料庫 Session 表
+/// 使用資料庫 session 策略時，每次登入在此建立一筆 session 記錄
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// NextAuth：Email 驗證 Token 表
+/// 用於 Magic Link / Email 登入（本專案目前未啟用，但 adapter 需要此表）
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 /// 部門／團隊表
