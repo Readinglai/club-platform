@@ -3,17 +3,12 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 import EventEditForm from "./EventEditForm";
+import RegistrationsTable from "./RegistrationsTable";
 
 export const dynamic = "force-dynamic";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
-
-const STATUS_LABEL: Record<string, string> = {
-  REGISTERED: "已報名",
-  WAITLISTED: "候補",
-  CANCELLED: "已取消",
-};
 
 export default async function AdminEventDetailPage({
   params,
@@ -36,6 +31,8 @@ export default async function AdminEventDetailPage({
   });
 
   if (!event) notFound();
+
+  const registeredCount = event.registrations.filter((r) => r.status === "REGISTERED").length;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -70,57 +67,18 @@ export default async function AdminEventDetailPage({
       {/* 報名名單 */}
       <div className="mt-10">
         <h2 className="text-lg font-semibold mb-4" style={{ color: PRIMARY }}>
-          報名名單（{event.registrations.length} 人）
+          報名名單（已報名 {registeredCount} 人 / 共 {event.registrations.length} 筆記錄）
         </h2>
-
-        {event.registrations.length === 0 ? (
-          <p className="text-sm text-gray-400">尚無報名記錄。</p>
-        ) : (
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b" style={{ backgroundColor: `${PRIMARY}08` }}>
-                  {["姓名", "Email", "報名時間", "出席狀態"].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide"
-                      style={{ color: PRIMARY }}
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {event.registrations.map((reg) => (
-                  <tr key={reg.id} className="border-b last:border-0 hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium" style={{ color: PRIMARY }}>
-                      {reg.user.name ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 text-gray-500">{reg.user.email}</td>
-                    <td className="px-4 py-3 text-gray-500">
-                      {reg.createdAt.toLocaleDateString("zh-TW")}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                        style={
-                          reg.status === "REGISTERED"
-                            ? { backgroundColor: "#d1fae5", color: "#065f46" }
-                            : reg.status === "WAITLISTED"
-                            ? { backgroundColor: "#fef3c7", color: "#92400e" }
-                            : { backgroundColor: "#f3f4f6", color: "#6b7280" }
-                        }
-                      >
-                        {STATUS_LABEL[reg.status] ?? reg.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <RegistrationsTable
+          eventId={event.id}
+          registrations={event.registrations.map((r) => ({
+            id: r.id,
+            status: r.status,
+            attendedAt: r.attendedAt?.toISOString() ?? null,
+            createdAt: r.createdAt.toISOString(),
+            user: { name: r.user.name ?? "—", email: r.user.email },
+          }))}
+        />
       </div>
     </div>
   );

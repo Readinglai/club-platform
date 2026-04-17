@@ -35,8 +35,10 @@ export default async function AttendancePage({
   });
 
   const data = events.map((e) => {
-    const total = e.registrations.length;
-    const attended = e.registrations.filter((r) => r.attendedAt !== null).length;
+    // Denominator: only REGISTERED (confirmed spots). WAITLISTED/CANCELLED excluded.
+    const registered = e.registrations.filter((r) => r.status === "REGISTERED");
+    const total = registered.length;
+    const attended = registered.filter((r) => r.attendedAt !== null).length;
     return {
       id: e.id,
       title: e.title,

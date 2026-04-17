@@ -9,6 +9,9 @@ export async function GET(request: NextRequest) {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    const role = (session.user.role as Role | undefined) ?? "MEMBER";
+    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
     const { searchParams } = new URL(request.url);
     const published = searchParams.get("published");
 
