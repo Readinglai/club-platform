@@ -35,20 +35,25 @@ export default function AnnouncementEditForm({ announcement, locale }: Props) {
       published: fd.get("published") === "on",
     };
 
-    const res = await fetch(`/api/announcements/${announcement.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    try {
+      const res = await fetch(`/api/announcements/${announcement.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
-    if (res.ok) {
-      setSuccess(true);
-      router.refresh();
-    } else {
-      const data = await res.json();
-      setError(data.error ?? "更新失敗，請稍後再試。");
+      if (res.ok) {
+        setSuccess(true);
+        router.refresh();
+      } else {
+        const data = await res.json();
+        setError(data.error ?? "更新失敗，請稍後再試。");
+      }
+    } catch {
+      setError("網路錯誤，請稍後再試。");
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   }
 
   return (

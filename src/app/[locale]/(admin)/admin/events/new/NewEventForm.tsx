@@ -31,18 +31,23 @@ export default function NewEventForm({ locale }: Props) {
       published: fd.get("published") === "on",
     };
 
-    const res = await fetch("/api/admin/events", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    try {
+      const res = await fetch("/api/admin/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
-    if (res.ok) {
-      router.push(`/${locale}/admin/events`);
-      router.refresh();
-    } else {
-      const data = await res.json();
-      setError(data.error ?? "建立失敗，請稍後再試。");
+      if (res.ok) {
+        router.push(`/${locale}/admin/events`);
+        router.refresh();
+      } else {
+        const data = await res.json();
+        setError(data.error ?? "建立失敗，請稍後再試。");
+        setSubmitting(false);
+      }
+    } catch {
+      setError("網路錯誤，請稍後再試。");
       setSubmitting(false);
     }
   }

@@ -63,24 +63,29 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
     setSaving(true);
     setSaveError(null);
     setSaveSuccess(false);
-    const res = await fetch(`/api/sponsors/${sponsor.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: name.trim(),
-        logoUrl: logoUrl || null,
-        website: website || null,
-        description: description || null,
-      }),
-    });
-    if (res.ok) {
-      setSaveSuccess(true);
-      router.refresh();
-    } else {
-      const d = await res.json();
-      setSaveError(d.error ?? "儲存失敗");
+    try {
+      const res = await fetch(`/api/sponsors/${sponsor.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          logoUrl: logoUrl || null,
+          website: website || null,
+          description: description || null,
+        }),
+      });
+      if (res.ok) {
+        setSaveSuccess(true);
+        router.refresh();
+      } else {
+        const d = await res.json();
+        setSaveError(d.error ?? "儲存失敗");
+      }
+    } catch {
+      setSaveError("網路錯誤，請稍後再試");
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   }
 
   async function addHistory() {
@@ -91,41 +96,51 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
     }
     setAddingHistory(true);
     setAddHistoryError(null);
-    const res = await fetch(`/api/sponsors/${sponsor.id}/history`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ year: yearNum, tier: newTier }),
-    });
-    if (res.ok) {
-      const created = await res.json();
-      setHistories((prev) =>
-        [{ id: created.id, year: created.year, tier: created.tier }, ...prev].sort(
-          (a, b) => b.year - a.year
-        )
-      );
-      setShowAddHistory(false);
-      setNewYear(String(new Date().getFullYear()));
-      setNewTier("gold");
-    } else {
-      const d = await res.json();
-      setAddHistoryError(d.error ?? "新增失敗");
+    try {
+      const res = await fetch(`/api/sponsors/${sponsor.id}/history`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ year: yearNum, tier: newTier }),
+      });
+      if (res.ok) {
+        const created = await res.json();
+        setHistories((prev) =>
+          [{ id: created.id, year: created.year, tier: created.tier }, ...prev].sort(
+            (a, b) => b.year - a.year
+          )
+        );
+        setShowAddHistory(false);
+        setNewYear(String(new Date().getFullYear()));
+        setNewTier("gold");
+      } else {
+        const d = await res.json();
+        setAddHistoryError(d.error ?? "新增失敗");
+      }
+    } catch {
+      setAddHistoryError("網路錯誤，請稍後再試");
+    } finally {
+      setAddingHistory(false);
     }
-    setAddingHistory(false);
   }
 
   async function deleteHistory(historyId: string) {
     if (!confirm("確定要刪除這筆歷史記錄？此操作無法復原。")) return;
     setDeletingId(historyId);
-    const res = await fetch(`/api/sponsors/${sponsor.id}/history/${historyId}`, {
-      method: "DELETE",
-    });
-    if (res.ok) {
-      setHistories((prev) => prev.filter((h) => h.id !== historyId));
-    } else {
-      const d = await res.json();
-      alert(d.error ?? "刪除失敗");
+    try {
+      const res = await fetch(`/api/sponsors/${sponsor.id}/history/${historyId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setHistories((prev) => prev.filter((h) => h.id !== historyId));
+      } else {
+        const d = await res.json();
+        alert(d.error ?? "刪除失敗");
+      }
+    } catch {
+      alert("網路錯誤，請稍後再試");
+    } finally {
+      setDeletingId(null);
     }
-    setDeletingId(null);
   }
 
   return (

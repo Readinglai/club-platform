@@ -36,6 +36,14 @@ export async function POST(
     return NextResponse.json({ error: "投票不存在" }, { status: 404 });
   }
 
+  const taskGroup = await db.taskGroup.findUnique({
+    where: { id: taskGroupId },
+    select: { status: true },
+  });
+  if (taskGroup && taskGroup.status !== "ACTIVE") {
+    return NextResponse.json({ error: "此小組已完成或封存，無法投票" }, { status: 403 });
+  }
+
   if (vote.closedAt && vote.closedAt <= new Date()) {
     return NextResponse.json({ error: "此投票已關閉" }, { status: 400 });
   }

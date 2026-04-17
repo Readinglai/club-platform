@@ -43,38 +43,48 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
     if (!newName.trim()) { setCreateError("名稱不能為空"); return; }
     setCreating(true);
     setCreateError(null);
-    const res = await fetch("/api/sponsors", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: newName.trim(),
-        logoUrl: newLogoUrl || null,
-        website: newWebsite || null,
-      }),
-    });
-    if (res.ok) {
-      setShowNew(false);
-      setNewName(""); setNewLogoUrl(""); setNewWebsite("");
-      router.refresh();
-    } else {
-      const d = await res.json();
-      setCreateError(d.error ?? "新增失敗");
+    try {
+      const res = await fetch("/api/sponsors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newName.trim(),
+          logoUrl: newLogoUrl || null,
+          website: newWebsite || null,
+        }),
+      });
+      if (res.ok) {
+        setShowNew(false);
+        setNewName(""); setNewLogoUrl(""); setNewWebsite("");
+        router.refresh();
+      } else {
+        const d = await res.json();
+        setCreateError(d.error ?? "新增失敗");
+      }
+    } catch {
+      setCreateError("網路錯誤，請稍後再試");
+    } finally {
+      setCreating(false);
     }
-    setCreating(false);
   }
 
   async function deleteSponsor(id: string, name: string) {
     if (!confirm(`確定要刪除「${name}」？所有歷史記錄也會一併刪除，此操作無法復原。`)) return;
     setLoading(id);
-    const res = await fetch(`/api/sponsors/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      setSponsors((prev) => prev.filter((s) => s.id !== id));
-    } else {
-      const d = await res.json();
-      alert(d.error ?? "刪除失敗");
+    try {
+      const res = await fetch(`/api/sponsors/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setSponsors((prev) => prev.filter((s) => s.id !== id));
+      } else {
+        const d = await res.json();
+        alert(d.error ?? "刪除失敗");
+      }
+    } catch {
+      alert("網路錯誤，請稍後再試");
+    } finally {
+      setLoading(null);
+      router.refresh();
     }
-    setLoading(null);
-    router.refresh();
   }
 
   return (
