@@ -7,7 +7,6 @@ const SECONDARY = "#c9b99a";
 
 const STATUS_LABEL: Record<string, string> = {
   REGISTERED: "已報名",
-  WAITLISTED: "候補",
   CANCELLED: "已取消",
 };
 
@@ -88,8 +87,6 @@ export default function RegistrationsTable({ eventId, registrations }: Props) {
                     style={
                       reg.status === "REGISTERED"
                         ? { backgroundColor: "#d1fae5", color: "#065f46" }
-                        : reg.status === "WAITLISTED"
-                        ? { backgroundColor: "#fef3c7", color: "#92400e" }
                         : { backgroundColor: "#f3f4f6", color: "#6b7280" }
                     }
                   >

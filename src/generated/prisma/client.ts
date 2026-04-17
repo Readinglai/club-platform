@@ -81,7 +81,7 @@ export type Event = Prisma.EventModel
 /**
  * Model Registration
  * 報名表
- * 記錄使用者對活動的報名、候補或取消狀態，以及出席打卡時間
+ * 記錄使用者對活動的報名或取消狀態，以及出席打卡時間
  */
 export type Registration = Prisma.RegistrationModel
 /**

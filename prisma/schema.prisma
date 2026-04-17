@@ -12,8 +12,7 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -31,7 +30,6 @@ enum Role {
 /// 報名狀態
 enum RegistrationStatus {
   REGISTERED  /// 已成功報名
-  WAITLISTED  /// 在候補名單中（活動已滿）
   CANCELLED   /// 已取消報名
 }
 
@@ -183,7 +181,7 @@ model Event {
 }
 
 /// 報名表
-/// 記錄使用者對活動的報名、候補或取消狀態，以及出席打卡時間
+/// 記錄使用者對活動的報名或取消狀態，以及出席打卡時間
 model Registration {
   id      String             @id @default(cuid())
   userId  String

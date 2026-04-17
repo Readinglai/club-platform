@@ -21,7 +21,6 @@ export type Role = (typeof Role)[keyof typeof Role]
 
 export const RegistrationStatus = {
   REGISTERED: 'REGISTERED',
-  WAITLISTED: 'WAITLISTED',
   CANCELLED: 'CANCELLED'
 } as const
 

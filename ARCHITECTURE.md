@@ -103,7 +103,7 @@
 
 - 2.2.1 報名 API `Claude Code` ✅
 - 2.2.2 報名表單 UI ✅
-- 2.2.3 候補名單邏輯 `Claude Code` ✅
+- 2.2.3 候補名單邏輯 ⛔ 永久移除（名額已滿直接回傳錯誤，不得重新引入 WAITLISTED 邏輯）
 - 2.2.4 出席打卡 API `Claude Code` ✅
 - 2.2.5 出席打卡 UI ✅
 - 2.2.6 Email 通知 `Claude Code` ✅

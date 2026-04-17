@@ -25,7 +25,7 @@ export async function GET() {
     });
 
     const result = events.map((e) => {
-      // Denominator: only REGISTERED (confirmed spots). WAITLISTED/CANCELLED excluded.
+      // Denominator: REGISTERED only (CANCELLED excluded).
       const registered = e.registrations.filter((r) => r.status === "REGISTERED");
       const total = registered.length;
       const attended = registered.filter((r) => r.attendedAt !== null).length;

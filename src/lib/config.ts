@@ -173,8 +173,6 @@ export interface ModulesConfig {
 
 /** 活動報名設定 */
 export interface RegistrationConfig {
-  allow_waitlist: boolean;
-  max_waitlist_size: number;
   reminder_hours_before: number;
 }
 

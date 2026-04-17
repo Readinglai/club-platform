@@ -30,8 +30,10 @@ function rateStyle(rate: number) {
   return { color: "#991b1b", backgroundColor: "#fee2e2" };
 }
 
-export default function AttendanceList({ events }: { events: EventRow[] }) {
+export default function AttendanceList({ events: initial }: { events: EventRow[] }) {
+  const [events, setEvents] = useState<EventRow[]>(initial);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   function toggle(id: string) {
     setExpanded((prev) => {
@@ -39,6 +41,43 @@ export default function AttendanceList({ events }: { events: EventRow[] }) {
       if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
+  }
+
+  async function toggleAttend(eventId: string, reg: RegistrationRow) {
+    const key = `${eventId}:${reg.id}`;
+    setLoadingId(key);
+    const next = !reg.attended;
+    const res = await fetch(
+      `/api/admin/events/${eventId}/registrations/${reg.id}/attend`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ attended: next }),
+      }
+    );
+    if (res.ok) {
+      const updated = await res.json();
+      setEvents((prev) =>
+        prev.map((e) => {
+          if (e.id !== eventId) return e;
+          const newRegs = e.registrations.map((r) =>
+            r.id !== reg.id
+              ? r
+              : { ...r, attended: updated.attendedAt !== null, attendedAt: updated.attendedAt }
+          );
+          const attendedCount = newRegs.filter((r) => r.attended).length;
+          return {
+            ...e,
+            registrations: newRegs,
+            attended: attendedCount,
+            attendanceRate: e.totalRegistrations > 0
+              ? Math.round((attendedCount / e.totalRegistrations) * 100)
+              : 0,
+          };
+        })
+      );
+    }
+    setLoadingId(null);
   }
 
   if (events.length === 0) {
@@ -52,30 +91,22 @@ export default function AttendanceList({ events }: { events: EventRow[] }) {
         const style = rateStyle(e.attendanceRate);
         return (
           <div key={e.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
-            {/* 活動列（可點擊展開） */}
             <button
               onClick={() => toggle(e.id)}
               className="w-full text-left px-5 py-4 flex items-center gap-4 hover:bg-gray-50 transition-colors"
             >
-              <span
-                className="text-sm shrink-0"
-                style={{ color: `${PRIMARY}44` }}
-              >
+              <span className="text-sm shrink-0" style={{ color: `${PRIMARY}44` }}>
                 {isOpen ? "▾" : "▸"}
               </span>
-
               <span className="flex-1 font-medium text-sm" style={{ color: PRIMARY }}>
                 {e.title}
               </span>
-
               <span className="text-xs text-gray-400 shrink-0">
                 {new Date(e.startAt).toLocaleDateString("zh-TW")}
               </span>
-
               <span className="text-xs text-gray-500 shrink-0 w-20 text-right">
                 {e.attended} / {e.totalRegistrations} 人
               </span>
-
               <span
                 className="text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 w-16 text-center"
                 style={style}
@@ -84,7 +115,6 @@ export default function AttendanceList({ events }: { events: EventRow[] }) {
               </span>
             </button>
 
-            {/* 展開：報名者列表 */}
             {isOpen && (
               <div className="border-t" style={{ borderColor: `${SECONDARY}22` }}>
                 {e.registrations.length === 0 ? (
@@ -93,7 +123,7 @@ export default function AttendanceList({ events }: { events: EventRow[] }) {
                   <table className="w-full text-xs">
                     <thead>
                       <tr style={{ backgroundColor: `${PRIMARY}05` }}>
-                        {["姓名", "Email", "狀態", "出席時間"].map((h) => (
+                        {["姓名", "Email", "狀態", "出席時間", "操作"].map((h) => (
                           <th
                             key={h}
                             className="text-left px-5 py-2.5 font-semibold uppercase tracking-wide"
@@ -105,31 +135,48 @@ export default function AttendanceList({ events }: { events: EventRow[] }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {e.registrations.map((r) => (
-                        <tr key={r.id} className="border-t last:border-0" style={{ borderColor: `${PRIMARY}08` }}>
-                          <td className="px-5 py-2.5 font-medium" style={{ color: PRIMARY }}>
-                            {r.userName}
-                          </td>
-                          <td className="px-5 py-2.5 text-gray-500">{r.userEmail}</td>
-                          <td className="px-5 py-2.5">
-                            <span
-                              className="font-semibold px-2 py-0.5 rounded-full"
-                              style={
-                                r.attended
-                                  ? { backgroundColor: "#d1fae5", color: "#065f46" }
-                                  : { backgroundColor: "#f3f4f6", color: "#6b7280" }
-                              }
-                            >
-                              {r.attended ? "已出席" : "未出席"}
-                            </span>
-                          </td>
-                          <td className="px-5 py-2.5 text-gray-400">
-                            {r.attendedAt
-                              ? new Date(r.attendedAt).toLocaleString("zh-TW")
-                              : "—"}
-                          </td>
-                        </tr>
-                      ))}
+                      {e.registrations.map((r) => {
+                        const loadKey = `${e.id}:${r.id}`;
+                        return (
+                          <tr key={r.id} className="border-t last:border-0" style={{ borderColor: `${PRIMARY}08` }}>
+                            <td className="px-5 py-2.5 font-medium" style={{ color: PRIMARY }}>
+                              {r.userName}
+                            </td>
+                            <td className="px-5 py-2.5 text-gray-500">{r.userEmail}</td>
+                            <td className="px-5 py-2.5">
+                              <span
+                                className="font-semibold px-2 py-0.5 rounded-full"
+                                style={
+                                  r.attended
+                                    ? { backgroundColor: "#d1fae5", color: "#065f46" }
+                                    : { backgroundColor: "#f3f4f6", color: "#6b7280" }
+                                }
+                              >
+                                {r.attended ? "已出席" : "未出席"}
+                              </span>
+                            </td>
+                            <td className="px-5 py-2.5 text-gray-400">
+                              {r.attendedAt
+                                ? new Date(r.attendedAt).toLocaleString("zh-TW")
+                                : "—"}
+                            </td>
+                            <td className="px-5 py-2.5">
+                              <button
+                                onClick={() => toggleAttend(e.id, r)}
+                                disabled={loadingId === loadKey}
+                                className="text-xs font-semibold px-2.5 py-1 rounded-lg border transition-all hover:opacity-80 disabled:opacity-40"
+                                style={
+                                  r.attended
+                                    ? { borderColor: "#6ee7b7", color: "#065f46", backgroundColor: "#d1fae5" }
+                                    : { borderColor: `${SECONDARY}66`, color: PRIMARY, backgroundColor: "white" }
+                                }
+                              >
+                                {loadingId === loadKey ? "…" : r.attended ? "取消出席" : "標記出席"}
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 )}

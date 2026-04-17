@@ -122,8 +122,6 @@ modules:
     enabled: false
 
 registration:
-  allow_waitlist: true
-  max_waitlist_size: 20
   reminder_hours_before: 24
 
 multi_tenant:
