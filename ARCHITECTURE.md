@@ -1,5 +1,32 @@
 # ARCHITECTURE — ROCSAUT Club Platform
 
+## 實際實作備註（與原始規劃的差異）
+
+### Schema 重大變更
+原始規劃的 `Team` model 已拆分為兩個獨立 model：
+- `Department`：固定部門（Event、Marketing、Operation），對應 config.yaml 的 teams 設定
+- `TaskGroup`：動態任務小組，由 exec 層級建立，成員可跨部門，有生命週期（ACTIVE / COMPLETED / ARCHIVED）
+
+### 組織結構說明（ROCSAUT）
+- President 和 Vice President 對應 role level 4（exec），權限相同
+- 三個 Vice President 分別管理 Event、Operation、Marketing 部門
+- 任務小組由 VP 或 President 建立，指派 Team Leader 領導，成員可同時加入多個小組
+- 未來可能新增 Internal Relation 部門
+
+### 跳過的子任務
+- 3.3.4 便條元件：已跳過，Discord pins 可替代
+- 社團議題投票：已跳過，Discord 投票功能可替代；僅保留任務小組旗下的投票
+
+### 新增的 Model
+- `TaskGroupMember`：TaskGroup 與 User 的多對多中間表，含 LEADER / MEMBER 角色
+- `Vote`、`VoteOption`、`VoteResponse`：任務小組投票系統，防重複投票
+
+### 環境變數新增
+- `CRON_SECRET`：保護 cron endpoint（需在 Vercel 手動設定）
+- `EMAIL_FROM`：Resend 寄件地址（需在 Vercel 手動設定）
+
+---
+
 ## 執行環境說明
 
 | 標籤 | 適用場景 |
@@ -8,6 +35,8 @@
 | `Kaggle` | 一般 UI 頁面、表單、列表 |
 | `Colab` | 複雜互動元件（Kanban、投票、圖表、購物車） |
 | `Local AI` | Seed 資料、測試生成、文件生成 |
+
+> 注意：目前所有程式碼生成任務均由 Claude Code 執行。Kaggle / Colab / Local AI 標籤保留作為未來引入執行者模型後的分工參考。
 
 ---
 
@@ -109,31 +138,38 @@
 
 ## Module 3：執委內部工具（Exec Tools）
 
-### 3.1 Team 管理
+### 3.1 部門與任務小組管理
 
-- 3.1.1 Team 成員列表 `Kaggle`
-- 3.1.2 角色指派 API `Claude Code`
-- 3.1.3 角色指派介面 `Kaggle`
-- 3.1.4 跨 team 成員概覽 `Kaggle`
+> 原規劃為 Team 管理；實作時拆分為 Department（固定部門）與 TaskGroup（動態任務小組）兩套系統。
+
+- 3.1.1 部門成員列表 `Kaggle` ✅
+- 3.1.2 角色指派 API `Claude Code` ✅
+- 3.1.3 角色指派介面（下拉選單，SUPER_ADMIN 限定）`Kaggle` ✅
+- 3.1.4 跨部門任務小組概覽 `Kaggle` ✅
+- 3.1.5 任務小組建立 API + 自動加入建立者為 LEADER `Claude Code` ✅
+- 3.1.6 任務小組成員管理 API（新增 / 移除 / 角色變更）`Claude Code` ✅
+- 3.1.7 任務小組狀態更新 API（ACTIVE / COMPLETED / ARCHIVED）`Claude Code` ✅
+- 3.1.8 任務小組建立表單 UI `Kaggle` ✅
+- 3.1.9 任務小組詳情頁與成員管理 UI `Kaggle` ✅
 
 ### 3.2 任務管理
 
-- 3.2.1 任務 CRUD API `Claude Code`
-- 3.2.2 任務建立/指派介面 `Kaggle`
-- 3.2.3 任務看板 UI `Colab`
-- 3.2.4 任務狀態追蹤與通知 `Claude Code`
-- 3.2.5 任務截止日提醒 `Claude Code`
+- 3.2.1 任務 CRUD API `Claude Code` ✅
+- 3.2.2 任務建立/指派介面（含 Modal）`Kaggle` ✅
+- 3.2.3 任務看板 UI（三欄 Kanban：TODO / IN_PROGRESS / DONE）`Colab` ✅
+- 3.2.4 任務狀態追蹤與通知（狀態變更時寄信給 assignee）`Claude Code` ✅
+- 3.2.5 任務截止日提醒（Vercel Cron，每日 UTC 09:00）`Claude Code` ✅
 
-### 3.3 討論區
+### 3.3 討論區與投票
 
-- 3.3.1 討論區自動生成 API `Claude Code`
-- 3.3.2 討論留言 UI `Kaggle`
-- 3.3.3 留言 API `Claude Code`
-- 3.3.4 便條元件 `Kaggle`
-- 3.3.5 投票元件 `Colab`
-- 3.3.6 投票 API `Claude Code`
-- 3.3.7 討論區任務指派 API `Claude Code`
-- 3.3.8 討論區任務指派 UI `Kaggle`
+- 3.3.1 討論區自動建立 API（TaskGroup 專屬，首次存取時 get-or-create）`Claude Code` ✅
+- 3.3.2 討論留言 UI `Kaggle` ✅
+- 3.3.3 留言 API（支援匿名，isAnonymous=true 時 authorId 存 null）`Claude Code` ✅
+- 3.3.4 便條元件 `Kaggle` ⏭️ 跳過（Discord pins 可替代）
+- 3.3.5 投票元件 UI（進度條、單選換票、關閉投票）`Colab` ✅
+- 3.3.6 投票 API（建立 / 投票 / 關閉，防重複投票）`Claude Code` ✅
+- 3.3.7 討論區任務指派 API `Claude Code` ⏭️ 跳過（Task.discussionId 已廢棄，改為 TaskGroup 層級）
+- 3.3.8 討論區任務指派 UI `Kaggle` ⏭️ 跳過（同上）
 
 ---
 
