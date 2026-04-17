@@ -33,14 +33,28 @@ declare global {
  * 傳入 DATABASE_URL 字串即可，PrismaPg 會內部建立連線池。
  */
 function createPrismaClient(): PrismaClient {
-  const connectionString = process.env.DATABASE_URL;
+  const rawUrl = process.env.DATABASE_URL;
 
-  if (!connectionString) {
+  if (!rawUrl) {
     throw new Error(
       "[db] DATABASE_URL 環境變數未設定。\n" +
         "開發環境請確認 .env.local 已設定此變數。\n" +
         "生產環境請確認 Vercel 環境變數已設定。"
     );
+  }
+
+  // Strip Prisma-specific query params that @prisma/adapter-pg / pg doesn't understand.
+  // ?pgbouncer=true is for Prisma's own query engine; pg library doesn't recognize it
+  // and may cause connection errors when passed to the PostgreSQL server.
+  let connectionString = rawUrl;
+  try {
+    const u = new URL(rawUrl);
+    u.searchParams.delete("pgbouncer");
+    u.searchParams.delete("connect_timeout");
+    u.searchParams.delete("pool_timeout");
+    connectionString = u.toString();
+  } catch {
+    // URL parsing failed — use raw string as-is
   }
 
   // PrismaPg adapter：將 pg.Pool 包裝成 Prisma 7 可用的 driver adapter 介面
