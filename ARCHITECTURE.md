@@ -252,3 +252,23 @@
 - 9.2.2 跨社團活動 UI
 - 9.2.3 校園公告系統 API `Claude Code`
 - 9.2.4 校園公告系統 UI
+
+
+---
+
+## 整合測試紀錄（2026-04-17）
+
+### 已修復的主要問題
+1. middleware matcher 將所有 /api/* 納入 i18n，導致 POST 請求 307 redirect 後 404
+2. 所有 Admin 表單缺少 try-catch-finally，導致 loading 狀態永遠卡住
+3. 候補功能（WAITLISTED）已永久移除，報名滿額直接回傳錯誤
+4. Race condition in capacity check，改用 DB transaction + advisory lock
+5. 出席率報表分母錯誤，已修正為只計算 REGISTERED 狀態
+6. Department seed 資料透過 Supabase SQL 手動建立（event/marketing/operation）
+7. SiteConfig 表建立，支援 Hero 背景圖上傳
+8. 語言切換 /en/en 雙重疊加 bug 已修復
+9. Resend 寄件者改為 onboarding@resend.dev（待 rocsaut.ca domain 驗證後改回）
+10. SponsorsSection onError 事件處理器導致 Server Component 崩潰已修復
+
+### 權限設計確認
+- EXEC（level=4）可存取 /admin，設計如此，不視為漏洞
