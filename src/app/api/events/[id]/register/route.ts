@@ -20,6 +20,7 @@ export async function POST(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  try {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "未登入" }, { status: 401 });
@@ -124,6 +125,10 @@ export async function POST(
   }
 
   return NextResponse.json(registration, { status: 201 });
+  } catch (err) {
+    console.error("[register] 未預期錯誤：", err);
+    return NextResponse.json({ error: "伺服器錯誤" }, { status: 500 });
+  }
 }
 
 /** DELETE /api/events/[id]/register — 取消報名 */
@@ -131,25 +136,30 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "未登入" }, { status: 401 });
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "未登入" }, { status: 401 });
+    }
+
+    const { id: eventId } = await params;
+
+    const registration = await db.registration.findUnique({
+      where: { userId_eventId: { userId: session.user.id, eventId } },
+    });
+
+    if (!registration || registration.status === RegistrationStatus.CANCELLED) {
+      return NextResponse.json({ error: "找不到有效的報名記錄" }, { status: 404 });
+    }
+
+    await db.registration.update({
+      where: { id: registration.id },
+      data: { status: RegistrationStatus.CANCELLED },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("[register] 取消報名失敗：", err);
+    return NextResponse.json({ error: "伺服器錯誤" }, { status: 500 });
   }
-
-  const { id: eventId } = await params;
-
-  const registration = await db.registration.findUnique({
-    where: { userId_eventId: { userId: session.user.id, eventId } },
-  });
-
-  if (!registration || registration.status === RegistrationStatus.CANCELLED) {
-    return NextResponse.json({ error: "找不到有效的報名記錄" }, { status: 404 });
-  }
-
-  await db.registration.update({
-    where: { id: registration.id },
-    data: { status: RegistrationStatus.CANCELLED },
-  });
-
-  return NextResponse.json({ success: true });
 }

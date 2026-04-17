@@ -53,20 +53,24 @@ export default function ImportForm({ locale }: { locale: string }) {
       return;
     }
 
-    const res = await fetch("/api/admin/members/import", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ members }),
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-      setResult(data);
-      router.refresh();
-    } else {
-      setParseError(data.error ?? "匯入失敗");
+    try {
+      const res = await fetch("/api/admin/members/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ members }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setResult(data);
+        router.refresh();
+      } else {
+        setParseError(data.error ?? "匯入失敗");
+      }
+    } catch {
+      setParseError("網路錯誤，請稍後再試。");
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   }
 
   return (
