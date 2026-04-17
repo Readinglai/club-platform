@@ -119,8 +119,9 @@ export default async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // 匹配所有路徑，但排除靜態資源、_next 內部路徑、以及 NextAuth API 路徑
-    // api/auth/ 必須排除，否則 i18n middleware 會在 OAuth callback URL 加上 locale 前綴導致驗證失敗
-    "/((?!_next/static|_next/image|favicon.ico|assets/|api/auth/|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp)).*)",
+    // 排除靜態資源、_next 內部路徑、以及所有 /api/* 路徑。
+    // API routes 自行呼叫 auth() 驗證 session，不需要 middleware 做 i18n 前綴或 auth redirect，
+    // 否則 next-intl 會將 POST /api/xxx 重導到 /en/api/xxx（不存在）導致 404。
+    "/((?!_next/static|_next/image|favicon.ico|assets/|api/|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp)).*)",
   ],
 };
