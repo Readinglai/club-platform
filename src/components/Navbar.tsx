@@ -4,8 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { usePathname } from "next/navigation";
-import { useRouter } from "@/i18n/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const NAV_LINKS = [
   { key: "home", href: "/" },
@@ -21,18 +20,20 @@ const SECONDARY = "#c9b99a";
 
 export default function Navbar() {
   const t = useTranslations("nav");
-  const locale = useLocale();
-  // Full pathname including locale prefix — used for active-link detection and switching
-  const pathname = usePathname();
+  const locale = useLocale(); // used for display (button text, link prefixes)
+  const pathname = usePathname(); // always reflects the current URL
   const router = useRouter();
 
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLangSwitch = () => {
-    const targetLocale = locale === "zh" ? "en" : "zh";
-    // Strip the current locale prefix to get the bare path (e.g. "/zh/events" → "/events")
-    const pathWithoutLocale = pathname.replace(new RegExp(`^/${locale}`), "") || "/";
-    router.replace(pathWithoutLocale, { locale: targetLocale });
+    // Derive locale from the actual URL (immune to stale useLocale context after soft-nav)
+    const segments = pathname.split("/");
+    const currentLocale = segments[1] === "en" ? "en" : "zh";
+    const targetLocale = currentLocale === "zh" ? "en" : "zh";
+    segments[1] = targetLocale;
+    const newPath = segments.join("/") || `/${targetLocale}`;
+    router.replace(newPath);
   };
 
   const localizedHref = (href: string) =>

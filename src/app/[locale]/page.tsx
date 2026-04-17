@@ -28,7 +28,7 @@ async function HeroSection() {
   let heroImageUrl: string | null = null;
   try {
     const heroConfig = await db.siteConfig.findUnique({ where: { key: "heroImageUrl" } });
-    heroImageUrl = heroConfig?.value ?? "/assets/hero.jpg";
+    heroImageUrl = heroConfig?.value?.trim() || "/assets/hero.jpg";
   } catch {
     heroImageUrl = "/assets/hero.jpg";
   }
@@ -43,7 +43,7 @@ function HeroClient({ heroImageUrl, locale }: { heroImageUrl: string | null; loc
       style={{
         backgroundColor: PRIMARY,
         ...(heroImageUrl && {
-          backgroundImage: `url(${heroImageUrl})`,
+          backgroundImage: `url("${heroImageUrl}")`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }),

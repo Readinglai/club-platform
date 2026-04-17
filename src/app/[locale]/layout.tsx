@@ -43,7 +43,7 @@ export default async function LocaleLayout({
     <html lang={locale} suppressHydrationWarning>
       <body className="min-h-full flex flex-col">
         {/* NextIntlClientProvider 將翻譯訊息注入到所有子 Client Components */}
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           {/* 全站 Navbar，含語言切換和響應式漢堡選單 */}
           <Navbar />
           {/* 頁面主要內容 */}
