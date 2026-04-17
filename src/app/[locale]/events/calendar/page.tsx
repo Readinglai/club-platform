@@ -17,7 +17,7 @@
  */
 
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getAllEvents } from "@/lib/data/events";
 import EventCalendar from "@/components/EventCalendar";
 
@@ -33,6 +33,7 @@ interface CalendarPageProps {
 
 export default async function CalendarPage({ params }: CalendarPageProps) {
   const { locale } = await params;
+  setRequestLocale(locale);
 
   // async Server Component 使用 getTranslations
   const t = await getTranslations("events");

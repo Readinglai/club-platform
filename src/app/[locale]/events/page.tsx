@@ -14,7 +14,7 @@
  */
 
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getAllEvents, type Event } from "@/lib/data/events";
 
 // 主題色
@@ -186,6 +186,7 @@ interface EventsPageProps {
 
 export default async function EventsPage({ params }: EventsPageProps) {
   const { locale } = await params;
+  setRequestLocale(locale);
 
   // async Server Component 使用 getTranslations（非 useTranslations hook）
   const t = await getTranslations("events");

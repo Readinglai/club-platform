@@ -18,7 +18,7 @@
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import {
   getMemberById,
   getAllMembers,
@@ -73,6 +73,7 @@ export default async function MemberDetailPage({
   params,
 }: MemberDetailPageProps) {
   const { locale, id } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations("members");
 
   // 查找成員；找不到則 404

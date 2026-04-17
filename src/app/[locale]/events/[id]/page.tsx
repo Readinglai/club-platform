@@ -17,7 +17,7 @@
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getEventById } from "@/lib/data/events";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -90,6 +90,7 @@ export default async function EventDetailPage({
   params,
 }: EventDetailPageProps) {
   const { locale, id } = await params;
+  setRequestLocale(locale);
 
   // async Server Component 使用 getTranslations
   const t = await getTranslations("events");

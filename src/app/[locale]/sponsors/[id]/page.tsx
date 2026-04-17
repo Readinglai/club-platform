@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +21,7 @@ export default async function SponsorPublicDetailPage({
   params: Promise<{ locale: string; id: string }>;
 }) {
   const { locale, id } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations("sponsors");
 
   let sponsorRows: Array<{ id: string; name: string; logoUrl: string | null; website: string | null; description: string | null }> = [];

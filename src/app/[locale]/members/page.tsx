@@ -11,7 +11,7 @@
  */
 
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import {
   getAllMembers,
   ROLE_LABELS,
@@ -132,6 +132,7 @@ interface MembersPageProps {
 
 export default async function MembersPage({ params }: MembersPageProps) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations("members");
   const members = getAllMembers();
 

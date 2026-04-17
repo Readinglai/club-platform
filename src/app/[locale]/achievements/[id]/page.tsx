@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { db } from "@/lib/db";
 import { getAchievementById, getAllAchievements } from "@/lib/data/achievements";
 
@@ -15,6 +15,7 @@ interface AchievementDetailPageProps {
 
 export default async function AchievementDetailPage({ params }: AchievementDetailPageProps) {
   const { locale, id } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations("achievements");
 
   // Normalize to a common shape: try DB first, then mock

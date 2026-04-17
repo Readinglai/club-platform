@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { db } from "@/lib/db";
 import { getAllAchievements, getAchievementYears } from "@/lib/data/achievements";
 import AchievementsGrid from "@/components/AchievementsGrid";
@@ -14,6 +14,7 @@ interface AchievementsPageProps {
 
 export default async function AchievementsPage({ params }: AchievementsPageProps) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations("achievements");
 
   // Try DB first; fall back to static mock data

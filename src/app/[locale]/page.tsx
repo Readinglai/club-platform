@@ -5,7 +5,7 @@
  */
 
 import { useTranslations } from "next-intl";
-import { getLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { db } from "@/lib/db";
@@ -28,7 +28,8 @@ async function HeroSection() {
   let heroImageUrl: string | null = null;
   try {
     const heroConfig = await db.siteConfig.findUnique({ where: { key: "heroImageUrl" } });
-    heroImageUrl = heroConfig?.value?.trim() || "/assets/hero.jpg";
+    const rawUrl = heroConfig?.value?.trim() ?? "";
+    heroImageUrl = /^(https?:\/\/|\/)/.test(rawUrl) ? rawUrl : "/assets/hero.jpg";
   } catch {
     heroImageUrl = "/assets/hero.jpg";
   }
@@ -325,7 +326,9 @@ function Footer() {
 
 // ─── 頁面主元件 ───────────────────────────────────────────────────────────────
 
-export default async function HomePage() {
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <>
       <HeroSection />

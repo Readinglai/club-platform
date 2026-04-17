@@ -12,7 +12,7 @@
  */
 
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Navbar from "@/components/Navbar";
@@ -33,6 +33,8 @@ export default async function LocaleLayout({
   if (!routing.locales.includes(locale as "zh" | "en")) {
     notFound();
   }
+
+  setRequestLocale(locale);
 
   // 在伺服器端載入對應語言的所有訊息，傳給 Provider
   // getMessages() 會自動讀取 src/i18n/request.ts 設定的訊息
