@@ -16,7 +16,10 @@ import Google from "next-auth/providers/google";
 import type { Role } from "@/generated/prisma/client";
 
 /** 允許登入的 email 網域白名單 */
-const ALLOWED_DOMAINS = ["utoronto.ca", "mail.utoronto.ca", "gmail.com"];
+const ALLOWED_DOMAINS = ["utoronto.ca", "mail.utoronto.ca"];
+
+/** 允許登入的特定帳號（不限網域，例如 SUPER_ADMIN） */
+const ALLOWED_EMAILS = ["flyincloud2001@gmail.com"];
 
 /** 需要登入才能訪問的路徑前綴 */
 const PROTECTED_PREFIXES = ["/member", "/admin"];
@@ -87,7 +90,7 @@ export const authConfig: NextAuthConfig = {
       console.log("[signIn callback] userEmail:", userEmail);
       console.log("[signIn callback] isDevAllowed:", isDevAllowed);
 
-      return isDevAllowed || ALLOWED_DOMAINS.includes(domain);
+      return isDevAllowed || ALLOWED_EMAILS.includes(userEmail) || ALLOWED_DOMAINS.includes(domain);
     },
 
     /**
