@@ -23,12 +23,16 @@ export default async function SponsorPublicDetailPage({
   const { locale, id } = await params;
   const t = await getTranslations("sponsors");
 
-  const sponsor = await db.sponsor.findUnique({
-    where: { id },
-    include: { histories: { orderBy: { year: "desc" } } },
-  });
+  const sponsorRows = await db.$queryRaw<
+    Array<{ id: string; name: string; logoUrl: string | null; website: string | null; description: string | null }>
+  >`SELECT id, name, "logoUrl", website, description FROM "Sponsor" WHERE id = ${id} LIMIT 1`;
 
-  if (!sponsor) notFound();
+  if (sponsorRows.length === 0) notFound();
+  const sponsor = sponsorRows[0];
+
+  const histories = await db.$queryRaw<
+    Array<{ id: string; year: number; tier: string }>
+  >`SELECT id, year::int, tier FROM "SponsorHistory" WHERE "sponsorId" = ${id} ORDER BY year DESC`;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f9f7f4" }}>
@@ -126,7 +130,7 @@ export default async function SponsorPublicDetailPage({
         )}
 
         {/* Sponsorship history */}
-        {sponsor.histories.length > 0 && (
+        {histories.length > 0 && (
           <div
             className="rounded-2xl bg-white p-6 sm:p-8 shadow-sm"
             style={{ border: "1px solid #e5e7eb" }}
@@ -137,9 +141,9 @@ export default async function SponsorPublicDetailPage({
 
             {/* Timeline */}
             <div className="flex flex-col gap-0">
-              {sponsor.histories.map((h, idx) => {
+              {histories.map((h, idx) => {
                 const style = TIER_STYLE[h.tier] ?? { bg: "#f3f4f6", color: "#374151", border: "#d1d5db" };
-                const isLast = idx === sponsor.histories.length - 1;
+                const isLast = idx === histories.length - 1;
                 return (
                   <div key={h.id} className="flex items-start gap-4">
                     {/* Timeline dot + line */}
@@ -156,7 +160,7 @@ export default async function SponsorPublicDetailPage({
                     {/* Year + tier badge */}
                     <div className="flex items-center gap-3 pb-6">
                       <span className="text-sm font-bold" style={{ color: PRIMARY }}>
-                        {h.year}
+                        {Number(h.year)}
                       </span>
                       <span
                         className="text-xs font-semibold px-2.5 py-0.5 rounded-full border"

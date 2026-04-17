@@ -15,24 +15,28 @@ export default async function SponsorsPage({
   const { locale } = await params;
   const t = await getTranslations("sponsors");
 
-  const histories = await db.sponsorHistory.findMany({
-    select: { year: true },
-    orderBy: { year: "desc" },
-  });
-  const years = [...new Set(histories.map((h) => h.year))];
+  const yearRows = await db.$queryRaw<{ year: number }[]>`
+    SELECT DISTINCT year FROM "SponsorHistory" ORDER BY year DESC
+  `;
+  const years = yearRows.map((r) => Number(r.year));
 
   const currentYear = new Date().getFullYear();
   const defaultYear = years.includes(currentYear) ? currentYear : (years[0] ?? currentYear);
 
-  // All sponsors with all their histories (client will filter by year)
-  const sponsors = await db.sponsor.findMany({
-    orderBy: { name: "asc" },
-    include: {
-      histories: {
-        orderBy: { year: "desc" },
-      },
-    },
-  });
+  const sponsorRows = await db.$queryRaw<
+    Array<{ id: string; name: string; logoUrl: string | null; website: string | null }>
+  >`SELECT id, name, "logoUrl", website FROM "Sponsor" ORDER BY name ASC`;
+
+  const historyRows = await db.$queryRaw<
+    Array<{ sponsorId: string; year: number; tier: string }>
+  >`SELECT "sponsorId", year::int, tier FROM "SponsorHistory" ORDER BY year DESC`;
+
+  const sponsors = sponsorRows.map((s) => ({
+    ...s,
+    histories: historyRows
+      .filter((h) => h.sponsorId === s.id)
+      .map((h) => ({ year: Number(h.year), tier: h.tier })),
+  }));
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f9f7f4" }}>
@@ -75,13 +79,7 @@ export default async function SponsorsPage({
       {/* Grid */}
       <section className="max-w-6xl mx-auto px-4 py-12">
         <SponsorsGrid
-          sponsors={sponsors.map((s) => ({
-            id: s.id,
-            name: s.name,
-            logoUrl: s.logoUrl,
-            website: s.website,
-            histories: s.histories.map((h) => ({ year: h.year, tier: h.tier })),
-          }))}
+          sponsors={sponsors}
           years={years}
           locale={locale}
           defaultYear={defaultYear}
