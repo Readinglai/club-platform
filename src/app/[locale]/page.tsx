@@ -23,12 +23,14 @@ const TIER_LABEL: Record<string, string> = {
 // ─── Hero Section ─────────────────────────────────────────────────────────────
 
 async function HeroSection() {
-  const heroConfig = await db.siteConfig.findUnique({ where: { key: "heroImageUrl" } }).catch(() => null);
-  const heroImageUrl = heroConfig?.value || null;
-
-  return (
-    <HeroClient heroImageUrl={heroImageUrl} />
-  );
+  let heroImageUrl: string | null = null;
+  try {
+    const heroConfig = await db.siteConfig.findUnique({ where: { key: "heroImageUrl" } });
+    heroImageUrl = heroConfig?.value ?? null;
+  } catch {
+    // Table may not yet exist in production; fall back to solid background
+  }
+  return <HeroClient heroImageUrl={heroImageUrl} />;
 }
 
 // Inline client-like hero rendered as server (no interactivity needed)
@@ -135,12 +137,17 @@ function AboutSection() {
 // ─── Upcoming Events Section ──────────────────────────────────────────────────
 
 async function UpcomingEventsSection() {
-  const events = await db.event.findMany({
-    where: { published: true, startAt: { gt: new Date() } },
-    orderBy: { startAt: "asc" },
-    take: 3,
-    select: { id: true, title: true, startAt: true, endAt: true, location: true, capacity: true },
-  }).catch(() => []);
+  let events: { id: string; title: string; startAt: Date; endAt: Date | null; location: string | null; capacity: number | null }[] = [];
+  try {
+    events = await db.event.findMany({
+      where: { published: true, startAt: { gt: new Date() } },
+      orderBy: { startAt: "asc" },
+      take: 3,
+      select: { id: true, title: true, startAt: true, endAt: true, location: true, capacity: true },
+    });
+  } catch {
+    // DB unreachable or table missing — skip section
+  }
 
   if (events.length === 0) return null;
 
@@ -195,13 +202,16 @@ async function UpcomingEventsSection() {
 // ─── Sponsors Section ─────────────────────────────────────────────────────────
 
 async function SponsorsSection() {
-  const sponsors = await db.sponsor.findMany({
-    where: { histories: { some: {} } },
-    include: {
-      histories: { orderBy: { year: "desc" }, take: 1 },
-    },
-    orderBy: { name: "asc" },
-  }).catch(() => []);
+  let sponsors: { id: string; name: string; logoUrl: string | null; website: string | null; description: string | null; createdAt: Date; updatedAt: Date; histories: { id: string; sponsorId: string; year: number; tier: string; createdAt: Date }[] }[] = [];
+  try {
+    sponsors = await db.sponsor.findMany({
+      where: { histories: { some: {} } },
+      include: { histories: { orderBy: { year: "desc" }, take: 1 } },
+      orderBy: { name: "asc" },
+    });
+  } catch {
+    // DB unreachable — skip section
+  }
 
   if (sponsors.length === 0) return null;
 
@@ -238,12 +248,12 @@ async function SponsorsSection() {
                   title={s.name}
                 >
                   {s.logoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={s.logoUrl}
                       alt={s.name}
                       className="object-contain"
                       style={{ height: tier === "platinum" ? 64 : tier === "gold" ? 52 : 40, maxWidth: 160 }}
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                     />
                   ) : (
                     <span className="text-sm font-semibold" style={{ color: PRIMARY }}>{s.name}</span>
