@@ -20,13 +20,14 @@ export async function GET(request: NextRequest) {
         select: {
           title: true,
           startAt: true,
-          registrations: { select: { attendedAt: true } },
+          registrations: { select: { attendedAt: true, status: true } },
         },
       });
 
       const rows = events.map((e) => {
-        const total = e.registrations.length;
-        const attended = e.registrations.filter((r) => r.attendedAt !== null).length;
+        const registered = e.registrations.filter((r) => r.status === "REGISTERED");
+        const total = registered.length;
+        const attended = registered.filter((r) => r.attendedAt !== null).length;
         const rate = total > 0 ? Math.round((attended / total) * 100) : 0;
         return `"${e.title}","${e.startAt.toLocaleDateString("zh-TW")}",${total},${attended},${rate}%`;
       });
