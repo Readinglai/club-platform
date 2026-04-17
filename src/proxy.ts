@@ -80,19 +80,29 @@ const { auth } = NextAuth({
  *    - 若回傳 next()，繼續往下
  * 2. 執行 NextAuth auth 保護（只對受保護路徑生效）
  */
-export default async function proxy(request: NextRequest) {
-  // 步驟 1：next-intl 語言路由
-  // createMiddleware 回傳的 handler 對每個請求回傳 NextResponse
-  const i18nResponse = handleI18nRouting(request);
+// 不需要 i18n locale 前綴的內部路徑（exec/portal 都是純中文內部工具，無多語需求）
+const NO_I18N_PREFIXES = [/^\/exec(\/|$)/, /^\/portal(\/|$)/];
 
-  // 若 i18n middleware 觸發重導向（新增語言前綴），直接回傳
-  if (i18nResponse.status >= 300 && i18nResponse.status < 400) {
-    return i18nResponse;
+export default async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const skipI18n = NO_I18N_PREFIXES.some((p) => p.test(pathname));
+
+  let i18nResponse: NextResponse;
+
+  if (skipI18n) {
+    // 跳過 next-intl，直接放行（避免被重導到 /zh/exec/... 而 404）
+    i18nResponse = NextResponse.next();
+  } else {
+    // 步驟 1：next-intl 語言路由
+    i18nResponse = handleI18nRouting(request);
+
+    // 若 i18n middleware 觸發重導向（新增語言前綴），直接回傳
+    if (i18nResponse.status >= 300 && i18nResponse.status < 400) {
+      return i18nResponse;
+    }
   }
 
-  // 步驟 2：NextAuth 路由保護
-  // auth() 作為函數呼叫時，會執行 authorized callback 並自動處理未授權情況
-  // 使用 unknown 中轉以相容不同版本的 NextAuth 型別定義
+  // 步驟 2：NextAuth 路由保護（exec/portal 仍需驗證登入）
   const authHandler = auth as unknown as (req: NextRequest) => Promise<NextResponse | Response | undefined>;
   const authResponse = await authHandler(request);
 
