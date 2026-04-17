@@ -203,10 +203,10 @@ model Registration {
 /// 可選擇性關聯任務群組（供社團層級討論使用）
 model Discussion {
   id          String     @id @default(cuid())
-  /// 關聯的活動（唯一，一對一）
-  eventId     String     @unique
-  event       Event      @relation(fields: [eventId], references: [id])
-  /// 關聯的任務群組（可選，未來社團層級討論區使用）
+  /// 關聯的活動（唯一，一對一；TaskGroup 專屬討論區時為 null）
+  eventId     String?    @unique
+  event       Event?     @relation(fields: [eventId], references: [id])
+  /// 關聯的任務群組（TaskGroup 專屬討論區時必填，活動討論區時可選）
   taskGroupId String?
   taskGroup   TaskGroup? @relation(fields: [taskGroupId], references: [id])
   createdAt   DateTime   @default(now())

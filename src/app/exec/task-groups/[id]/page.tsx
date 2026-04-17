@@ -1,15 +1,17 @@
 /**
  * task-groups/[id]/page.tsx — 任務小組詳情頁
  *
- * 顯示小組資訊、成員管理（TaskGroupManager）與任務看板（TaskKanban）。
+ * 顯示小組資訊、成員管理（TaskGroupManager）與三 Tab 內容（TaskGroupTabs）。
  */
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ROLE_LEVEL } from "@/lib/rbac";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import TaskGroupManager from "./TaskGroupManager";
-import TaskKanban from "./TaskKanban";
+import TaskGroupTabs from "./TaskGroupTabs";
+import type { Role } from "@/generated/prisma/client";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -24,6 +26,7 @@ export default async function TaskGroupDetailPage({
   const { id } = await params;
   const session = await auth();
   const userId = session?.user?.id ?? "";
+  const globalRole = (session?.user?.role as Role | undefined) ?? "MEMBER";
 
   const taskGroup = await db.taskGroup.findUnique({
     where: { id },
@@ -50,6 +53,7 @@ export default async function TaskGroupDetailPage({
   const currentMember = taskGroup.members.find((m) => m.user.id === userId);
   const isMember = !!currentMember;
   const isLeader = currentMember?.role === "LEADER";
+  const canCreateVote = isLeader || ROLE_LEVEL[globalRole] >= 4;
 
   const members = taskGroup.members.map((m) => ({
     id: m.id,
@@ -101,13 +105,17 @@ export default async function TaskGroupDetailPage({
         isCreator={isCreator}
       />
 
-      <TaskKanban
-        taskGroupId={taskGroup.id}
-        initialTasks={tasks}
-        members={memberUsers}
-        isMember={isMember}
-        isLeader={isLeader}
-      />
+      <div className="mt-8">
+        <TaskGroupTabs
+          taskGroupId={taskGroup.id}
+          initialTasks={tasks}
+          memberUsers={memberUsers}
+          isMember={isMember}
+          isLeader={isLeader}
+          userId={userId}
+          canCreateVote={canCreateVote}
+        />
+      </div>
     </div>
   );
 }
