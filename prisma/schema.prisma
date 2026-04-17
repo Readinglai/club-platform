@@ -52,7 +52,9 @@ model User {
   email     String   @unique
   name      String
   /// 大頭貼 URL，來自 Google 帳號，可為 null
-  image     String?
+  image         String?
+  /// NextAuth：email 驗證時間（Magic Link 用；Google OAuth 登入時為 null）
+  emailVerified DateTime?
   /// 使用者在社團中的角色
   role      Role     @default(MEMBER)
   /// 所屬部門（可為 null，尚未分配或為 exec 層級）
@@ -71,6 +73,10 @@ model User {
   tasks         Task[]          @relation("AssignedTasks")
   /// 該使用者在討論區發表的留言（匿名留言時 authorId 為 null）
   comments      Comment[]
+  /// 該使用者建立的公告
+  announcements     Announcement[]
+  /// 該使用者已讀的公告記錄
+  announcementReads AnnouncementRead[]
 }
 
 /// NextAuth：OAuth 帳號表
@@ -200,6 +206,33 @@ model Comment {
   /// 是否為匿名留言
   isAnonymous  Boolean    @default(false)
   createdAt    DateTime   @default(now())
+}
+
+/// 公告表
+/// 由管理員發布的社團公告，成員可瀏覽並標記已讀
+model Announcement {
+  id        String             @id @default(cuid())
+  title     String
+  content   String
+  published Boolean            @default(false)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  authorId  String
+  author    User               @relation(fields: [authorId], references: [id])
+  reads     AnnouncementRead[]
+}
+
+/// 公告已讀記錄表
+/// 記錄每位成員對每則公告的已讀狀態，避免重複標記
+model AnnouncementRead {
+  id             String       @id @default(cuid())
+  announcementId String
+  announcement   Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  readAt         DateTime     @default(now())
+
+  @@unique([announcementId, userId])
 }
 
 /// 任務表

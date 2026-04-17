@@ -9,36 +9,27 @@
  * - 完整描述（支援換行與列表段落）
  * - 報名截止日、活動名額
  * - 返回列表 / 查看日曆 導覽連結
+ * - 若已登入：顯示報名狀態與操作按鈕（RegisterPanel）
+ * - 若未登入：顯示「請登入後報名」連結
  *
  * ⚠️ async Server Component 使用 getTranslations（非 useTranslations hook）
- *
- * TODO: 替換假資料查詢為 Prisma，並在此頁面加入報名按鈕（Module 2.2）
  */
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { getEventById, getAllEvents } from "@/lib/data/events";
+import { getEventById } from "@/lib/data/events";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { RegistrationStatus } from "@/generated/prisma/client";
+import { RegisterPanel } from "./RegisterPanel";
+
+// 頁面為動態渲染（含 auth() 與 DB 查詢）
+export const dynamic = "force-dynamic";
 
 // 主題色
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
-
-// ─── 靜態路徑預生成 ──────────────────────────────────────────────────────────
-
-/**
- * generateStaticParams — 預先產生所有活動的靜態路徑
- *
- * 讓 Next.js 在 build 時就為每筆活動生成靜態頁面，提升載入速度。
- * TODO: 接資料庫後改為非同步 Prisma 查詢
- */
-export async function generateStaticParams() {
-  const events = getAllEvents();
-  const locales = ["zh", "en"];
-  return locales.flatMap((locale) =>
-    events.map((event) => ({ locale, id: event.id }))
-  );
-}
 
 // ─── 日期格式化工具 ───────────────────────────────────────────────────────────
 
@@ -108,6 +99,45 @@ export default async function EventDetailPage({
   if (!event) {
     notFound();
   }
+
+  // ─── 報名狀態（從資料庫查詢）────────────────────────────────────────────────
+  const session = await auth();
+  const userId = session?.user?.id ?? null;
+
+  // 查詢 DB 中的活動（mock 資料不在 DB 中時為 null）
+  const dbEvent = await db.event.findUnique({
+    where: { id, published: true },
+    select: {
+      capacity: true,
+      registrations: {
+        where: { status: RegistrationStatus.REGISTERED },
+        select: { id: true },
+      },
+    },
+  });
+
+  // 使用者目前的報名記錄
+  const userRegistration = userId && dbEvent
+    ? await db.registration.findUnique({
+        where: { userId_eventId: { userId, eventId: id } },
+        select: { status: true },
+      })
+    : null;
+
+  // 計算初始狀態與剩餘名額
+  const initialStatus: RegistrationStatus | null = userRegistration?.status
+    ? (userRegistration.status === RegistrationStatus.CANCELLED
+        ? null
+        : userRegistration.status)
+    : dbEvent
+    ? null
+    : null;
+
+  const registeredCount = dbEvent?.registrations.length ?? 0;
+  const remainingSpots =
+    dbEvent?.capacity != null
+      ? Math.max(0, dbEvent.capacity - registeredCount)
+      : null;
 
   // 將描述依 \n\n 分段（每段可能是段落文字或以「-」開頭的列表）
   const descParagraphs = event.description
@@ -408,13 +438,14 @@ export default async function EventDetailPage({
                 />
               </div>
 
-              {/* TODO: 報名按鈕（Module 2.2 活動報名功能完成後啟用） */}
-              <div
-                className="mt-6 rounded-lg px-4 py-3 text-xs text-center"
-                style={{ backgroundColor: "#f3f4f6", color: "#9ca3af" }}
-              >
-                {t("registrationComingSoon")}
-              </div>
+              {/* 報名操作區（Client Component） */}
+              <RegisterPanel
+                eventId={id}
+                isLoggedIn={!!userId}
+                initialStatus={dbEvent ? initialStatus : null}
+                remainingSpots={remainingSpots}
+                locale={locale}
+              />
             </div>
           </aside>
         </div>

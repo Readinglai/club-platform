@@ -42,3 +42,6 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# 本機手動資訊（含敏感金鑰，不可上傳）
+社團平台所有手動資訊.txt
