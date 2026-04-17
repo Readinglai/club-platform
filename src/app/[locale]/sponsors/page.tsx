@@ -15,28 +15,46 @@ export default async function SponsorsPage({
   const { locale } = await params;
   const t = await getTranslations("sponsors");
 
-  const yearRows = await db.$queryRaw<{ year: number }[]>`
-    SELECT DISTINCT year FROM "SponsorHistory" ORDER BY year DESC
-  `;
-  const years = yearRows.map((r) => Number(r.year));
+  let years: number[] = [];
+  let sponsors: Array<{ id: string; name: string; logoUrl: string | null; website: string | null; histories: Array<{ year: number; tier: string }> }> = [];
+  let defaultYear = new Date().getFullYear();
+  let errorMsg: string | null = null;
 
-  const currentYear = new Date().getFullYear();
-  const defaultYear = years.includes(currentYear) ? currentYear : (years[0] ?? currentYear);
+  try {
+    const yearRows = await db.$queryRaw<{ year: number }[]>`
+      SELECT DISTINCT year FROM "SponsorHistory" ORDER BY year DESC
+    `;
+    years = yearRows.map((r) => Number(r.year));
+    defaultYear = years.includes(new Date().getFullYear()) ? new Date().getFullYear() : (years[0] ?? new Date().getFullYear());
 
-  const sponsorRows = await db.$queryRaw<
-    Array<{ id: string; name: string; logoUrl: string | null; website: string | null }>
-  >`SELECT id, name, "logoUrl", website FROM "Sponsor" ORDER BY name ASC`;
+    const sponsorRows = await db.$queryRaw<
+      Array<{ id: string; name: string; logoUrl: string | null; website: string | null }>
+    >`SELECT id, name, "logoUrl", website FROM "Sponsor" ORDER BY name ASC`;
 
-  const historyRows = await db.$queryRaw<
-    Array<{ sponsorId: string; year: number; tier: string }>
-  >`SELECT "sponsorId", year::int, tier FROM "SponsorHistory" ORDER BY year DESC`;
+    const historyRows = await db.$queryRaw<
+      Array<{ sponsorId: string; year: number; tier: string }>
+    >`SELECT "sponsorId", year, tier FROM "SponsorHistory" ORDER BY year DESC`;
 
-  const sponsors = sponsorRows.map((s) => ({
-    ...s,
-    histories: historyRows
-      .filter((h) => h.sponsorId === s.id)
-      .map((h) => ({ year: Number(h.year), tier: h.tier })),
-  }));
+    sponsors = sponsorRows.map((s) => ({
+      ...s,
+      histories: historyRows
+        .filter((h) => h.sponsorId === s.id)
+        .map((h) => ({ year: Number(h.year), tier: h.tier })),
+    }));
+  } catch (e) {
+    errorMsg = e instanceof Error ? e.message : String(e);
+  }
+
+  if (errorMsg) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-8">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 max-w-xl w-full">
+          <h1 className="text-red-700 font-bold mb-2">DB Error (debug)</h1>
+          <pre className="text-xs text-red-600 whitespace-pre-wrap break-all">{errorMsg}</pre>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f9f7f4" }}>
