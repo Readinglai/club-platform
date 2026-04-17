@@ -45,16 +45,7 @@ export default async function SponsorsPage({
     errorMsg = e instanceof Error ? e.message : String(e);
   }
 
-  if (errorMsg) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-8">
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 max-w-xl w-full">
-          <h1 className="text-red-700 font-bold mb-2">DB Error (debug)</h1>
-          <pre className="text-xs text-red-600 whitespace-pre-wrap break-all">{errorMsg}</pre>
-        </div>
-      </div>
-    );
-  }
+  void errorMsg;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f9f7f4" }}>
