@@ -15,7 +15,5 @@ export default defineConfig({
   },
   datasource: {
     url: process.env["DATABASE_URL"],
-    // 注意：migrate 需要直連時，使用 --url 旗標傳入 DIRECT_URL（port 5432）
-    // 例如：npx prisma migrate dev --url "$DIRECT_URL"
   },
 });
