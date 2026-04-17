@@ -60,6 +60,8 @@ export default function DepartmentMemberRow({ slug, member }: Props) {
     }
   }
 
+  const isEditableRole = role === "TEAM_LEAD" || role === "MEMBER";
+
   return (
     <div
       className="flex items-center justify-between px-4 py-3 rounded-xl border"
@@ -72,20 +74,29 @@ export default function DepartmentMemberRow({ slug, member }: Props) {
         <p className="text-xs text-gray-400">{member.email}</p>
         {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
       </div>
-      <select
-        value={role}
-        disabled={loading}
-        onChange={(e) => handleChange(e.target.value)}
-        className="text-xs rounded-lg border px-2 py-1.5 disabled:opacity-50 cursor-pointer"
-        style={{
-          borderColor: `${SECONDARY}55`,
-          color: PRIMARY,
-          backgroundColor: "white",
-        }}
-      >
-        <option value="TEAM_LEAD">組長</option>
-        <option value="MEMBER">組員</option>
-      </select>
+      {isEditableRole ? (
+        <select
+          value={role}
+          disabled={loading}
+          onChange={(e) => handleChange(e.target.value)}
+          className="text-xs rounded-lg border px-2 py-1.5 disabled:opacity-50 cursor-pointer"
+          style={{
+            borderColor: `${SECONDARY}55`,
+            color: PRIMARY,
+            backgroundColor: "white",
+          }}
+        >
+          <option value="TEAM_LEAD">組長</option>
+          <option value="MEMBER">組員</option>
+        </select>
+      ) : (
+        <span
+          className="text-xs px-2.5 py-1 rounded-full font-semibold"
+          style={{ backgroundColor: `${PRIMARY}12`, color: PRIMARY }}
+        >
+          {ROLE_LABELS[role] ?? role}
+        </span>
+      )}
     </div>
   );
 }
