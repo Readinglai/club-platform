@@ -81,13 +81,13 @@ export async function POST(request: NextRequest) {
 
   // 收件信箱：社團 Email（設定在環境變數，fallback 為 config 預設值）
   const toEmail = process.env.CONTACT_TO_EMAIL ?? "noreply@rocsaut.ca";
-  // 寄件地址（Resend 的 from 欄位需使用已驗證的域名）
-  const fromEmail = process.env.CONTACT_FROM_EMAIL ?? "noreply@rocsaut.ca";
+  // TODO: 待 rocsaut.ca domain 在 Resend 驗證後，改回 noreply@rocsaut.ca
+  const fromEmail = process.env.CONTACT_FROM_EMAIL ?? "onboarding@resend.dev";
 
   // 5. 發送 Email
   try {
     const { error } = await resend.emails.send({
-      from: `ROCSAUT Contact Form <${fromEmail}>`,
+      from: `ROCSAUT <${fromEmail}>`,
       to: [toEmail],
       // replyTo 設為提交者的 email，讓社團可以直接回覆
       replyTo: `${name} <${email}>`,

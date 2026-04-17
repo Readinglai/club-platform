@@ -101,8 +101,9 @@ export async function POST(
         ? event.endAt.toLocaleString("zh-TW", { timeZone: "America/Toronto", hour: "2-digit", minute: "2-digit" })
         : null;
 
+      // TODO: 待 rocsaut.ca domain 在 Resend 驗證後，改回 config.infrastructure.email.from (noreply@rocsaut.ca)
       await resend.emails.send({
-        from: config.infrastructure.email.from,
+        from: "ROCSAUT <onboarding@resend.dev>",
         to: user.email,
         subject: `活動報名確認：${event.title}`,
         html: `
