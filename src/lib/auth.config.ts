@@ -22,10 +22,8 @@ const ALLOWED_DOMAINS = ["utoronto.ca", "mail.utoronto.ca"];
 const PROTECTED_PREFIXES = ["/member", "/admin"];
 
 export const authConfig: NextAuthConfig = {
-  /**
-   * 自訂頁面路徑
-   * 將 NextAuth 預設登入頁導向 /login；驗證錯誤也導向 /login。
-   */
+  trustHost: true,
+
   pages: {
     signIn: "/login",
     error: "/login",
