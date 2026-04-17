@@ -6,7 +6,7 @@
  *   GET  — 無 body（從 session 識別使用者）
  *   PATCH — body: { name?: string; image?: string }
  * 輸出：
- *   GET  — UserProfile（id, name, email, image, role, team, createdAt）
+ *   GET  — UserProfile（id, name, email, image, role, department, createdAt）
  *   PATCH — 更新後的 UserProfile
  * 驗證：未登入回傳 401
  */
@@ -23,7 +23,7 @@ const USER_SELECT = {
   image: true,
   role: true,
   createdAt: true,
-  team: {
+  department: {
     select: {
       id: true,
       slug: true,

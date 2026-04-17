@@ -38,7 +38,7 @@ export default async function ProfilePage() {
       image: true,
       role: true,
       createdAt: true,
-      team: { select: { name: true } },
+      department: { select: { name: true } },
     },
   });
 
@@ -117,7 +117,7 @@ export default async function ProfilePage() {
             <InfoRow label="Email" value={user.email} />
             <InfoRow
               label="所屬部門"
-              value={user.team?.name ?? "尚未分配"}
+              value={user.department?.name ?? "尚未分配"}
             />
             <InfoRow label="加入日期" value={joinDate} />
           </dl>

@@ -41,6 +41,19 @@ enum TaskStatus {
   DONE        /// 已完成
 }
 
+/// 任務群組狀態
+enum TaskGroupStatus {
+  ACTIVE    /// 進行中
+  COMPLETED /// 已完成
+  ARCHIVED  /// 已封存
+}
+
+/// 任務群組成員角色
+enum TaskGroupRole {
+  LEADER /// 群組負責人
+  MEMBER /// 一般成員
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Models
 // ─────────────────────────────────────────────────────────────────────────────
@@ -48,20 +61,20 @@ enum TaskStatus {
 /// 使用者表
 /// 透過 NextAuth Google OAuth 登入，email 必須屬於允許的網域（mail.utoronto.ca / utoronto.ca）
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
   /// 大頭貼 URL，來自 Google 帳號，可為 null
   image         String?
   /// NextAuth：email 驗證時間（Magic Link 用；Google OAuth 登入時為 null）
   emailVerified DateTime?
   /// 使用者在社團中的角色
-  role      Role     @default(MEMBER)
+  role          Role      @default(MEMBER)
   /// 所屬部門（可為 null，尚未分配或為 exec 層級）
-  teamId    String?
-  team      Team?    @relation(fields: [teamId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  departmentId  String?
+  department    Department? @relation(fields: [departmentId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   /// NextAuth：OAuth 帳號關聯（一個使用者可連結多個 OAuth provider）
   accounts      Account[]
@@ -70,13 +83,21 @@ model User {
   /// 該使用者的所有活動報名記錄
   registrations Registration[]
   /// 該使用者被指派的任務
-  tasks         Task[]          @relation("AssignedTasks")
+  assignedTasks Task[]           @relation("TaskAssignee")
   /// 該使用者在討論區發表的留言（匿名留言時 authorId 為 null）
   comments      Comment[]
   /// 該使用者建立的公告
   announcements     Announcement[]
   /// 該使用者已讀的公告記錄
   announcementReads AnnouncementRead[]
+  /// 該使用者所屬的任務群組（中間表）
+  taskGroups        TaskGroupMember[]
+  /// 該使用者建立的任務群組
+  createdTaskGroups TaskGroup[]      @relation("TaskGroupCreator")
+  /// 該使用者建立的投票
+  createdVotes      Vote[]           @relation("VoteCreator")
+  /// 該使用者的投票回應
+  voteResponses     VoteResponse[]
 }
 
 /// NextAuth：OAuth 帳號表
@@ -121,19 +142,19 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-/// 部門／團隊表
+/// 部門表（取代原 Team，專職管理社團組織架構）
 /// slug 對應 config.yaml teams[].id，例如 "event"、"marketing"、"operation"
-model Team {
-  id          String  @id @default(cuid())
+model Department {
+  id          String   @id @default(cuid())
   /// 唯一識別符，對應 config.yaml 的 team id
-  slug        String  @unique
+  slug        String   @unique
   name        String
   description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   /// 該部門的所有成員
   members User[]
-  /// 指派給該部門的任務
-  tasks   Task[]
 }
 
 /// 活動表
@@ -179,13 +200,16 @@ model Registration {
 
 /// 討論區表
 /// 每個活動自動生成一個討論區，作為活動前後的溝通空間
-/// 也可作為任務指派的來源（Task.discussionId）
+/// 可選擇性關聯任務群組（供社團層級討論使用）
 model Discussion {
-  id        String   @id @default(cuid())
+  id          String     @id @default(cuid())
   /// 關聯的活動（唯一，一對一）
-  eventId   String   @unique
-  event     Event    @relation(fields: [eventId], references: [id])
-  createdAt DateTime @default(now())
+  eventId     String     @unique
+  event       Event      @relation(fields: [eventId], references: [id])
+  /// 關聯的任務群組（可選，未來社團層級討論區使用）
+  taskGroupId String?
+  taskGroup   TaskGroup? @relation(fields: [taskGroupId], references: [id])
+  createdAt   DateTime   @default(now())
 
   /// 該討論區的所有留言
   comments Comment[]
@@ -235,19 +259,57 @@ model AnnouncementRead {
   @@unique([announcementId, userId])
 }
 
+/// 任務群組表
+/// 跨部門的專案群組，由 VP 或 President 建立，成員可跨部門加入
+/// 每個群組包含任務、討論區和投票
+model TaskGroup {
+  id          String          @id @default(cuid())
+  name        String
+  description String?
+  status      TaskGroupStatus @default(ACTIVE)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  /// 建立者（應為 VP 或 President，權限驗證在 API 層）
+  createdById String
+  createdBy   User            @relation("TaskGroupCreator", fields: [createdById], references: [id])
+
+  /// 群組成員（多對多中間表）
+  members     TaskGroupMember[]
+  /// 該群組的所有任務
+  tasks       Task[]
+  /// 該群組的所有討論區
+  discussions Discussion[]
+  /// 該群組的所有投票
+  votes       Vote[]
+}
+
+/// 任務群組成員表（多對多中間表）
+/// 記錄使用者與任務群組的關係及其群組內角色
+model TaskGroupMember {
+  id          String        @id @default(cuid())
+  taskGroupId String
+  taskGroup   TaskGroup     @relation(fields: [taskGroupId], references: [id])
+  userId      String
+  user        User          @relation(fields: [userId], references: [id])
+  role        TaskGroupRole @default(MEMBER)
+  joinedAt    DateTime      @default(now())
+
+  /// 同一使用者在同一群組只能有一筆記錄
+  @@unique([taskGroupId, userId])
+}
+
 /// 任務表
-/// 用於追蹤社團內部工作項目，可指派給個人或部門
-/// 也可從討論區（活動討論）直接指派，方便將討論轉化為行動
+/// 隸屬於任務群組，可指派給個人，可從討論區衍生
 model Task {
-  id           String     @id @default(cuid())
-  title        String
-  description  String?
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  /// 任務所屬群組（必填）
+  taskGroupId String
+  taskGroup   TaskGroup  @relation(fields: [taskGroupId], references: [id])
   /// 任務負責人（可為 null，尚未指派）
-  assigneeId   String?
-  assignee     User?      @relation("AssignedTasks", fields: [assigneeId], references: [id])
-  /// 負責部門（可為 null，跨部門任務）
-  teamId       String?
-  team         Team?      @relation(fields: [teamId], references: [id])
+  assigneeId  String?
+  assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
   /// 來源討論區（若任務由活動討論衍生，記錄此關聯）
   discussionId String?
   discussion   Discussion? @relation(fields: [discussionId], references: [id])
@@ -256,4 +318,49 @@ model Task {
   dueAt        DateTime?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
+}
+
+/// 投票表
+/// 任務群組內的決策投票，由群組成員發起
+model Vote {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  taskGroupId String
+  taskGroup   TaskGroup @relation(fields: [taskGroupId], references: [id])
+  createdById String
+  createdBy   User      @relation("VoteCreator", fields: [createdById], references: [id])
+  /// 投票關閉時間（null 代表尚未關閉，仍可投票）
+  closedAt    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  /// 該投票的所有選項
+  options VoteOption[]
+}
+
+/// 投票選項表
+/// 每個投票可有多個選項，成員對每個選項最多投一票
+model VoteOption {
+  id     String @id @default(cuid())
+  voteId String
+  vote   Vote   @relation(fields: [voteId], references: [id])
+  label  String
+
+  /// 該選項的所有回應
+  responses VoteResponse[]
+}
+
+/// 投票回應表
+/// 記錄使用者對投票選項的回應，每人每選項只能投一次
+model VoteResponse {
+  id           String     @id @default(cuid())
+  voteOptionId String
+  voteOption   VoteOption @relation(fields: [voteOptionId], references: [id])
+  userId       String
+  user         User       @relation(fields: [userId], references: [id])
+  createdAt    DateTime   @default(now())
+
+  /// 同一使用者對同一選項只能投一票
+  @@unique([voteOptionId, userId])
 }

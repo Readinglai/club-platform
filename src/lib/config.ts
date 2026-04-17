@@ -63,8 +63,8 @@ export interface ThemeConfig {
   font_display: string;
 }
 
-/** 團隊定義 */
-export interface TeamConfig {
+/** 部門定義（對應 config.yaml teams[] — yaml key 仍為 teams，TypeScript 型別改名） */
+export interface DepartmentConfig {
   id: string;
   name: string;
   description: string;
@@ -188,7 +188,7 @@ export interface MultiTenantConfig {
 export interface AppConfig {
   club: ClubConfig;
   theme: ThemeConfig;
-  teams: TeamConfig[];
+  teams: DepartmentConfig[];
   roles: RoleConfig[];
   sponsor_tiers: SponsorTierConfig[];
   infrastructure: InfrastructureConfig;

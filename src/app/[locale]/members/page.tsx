@@ -15,7 +15,7 @@ import { getTranslations } from "next-intl/server";
 import {
   getAllMembers,
   ROLE_LABELS,
-  TEAM_LABELS,
+  DEPARTMENT_LABELS,
   type Member,
 } from "@/lib/data/members";
 
@@ -23,9 +23,9 @@ import {
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
-// ─── Team 色票（區分不同 team 的視覺標籤） ───────────────────────────────────
+// ─── 部門色票（區分不同部門的視覺標籤） ─────────────────────────────────────
 
-const TEAM_COLORS: Record<string, { bg: string; text: string }> = {
+const DEPARTMENT_COLORS: Record<string, { bg: string; text: string }> = {
   event: { bg: "#dbeafe", text: "#1e40af" },
   marketing: { bg: "#fce7f3", text: "#9d174d" },
   operation: { bg: "#d1fae5", text: "#065f46" },
@@ -59,7 +59,7 @@ interface MemberCardProps {
 }
 
 function MemberCard({ member, locale }: MemberCardProps) {
-  const teamColor = TEAM_COLORS[member.team] ?? {
+  const departmentColor = DEPARTMENT_COLORS[member.department] ?? {
     bg: "#f3f4f6",
     text: "#374151",
   };
@@ -100,12 +100,12 @@ function MemberCard({ member, locale }: MemberCardProps) {
         </p>
       </div>
 
-      {/* ── Team 標籤 ── */}
+      {/* ── 部門標籤 ── */}
       <span
         className="px-3 py-0.5 rounded-full text-xs font-semibold"
-        style={{ backgroundColor: teamColor.bg, color: teamColor.text }}
+        style={{ backgroundColor: departmentColor.bg, color: departmentColor.text }}
       >
-        {TEAM_LABELS[member.team]}
+        {DEPARTMENT_LABELS[member.department]}
       </span>
 
       {/* ── 簡介摘要 ── */}

@@ -23,15 +23,15 @@ import {
   getMemberById,
   getAllMembers,
   ROLE_LABELS,
-  TEAM_LABELS,
+  DEPARTMENT_LABELS,
 } from "@/lib/data/members";
 
 // 主題色
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
-// Team 色票（與列表頁一致）
-const TEAM_COLORS: Record<string, { bg: string; text: string }> = {
+// 部門色票（與列表頁一致）
+const DEPARTMENT_COLORS: Record<string, { bg: string; text: string }> = {
   event: { bg: "#dbeafe", text: "#1e40af" },
   marketing: { bg: "#fce7f3", text: "#9d174d" },
   operation: { bg: "#d1fae5", text: "#065f46" },
@@ -79,7 +79,7 @@ export default async function MemberDetailPage({
   const member = getMemberById(id);
   if (!member) notFound();
 
-  const teamColor = TEAM_COLORS[member.team] ?? { bg: "#f3f4f6", text: "#374151" };
+  const departmentColor = DEPARTMENT_COLORS[member.department] ?? { bg: "#f3f4f6", text: "#374151" };
   const initials = getInitials(member.name);
 
   // 將簡介依段落分割（\n\n）
@@ -137,12 +137,12 @@ export default async function MemberDetailPage({
               <p className="text-base font-medium" style={{ color: `${SECONDARY}bb` }}>
                 {ROLE_LABELS[member.role]}
               </p>
-              {/* Team 標籤 */}
+              {/* 部門標籤 */}
               <span
                 className="px-3 py-0.5 rounded-full text-xs font-semibold"
-                style={{ backgroundColor: teamColor.bg, color: teamColor.text }}
+                style={{ backgroundColor: departmentColor.bg, color: departmentColor.text }}
               >
-                {TEAM_LABELS[member.team]}
+                {DEPARTMENT_LABELS[member.department]}
               </span>
             </div>
           </div>
