@@ -16,7 +16,7 @@ import Google from "next-auth/providers/google";
 import type { Role } from "@/generated/prisma/client";
 
 /** 允許登入的 email 網域白名單 */
-const ALLOWED_DOMAINS = ["utoronto.ca", "mail.utoronto.ca"];
+const ALLOWED_DOMAINS = ["utoronto.ca", "mail.utoronto.ca", "gmail.com"];
 
 /** 需要登入才能訪問的路徑前綴 */
 const PROTECTED_PREFIXES = ["/member", "/admin"];
