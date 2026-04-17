@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ROLE_LEVEL } from "@/lib/rbac";
 import type { Role } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -64,7 +65,10 @@ export async function PUT(request: NextRequest, { params }: Params) {
     });
 
     return NextResponse.json(announcement);
-  } catch {
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+      return NextResponse.json({ error: "公告不存在" }, { status: 404 });
+    }
     return NextResponse.json({ error: "伺服器錯誤" }, { status: 500 });
   }
 }
@@ -82,7 +86,10 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     await db.announcement.delete({ where: { id } });
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+      return NextResponse.json({ error: "公告不存在" }, { status: 404 });
+    }
     return NextResponse.json({ error: "伺服器錯誤" }, { status: 500 });
   }
 }

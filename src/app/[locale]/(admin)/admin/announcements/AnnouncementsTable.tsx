@@ -27,12 +27,17 @@ export default function AnnouncementsTable({ announcements: initial, locale }: P
 
   async function togglePublish(id: string, published: boolean) {
     setLoading(id);
-    await fetch(`/api/announcements/${id}/publish`, {
+    const res = await fetch(`/api/announcements/${id}/publish`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ published: !published }),
     });
-    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, published: !published } : r)));
+    if (res.ok) {
+      setRows((prev) => prev.map((r) => (r.id === id ? { ...r, published: !published } : r)));
+    } else {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error ?? "操作失敗，請稍後再試");
+    }
     setLoading(null);
   }
 
