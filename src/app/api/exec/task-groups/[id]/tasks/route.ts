@@ -61,10 +61,13 @@ export async function POST(
 
   const taskGroup = await db.taskGroup.findUnique({
     where: { id: taskGroupId },
-    select: { id: true },
+    select: { id: true, status: true },
   });
   if (!taskGroup) {
     return NextResponse.json({ error: "任務小組不存在" }, { status: 404 });
+  }
+  if (taskGroup.status !== "ACTIVE") {
+    return NextResponse.json({ error: "此小組已完成或封存，無法修改" }, { status: 409 });
   }
 
   let body: unknown;
@@ -74,12 +77,17 @@ export async function POST(
     return NextResponse.json({ error: "請求格式錯誤" }, { status: 400 });
   }
 
-  const { title, description, assigneeId, dueAt } = body as {
+  const { title, description, assigneeId, dueAt, status } = body as {
     title?: unknown;
     description?: unknown;
     assigneeId?: unknown;
     dueAt?: unknown;
+    status?: unknown;
   };
+
+  if (status !== undefined && status !== "TODO" && status !== "IN_PROGRESS" && status !== "DONE") {
+    return NextResponse.json({ error: "status 必須為 TODO、IN_PROGRESS 或 DONE" }, { status: 400 });
+  }
 
   if (typeof title !== "string" || title.trim().length === 0) {
     return NextResponse.json({ error: "title 為必填欄位" }, { status: 400 });
@@ -103,6 +111,7 @@ export async function POST(
       description: typeof description === "string" ? description.trim() || null : null,
       assigneeId: typeof assigneeId === "string" ? assigneeId : null,
       dueAt: typeof dueAt === "string" ? new Date(dueAt) : null,
+      ...(status ? { status: status as "TODO" | "IN_PROGRESS" | "DONE" } : {}),
     },
     include: {
       assignee: { select: { id: true, name: true, email: true } },

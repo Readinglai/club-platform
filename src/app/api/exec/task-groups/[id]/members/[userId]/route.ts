@@ -31,7 +31,7 @@ export async function DELETE(
 
   const taskGroup = await db.taskGroup.findUnique({
     where: { id: taskGroupId },
-    select: { createdById: true },
+    select: { createdById: true, status: true },
   });
 
   if (!taskGroup) {
@@ -40,6 +40,10 @@ export async function DELETE(
 
   if (taskGroup.createdById !== session.user.id) {
     return NextResponse.json({ error: "只有建立者可以管理成員" }, { status: 403 });
+  }
+
+  if (taskGroup.status !== "ACTIVE") {
+    return NextResponse.json({ error: "此小組已完成或封存，無法修改" }, { status: 409 });
   }
 
   // 不允許移除建立者自己

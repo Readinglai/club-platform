@@ -266,6 +266,7 @@ export default function TaskKanban({
           description: form.description || undefined,
           assigneeId: form.assigneeId || undefined,
           dueAt: form.dueAt || undefined,
+          status: createModal!.status,
         }),
       });
       const data = await res.json();
@@ -273,9 +274,7 @@ export default function TaskKanban({
         setModalError(data.error ?? "建立失敗");
         return;
       }
-      setTasks((prev) => [...prev, { ...data, status: createModal!.status }]);
-      // If the created task came back with different status (shouldn't happen), just use what server returns
-      setTasks((prev) => prev.filter((t) => t.id !== data.id).concat(data as Task));
+      setTasks((prev) => [...prev, data as Task]);
       setCreateModal(null);
     } catch {
       setModalError("網路錯誤");

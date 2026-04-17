@@ -97,6 +97,17 @@ export async function POST(
     return NextResponse.json({ error: "只有組長或執委可以建立投票" }, { status: 403 });
   }
 
+  const taskGroup = await db.taskGroup.findUnique({
+    where: { id: taskGroupId },
+    select: { status: true },
+  });
+  if (!taskGroup) {
+    return NextResponse.json({ error: "任務小組不存在" }, { status: 404 });
+  }
+  if (taskGroup.status !== "ACTIVE") {
+    return NextResponse.json({ error: "此小組已完成或封存，無法修改" }, { status: 409 });
+  }
+
   let body: unknown;
   try {
     body = await request.json();

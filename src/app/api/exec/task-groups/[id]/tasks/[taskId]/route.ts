@@ -39,12 +39,16 @@ export async function PATCH(
     where: { id: taskId },
     include: {
       assignee: { select: { id: true, email: true, name: true } },
-      taskGroup: { select: { name: true } },
+      taskGroup: { select: { name: true, status: true } },
     },
   });
 
   if (!existingTask || existingTask.taskGroupId !== taskGroupId) {
     return NextResponse.json({ error: "任務不存在" }, { status: 404 });
+  }
+
+  if (existingTask.taskGroup.status !== "ACTIVE") {
+    return NextResponse.json({ error: "此小組已完成或封存，無法修改" }, { status: 409 });
   }
 
   let body: unknown;
@@ -152,11 +156,15 @@ export async function DELETE(
 
   const task = await db.task.findUnique({
     where: { id: taskId },
-    select: { taskGroupId: true },
+    include: { taskGroup: { select: { status: true } } },
   });
 
   if (!task || task.taskGroupId !== taskGroupId) {
     return NextResponse.json({ error: "任務不存在" }, { status: 404 });
+  }
+
+  if (task.taskGroup.status !== "ACTIVE") {
+    return NextResponse.json({ error: "此小組已完成或封存，無法修改" }, { status: 409 });
   }
 
   await db.task.delete({ where: { id: taskId } });
