@@ -16,7 +16,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { RegistrationStatus } from "@/generated/prisma/client";
+
+// 本地定義 enum 值，避免在 Client Component 中 import Prisma（含 node:module）
+const RegistrationStatus = {
+  REGISTERED: "REGISTERED",
+  WAITLISTED: "WAITLISTED",
+  CANCELLED: "CANCELLED",
+} as const;
+type RegistrationStatus = (typeof RegistrationStatus)[keyof typeof RegistrationStatus];
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
