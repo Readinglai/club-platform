@@ -15,12 +15,6 @@ import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
 import type { Role } from "@/generated/prisma/client";
 
-/** 允許登入的 email 網域白名單 */
-const ALLOWED_DOMAINS = ["utoronto.ca", "mail.utoronto.ca"];
-
-/** 允許登入的特定帳號（不限網域，例如 SUPER_ADMIN） */
-const ALLOWED_EMAILS = ["flyincloud2001@gmail.com"];
-
 /** 需要登入才能訪問的路徑前綴 */
 const PROTECTED_PREFIXES = ["/member", "/admin"];
 
@@ -67,30 +61,6 @@ export const authConfig: NextAuthConfig = {
       }
 
       return true;
-    },
-
-    /**
-     * signIn callback — 驗證 email 網域
-     * 不符合白名單的 email 拒絕登入。
-     */
-    signIn({ user, account, profile, email, credentials }) {
-      console.log("[signIn callback] user:", user);
-      console.log("[signIn callback] account:", account);
-      console.log("[signIn callback] profile:", profile);
-      console.log("[signIn callback] email:", email);
-      const userEmail = user.email ?? "";
-      const domain = userEmail.split("@")[1] ?? "";
-      console.log("[signIn callback] domain:", domain, "allowed:", ALLOWED_DOMAINS.includes(domain));
-
-      const devAllowedEmails = process.env.DEV_ALLOWED_EMAILS?.split(",") ?? [];
-      const isDevAllowed =
-        process.env.NODE_ENV === "development" && devAllowedEmails.includes(userEmail);
-      console.log("[signIn callback] DEV_ALLOWED_EMAILS:", process.env.DEV_ALLOWED_EMAILS);
-      console.log("[signIn callback] NODE_ENV:", process.env.NODE_ENV);
-      console.log("[signIn callback] userEmail:", userEmail);
-      console.log("[signIn callback] isDevAllowed:", isDevAllowed);
-
-      return isDevAllowed || ALLOWED_EMAILS.includes(userEmail) || ALLOWED_DOMAINS.includes(domain);
     },
 
     /**

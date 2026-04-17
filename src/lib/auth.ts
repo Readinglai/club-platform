@@ -14,6 +14,9 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
 import { authConfig } from "@/lib/auth.config";
 
+// Accounts that can always log in regardless of DB pre-registration
+const SUPER_ADMIN_EMAILS = ["flyincloud2001@gmail.com"];
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
 
@@ -31,5 +34,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   session: {
     strategy: "jwt",
+  },
+
+  callbacks: {
+    ...authConfig.callbacks,
+
+    // Only allow users pre-registered in the DB (invite-only).
+    // SUPER_ADMIN_EMAILS bypass this check.
+    async signIn({ user }) {
+      const email = user.email ?? "";
+      if (SUPER_ADMIN_EMAILS.includes(email)) return true;
+
+      const existing = await db.user.findUnique({
+        where: { email },
+        select: { id: true },
+      });
+      return existing ? true : "/unauthorized";
+    },
   },
 });
