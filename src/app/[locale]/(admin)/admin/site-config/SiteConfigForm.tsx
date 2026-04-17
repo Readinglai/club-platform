@@ -1,0 +1,87 @@
+"use client";
+
+import { useState } from "react";
+
+const PRIMARY = "#1a2744";
+const SECONDARY = "#c9b99a";
+
+export default function SiteConfigForm({ heroImageUrl }: { heroImageUrl: string }) {
+  const [url, setUrl] = useState(heroImageUrl);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  async function save() {
+    setSaving(true);
+    setError(null);
+    setSuccess(false);
+    try {
+      const res = await fetch("/api/admin/site-config", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: "heroImageUrl", value: url }),
+      });
+      if (res.ok) {
+        setSuccess(true);
+      } else {
+        const d = await res.json();
+        setError(d.error ?? "儲存失敗");
+      }
+    } catch {
+      setError("網路錯誤，請稍後再試");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-5">
+      <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: PRIMARY }}>
+        Hero 背景圖
+      </h2>
+
+      {error && (
+        <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">{error}</p>
+      )}
+      {success && (
+        <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">已儲存</p>
+      )}
+
+      <div className="flex flex-col gap-1.5">
+        <label className="text-xs text-gray-500 uppercase tracking-wide">圖片 URL</label>
+        <div className="flex items-center gap-3">
+          <input
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none"
+            style={{ borderColor: "#e5e7eb", color: PRIMARY }}
+            placeholder="https://..."
+          />
+          {url && (
+            <img
+              src={url}
+              alt="preview"
+              className="h-14 w-24 object-cover rounded border"
+              style={{ borderColor: "#e5e7eb" }}
+              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+            />
+          )}
+        </div>
+        <p className="text-xs text-gray-400 mt-1">
+          建議尺寸：1920×1080 以上。留空則使用預設深藍色背景。
+        </p>
+      </div>
+
+      <div className="flex justify-end">
+        <button
+          onClick={save}
+          disabled={saving}
+          className="px-5 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
+          style={{ backgroundColor: PRIMARY, color: SECONDARY }}
+        >
+          {saving ? "儲存中…" : "儲存"}
+        </button>
+      </div>
+    </div>
+  );
+}

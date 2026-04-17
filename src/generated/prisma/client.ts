@@ -153,6 +153,12 @@ export type VoteResponse = Prisma.VoteResponseModel
  */
 export type Sponsor = Prisma.SponsorModel
 /**
+ * Model SiteConfig
+ * 網站全域設定 key-value 表
+ * 用於儲存如 Hero 背景圖 URL 等全域設定
+ */
+export type SiteConfig = Prisma.SiteConfigModel
+/**
  * Model SponsorHistory
  * 贊助歷史記錄表
  * 記錄贊助商每年的贊助等級（tier），同一贊助商同一年份唯一

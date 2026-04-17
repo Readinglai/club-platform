@@ -26,6 +26,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "members 陣列為必填且不得為空" }, { status: 400 });
     }
 
+    // Build slug→id map so callers can pass department slug (e.g. "event") instead of cuid
+    const allDepts = await db.department.findMany({ select: { id: true, slug: true } });
+    const deptBySlug = new Map(allDepts.map((d) => [d.slug, d.id]));
+    const deptById = new Set(allDepts.map((d) => d.id));
+
     const VALID_ROLES = ["SUPER_ADMIN", "EXEC", "TEAM_LEAD", "MEMBER"];
     let imported = 0;
     let updated = 0;
@@ -39,6 +44,19 @@ export async function POST(request: NextRequest) {
 
       const role = VALID_ROLES.includes(m.role ?? "") ? (m.role as Role) : "MEMBER";
 
+      // Accept department slug (e.g. "event") or raw cuid id
+      let resolvedDeptId: string | null = null;
+      if (m.departmentId && m.departmentId !== "") {
+        if (deptBySlug.has(m.departmentId)) {
+          resolvedDeptId = deptBySlug.get(m.departmentId)!;
+        } else if (deptById.has(m.departmentId)) {
+          resolvedDeptId = m.departmentId;
+        } else {
+          errors.push(`${m.email}：找不到部門「${m.departmentId}」`);
+          continue;
+        }
+      }
+
       try {
         const existing = await db.user.findUnique({ where: { email: m.email } });
         await db.user.upsert({
@@ -47,14 +65,12 @@ export async function POST(request: NextRequest) {
             email: m.email,
             name: m.name,
             role,
-            departmentId: m.departmentId ?? null,
+            departmentId: resolvedDeptId,
           },
           update: {
             name: m.name,
             role,
-            ...(m.departmentId !== undefined && {
-              departmentId: m.departmentId === "" ? null : m.departmentId,
-            }),
+            ...(m.departmentId !== undefined && { departmentId: resolvedDeptId }),
           },
         });
         if (existing) updated++; else imported++;

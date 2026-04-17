@@ -17,6 +17,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -75,13 +76,22 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* ── 左側：社團名稱 Logo ── */}
+          {/* ── 左側：Logo ── */}
           <Link
             href={`/${currentLocale}`}
-            className="flex-shrink-0 font-bold text-lg tracking-widest transition-opacity hover:opacity-80"
-            style={{ color: SECONDARY }}
+            className="flex-shrink-0 flex items-center gap-2 transition-opacity hover:opacity-80"
           >
-            ROCSAUT
+            <Image
+              src="/assets/logo.png"
+              alt="ROCSAUT"
+              width={36}
+              height={36}
+              className="object-contain"
+              priority
+            />
+            <span className="font-bold text-base tracking-widest hidden sm:block" style={{ color: SECONDARY }}>
+              ROCSAUT
+            </span>
           </Link>
 
           {/* ── 桌面版導覽連結（md 以上顯示） ── */}

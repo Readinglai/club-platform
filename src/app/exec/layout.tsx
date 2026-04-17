@@ -9,6 +9,7 @@ import { auth } from "@/lib/auth";
 import { ROLE_LEVEL } from "@/lib/rbac";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import type { Role } from "@/generated/prisma/client";
 
 const PRIMARY = "#1a2744";
@@ -38,12 +39,12 @@ export default async function ExecLayout({
         style={{ backgroundColor: PRIMARY, borderColor: `${SECONDARY}33` }}
       >
         <div className="flex items-center gap-6">
-          <span
-            className="text-sm font-bold tracking-widest"
-            style={{ color: SECONDARY }}
-          >
-            ROCSAUT · 執委工具
-          </span>
+          <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
+            <Image src="/assets/logo.png" alt="ROCSAUT" width={28} height={28} className="object-contain" />
+            <span className="text-sm font-bold tracking-widest" style={{ color: SECONDARY }}>
+              ROCSAUT · 執委工具
+            </span>
+          </Link>
           <nav className="flex items-center gap-1">
             {NAV_ITEMS.map((item) => (
               <Link

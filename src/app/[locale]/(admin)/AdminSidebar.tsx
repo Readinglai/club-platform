@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 
@@ -14,6 +15,7 @@ const NAV_SLUGS = [
   { slug: "achievements", label: "過往成果" },
   { slug: "sponsors",     label: "贊助商管理" },
   { slug: "reports",      label: "數據報表" },
+  { slug: "site-config",  label: "網站設定" },
 ];
 
 interface Props {
@@ -32,8 +34,9 @@ export default function AdminSidebar({ userName, userRole }: Props) {
       style={{ backgroundColor: PRIMARY, borderColor: `${SECONDARY}22` }}
     >
       {/* Logo / 標題 */}
-      <div className="px-5 py-5 border-b" style={{ borderColor: `${SECONDARY}22` }}>
-        <Link href={`/${locale}/admin`}>
+      <div className="px-5 py-4 border-b" style={{ borderColor: `${SECONDARY}22` }}>
+        <Link href={`/${locale}/admin`} className="flex items-center gap-2">
+          <Image src="/assets/logo.png" alt="ROCSAUT" width={28} height={28} className="object-contain" />
           <span className="text-xs font-bold tracking-widest" style={{ color: SECONDARY }}>
             ROCSAUT · 管理後台
           </span>
