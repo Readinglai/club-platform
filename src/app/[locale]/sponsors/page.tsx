@@ -15,13 +15,12 @@ export default async function SponsorsPage({
   const { locale } = await params;
   const t = await getTranslations("sponsors");
 
-  // Distinct years that have at least one history record, descending
-  const historyYears = await db.sponsorHistory.findMany({
-    select: { year: true },
-    distinct: ["year"],
+  // Distinct years via groupBy (more compatible with pgBouncer than distinct)
+  const yearGroups = await db.sponsorHistory.groupBy({
+    by: ["year"],
     orderBy: { year: "desc" },
   });
-  const years = historyYears.map((h) => h.year);
+  const years = yearGroups.map((g) => g.year);
 
   const currentYear = new Date().getFullYear();
   const defaultYear = years.includes(currentYear) ? currentYear : (years[0] ?? currentYear);
@@ -31,7 +30,6 @@ export default async function SponsorsPage({
     orderBy: { name: "asc" },
     include: {
       histories: {
-        select: { year: true, tier: true },
         orderBy: { year: "desc" },
       },
     },
@@ -83,7 +81,7 @@ export default async function SponsorsPage({
             name: s.name,
             logoUrl: s.logoUrl,
             website: s.website,
-            histories: s.histories,
+            histories: s.histories.map((h) => ({ year: h.year, tier: h.tier })),
           }))}
           years={years}
           locale={locale}
