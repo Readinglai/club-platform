@@ -109,6 +109,14 @@
     "silver": "Silver",
     "bronze": "Bronze",
     "becomeASponsor": "Become a Sponsor",
-    "learnMore": "Learn More"
+    "learnMore": "Learn More",
+    "filterByYear": "Filter by Year",
+    "noSponsors": "No sponsors for this year yet",
+    "visitWebsite": "Visit Website",
+    "backToList": "Back to Sponsors",
+    "historyTitle": "Sponsorship History",
+    "year": "Year",
+    "tier": "Tier",
+    "descriptionTitle": "About"
   }
 }

@@ -12,6 +12,7 @@ const NAV_SLUGS = [
   { slug: "events",       label: "活動管理" },
   { slug: "announcements",label: "公告管理" },
   { slug: "achievements", label: "過往成果" },
+  { slug: "sponsors",     label: "贊助商管理" },
   { slug: "reports",      label: "數據報表" },
 ];
 

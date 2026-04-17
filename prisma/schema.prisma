@@ -359,3 +359,29 @@ model VoteResponse {
   /// 同一使用者對同一選項只能投一票
   @@unique([voteOptionId, userId])
 }
+
+/// 贊助商表
+/// 儲存贊助商的基本資料，歷年贊助記錄另存於 SponsorHistory
+model Sponsor {
+  id          String           @id @default(cuid())
+  name        String
+  logoUrl     String?
+  website     String?
+  description String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  histories   SponsorHistory[]
+}
+
+/// 贊助歷史記錄表
+/// 記錄贊助商每年的贊助等級（tier），同一贊助商同一年份唯一
+model SponsorHistory {
+  id        String   @id @default(cuid())
+  sponsorId String
+  sponsor   Sponsor  @relation(fields: [sponsorId], references: [id], onDelete: Cascade)
+  year      Int
+  tier      String
+  createdAt DateTime @default(now())
+
+  @@unique([sponsorId, year])
+}

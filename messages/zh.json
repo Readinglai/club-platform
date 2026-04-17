@@ -109,6 +109,14 @@
     "silver": "白銀贊助",
     "bronze": "銅級贊助",
     "becomeASponsor": "成為贊助商",
-    "learnMore": "了解更多"
+    "learnMore": "了解更多",
+    "filterByYear": "依年份篩選",
+    "noSponsors": "本年度暫無贊助商記錄",
+    "visitWebsite": "前往官網",
+    "backToList": "返回贊助商列表",
+    "historyTitle": "贊助歷史",
+    "year": "年份",
+    "tier": "等級",
+    "descriptionTitle": "關於"
   }
 }
