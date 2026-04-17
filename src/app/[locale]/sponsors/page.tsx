@@ -15,12 +15,11 @@ export default async function SponsorsPage({
   const { locale } = await params;
   const t = await getTranslations("sponsors");
 
-  // Distinct years via groupBy (more compatible with pgBouncer than distinct)
-  const yearGroups = await db.sponsorHistory.groupBy({
-    by: ["year"],
+  const histories = await db.sponsorHistory.findMany({
+    select: { year: true },
     orderBy: { year: "desc" },
   });
-  const years = yearGroups.map((g) => g.year);
+  const years = [...new Set(histories.map((h) => h.year))];
 
   const currentYear = new Date().getFullYear();
   const defaultYear = years.includes(currentYear) ? currentYear : (years[0] ?? currentYear);
