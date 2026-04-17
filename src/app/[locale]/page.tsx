@@ -40,25 +40,22 @@ function HeroClient({ heroImageUrl, locale }: { heroImageUrl: string | null; loc
   return (
     <section
       className="relative flex flex-col items-center justify-center text-center px-4 py-28 sm:py-40 overflow-hidden"
-      style={heroImageUrl ? {} : { backgroundColor: PRIMARY }}
+      style={{
+        backgroundColor: PRIMARY,
+        ...(heroImageUrl && {
+          backgroundImage: `url(${heroImageUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }),
+      }}
       aria-label="Hero section"
     >
-      {/* Background image */}
+      {/* Dark overlay when image is present */}
       {heroImageUrl && (
-        <>
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `url(${heroImageUrl})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          />
-          <div className="absolute inset-0" style={{ backgroundColor: `${PRIMARY}cc` }} />
-        </>
+        <div className="absolute inset-0" style={{ backgroundColor: `${PRIMARY}cc` }} />
       )}
 
-      {/* Subtle radial overlay */}
+      {/* Subtle radial overlay (no image) */}
       {!heroImageUrl && (
         <div
           className="absolute inset-0 opacity-5 pointer-events-none"

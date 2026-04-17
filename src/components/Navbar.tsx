@@ -4,8 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { usePathname as useFullPathname } from "next/navigation";
-import { useRouter, usePathname } from "@/i18n/navigation";
+import { usePathname } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 const NAV_LINKS = [
   { key: "home", href: "/" },
@@ -22,9 +22,7 @@ const SECONDARY = "#c9b99a";
 export default function Navbar() {
   const t = useTranslations("nav");
   const locale = useLocale();
-  // Full pathname including locale prefix — used for active-link detection
-  const fullPathname = useFullPathname();
-  // Pathname without locale prefix — used for locale switching
+  // Full pathname including locale prefix — used for active-link detection and switching
   const pathname = usePathname();
   const router = useRouter();
 
@@ -32,7 +30,9 @@ export default function Navbar() {
 
   const handleLangSwitch = () => {
     const targetLocale = locale === "zh" ? "en" : "zh";
-    router.replace(pathname, { locale: targetLocale });
+    // Strip the current locale prefix to get the bare path (e.g. "/zh/events" → "/events")
+    const pathWithoutLocale = pathname.replace(new RegExp(`^/${locale}`), "") || "/";
+    router.replace(pathWithoutLocale, { locale: targetLocale });
   };
 
   const localizedHref = (href: string) =>
@@ -68,7 +68,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-6">
             {NAV_LINKS.map(({ key, href }) => {
               const fullHref = localizedHref(href);
-              const isActive = fullPathname === fullHref;
+              const isActive = pathname === fullHref;
               return (
                 <Link
                   key={key}
@@ -132,7 +132,7 @@ export default function Navbar() {
           <div className="px-4 py-3 flex flex-col gap-1">
             {NAV_LINKS.map(({ key, href }) => {
               const fullHref = localizedHref(href);
-              const isActive = fullPathname === fullHref;
+              const isActive = pathname === fullHref;
               return (
                 <Link
                   key={key}
