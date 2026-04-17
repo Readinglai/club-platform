@@ -7,21 +7,12 @@
  *
  * ⚠️ 此檔案只應在 Server Components、Server Actions 和 API Routes 中 import。
  *    不可在 proxy.ts（Edge Runtime）中引用此檔案。
- *
- * 導出：
- *   handlers  → 用於 /api/auth/[...nextauth]/route.ts
- *   auth      → 用於 Server Components 取得 session（await auth()）
- *   signIn    → 用於 Server Actions 觸發登入
- *   signOut   → 用於 Server Actions 觸發登出
  */
 
 import NextAuth from "next-auth";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { db } from "@/lib/db";
 import { authConfig } from "@/lib/auth.config";
-
-// NOTE: PrismaAdapter temporarily disabled to isolate DB connectivity issue.
-// DB at db.rbwchvwiuazfrsoabwni.supabase.co is unreachable from Vercel serverless,
-// causing PrismaAdapter to throw → wrapped as error=Configuration.
-// To restore: add PrismaAdapter back after fixing DATABASE_URL to pooler URL.
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -34,6 +25,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       console.warn("[NextAuth][warn]", code);
     },
   },
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  adapter: PrismaAdapter(db as any),
 
   session: {
     strategy: "jwt",
