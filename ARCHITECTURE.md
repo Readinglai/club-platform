@@ -59,13 +59,6 @@
 - 0.4.4 登入/登出頁面 UI
 - 0.4.5 未授權頁面
 
-### 0.5 執行環境整合層
-
-- 0.5.1 Ollama REST API 包裝模組 `Claude Code`
-- 0.5.2 Kaggle API job 提交腳本 `Claude Code`
-- 0.5.3 Colab endpoint 呼叫模組 `Claude Code`
-- 0.5.4 執行環境健康檢查與自動切換 `Claude Code`
-
 ---
 
 ## Module 1：公開網站（Public Site）
@@ -100,7 +93,7 @@
 
 ### 2.1 個人資料
 
-- 2.1.1 個人資料頁（檢視）`Kaggle`
+- 2.1.1 個人資料頁（檢視）
 - 2.1.2 個人資料編輯表單
 - 2.1.3 個人資料更新 API `Claude Code`
 - 2.1.4 出席記錄查詢 UI
@@ -131,7 +124,7 @@
 
 - 3.1.1 部門成員列表 ✅
 - 3.1.2 角色指派 API `Claude Code` ✅
-- 3.1.3 角色指派介面（下拉選單，SUPER_ADMIN 限定）`Kaggle` ✅
+- 3.1.3 角色指派介面（下拉選單，SUPER_ADMIN 限定）✅
 - 3.1.4 跨部門任務小組概覽 ✅
 - 3.1.5 任務小組建立 API + 自動加入建立者為 LEADER `Claude Code` ✅
 - 3.1.6 任務小組成員管理 API（新增 / 移除 / 角色變更）`Claude Code` ✅
@@ -142,8 +135,8 @@
 ### 3.2 任務管理
 
 - 3.2.1 任務 CRUD API `Claude Code` ✅
-- 3.2.2 任務建立/指派介面（含 Modal）`Kaggle` ✅
-- 3.2.3 任務看板 UI（三欄 Kanban：TODO / IN_PROGRESS / DONE）`Colab` ✅
+- 3.2.2 任務建立/指派介面（含 Modal）✅
+- 3.2.3 任務看板 UI（三欄 Kanban：TODO / IN_PROGRESS / DONE）✅
 - 3.2.4 任務狀態追蹤與通知（狀態變更時寄信給 assignee）`Claude Code` ✅
 - 3.2.5 任務截止日提醒（Vercel Cron，每日 UTC 09:00）`Claude Code` ✅
 
@@ -153,7 +146,7 @@
 - 3.3.2 討論留言 UI ✅
 - 3.3.3 留言 API（支援匿名，isAnonymous=true 時 authorId 存 null）`Claude Code` ✅
 - 3.3.4 便條元件 ⏭️ 跳過（Discord pins 可替代）
-- 3.3.5 投票元件 UI（進度條、單選換票、關閉投票）`Colab` ✅
+- 3.3.5 投票元件 UI（進度條、單選換票、關閉投票）✅
 - 3.3.6 投票 API（建立 / 投票 / 關閉，防重複投票）`Claude Code` ✅
 - 3.3.7 討論區任務指派 API `Claude Code` ⏭️ 跳過（Task.discussionId 已廢棄，改為 TaskGroup 層級）
 - 3.3.8 討論區任務指派 UI ⏭️ 跳過（同上）
