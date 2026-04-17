@@ -16,15 +16,16 @@
  */
 
 import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { db } from "@/lib/db";
 import { authConfig } from "@/lib/auth.config";
 
+// NOTE: PrismaAdapter temporarily disabled to isolate DB connectivity issue.
+// DB at db.rbwchvwiuazfrsoabwni.supabase.co is unreachable from Vercel serverless,
+// causing PrismaAdapter to throw → wrapped as error=Configuration.
+// To restore: add PrismaAdapter back after fixing DATABASE_URL to pooler URL.
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  // 合併 edge-safe 設定（providers、callbacks、pages）
   ...authConfig,
 
-  // 暫時加入 debug 模式，把所有 NextAuth 內部錯誤印到 server console
   logger: {
     error(error) {
       console.error("[NextAuth][error]", error);
@@ -32,31 +33,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     warn(code) {
       console.warn("[NextAuth][warn]", code);
     },
-    debug(message, metadata) {
-      console.log("[NextAuth][debug]", message, metadata);
-    },
   },
 
-  /**
-   * Prisma Adapter：讓 NextAuth 使用 Supabase 資料庫儲存
-   * User 和 Account 記錄（OAuth 憑證）。
-   *
-   * 使用 `as any` 是因為 @auth/prisma-adapter 的型別對應 @prisma/client，
-   * 而本專案使用 Prisma 7 的自訂輸出路徑（src/generated/prisma），
-   * 兩者 API 兼容但 TypeScript 型別路徑不同。
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  adapter: PrismaAdapter(db as any),
-
-  /**
-   * JWT Session 策略
-   *
-   * 使用 JWT 而非資料庫 session，原因：
-   * 1. Edge Runtime 相容：proxy.ts 可在不查資料庫的情況下驗證 session
-   * 2. 效能更好：每次請求不需查詢 Session 表
-   * 3. 與 Prisma Adapter 同時使用：User/Account 仍存於資料庫，
-   *    只有 session 改用 JWT（存於 httpOnly cookie）
-   */
   session: {
     strategy: "jwt",
   },
