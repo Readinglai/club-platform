@@ -23,16 +23,24 @@ export default async function SponsorPublicDetailPage({
   const { locale, id } = await params;
   const t = await getTranslations("sponsors");
 
-  const sponsorRows = await db.$queryRaw<
-    Array<{ id: string; name: string; logoUrl: string | null; website: string | null; description: string | null }>
-  >`SELECT id, name, "logoUrl", website, description FROM "Sponsor" WHERE id = ${id} LIMIT 1`;
+  let sponsorRows: Array<{ id: string; name: string; logoUrl: string | null; website: string | null; description: string | null }> = [];
+  let histories: Array<{ id: string; year: number; tier: string }> = [];
+  try {
+    sponsorRows = await db.$queryRaw<
+      Array<{ id: string; name: string; logoUrl: string | null; website: string | null; description: string | null }>
+    >`SELECT id, name, "logoUrl", website, description FROM "Sponsor" WHERE id = ${id} LIMIT 1`;
+
+    if (sponsorRows.length > 0) {
+      histories = await db.$queryRaw<
+        Array<{ id: string; year: number; tier: string }>
+      >`SELECT id, year::int, tier FROM "SponsorHistory" WHERE "sponsorId" = ${id} ORDER BY year DESC`;
+    }
+  } catch {
+    // DB unavailable — fall through to notFound
+  }
 
   if (sponsorRows.length === 0) notFound();
   const sponsor = sponsorRows[0];
-
-  const histories = await db.$queryRaw<
-    Array<{ id: string; year: number; tier: string }>
-  >`SELECT id, year::int, tier FROM "SponsorHistory" WHERE "sponsorId" = ${id} ORDER BY year DESC`;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f9f7f4" }}>
