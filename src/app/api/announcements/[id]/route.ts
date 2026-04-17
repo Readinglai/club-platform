@@ -1,20 +1,15 @@
-/**
- * route.ts — 單一公告 API
- *
- * 功能：取得指定公告的完整內容
- * 輸入：URL [id] 參數（公告 ID）
- * 輸出：Announcement — 完整公告資料，含 isRead 欄位
- * 驗證：未登入回傳 401；公告不存在或未發布回傳 404
- */
-
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { ROLE_LEVEL } from "@/lib/rbac";
+import type { Role } from "@/generated/prisma/client";
 
-/** GET /api/announcements/[id] — 取得單一公告完整內容 */
+type Params = { params: Promise<{ id: string }> };
+
+/** GET /api/announcements/[id] — 取得單一公告完整內容（已發布） */
 export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  _request: NextRequest,
+  { params }: Params
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -30,9 +25,7 @@ export async function GET(
       title: true,
       content: true,
       createdAt: true,
-      author: {
-        select: { name: true },
-      },
+      author: { select: { name: true } },
       reads: {
         where: { userId: session.user.id },
         select: { id: true },
@@ -46,4 +39,50 @@ export async function GET(
 
   const { reads, ...rest } = announcement;
   return NextResponse.json({ ...rest, isRead: reads.length > 0 });
+}
+
+/** PUT /api/announcements/[id] — 更新公告（EXEC+） */
+export async function PUT(request: NextRequest, { params }: Params) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) return NextResponse.json({ error: "未登入" }, { status: 401 });
+
+    const role = (session.user.role as Role | undefined) ?? "MEMBER";
+    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "權限不足" }, { status: 403 });
+
+    const { id } = await params;
+    const body = await request.json();
+    const { title, content, published } = body;
+
+    const announcement = await db.announcement.update({
+      where: { id },
+      data: {
+        ...(title !== undefined && { title }),
+        ...(content !== undefined && { content }),
+        ...(published !== undefined && { published }),
+      },
+    });
+
+    return NextResponse.json(announcement);
+  } catch {
+    return NextResponse.json({ error: "伺服器錯誤" }, { status: 500 });
+  }
+}
+
+/** DELETE /api/announcements/[id] — 刪除公告（EXEC+） */
+export async function DELETE(_req: NextRequest, { params }: Params) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) return NextResponse.json({ error: "未登入" }, { status: 401 });
+
+    const role = (session.user.role as Role | undefined) ?? "MEMBER";
+    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "權限不足" }, { status: 403 });
+
+    const { id } = await params;
+    await db.announcement.delete({ where: { id } });
+
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "伺服器錯誤" }, { status: 500 });
+  }
 }

@@ -109,7 +109,8 @@ export default async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // 匹配所有路徑，但排除靜態資源和 _next 內部路徑
-    "/((?!_next/static|_next/image|favicon.ico|assets/|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp)).*)",
+    // 匹配所有路徑，但排除靜態資源、_next 內部路徑、以及 NextAuth API 路徑
+    // api/auth/ 必須排除，否則 i18n middleware 會在 OAuth callback URL 加上 locale 前綴導致驗證失敗
+    "/((?!_next/static|_next/image|favicon.ico|assets/|api/auth/|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp)).*)",
   ],
 };

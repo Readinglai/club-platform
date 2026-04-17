@@ -8,12 +8,14 @@
  * 驗證：未登入回傳 401
  */
 
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { ROLE_LEVEL } from "@/lib/rbac";
+import type { Role } from "@/generated/prisma/client";
 
 /** GET /api/announcements — 取得已發布公告列表 */
-export async function GET() {
+export async function GET(_req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "未登入" }, { status: 401 });
@@ -43,4 +45,34 @@ export async function GET() {
   }));
 
   return NextResponse.json(result);
+}
+
+/** POST /api/announcements — 建立公告（EXEC+） */
+export async function POST(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) return NextResponse.json({ error: "未登入" }, { status: 401 });
+
+    const role = (session.user.role as Role | undefined) ?? "MEMBER";
+    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "權限不足" }, { status: 403 });
+
+    const body = await request.json();
+    const { title, content, published } = body;
+    if (!title || !content) {
+      return NextResponse.json({ error: "title 和 content 為必填" }, { status: 400 });
+    }
+
+    const announcement = await db.announcement.create({
+      data: {
+        title,
+        content,
+        published: published ?? false,
+        authorId: session.user.id,
+      },
+    });
+
+    return NextResponse.json(announcement, { status: 201 });
+  } catch {
+    return NextResponse.json({ error: "伺服器錯誤" }, { status: 500 });
+  }
 }
