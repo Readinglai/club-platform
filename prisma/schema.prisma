@@ -213,8 +213,6 @@ model Discussion {
 
   /// 該討論區的所有留言
   comments Comment[]
-  /// 從此討論區衍生出的任務
-  tasks    Task[]
 }
 
 /// 留言表
@@ -299,7 +297,7 @@ model TaskGroupMember {
 }
 
 /// 任務表
-/// 隸屬於任務群組，可指派給個人，可從討論區衍生
+/// 隸屬於任務群組，可指派給個人
 model Task {
   id          String     @id @default(cuid())
   title       String
@@ -310,9 +308,6 @@ model Task {
   /// 任務負責人（可為 null，尚未指派）
   assigneeId  String?
   assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
-  /// 來源討論區（若任務由活動討論衍生，記錄此關聯）
-  discussionId String?
-  discussion   Discussion? @relation(fields: [discussionId], references: [id])
   status       TaskStatus  @default(TODO)
   /// 截止日期（可為 null）
   dueAt        DateTime?

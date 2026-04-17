@@ -1,7 +1,7 @@
 /**
  * task-groups/[id]/page.tsx — 任務小組詳情頁
  *
- * 顯示小組資訊與成員，建立者可透過 TaskGroupManager 管理成員與狀態。
+ * 顯示小組資訊、成員管理（TaskGroupManager）與任務看板（TaskKanban）。
  */
 
 import { auth } from "@/lib/auth";
@@ -9,6 +9,7 @@ import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import TaskGroupManager from "./TaskGroupManager";
+import TaskKanban from "./TaskKanban";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -22,6 +23,7 @@ export default async function TaskGroupDetailPage({
 }) {
   const { id } = await params;
   const session = await auth();
+  const userId = session?.user?.id ?? "";
 
   const taskGroup = await db.taskGroup.findUnique({
     where: { id },
@@ -33,12 +35,21 @@ export default async function TaskGroupDetailPage({
           user: { select: { id: true, name: true, email: true } },
         },
       },
+      tasks: {
+        orderBy: { createdAt: "asc" },
+        include: {
+          assignee: { select: { id: true, name: true, email: true } },
+        },
+      },
     },
   });
 
   if (!taskGroup) notFound();
 
-  const isCreator = session?.user?.id === taskGroup.createdById;
+  const isCreator = userId === taskGroup.createdById;
+  const currentMember = taskGroup.members.find((m) => m.user.id === userId);
+  const isMember = !!currentMember;
+  const isLeader = currentMember?.role === "LEADER";
 
   const members = taskGroup.members.map((m) => ({
     id: m.id,
@@ -46,8 +57,20 @@ export default async function TaskGroupDetailPage({
     user: m.user,
   }));
 
+  const memberUsers = taskGroup.members.map((m) => m.user);
+
+  const tasks = taskGroup.tasks.map((t) => ({
+    id: t.id,
+    title: t.title,
+    description: t.description,
+    status: t.status as "TODO" | "IN_PROGRESS" | "DONE",
+    assigneeId: t.assigneeId,
+    assignee: t.assignee,
+    dueAt: t.dueAt ? t.dueAt.toISOString() : null,
+  }));
+
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-4xl mx-auto">
       <div className="mb-4">
         <Link
           href="/exec/task-groups"
@@ -76,6 +99,14 @@ export default async function TaskGroupDetailPage({
         initialStatus={taskGroup.status}
         initialMembers={members}
         isCreator={isCreator}
+      />
+
+      <TaskKanban
+        taskGroupId={taskGroup.id}
+        initialTasks={tasks}
+        members={memberUsers}
+        isMember={isMember}
+        isLeader={isLeader}
       />
     </div>
   );
