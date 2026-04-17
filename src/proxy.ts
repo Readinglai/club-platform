@@ -52,6 +52,8 @@ const { auth } = NextAuth({
         /^\/(zh|en)\/admin(\/|$)/,
         /^\/member(\/|$)/,
         /^\/admin(\/|$)/,
+        /^\/exec(\/|$)/,   // 執委內部工具（role 層級在 layout 層驗證）
+        /^\/portal(\/|$)/, // 會員 portal
       ];
 
       const isProtected = protectedPatterns.some((pattern) =>
