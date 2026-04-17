@@ -6,80 +6,75 @@ import type { Role } from "@/generated/prisma/client";
 
 type Params = { params: Promise<{ id: string }> };
 
-/** GET /api/sponsors/[id] — 取得單一贊助商（含所有 histories） */
+/** GET /api/admin/achievements/[id] */
 export async function GET(_req: NextRequest, { params }: Params) {
   try {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
     const role = (session.user.role as Role | undefined) ?? "MEMBER";
     if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const { id } = await params;
-    const sponsor = await db.sponsor.findUnique({
-      where: { id },
-      include: { histories: { orderBy: { year: "desc" } } },
-    });
-
-    if (!sponsor) return NextResponse.json({ error: "Sponsor not found" }, { status: 404 });
-    return NextResponse.json(sponsor);
+    const achievement = await db.achievement.findUnique({ where: { id } });
+    if (!achievement) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json(achievement);
   } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
-/** PATCH /api/sponsors/[id] — 更新贊助商基本資料 */
+/** PATCH /api/admin/achievements/[id] */
 export async function PATCH(request: NextRequest, { params }: Params) {
   try {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
     const role = (session.user.role as Role | undefined) ?? "MEMBER";
     if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const { id } = await params;
     const body = await request.json();
-    const { name, logoUrl, website, description } = body;
+    const { title, year, description, imageUrl } = body;
 
-    if (name !== undefined && !name?.trim()) {
-      return NextResponse.json({ error: "name cannot be empty" }, { status: 400 });
+    if (title !== undefined && !title?.trim()) {
+      return NextResponse.json({ error: "title cannot be empty" }, { status: 400 });
+    }
+    if (year !== undefined && (typeof year !== "number" || year < 2000 || year > 2100)) {
+      return NextResponse.json({ error: "year must be a valid integer" }, { status: 400 });
     }
 
-    const sponsor = await db.sponsor.update({
+    const achievement = await db.achievement.update({
       where: { id },
       data: {
-        ...(name !== undefined && { name: name.trim() }),
-        ...(logoUrl !== undefined && { logoUrl: logoUrl || null }),
-        ...(website !== undefined && { website: website || null }),
-        ...(description !== undefined && { description: description || null }),
+        ...(title !== undefined && { title: title.trim() }),
+        ...(year !== undefined && { year }),
+        ...(description !== undefined && { description: description.trim() }),
+        ...(imageUrl !== undefined && { imageUrl: imageUrl?.trim() || null }),
       },
     });
 
-    return NextResponse.json(sponsor);
+    return NextResponse.json(achievement);
   } catch (err) {
     if ((err as { code?: string }).code === "P2025") {
-      return NextResponse.json({ error: "Sponsor not found" }, { status: 404 });
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
-/** DELETE /api/sponsors/[id] — 刪除贊助商（histories cascade 刪除） */
+/** DELETE /api/admin/achievements/[id] */
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
     const role = (session.user.role as Role | undefined) ?? "MEMBER";
     if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const { id } = await params;
-    await db.sponsor.delete({ where: { id } });
-
+    await db.achievement.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (err) {
     if ((err as { code?: string }).code === "P2025") {
-      return NextResponse.json({ error: "Sponsor not found" }, { status: 404 });
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

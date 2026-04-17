@@ -5,6 +5,7 @@
  */
 
 import { useTranslations } from "next-intl";
+import { getLocale } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { db } from "@/lib/db";
@@ -23,18 +24,19 @@ const TIER_LABEL: Record<string, string> = {
 // ─── Hero Section ─────────────────────────────────────────────────────────────
 
 async function HeroSection() {
+  const locale = await getLocale();
   let heroImageUrl: string | null = null;
   try {
     const heroConfig = await db.siteConfig.findUnique({ where: { key: "heroImageUrl" } });
-    heroImageUrl = heroConfig?.value ?? null;
+    heroImageUrl = heroConfig?.value ?? "/assets/hero.jpg";
   } catch {
-    // Table may not yet exist in production; fall back to solid background
+    heroImageUrl = "/assets/hero.jpg";
   }
-  return <HeroClient heroImageUrl={heroImageUrl} />;
+  return <HeroClient heroImageUrl={heroImageUrl} locale={locale} />;
 }
 
 // Inline client-like hero rendered as server (no interactivity needed)
-function HeroClient({ heroImageUrl }: { heroImageUrl: string | null }) {
+function HeroClient({ heroImageUrl, locale }: { heroImageUrl: string | null; locale: string }) {
   return (
     <section
       className="relative flex flex-col items-center justify-center text-center px-4 py-28 sm:py-40 overflow-hidden"
@@ -87,7 +89,7 @@ function HeroClient({ heroImageUrl }: { heroImageUrl: string | null }) {
             了解更多
           </a>
           <Link
-            href="/contact"
+            href={`/${locale}/contact`}
             className="px-8 py-3 rounded-xl text-sm font-semibold tracking-wide border transition-all duration-200 hover:opacity-90 active:scale-95"
             style={{ borderColor: `${SECONDARY}88`, color: `${SECONDARY}cc` }}
           >
@@ -137,6 +139,7 @@ function AboutSection() {
 // ─── Upcoming Events Section ──────────────────────────────────────────────────
 
 async function UpcomingEventsSection() {
+  const locale = await getLocale();
   let events: { id: string; title: string; startAt: Date; endAt: Date | null; location: string | null; capacity: number | null }[] = [];
   try {
     events = await db.event.findMany({
@@ -179,7 +182,7 @@ async function UpcomingEventsSection() {
                   <p className="text-xs text-gray-400">名額：{ev.capacity} 人</p>
                 )}
                 <Link
-                  href={`/events/${ev.id}`}
+                  href={`/${locale}/events/${ev.id}`}
                   className="mt-auto inline-block text-xs font-semibold px-4 py-2 rounded-lg text-center transition-all hover:opacity-80"
                   style={{ backgroundColor: PRIMARY, color: SECONDARY }}
                 >
@@ -190,7 +193,7 @@ async function UpcomingEventsSection() {
           })}
         </div>
         <div className="text-center">
-          <Link href="/events" className="text-sm font-semibold transition-opacity hover:opacity-70" style={{ color: PRIMARY }}>
+          <Link href={`/${locale}/events`} className="text-sm font-semibold transition-opacity hover:opacity-70" style={{ color: PRIMARY }}>
             查看所有活動 →
           </Link>
         </div>

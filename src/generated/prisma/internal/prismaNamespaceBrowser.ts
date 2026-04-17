@@ -70,6 +70,7 @@ export const ModelName = {
   VoteResponse: 'VoteResponse',
   Sponsor: 'Sponsor',
   SiteConfig: 'SiteConfig',
+  Achievement: 'Achievement',
   SponsorHistory: 'SponsorHistory'
 } as const
 
@@ -318,6 +319,19 @@ export const SiteConfigScalarFieldEnum = {
 } as const
 
 export type SiteConfigScalarFieldEnum = (typeof SiteConfigScalarFieldEnum)[keyof typeof SiteConfigScalarFieldEnum]
+
+
+export const AchievementScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  year: 'year',
+  description: 'description',
+  imageUrl: 'imageUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AchievementScalarFieldEnum = (typeof AchievementScalarFieldEnum)[keyof typeof AchievementScalarFieldEnum]
 
 
 export const SponsorHistoryScalarFieldEnum = {

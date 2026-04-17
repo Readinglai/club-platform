@@ -135,6 +135,12 @@ export type Sponsor = Prisma.SponsorModel
  */
 export type SiteConfig = Prisma.SiteConfigModel
 /**
+ * Model Achievement
+ * 過往成果表
+ * 記錄社團每年的重要成就，供公開展示頁與後台管理使用
+ */
+export type Achievement = Prisma.AchievementModel
+/**
  * Model SponsorHistory
  * 贊助歷史記錄表
  * 記錄贊助商每年的贊助等級（tier），同一贊助商同一年份唯一

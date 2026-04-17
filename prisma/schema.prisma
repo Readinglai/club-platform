@@ -380,6 +380,18 @@ model SiteConfig {
   updatedAt DateTime @updatedAt
 }
 
+/// 過往成果表
+/// 記錄社團每年的重要成就，供公開展示頁與後台管理使用
+model Achievement {
+  id          String   @id @default(cuid())
+  title       String
+  year        Int
+  description String
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 /// 贊助歷史記錄表
 /// 記錄贊助商每年的贊助等級（tier），同一贊助商同一年份唯一
 model SponsorHistory {
