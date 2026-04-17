@@ -31,33 +31,33 @@
 
 ### 0.1 設定層（Config Layer）
 
-- 0.1.1 config.yaml schema 定義 `Claude Code`
-- 0.1.2 設定讀取與驗證模組 `Claude Code`
-- 0.1.3 環境變數管理 `Claude Code`
+- 0.1.1 config.yaml schema 定義 `Claude Code` ✅
+- 0.1.2 設定讀取與驗證模組 `Claude Code` ✅
+- 0.1.3 環境變數管理 `Claude Code` ✅
 - 0.1.4 功能開關中介層 `Claude Code`
 
 ### 0.2 專案基礎架構
 
-- 0.2.1 Monorepo 目錄結構 `Claude Code`
-- 0.2.2 共用 TypeScript 型別定義 `Claude Code`
-- 0.2.3 共用 UI 元件庫
-- 0.2.4 共用 Layout
-- 0.2.5 錯誤處理與 logging `Claude Code`
+- 0.2.1 Monorepo 目錄結構 `Claude Code` ✅
+- 0.2.2 共用 TypeScript 型別定義 `Claude Code` ✅
+- 0.2.3 共用 UI 元件庫 ✅
+- 0.2.4 共用 Layout ✅
+- 0.2.5 錯誤處理與 logging `Claude Code` ✅
 
 ### 0.3 資料庫層
 
-- 0.3.1 核心 schema 設計 `Claude Code`
-- 0.3.2 Migration 腳本管理 `Claude Code`
+- 0.3.1 核心 schema 設計 `Claude Code` ✅
+- 0.3.2 Migration 腳本管理 `Claude Code` ✅
 - 0.3.3 Seed 資料
-- 0.3.4 資料庫連線池設定 `Claude Code`
+- 0.3.4 資料庫連線池設定 `Claude Code` ✅
 
 ### 0.4 認證與授權
 
-- 0.4.1 NextAuth.js 設定 `Claude Code`
-- 0.4.2 RBAC 權限定義 `Claude Code`
-- 0.4.3 權限中介層 `Claude Code`
-- 0.4.4 登入/登出頁面 UI
-- 0.4.5 未授權頁面
+- 0.4.1 NextAuth.js 設定 `Claude Code` ✅
+- 0.4.2 RBAC 權限定義 `Claude Code` ✅
+- 0.4.3 權限中介層 `Claude Code` ✅
+- 0.4.4 登入/登出頁面 UI ✅
+- 0.4.5 未授權頁面 ✅
 
 ---
 
@@ -65,27 +65,27 @@
 
 ### 1.1 首頁（Landing Page）
 
-- 1.1.1 Hero section
-- 1.1.2 About section
-- 1.1.3 Contact 表單 + 送出 API `Claude Code`
+- 1.1.1 Hero section ✅
+- 1.1.2 About section ✅
+- 1.1.3 Contact 表單 + 送出 API `Claude Code` ✅
 - 1.1.4 地圖與地址元件
 
 ### 1.2 活動公告頁
 
-- 1.2.1 活動列表頁
-- 1.2.2 活動詳情頁
-- 1.2.3 活動日曆元件
+- 1.2.1 活動列表頁 ✅
+- 1.2.2 活動詳情頁 ✅
+- 1.2.3 活動日曆元件 ✅
 
 ### 1.3 成員介紹頁
 
-- 1.3.1 成員列表
-- 1.3.2 成員個人介紹頁
+- 1.3.1 成員列表 ✅
+- 1.3.2 成員個人介紹頁 ✅
 
 ### 1.4 過往成果頁
 
-- 1.4.1 年份篩選元件
-- 1.4.2 成就卡片
-- 1.4.3 成就詳情頁
+- 1.4.1 年份篩選元件 ✅
+- 1.4.2 成就卡片 ✅
+- 1.4.3 成就詳情頁 ✅
 
 ---
 
@@ -93,26 +93,26 @@
 
 ### 2.1 個人資料
 
-- 2.1.1 個人資料頁（檢視）
-- 2.1.2 個人資料編輯表單
-- 2.1.3 個人資料更新 API `Claude Code`
-- 2.1.4 出席記錄查詢 UI
-- 2.1.5 出席記錄 API `Claude Code`
+- 2.1.1 個人資料頁（檢視）✅
+- 2.1.2 個人資料編輯表單 ✅
+- 2.1.3 個人資料更新 API `Claude Code` ✅
+- 2.1.4 出席記錄查詢 UI ✅
+- 2.1.5 出席記錄 API `Claude Code` ✅
 
 ### 2.2 活動報名
 
-- 2.2.1 報名 API `Claude Code`
-- 2.2.2 報名表單 UI
-- 2.2.3 候補名單邏輯 `Claude Code`
-- 2.2.4 出席打卡 API `Claude Code`
-- 2.2.5 出席打卡 UI
-- 2.2.6 Email 通知 `Claude Code`
+- 2.2.1 報名 API `Claude Code` ✅
+- 2.2.2 報名表單 UI ✅
+- 2.2.3 候補名單邏輯 `Claude Code` ✅
+- 2.2.4 出席打卡 API `Claude Code` ✅
+- 2.2.5 出席打卡 UI ✅
+- 2.2.6 Email 通知 `Claude Code` ✅
 
 ### 2.3 公告閱覽
 
-- 2.3.1 公告列表 UI
-- 2.3.2 公告詳情頁
-- 2.3.3 已讀標記 API `Claude Code`
+- 2.3.1 公告列表 UI ✅
+- 2.3.2 公告詳情頁 ✅
+- 2.3.3 已讀標記 API `Claude Code` ✅
 
 ---
 
@@ -189,16 +189,16 @@
 
 ### 5.1 贊助商展示
 
-- 5.1.1 分級展示 UI
-- 5.1.2 年份篩選元件
-- 5.1.3 贊助商詳情頁
+- 5.1.1 分級展示 UI ✅
+- 5.1.2 年份篩選元件 ✅
+- 5.1.3 贊助商詳情頁 ✅
 
 ### 5.2 贊助商後台
 
-- 5.2.1 贊助商 CRUD API `Claude Code`
-- 5.2.2 贊助商管理介面
-- 5.2.3 贊助歷史記錄 `Claude Code`
-- 5.2.4 贊助歷史記錄介面
+- 5.2.1 贊助商 CRUD API `Claude Code` ✅
+- 5.2.2 贊助商管理介面 ✅
+- 5.2.3 贊助歷史記錄 `Claude Code` ✅
+- 5.2.4 贊助歷史記錄介面 ✅
 
 ---
 
