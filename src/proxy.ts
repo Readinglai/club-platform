@@ -87,6 +87,18 @@ const NO_I18N_PREFIXES = [/^\/exec(\/|$)/, /^\/portal(\/|$)/];
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Step 0: exec and portal are Chinese-only internal tools without locale support.
+  // Redirect /(zh|en)/exec/* and /(zh|en)/portal/* to the non-locale version.
+  // Must run before i18n handling, because middleware executes before next.config redirects
+  // in Next.js 16.
+  const localeInternalMatch = pathname.match(/^\/(zh|en)\/(exec|portal)(\/.*)?$/);
+  if (localeInternalMatch) {
+    const tool = localeInternalMatch[2];
+    const rest = localeInternalMatch[3] ?? "";
+    return NextResponse.redirect(new URL(`/${tool}${rest}`, request.url));
+  }
+
   const skipI18n = NO_I18N_PREFIXES.some((p) => p.test(pathname));
 
   let i18nResponse: NextResponse;

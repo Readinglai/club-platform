@@ -16,32 +16,7 @@ import type { NextConfig } from "next";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
-  async redirects() {
-    // exec and portal intentionally have no locale prefix (Chinese-only internal tools).
-    // Redirect locale-prefixed variants so /zh/exec and /en/exec both land on /exec.
-    return [
-      {
-        source: "/:locale(zh|en)/exec",
-        destination: "/exec",
-        permanent: false,
-      },
-      {
-        source: "/:locale(zh|en)/exec/:path*",
-        destination: "/exec/:path*",
-        permanent: false,
-      },
-      {
-        source: "/:locale(zh|en)/portal",
-        destination: "/portal",
-        permanent: false,
-      },
-      {
-        source: "/:locale(zh|en)/portal/:path*",
-        destination: "/portal/:path*",
-        permanent: false,
-      },
-    ];
-  },
+  /* config options here */
 };
 
 export default withNextIntl(nextConfig);
