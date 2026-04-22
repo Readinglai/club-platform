@@ -34,6 +34,10 @@ export const authConfig: NextAuthConfig = {
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      // Allow linking a Google account to an existing User row that was
+      // pre-inserted via SQL (no Account record yet). Safe because Google
+      // verifies email ownership and our signIn callback guards access.
+      allowDangerousEmailAccountLinking: true,
     }),
   ],
 
