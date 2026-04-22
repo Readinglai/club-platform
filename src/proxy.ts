@@ -50,6 +50,8 @@ const { auth } = NextAuth({
       const protectedPatterns = [
         /^\/(zh|en)\/member(\/|$)/,
         /^\/(zh|en)\/admin(\/|$)/,
+        /^\/(zh|en)\/exec(\/|$)/,   // locale-prefixed exec（會被 redirect 到 /exec，但仍需 auth）
+        /^\/(zh|en)\/portal(\/|$)/, // locale-prefixed portal
         /^\/member(\/|$)/,
         /^\/admin(\/|$)/,
         /^\/exec(\/|$)/,   // 執委內部工具（role 層級在 layout 層驗證）
