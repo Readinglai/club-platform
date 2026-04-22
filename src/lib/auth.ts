@@ -14,8 +14,14 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
 import { authConfig } from "@/lib/auth.config";
 
-// Accounts that can always log in regardless of DB pre-registration
+// Always allowed regardless of DB role
 const SUPER_ADMIN_EMAILS = ["flyincloud2001@gmail.com"];
+
+// UofT email domains: allowed if email exists in User table
+const UOFT_DOMAINS = ["utoronto.ca", "mail.utoronto.ca"];
+
+// Gmail users need to exist in DB with EXEC or above
+const EXEC_AND_ABOVE = ["SUPER_ADMIN", "EXEC"] as const;
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -39,17 +45,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     ...authConfig.callbacks,
 
-    // Only allow users pre-registered in the DB (invite-only).
-    // SUPER_ADMIN_EMAILS bypass this check.
     async signIn({ user }) {
       const email = user.email ?? "";
+      if (!email) return false;
+
+      // Super admin exception — always allowed
       if (SUPER_ADMIN_EMAILS.includes(email)) return true;
 
-      const existing = await db.user.findUnique({
-        where: { email },
-        select: { id: true },
-      });
-      return existing ? true : "/unauthorized";
+      const domain = email.split("@")[1];
+
+      // UofT domains: must exist in User table (pre-registered)
+      if (UOFT_DOMAINS.includes(domain)) {
+        const existing = await db.user.findUnique({
+          where: { email },
+          select: { id: true },
+        });
+        return existing ? true : "/unauthorized";
+      }
+
+      // Gmail: must exist in User table with EXEC or above role
+      if (domain === "gmail.com") {
+        const existing = await db.user.findUnique({
+          where: { email },
+          select: { role: true },
+        });
+        if (!existing) return "/unauthorized";
+        return (EXEC_AND_ABOVE as readonly string[]).includes(existing.role)
+          ? true
+          : "/unauthorized";
+      }
+
+      // All other domains denied
+      return "/unauthorized";
     },
   },
 });
