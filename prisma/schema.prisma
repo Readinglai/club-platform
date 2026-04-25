@@ -392,6 +392,33 @@ model Achievement {
   updatedAt   DateTime @updatedAt
 }
 
+/// 校友表
+/// 由管理員手動維護，記錄離開社團的前成員資料，供公開校友目錄展示使用
+/// isPublic = false 時，該校友不會出現在公開頁面
+model Alumni {
+  id             String   @id @default(cuid())
+  /// 校友姓名
+  name           String
+  /// 離開社團的年份（可為 null）
+  graduationYear Int?
+  /// 在社團擔任過的職位，例如 "President 2023–2024"
+  position       String?
+  /// 所屬部門，例如 "Event"、"Marketing"、"Operation"
+  department     String?
+  /// 個人簡介（可為 null）
+  bio            String?
+  /// LinkedIn 個人頁 URL（可為 null）
+  linkedinUrl    String?
+  /// Instagram 帳號 URL（可為 null）
+  instagramUrl   String?
+  /// 大頭貼 URL（可為 null）
+  photoUrl       String?
+  /// 是否在公開頁面顯示；false 時僅後台可見
+  isPublic       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
 /// 贊助歷史記錄表
 /// 記錄贊助商每年的贊助等級（tier），同一贊助商同一年份唯一
 model SponsorHistory {

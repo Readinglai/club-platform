@@ -404,6 +404,7 @@ export const ModelName = {
   Sponsor: 'Sponsor',
   SiteConfig: 'SiteConfig',
   Achievement: 'Achievement',
+  Alumni: 'Alumni',
   SponsorHistory: 'SponsorHistory'
 } as const
 
@@ -420,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "department" | "event" | "registration" | "discussion" | "comment" | "announcement" | "announcementRead" | "taskGroup" | "taskGroupMember" | "task" | "vote" | "voteOption" | "voteResponse" | "sponsor" | "siteConfig" | "achievement" | "sponsorHistory"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "department" | "event" | "registration" | "discussion" | "comment" | "announcement" | "announcementRead" | "taskGroup" | "taskGroupMember" | "task" | "vote" | "voteOption" | "voteResponse" | "sponsor" | "siteConfig" | "achievement" | "alumni" | "sponsorHistory"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1904,6 +1905,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Alumni: {
+      payload: Prisma.$AlumniPayload<ExtArgs>
+      fields: Prisma.AlumniFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AlumniFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlumniPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AlumniFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlumniPayload>
+        }
+        findFirst: {
+          args: Prisma.AlumniFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlumniPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AlumniFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlumniPayload>
+        }
+        findMany: {
+          args: Prisma.AlumniFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlumniPayload>[]
+        }
+        create: {
+          args: Prisma.AlumniCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlumniPayload>
+        }
+        createMany: {
+          args: Prisma.AlumniCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AlumniCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlumniPayload>[]
+        }
+        delete: {
+          args: Prisma.AlumniDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlumniPayload>
+        }
+        update: {
+          args: Prisma.AlumniUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlumniPayload>
+        }
+        deleteMany: {
+          args: Prisma.AlumniDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AlumniUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AlumniUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlumniPayload>[]
+        }
+        upsert: {
+          args: Prisma.AlumniUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlumniPayload>
+        }
+        aggregate: {
+          args: Prisma.AlumniAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAlumni>
+        }
+        groupBy: {
+          args: Prisma.AlumniGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AlumniGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AlumniCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AlumniCountAggregateOutputType> | number
+        }
+      }
+    }
     SponsorHistory: {
       payload: Prisma.$SponsorHistoryPayload<ExtArgs>
       fields: Prisma.SponsorHistoryFieldRefs
@@ -2261,6 +2336,24 @@ export const AchievementScalarFieldEnum = {
 export type AchievementScalarFieldEnum = (typeof AchievementScalarFieldEnum)[keyof typeof AchievementScalarFieldEnum]
 
 
+export const AlumniScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  graduationYear: 'graduationYear',
+  position: 'position',
+  department: 'department',
+  bio: 'bio',
+  linkedinUrl: 'linkedinUrl',
+  instagramUrl: 'instagramUrl',
+  photoUrl: 'photoUrl',
+  isPublic: 'isPublic',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AlumniScalarFieldEnum = (typeof AlumniScalarFieldEnum)[keyof typeof AlumniScalarFieldEnum]
+
+
 export const SponsorHistoryScalarFieldEnum = {
   id: 'id',
   sponsorId: 'sponsorId',
@@ -2549,6 +2642,7 @@ export type GlobalOmitConfig = {
   sponsor?: Prisma.SponsorOmit
   siteConfig?: Prisma.SiteConfigOmit
   achievement?: Prisma.AchievementOmit
+  alumni?: Prisma.AlumniOmit
   sponsorHistory?: Prisma.SponsorHistoryOmit
 }
 

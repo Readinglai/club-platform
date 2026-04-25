@@ -71,6 +71,7 @@ export const ModelName = {
   Sponsor: 'Sponsor',
   SiteConfig: 'SiteConfig',
   Achievement: 'Achievement',
+  Alumni: 'Alumni',
   SponsorHistory: 'SponsorHistory'
 } as const
 
@@ -332,6 +333,24 @@ export const AchievementScalarFieldEnum = {
 } as const
 
 export type AchievementScalarFieldEnum = (typeof AchievementScalarFieldEnum)[keyof typeof AchievementScalarFieldEnum]
+
+
+export const AlumniScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  graduationYear: 'graduationYear',
+  position: 'position',
+  department: 'department',
+  bio: 'bio',
+  linkedinUrl: 'linkedinUrl',
+  instagramUrl: 'instagramUrl',
+  photoUrl: 'photoUrl',
+  isPublic: 'isPublic',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AlumniScalarFieldEnum = (typeof AlumniScalarFieldEnum)[keyof typeof AlumniScalarFieldEnum]
 
 
 export const SponsorHistoryScalarFieldEnum = {

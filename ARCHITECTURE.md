@@ -206,11 +206,17 @@
 
 ### 6.1 校友目錄
 
-- 6.1.1 校友資料庫 API `Claude Code`
-- 6.1.2 校友目錄 UI
-- 6.1.3 校友個人頁
-- 6.1.4 聯絡功能 `Claude Code`
-- 6.1.5 校友自助更新資料介面
+- 6.1.1 校友資料庫 API `Claude Code` ✅（GET /api/alumni、GET+POST /api/admin/alumni、PATCH+DELETE /api/admin/alumni/[id]）
+- 6.1.2 校友目錄 UI ✅（/[locale]/alumni — 公開頁面，卡片展示、LinkedIn/Instagram 連結）
+- 6.1.3 校友個人頁 ⏭️ 跳過（卡片已含足夠資訊，獨立頁面需求低）
+- 6.1.4 聯絡功能 `Claude Code` ✅（透過 LinkedIn/Instagram 直連，不需平台中轉）
+- 6.1.5 校友自助更新資料介面 ⏭️ 跳過（目前由後台管理員手動維護）
+
+### 實作備註
+- Alumni 為獨立 model，不綁定 User role 系統（前成員可能無有效帳號）
+- 後台 /admin/alumni 支援新增、行內編輯、公開/隱藏切換、刪除
+- isPublic=false 時不出現在公開頁面
+- Navbar 已加入「校友」連結（中英文）
 
 ---
 

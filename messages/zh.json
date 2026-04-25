@@ -5,6 +5,7 @@
     "members": "成員",
     "achievements": "過往成果",
     "sponsors": "贊助商",
+    "alumni": "校友",
     "contact": "聯絡我們",
     "switchLang": "EN"
   },
@@ -100,6 +101,13 @@
     "backToList": "返回過往成果",
     "prevAchievement": "上一項",
     "nextAchievement": "下一項"
+  },
+  "alumni": {
+    "title": "校友",
+    "subtitle": "感謝每一位形塑 ROCSAUT 的前成員",
+    "totalAlumni": "位校友",
+    "yearSpan": "年份區間",
+    "noAlumni": "尚無校友記錄"
   },
   "sponsors": {
     "title": "贊助商",

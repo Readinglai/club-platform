@@ -5,6 +5,7 @@
     "members": "Members",
     "achievements": "Achievements",
     "sponsors": "Sponsors",
+    "alumni": "Alumni",
     "contact": "Contact",
     "switchLang": "中文"
   },
@@ -100,6 +101,13 @@
     "backToList": "Back to Achievements",
     "prevAchievement": "Previous",
     "nextAchievement": "Next"
+  },
+  "alumni": {
+    "title": "Alumni",
+    "subtitle": "Celebrating those who shaped ROCSAUT",
+    "totalAlumni": "alumni",
+    "yearSpan": "Year range",
+    "noAlumni": "No alumni records yet"
   },
   "sponsors": {
     "title": "Sponsors",

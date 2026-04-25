@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { key: "members", href: "/members" },
   { key: "achievements", href: "/achievements" },
   { key: "sponsors", href: "/sponsors" },
+  { key: "alumni", href: "/alumni" },
   { key: "contact", href: "/contact" },
 ] as const;
 

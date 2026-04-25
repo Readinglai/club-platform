@@ -165,6 +165,13 @@ export type SiteConfig = Prisma.SiteConfigModel
  */
 export type Achievement = Prisma.AchievementModel
 /**
+ * Model Alumni
+ * 校友表
+ * 由管理員手動維護，記錄離開社團的前成員資料，供公開校友目錄展示使用
+ * isPublic = false 時，該校友不會出現在公開頁面
+ */
+export type Alumni = Prisma.AlumniModel
+/**
  * Model SponsorHistory
  * 贊助歷史記錄表
  * 記錄贊助商每年的贊助等級（tier），同一贊助商同一年份唯一
