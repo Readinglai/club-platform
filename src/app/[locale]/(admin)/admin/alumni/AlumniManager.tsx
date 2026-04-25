@@ -371,16 +371,21 @@ export default function AlumniManager({ alumni: initial, locale }: Props) {
 
                 {/* 操作按鈕 */}
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  {/* 公開/隱藏切換 */}
-                  <button
-                    onClick={() => togglePublic(a.id, a.isPublic)}
-                    className={`text-xs px-2 py-1 rounded-full font-medium transition ${
+                  {/* 公開/隱藏切換：顯示目前狀態的 badge + 動作按鈕 */}
+                  <span
+                    className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                       a.isPublic
-                        ? "bg-green-100 text-green-700 hover:bg-green-200"
-                        : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-gray-100 text-gray-400"
                     }`}
                   >
-                    {a.isPublic ? "公開" : "隱藏"}
+                    {a.isPublic ? "公開中" : "已隱藏"}
+                  </span>
+                  <button
+                    onClick={() => togglePublic(a.id, a.isPublic)}
+                    className="text-xs px-2 py-1 rounded-full font-medium transition bg-amber-50 text-amber-700 hover:bg-amber-100"
+                  >
+                    {a.isPublic ? "隱藏" : "公開"}
                   </button>
 
                   {/* 編輯按鈕 */}
