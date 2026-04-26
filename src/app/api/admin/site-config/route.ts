@@ -1,10 +1,25 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
-import type { Role } from "@/generated/prisma/client";
+/**
+ * /api/admin/site-config
+ *
+ * 網站全域設定 API。
+ *
+ * GET   — 公開，讀取單一設定值（?key=heroImageUrl）
+ * PATCH — 需要 EXEC（level 4）以上權限，更新設定值
+ *
+ * 輸出：GET 回傳 { key, value }；PATCH 回傳更新後的 SiteConfig
+ */
 
-/** GET /api/admin/site-config?key=heroImageUrl */
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { requireAuthJson } from "@/lib/auth/guard";
+
+/**
+ * GET /api/admin/site-config?key=heroImageUrl
+ *
+ * 公開端點，不需登入。
+ * Query params:
+ *   key — 設定 key（必填）
+ */
 export async function GET(request: NextRequest) {
   try {
     const key = new URL(request.url).searchParams.get("key");
@@ -16,13 +31,16 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/** PATCH /api/admin/site-config  body: { key, value } */
+/**
+ * PATCH /api/admin/site-config
+ *
+ * 需要 EXEC（level 4）以上權限。
+ * Body: { key: string; value: string }
+ */
 export async function PATCH(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) return NextResponse.json({ error: "未登入" }, { status: 401 });
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "權限不足" }, { status: 403 });
+    const guard = await requireAuthJson(4, request);
+    if (guard.error) return guard.error;
 
     const { key, value } = await request.json();
     if (typeof key !== "string" || typeof value !== "string") {

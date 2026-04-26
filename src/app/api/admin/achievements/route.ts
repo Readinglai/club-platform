@@ -1,16 +1,28 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
-import type { Role } from "@/generated/prisma/client";
+/**
+ * /api/admin/achievements
+ *
+ * 後台成果管理 API，需要 EXEC（level 4）以上權限。
+ *
+ * GET  — 列出所有成果，可用 ?year=2024 篩選
+ * POST — 建立新成果
+ *
+ * 輸出：GET 回傳 Achievement[]；POST 回傳新建的 Achievement（201）
+ */
 
-/** GET /api/admin/achievements — 列出所有成果，可用 ?year=2024 篩選 */
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { requireAuthJson } from "@/lib/auth/guard";
+
+/**
+ * GET /api/admin/achievements — 列出所有成果
+ *
+ * Query params:
+ *   year? — 依年份篩選（整數）
+ */
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requireAuthJson(4, request);
+    if (guard.error) return guard.error;
 
     const yearParam = new URL(request.url).searchParams.get("year");
     const year = yearParam ? parseInt(yearParam, 10) : null;
@@ -26,13 +38,15 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/** POST /api/admin/achievements — 建立新成果 */
+/**
+ * POST /api/admin/achievements — 建立新成果
+ *
+ * Body: { title: string; year: number; description: string; imageUrl?: string }
+ */
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requireAuthJson(4, request);
+    if (guard.error) return guard.error;
 
     const body = await request.json();
     const { title, year, description, imageUrl } = body;

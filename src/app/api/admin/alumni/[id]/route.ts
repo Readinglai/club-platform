@@ -10,21 +10,21 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
-import type { Role } from "@/generated/prisma/client";
+import { requireAuthJson } from "@/lib/auth/guard";
 
-/** PATCH /api/admin/alumni/[id] — 更新校友資料 */
+/**
+ * PATCH /api/admin/alumni/[id] — 更新校友資料（部分更新）
+ *
+ * Body: 任意 Alumni 欄位的子集（未傳入的欄位保持不變）
+ */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requireAuthJson(4, request);
+    if (guard.error) return guard.error;
 
     const { id } = await params;
     const body = await request.json();
@@ -56,16 +56,16 @@ export async function PATCH(
   }
 }
 
-/** DELETE /api/admin/alumni/[id] — 刪除校友記錄 */
+/**
+ * DELETE /api/admin/alumni/[id] — 刪除校友記錄
+ */
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requireAuthJson(4, request);
+    if (guard.error) return guard.error;
 
     const { id } = await params;
 

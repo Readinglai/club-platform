@@ -1,18 +1,26 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
-import type { Role } from "@/generated/prisma/client";
+/**
+ * /api/sponsors
+ *
+ * 贊助商 API。
+ *
+ * GET  — 公開，不需登入。列出所有贊助商，可用 ?year=2024 篩選有該年度記錄的 sponsor。
+ * POST — 需要 EXEC（level 4）以上權限，新增贊助商。
+ *
+ * 輸出：GET 回傳 Sponsor[]（含 histories）；POST 回傳新建的 Sponsor（201）
+ */
 
-/** GET /api/sponsors — 列出所有贊助商，可用 ?year=2024 篩選有該年度記錄的 sponsor */
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { requireAuthJson } from "@/lib/auth/guard";
+
+/**
+ * GET /api/sponsors — 列出所有贊助商（公開）
+ *
+ * Query params:
+ *   year? — 篩選有該年度贊助記錄的贊助商（整數）
+ */
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-
     const yearParam = new URL(request.url).searchParams.get("year");
     const year = yearParam ? parseInt(yearParam, 10) : null;
 
@@ -34,14 +42,16 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/** POST /api/sponsors — 新增贊助商 */
+/**
+ * POST /api/sponsors — 新增贊助商
+ *
+ * 需要 EXEC（level 4）以上權限。
+ * Body: { name: string; logoUrl?: string; website?: string; description?: string }
+ */
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requireAuthJson(4, request);
+    if (guard.error) return guard.error;
 
     const body = await request.json();
     const { name, logoUrl, website, description } = body;

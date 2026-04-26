@@ -10,19 +10,19 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
-import type { Role } from "@/generated/prisma/client";
+import { requireAuthJson } from "@/lib/auth/guard";
 
-/** GET /api/admin/alumni — 列出所有校友（後台用，包含隱藏記錄） */
+/**
+ * GET /api/admin/alumni — 列出所有校友（後台用，包含隱藏記錄）
+ *
+ * Query params:
+ *   year? — 依畢業年份篩選（整數）
+ */
 export async function GET(request: NextRequest) {
   try {
-    // 驗證身份與權限
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requireAuthJson(4, request);
+    if (guard.error) return guard.error;
 
     // 可選年份篩選
     const yearParam = new URL(request.url).searchParams.get("year");
@@ -39,14 +39,25 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/** POST /api/admin/alumni — 建立新校友記錄 */
+/**
+ * POST /api/admin/alumni — 建立新校友記錄
+ *
+ * Body: {
+ *   name: string;
+ *   graduationYear?: number | string;
+ *   position?: string;
+ *   department?: string;
+ *   bio?: string;
+ *   linkedinUrl?: string;
+ *   instagramUrl?: string;
+ *   photoUrl?: string;
+ *   isPublic?: boolean;
+ * }
+ */
 export async function POST(request: NextRequest) {
   try {
-    // 驗證身份與權限
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requireAuthJson(4, request);
+    if (guard.error) return guard.error;
 
     const body = await request.json();
     const {

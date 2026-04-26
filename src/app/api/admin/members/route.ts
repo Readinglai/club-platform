@@ -1,16 +1,29 @@
+/**
+ * /api/admin/members
+ *
+ * 後台成員管理 API，需要 EXEC（level 4）以上權限。
+ *
+ * GET — 列出所有成員，可用 ?role= 篩選角色，?department= 篩選部門 slug
+ *
+ * 輸出：GET 回傳 User[]（含 department 資料）
+ */
+
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
+import { requireAuthJson } from "@/lib/auth/guard";
 import type { Role } from "@/generated/prisma/client";
 
+/**
+ * GET /api/admin/members — 列出所有成員
+ *
+ * Query params:
+ *   role?       — 依角色篩選（Role enum 值）
+ *   department? — 依部門 slug 篩選
+ */
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
-
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "權限不足" }, { status: 403 });
+    const guard = await requireAuthJson(4, request);
+    if (guard.error) return guard.error;
 
     const { searchParams } = new URL(request.url);
     const roleFilter = searchParams.get("role") as Role | null;
