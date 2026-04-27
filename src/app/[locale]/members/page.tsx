@@ -11,12 +11,13 @@
  */
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import {
   getAllMembers,
-  ROLE_LABELS,
   DEPARTMENT_LABELS,
   type Member,
+  type MemberRole,
 } from "@/lib/data/members";
 
 // 主題色
@@ -58,7 +59,15 @@ interface MemberCardProps {
   locale: string;
 }
 
+const ROLE_I18N_KEY: Record<MemberRole, "roleExec" | "roleTeamLead" | "roleMember" | "roleSuperAdmin"> = {
+  exec: "roleExec",
+  team_lead: "roleTeamLead",
+  member: "roleMember",
+  super_admin: "roleSuperAdmin",
+};
+
 function MemberCard({ member, locale }: MemberCardProps) {
+  const t = useTranslations("members");
   const departmentColor = DEPARTMENT_COLORS[member.department] ?? {
     bg: "#f3f4f6",
     text: "#374151",
@@ -73,7 +82,7 @@ function MemberCard({ member, locale }: MemberCardProps) {
       className="group flex flex-col items-center gap-4 p-6 rounded-2xl border bg-white
                  transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
       style={{ borderColor: "#e5e7eb" }}
-      aria-label={`查看 ${member.name} 的個人介紹`}
+      aria-label={t("viewProfileOf", { name: member.name })}
     >
       {/* ── 頭像 ── */}
       <div
@@ -96,7 +105,7 @@ function MemberCard({ member, locale }: MemberCardProps) {
 
         {/* 職位 */}
         <p className="text-sm font-medium" style={{ color: `${PRIMARY}99` }}>
-          {ROLE_LABELS[member.role]}
+          {t(ROLE_I18N_KEY[member.role])}
         </p>
       </div>
 
@@ -170,7 +179,7 @@ export default async function MembersPage({ params }: MembersPageProps) {
 
         {/* 執行委員 */}
         {execMembers.length > 0 && (
-          <section aria-label="執行委員">
+          <section aria-label={t("exec")}>
             <SectionTitle
               label={t("exec")}
               count={execMembers.length}
@@ -187,7 +196,7 @@ export default async function MembersPage({ params }: MembersPageProps) {
 
         {/* Team Leads */}
         {leadMembers.length > 0 && (
-          <section aria-label="Team Lead">
+          <section aria-label={t("teamLead")}>
             <SectionTitle
               label={t("teamLead")}
               count={leadMembers.length}
@@ -204,7 +213,7 @@ export default async function MembersPage({ params }: MembersPageProps) {
 
         {/* 一般成員 */}
         {generalMembers.length > 0 && (
-          <section aria-label="一般成員">
+          <section aria-label={t("general")}>
             <SectionTitle
               label={t("general")}
               count={generalMembers.length}

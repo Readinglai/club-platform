@@ -5,7 +5,7 @@
  */
 
 import { useTranslations } from "next-intl";
-import { getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { db } from "@/lib/db";
@@ -13,13 +13,8 @@ import { db } from "@/lib/db";
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
-const TIER_ORDER = ["platinum", "gold", "silver", "bronze"];
-const TIER_LABEL: Record<string, string> = {
-  platinum: "白金贊助",
-  gold: "黃金贊助",
-  silver: "白銀贊助",
-  bronze: "銅級贊助",
-};
+const TIER_ORDER = ["platinum", "gold", "silver", "bronze"] as const;
+type Tier = (typeof TIER_ORDER)[number];
 
 // ─── Hero Section ─────────────────────────────────────────────────────────────
 
@@ -38,6 +33,7 @@ async function HeroSection() {
 
 // Inline client-like hero rendered as server (no interactivity needed)
 function HeroClient({ heroImageUrl, locale }: { heroImageUrl: string | null; locale: string }) {
+  const t = useTranslations("hero");
   return (
     <section
       className="relative flex flex-col items-center justify-center text-center px-4 py-28 sm:py-40 overflow-hidden"
@@ -73,10 +69,10 @@ function HeroClient({ heroImageUrl, locale }: { heroImageUrl: string | null; loc
           ROCSAUT
         </h1>
         <p className="text-lg sm:text-xl font-light tracking-wide" style={{ color: `${SECONDARY}cc` }}>
-          多倫多大學台灣學生社群
+          {t("subtitle")}
         </p>
         <p className="text-sm sm:text-base leading-relaxed max-w-md" style={{ color: `${SECONDARY}99` }}>
-          連結在多倫多的台灣學生，共同成長、互相支持。
+          {t("description")}
         </p>
         <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
           <a
@@ -84,14 +80,14 @@ function HeroClient({ heroImageUrl, locale }: { heroImageUrl: string | null; loc
             className="px-8 py-3 rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 hover:opacity-90 active:scale-95"
             style={{ backgroundColor: SECONDARY, color: PRIMARY }}
           >
-            了解更多
+            {t("ctaPrimary")}
           </a>
           <Link
             href={`/${locale}/contact`}
             className="px-8 py-3 rounded-xl text-sm font-semibold tracking-wide border transition-all duration-200 hover:opacity-90 active:scale-95"
             style={{ borderColor: `${SECONDARY}88`, color: `${SECONDARY}cc` }}
           >
-            聯絡我們
+            {t("ctaSecondary")}
           </Link>
         </div>
       </div>
@@ -109,6 +105,12 @@ function HeroClient({ heroImageUrl, locale }: { heroImageUrl: string | null; loc
 
 function AboutSection() {
   const t = useTranslations("about");
+  const tHome = useTranslations("home");
+  const stats = [
+    { key: "statMembers", value: "100+" },
+    { key: "statEvents", value: "50+" },
+    { key: "statFounded", value: "2020" },
+  ] as const;
   return (
     <section id="about" className="px-4 py-20 sm:py-28" style={{ backgroundColor: "#f9f7f4" }} aria-label="About section">
       <div className="max-w-3xl mx-auto flex flex-col items-center gap-8">
@@ -122,10 +124,10 @@ function AboutSection() {
           <p className="text-base sm:text-lg leading-relaxed" style={{ color: "#555" }}>{t("paragraph3")}</p>
         </div>
         <div className="grid grid-cols-3 gap-6 mt-4 w-full">
-          {[{ label: "成員", value: "100+" }, { label: "活動", value: "50+" }, { label: "成立", value: "2020" }].map(({ label, value }) => (
-            <div key={label} className="flex flex-col items-center gap-1 p-4 rounded-xl" style={{ backgroundColor: "#fff", boxShadow: "0 1px 8px #0001" }}>
+          {stats.map(({ key, value }) => (
+            <div key={key} className="flex flex-col items-center gap-1 p-4 rounded-xl" style={{ backgroundColor: "#fff", boxShadow: "0 1px 8px #0001" }}>
               <span className="text-2xl font-bold" style={{ color: PRIMARY }}>{value}</span>
-              <span className="text-xs text-gray-500">{label}</span>
+              <span className="text-xs text-gray-500">{tHome(key)}</span>
             </div>
           ))}
         </div>
@@ -138,6 +140,8 @@ function AboutSection() {
 
 async function UpcomingEventsSection() {
   const locale = await getLocale();
+  const t = await getTranslations("home");
+  const tEvents = await getTranslations("events");
   let events: { id: string; title: string; startAt: Date; endAt: Date | null; location: string | null; capacity: number | null }[] = [];
   try {
     events = await db.event.findMany({
@@ -156,13 +160,13 @@ async function UpcomingEventsSection() {
     <section className="px-4 py-20 sm:py-28 bg-white" aria-label="Upcoming Events">
       <div className="max-w-5xl mx-auto flex flex-col gap-10">
         <div className="flex flex-col items-center gap-3 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-wide" style={{ color: PRIMARY }}>即將到來的活動</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-wide" style={{ color: PRIMARY }}>{t("upcomingEventsTitle")}</h2>
           <div className="w-12 h-0.5 rounded-full" style={{ backgroundColor: SECONDARY }} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {events.map((ev) => {
-            const dateStr = ev.startAt.toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric", timeZone: "America/Toronto" });
-            const timeStr = ev.startAt.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit", timeZone: "America/Toronto" });
+            const dateStr = ev.startAt.toLocaleDateString(locale === "en" ? "en-CA" : "zh-TW", { year: "numeric", month: "long", day: "numeric", timeZone: "America/Toronto" });
+            const timeStr = ev.startAt.toLocaleTimeString(locale === "en" ? "en-CA" : "zh-TW", { hour: "2-digit", minute: "2-digit", timeZone: "America/Toronto" });
             return (
               <div key={ev.id} className="rounded-2xl border flex flex-col gap-3 p-6 hover:shadow-md transition-shadow" style={{ borderColor: `${SECONDARY}44` }}>
                 <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: SECONDARY }}>{dateStr} {timeStr}</p>
@@ -177,14 +181,14 @@ async function UpcomingEventsSection() {
                   </p>
                 )}
                 {ev.capacity && (
-                  <p className="text-xs text-gray-400">名額：{ev.capacity} 人</p>
+                  <p className="text-xs text-gray-400">{t("capacityFormat", { count: ev.capacity })}</p>
                 )}
                 <Link
                   href={`/${locale}/events/${ev.id}`}
                   className="mt-auto inline-block text-xs font-semibold px-4 py-2 rounded-lg text-center transition-all hover:opacity-80"
                   style={{ backgroundColor: PRIMARY, color: SECONDARY }}
                 >
-                  了解詳情
+                  {tEvents("readMore")}
                 </Link>
               </div>
             );
@@ -192,7 +196,7 @@ async function UpcomingEventsSection() {
         </div>
         <div className="text-center">
           <Link href={`/${locale}/events`} className="text-sm font-semibold transition-opacity hover:opacity-70" style={{ color: PRIMARY }}>
-            查看所有活動 →
+            {t("viewAllEvents")}
           </Link>
         </div>
       </div>
@@ -203,6 +207,7 @@ async function UpcomingEventsSection() {
 // ─── Sponsors Section ─────────────────────────────────────────────────────────
 
 async function SponsorsSection() {
+  const t = await getTranslations("sponsors");
   let sponsors: { id: string; name: string; logoUrl: string | null; website: string | null; description: string | null; createdAt: Date; updatedAt: Date; histories: { id: string; sponsorId: string; year: number; tier: string; createdAt: Date }[] }[] = [];
   try {
     sponsors = await db.sponsor.findMany({
@@ -229,14 +234,14 @@ async function SponsorsSection() {
     <section className="px-4 py-20 sm:py-28" style={{ backgroundColor: "#f9f7f4" }} aria-label="Sponsors">
       <div className="max-w-5xl mx-auto flex flex-col gap-12">
         <div className="flex flex-col items-center gap-3 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-wide" style={{ color: PRIMARY }}>贊助商</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-wide" style={{ color: PRIMARY }}>{t("title")}</h2>
           <div className="w-12 h-0.5 rounded-full" style={{ backgroundColor: SECONDARY }} />
-          <p className="text-sm text-gray-500">感謝所有支持我們的贊助商</p>
+          <p className="text-sm text-gray-500">{t("subtitle")}</p>
         </div>
-        {TIER_ORDER.filter((t) => byTier[t]?.length).map((tier) => (
+        {TIER_ORDER.filter((tier) => byTier[tier]?.length).map((tier) => (
           <div key={tier} className="flex flex-col gap-5">
             <h3 className="text-center text-xs font-semibold uppercase tracking-widest" style={{ color: `${PRIMARY}88` }}>
-              {TIER_LABEL[tier]}
+              {t(tier)}
             </h3>
             <div className="flex flex-wrap justify-center items-center gap-8">
               {byTier[tier].map((s) => (
@@ -272,6 +277,7 @@ async function SponsorsSection() {
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
 function Footer() {
+  const t = useTranslations("home");
   return (
     <footer style={{ backgroundColor: PRIMARY, color: `${SECONDARY}cc` }}>
       <div className="max-w-5xl mx-auto px-6 py-14 grid grid-cols-1 sm:grid-cols-3 gap-10">
@@ -282,7 +288,7 @@ function Footer() {
             <span className="font-bold tracking-widest text-sm" style={{ color: SECONDARY }}>ROCSAUT</span>
           </div>
           <p className="text-xs leading-relaxed" style={{ color: `${SECONDARY}99` }}>
-            ROCSAUT 是多倫多大學的台灣學生社群，致力於連結在多倫多的台灣學生，共同成長、互相支持。
+            {t("footerDescription")}
           </p>
         </div>
 

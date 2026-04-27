@@ -52,6 +52,105 @@ const EMPTY_FORM = {
   isPublic: true,
 };
 
+// ── 通用表單欄位元件（減少重複） ──────────────────────────────────────────────
+interface FieldProps {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  type?: string;
+  required?: boolean;
+}
+
+function Field({ label, value, onChange, placeholder, type = "text", required = false }: FieldProps) {
+  return (
+    <div>
+      <label className="block text-xs font-medium text-gray-600 mb-1">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+      />
+    </div>
+  );
+}
+
+// ── 表單元件（新增與編輯共用結構）────────────────────────────────────────────
+interface AlumniFormProps {
+  form: typeof EMPTY_FORM;
+  setForm: (f: typeof EMPTY_FORM) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+  submitting: boolean;
+  error: string | null;
+  submitLabel: string;
+}
+
+function AlumniForm({ form, setForm, onSubmit, onCancel, submitting, error, submitLabel }: AlumniFormProps) {
+  const update = (key: keyof typeof EMPTY_FORM) => (val: string | boolean) =>
+    setForm({ ...form, [key]: val });
+
+  return (
+    <div className="border border-gray-200 rounded-xl p-5 bg-gray-50 space-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Field label="姓名" value={form.name} onChange={update("name") as (v: string) => void} placeholder="例：陳大文" required />
+        <Field label="離開年份" value={form.graduationYear} onChange={update("graduationYear") as (v: string) => void} placeholder="例：2024" type="number" />
+        <Field label="擔任職位" value={form.position} onChange={update("position") as (v: string) => void} placeholder="例：President 2023–2024" />
+        <Field label="部門" value={form.department} onChange={update("department") as (v: string) => void} placeholder="例：Event" />
+        <Field label="LinkedIn URL" value={form.linkedinUrl} onChange={update("linkedinUrl") as (v: string) => void} placeholder="https://linkedin.com/in/..." />
+        <Field label="Instagram URL" value={form.instagramUrl} onChange={update("instagramUrl") as (v: string) => void} placeholder="https://instagram.com/..." />
+        <Field label="大頭貼 URL" value={form.photoUrl} onChange={update("photoUrl") as (v: string) => void} placeholder="https://..." />
+      </div>
+
+      {/* 個人簡介（全寬） */}
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">個人簡介</label>
+        <textarea
+          value={form.bio}
+          onChange={(e) => setForm({ ...form, bio: e.target.value })}
+          placeholder="簡短介紹..."
+          rows={2}
+          className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition resize-none"
+        />
+      </div>
+
+      {/* 公開切換 */}
+      <label className="flex items-center gap-2 cursor-pointer w-fit">
+        <input
+          type="checkbox"
+          checked={form.isPublic}
+          onChange={(e) => setForm({ ...form, isPublic: e.target.checked })}
+          className="rounded"
+        />
+        <span className="text-sm text-gray-600">在公開頁面顯示</span>
+      </label>
+
+      {error && <p className="text-sm text-red-500">{error}</p>}
+
+      <div className="flex gap-2 pt-1">
+        <button
+          onClick={onSubmit}
+          disabled={submitting}
+          className="px-4 py-2 text-sm font-medium text-white rounded-lg transition disabled:opacity-50"
+          style={{ backgroundColor: PRIMARY }}
+        >
+          {submitting ? "處理中..." : submitLabel}
+        </button>
+        <button
+          onClick={onCancel}
+          className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+        >
+          取消
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function AlumniManager({ alumni: initial, locale }: Props) {
   const router = useRouter();
   const [alumni, setAlumni] = useState<AlumniRow[]>(initial);
@@ -189,116 +288,6 @@ export default function AlumniManager({ alumni: initial, locale }: Props) {
     } finally {
       setDeleting(null);
     }
-  }
-
-  // ── 通用表單欄位元件（減少重複） ──────────────────────────────────────────
-  function Field({
-    label,
-    value,
-    onChange,
-    placeholder,
-    type = "text",
-    required = false,
-  }: {
-    label: string;
-    value: string;
-    onChange: (v: string) => void;
-    placeholder?: string;
-    type?: string;
-    required?: boolean;
-  }) {
-    return (
-      <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">
-          {label} {required && <span className="text-red-500">*</span>}
-        </label>
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
-        />
-      </div>
-    );
-  }
-
-  // ── 表單元件（新增與編輯共用結構）────────────────────────────────────────
-  function AlumniForm({
-    form,
-    setForm,
-    onSubmit,
-    onCancel,
-    submitting,
-    error,
-    submitLabel,
-  }: {
-    form: typeof EMPTY_FORM;
-    setForm: (f: typeof EMPTY_FORM) => void;
-    onSubmit: () => void;
-    onCancel: () => void;
-    submitting: boolean;
-    error: string | null;
-    submitLabel: string;
-  }) {
-    const update = (key: keyof typeof EMPTY_FORM) => (val: string | boolean) =>
-      setForm({ ...form, [key]: val });
-
-    return (
-      <div className="border border-gray-200 rounded-xl p-5 bg-gray-50 space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Field label="姓名" value={form.name} onChange={update("name") as (v: string) => void} placeholder="例：陳大文" required />
-          <Field label="離開年份" value={form.graduationYear} onChange={update("graduationYear") as (v: string) => void} placeholder="例：2024" type="number" />
-          <Field label="擔任職位" value={form.position} onChange={update("position") as (v: string) => void} placeholder="例：President 2023–2024" />
-          <Field label="部門" value={form.department} onChange={update("department") as (v: string) => void} placeholder="例：Event" />
-          <Field label="LinkedIn URL" value={form.linkedinUrl} onChange={update("linkedinUrl") as (v: string) => void} placeholder="https://linkedin.com/in/..." />
-          <Field label="Instagram URL" value={form.instagramUrl} onChange={update("instagramUrl") as (v: string) => void} placeholder="https://instagram.com/..." />
-          <Field label="大頭貼 URL" value={form.photoUrl} onChange={update("photoUrl") as (v: string) => void} placeholder="https://..." />
-        </div>
-
-        {/* 個人簡介（全寬） */}
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">個人簡介</label>
-          <textarea
-            value={form.bio}
-            onChange={(e) => setForm({ ...form, bio: e.target.value })}
-            placeholder="簡短介紹..."
-            rows={2}
-            className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition resize-none"
-          />
-        </div>
-
-        {/* 公開切換 */}
-        <label className="flex items-center gap-2 cursor-pointer w-fit">
-          <input
-            type="checkbox"
-            checked={form.isPublic}
-            onChange={(e) => setForm({ ...form, isPublic: e.target.checked })}
-            className="rounded"
-          />
-          <span className="text-sm text-gray-600">在公開頁面顯示</span>
-        </label>
-
-        {error && <p className="text-sm text-red-500">{error}</p>}
-
-        <div className="flex gap-2 pt-1">
-          <button
-            onClick={onSubmit}
-            disabled={submitting}
-            className="px-4 py-2 text-sm font-medium text-white rounded-lg transition disabled:opacity-50"
-            style={{ backgroundColor: PRIMARY }}
-          >
-            {submitting ? "處理中..." : submitLabel}
-          </button>
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition"
-          >
-            取消
-          </button>
-        </div>
-      </div>
-    );
   }
 
   // ── 渲染 ─────────────────────────────────────────────────────────────────

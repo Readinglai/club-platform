@@ -110,7 +110,7 @@ export default function Navbar() {
             <button
               onClick={() => setMenuOpen((prev) => !prev)}
               className="p-1 rounded transition-opacity hover:opacity-80"
-              style={{ color: SECONDARY }}
+              style={{ color: SECONDARY, touchAction: "manipulation" }}
               aria-expanded={menuOpen}
               aria-label={menuOpen ? "關閉選單" : "開啟選單"}
             >

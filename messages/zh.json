@@ -22,9 +22,20 @@
     "paragraph2": "我們致力於為在多倫多求學的台灣學生提供一個溫暖的歸屬感，透過各種活動與資源協助成員融入校園生活。",
     "paragraph3": "無論是學術交流、文化推廣還是社交活動，我們都歡迎你的參與。"
   },
+  "home": {
+    "statMembers": "成員",
+    "statEvents": "活動",
+    "statFounded": "成立",
+    "upcomingEventsTitle": "即將到來的活動",
+    "capacityFormat": "名額：{count} 人",
+    "viewAllEvents": "查看所有活動 →",
+    "footerDescription": "ROCSAUT 是多倫多大學的台灣學生社群，致力於連結在多倫多的台灣學生，共同成長、互相支持。"
+  },
   "contact": {
     "title": "聯絡我們",
-    "subtitle": "有任何問題或合作提案，歡迎來信。",
+    "subtitle": "有任何問題或合作提案，歡迎透過以下方式聯絡我們。",
+    "teamContactsTitle": "執委聯絡資訊",
+    "socialTitle": "社群媒體",
     "nameLabel": "姓名",
     "namePlaceholder": "你的姓名",
     "emailLabel": "Email",
@@ -77,6 +88,7 @@
     "exec": "執行委員",
     "teamLead": "Team Lead",
     "general": "一般成員",
+    "viewProfileOf": "查看 {name} 的個人介紹",
     "viewProfile": "查看個人頁",
     "bioTitle": "個人簡介",
     "backToList": "返回成員列表",

@@ -1,3 +1,5 @@
+import { getTranslations, setRequestLocale } from "next-intl/server";
+
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
@@ -8,23 +10,27 @@ const TEAM_CONTACTS = [
   { title: "VP of Operations",  name: "Amy Huang",   email: "amy.huang@mail.utoronto.ca" },
 ];
 
-export default function ContactPage() {
+export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("contact");
+
   return (
     <main className="min-h-screen" style={{ backgroundColor: "#f9f7f4" }}>
       <div className="max-w-3xl mx-auto px-4 py-20 sm:py-28 flex flex-col gap-12">
 
         {/* Header */}
         <div className="flex flex-col items-center gap-3 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-wide" style={{ color: PRIMARY }}>聯絡我們</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-wide" style={{ color: PRIMARY }}>{t("title")}</h1>
           <div className="w-12 h-0.5 rounded-full" style={{ backgroundColor: SECONDARY }} />
           <p className="text-sm text-gray-500 max-w-md">
-            有任何問題或合作提案，歡迎透過以下方式聯絡我們。
+            {t("subtitle")}
           </p>
         </div>
 
         {/* Team contacts */}
         <div className="flex flex-col gap-4">
-          <h2 className="text-sm font-semibold uppercase tracking-widest" style={{ color: `${PRIMARY}88` }}>執委聯絡資訊</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-widest" style={{ color: `${PRIMARY}88` }}>{t("teamContactsTitle")}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {TEAM_CONTACTS.map(({ title, name, email }) => (
               <div
@@ -46,7 +52,7 @@ export default function ContactPage() {
 
         {/* Social links */}
         <div className="flex flex-col gap-4">
-          <h2 className="text-sm font-semibold uppercase tracking-widest" style={{ color: `${PRIMARY}88` }}>社群媒體</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-widest" style={{ color: `${PRIMARY}88` }}>{t("socialTitle")}</h2>
           <div className="flex flex-col sm:flex-row gap-3">
             <a
               href="https://www.instagram.com/rocsaut/"
