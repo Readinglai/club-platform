@@ -145,7 +145,7 @@ async function UpcomingEventsSection() {
   let events: { id: string; title: string; startAt: Date; endAt: Date | null; location: string | null; capacity: number | null }[] = [];
   try {
     events = await db.event.findMany({
-      where: { published: true, startAt: { gt: new Date() } },
+      where: { published: true, startAt: { gte: new Date(new Date().setHours(0,0,0,0)) } },
       orderBy: { startAt: "asc" },
       take: 3,
       select: { id: true, title: true, startAt: true, endAt: true, location: true, capacity: true },

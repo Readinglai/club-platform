@@ -1,31 +1,16 @@
 /**
  * app/[locale]/events/calendar/page.tsx — 活動日曆頁（Async Server Component 外殼）
- *
- * 架構說明（Server wrapper + Client leaf 模式）：
- * - 此頁是 async Server Component：
- *   1. 讀取活動假資料（未來改為 Prisma 查詢）
- *   2. 用 getTranslations 讀取 i18n 訊息
- *   3. 序列化後傳給 EventCalendar Client Component
- *
- * - EventCalendar（Client Component）：
- *   1. 渲染 react-big-calendar（需要瀏覽器 DOM API）
- *   2. 處理用戶點擊事件，用 router.push 導航到詳情頁
- *
- * ⚠️ async Server Component 使用 getTranslations（非 useTranslations hook）
- *
- * TODO: 替換 getAllEvents() 為 Prisma 查詢後，此頁面無需修改
  */
 
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { getAllEvents } from "@/lib/data/events";
+import type { Event } from "@/lib/data/events";
+import { db } from "@/lib/db";
 import EventCalendar from "@/components/EventCalendar";
 
 // 主題色
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
-
-// ─── 頁面主元件 ───────────────────────────────────────────────────────────────
 
 interface CalendarPageProps {
   params: Promise<{ locale: string }>;
@@ -35,19 +20,30 @@ export default async function CalendarPage({ params }: CalendarPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // async Server Component 使用 getTranslations
   const t = await getTranslations("events");
-  const events = getAllEvents();
 
-  /**
-   * calendarMessages — react-big-calendar 工具列的 i18n 文字
-   *
-   * 在 Server Component 中預先組合好，整包傳給 EventCalendar Client Component，
-   * 避免 Client Component 直接呼叫 useTranslations（雖然也可以，但這樣更乾淨）。
-   *
-   * showMore 是函式，用來顯示「還有 N 場」的文字。
-   * Next.js 允許將普通函式作為 prop 傳給 Client Component。
-   */
+  // 從資料庫讀取所有已發布活動（含過去活動，讓日曆可向前翻閱）
+  let events: Event[] = [];
+  try {
+    const rows = await db.event.findMany({
+      where: { published: true },
+      orderBy: { startAt: "asc" },
+      select: { id: true, title: true, startAt: true, endAt: true, location: true, capacity: true },
+    });
+    events = rows.map((e) => ({
+      id: e.id,
+      title: e.title,
+      date: e.startAt,
+      endDate: e.endAt ?? e.startAt,
+      location: e.location ?? "",
+      description: "",
+      registrationDeadline: null,
+      capacity: e.capacity,
+    }));
+  } catch {
+    // DB 無法連線時顯示空日曆
+  }
+
   const calendarMessages = {
     month: t("calMonth"),
     week: t("calWeek"),
@@ -57,15 +53,6 @@ export default async function CalendarPage({ params }: CalendarPageProps) {
     previous: t("calPrevious"),
     next: t("calNext"),
     noEventsInRange: t("calNoEvents"),
-    /**
-     * showMoreTemplate — 含 {count} 佔位符的模板字串
-     *
-     * 函式不能跨 Server→Client Component 邊界傳遞（Next.js 序列化限制），
-     * 所以傳模板字串，讓 EventCalendar Client Component 在內部組合成函式。
-     *
-     * 範例（zh）："另外 {count} 場"
-     * 範例（en）："{count} more"
-     */
     showMoreTemplate: t("calShowMore", { count: "{count}" }),
   };
 
@@ -143,16 +130,6 @@ export default async function CalendarPage({ params }: CalendarPageProps) {
           className="rounded-2xl bg-white p-4 sm:p-6 shadow-sm"
           style={{ border: "1px solid #e5e7eb" }}
         >
-          {/*
-           * EventCalendar 是 Client Component，接收：
-           * - events: Event[]（活動資料，含 Date 物件）
-           * - locale: string（語系）
-           * - messages: 工具列 i18n 文字物件
-           *
-           * Date 物件跨越 Server→Client 邊界時，Next.js 會序列化為 ISO string，
-           * 並在 Client 端反序列化回 Date。react-big-calendar 要求 Date 型別，
-           * EventCalendar 內部用 new Date() 確保型別正確。
-           */}
           <EventCalendar
             events={events}
             locale={locale}
