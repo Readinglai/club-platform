@@ -8,6 +8,7 @@
 
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { db } from "@/lib/db";
+import AlumniPhotoCard from "./AlumniPhotoCard";
 
 export const dynamic = "force-dynamic";
 
@@ -114,31 +115,8 @@ export default async function AlumniPage({ params }: AlumniPageProps) {
                 key={alumni.id}
                 className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200"
               >
-                {/* 大頭貼 */}
-                <div
-                  className="h-40 flex items-center justify-center"
-                  style={{ backgroundColor: `${PRIMARY}18` }}
-                >
-                  {alumni.photoUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={alumni.photoUrl}
-                      alt={alumni.name}
-                      className="w-24 h-24 rounded-full object-cover border-4 border-white shadow"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = "none";
-                      }}
-                    />
-                  ) : (
-                    /* 無大頭貼時顯示姓名首字母 */
-                    <div
-                      className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold border-4 border-white shadow"
-                      style={{ backgroundColor: PRIMARY, color: SECONDARY }}
-                    >
-                      {alumni.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
+                {/* 大頭貼（Client Component，因 onError 為 client-side 事件） */}
+                <AlumniPhotoCard photoUrl={alumni.photoUrl} name={alumni.name} />
 
                 {/* 卡片內容 */}
                 <div className="p-5">
@@ -220,3 +198,4 @@ export default async function AlumniPage({ params }: AlumniPageProps) {
     </div>
   );
 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                

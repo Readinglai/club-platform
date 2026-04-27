@@ -156,8 +156,8 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
       {sponsors.length === 0 ? (
         <div className="text-center py-16 text-gray-400 text-sm">尚無贊助商資料。</div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="border-b" style={{ backgroundColor: `${PRIMARY}08` }}>
                 {["Logo", "名稱", "網站", "最新等級", "操作"].map((h) => (
@@ -194,9 +194,15 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
                       )}
                     </td>
                     <td className="px-4 py-3 font-medium" style={{ color: PRIMARY }}>{s.name}</td>
-                    <td className="px-4 py-3 text-gray-500">
+                    <td className="px-4 py-3 text-gray-500 max-w-[200px]">
                       {s.website ? (
-                        <a href={s.website} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-70">
+                        <a
+                          href={s.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline hover:opacity-70 block truncate"
+                          title={s.website}
+                        >
                           {s.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
                         </a>
                       ) : "—"}
@@ -229,16 +235,3 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
                           style={{ color: "#dc2626", backgroundColor: "#fee2e2" }}
                         >
                           刪除
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-}

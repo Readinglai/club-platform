@@ -79,8 +79,3 @@ export default function AdminSidebar({ userName, userRole }: Props) {
           style={{ color: `${SECONDARY}88`, backgroundColor: `${SECONDARY}11` }}
         >
           登出
-        </button>
-      </div>
-    </aside>
-  );
-}
