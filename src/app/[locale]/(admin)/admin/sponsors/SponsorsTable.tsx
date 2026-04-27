@@ -196,13 +196,7 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
                     <td className="px-4 py-3 font-medium" style={{ color: PRIMARY }}>{s.name}</td>
                     <td className="px-4 py-3 text-gray-500 max-w-[200px]">
                       {s.website ? (
-                        <a
-                          href={s.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline hover:opacity-70 block truncate"
-                          title={s.website}
-                        >
+                        <a href={s.website} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-70 block truncate" title={s.website}>
                           {s.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
                         </a>
                       ) : "—"}
@@ -235,3 +229,16 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
                           style={{ color: "#dc2626", backgroundColor: "#fee2e2" }}
                         >
                           刪除
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -90,4 +90,13 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
           <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: `${PRIMARY}88` }}>Report a bug</p>
           <a
             href="mailto:foster.teng@mail.utoronto.ca"
-         
+            className="text-sm hover:underline"
+            style={{ color: PRIMARY }}
+          >
+            foster.teng@mail.utoronto.ca
+          </a>
+        </div>
+      </div>
+    </main>
+  );
+}

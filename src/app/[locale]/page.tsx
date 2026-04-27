@@ -336,4 +336,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   setRequestLocale(locale);
   return (
-  
+    <>
+      <HeroSection />
+      <AboutSection />
+      <UpcomingEventsSection />
+      <SponsorsSection />
+      <Footer />
+    </>
+  );
+}
