@@ -248,4 +248,17 @@ function SectionTitle({ label, count, color, accent }: SectionTitleProps) {
         {label}
       </h2>
       {/* 人數 badge */}
-      <s
+      <span
+        className="text-xs font-semibold px-2 py-0.5 rounded-full"
+        style={{ backgroundColor: `${accent}33`, color }}
+      >
+        {count}
+      </span>
+      {/* 底線裝飾 */}
+      <div
+        className="flex-1 h-px"
+        style={{ backgroundColor: `${color}22` }}
+      />
+    </div>
+  );
+}
