@@ -315,7 +315,7 @@ async function SponsorsSection() {
   let sponsors: SponsorItem[] = [];
   try {
     const res = await fetch(`${getBaseUrl()}/api/sponsors`, {
-      next: { revalidate: 3600 },
+      cache: "no-store",
     });
     if (res.ok) {
       const all = (await res.json()) as SponsorItem[];
