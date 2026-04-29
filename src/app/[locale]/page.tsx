@@ -433,7 +433,7 @@ function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t px-6 py-4 text-center text-xs" style={{ borderColor: `${SECONDARY}22`, color: `${SECONDARY}55` }}>
-          © 2025 ROCSAUT · Developed by Foster Teng
+          © 2025 ROCSAUT
         </div>
       </footer>
     </FadeIn>
