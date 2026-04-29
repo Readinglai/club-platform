@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import ExportButton from "./ExportButton";
 
 export const dynamic = "force-dynamic";
@@ -17,8 +18,8 @@ function rateStyle(rate: number) {
 export default async function AdminReportsPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
+  const t = await getTranslations("admin.reports");
 
-  // ── 出席率資料 ──────────────────────────────────────────
   const events = await db.event.findMany({
     orderBy: { startAt: "desc" },
     select: {
@@ -30,7 +31,6 @@ export default async function AdminReportsPage() {
   });
 
   const attendanceData = events.map((e) => {
-    // Denominator: REGISTERED only (CANCELLED excluded).
     const registered = e.registrations.filter((r) => r.status === "REGISTERED");
     const total = registered.length;
     const attended = registered.filter((r) => r.attendedAt !== null).length;
@@ -44,7 +44,6 @@ export default async function AdminReportsPage() {
     };
   });
 
-  // ── 成員成長資料（最近 12 個月）────────────────────────
   const since = new Date();
   since.setMonth(since.getMonth() - 11);
   since.setDate(1);
@@ -71,23 +70,22 @@ export default async function AdminReportsPage() {
 
   return (
     <div className="flex flex-col gap-10">
-      <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>數據報表</h1>
+      <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>{t("title")}</h1>
 
-      {/* ── 區塊一：活動出席率 ── */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>活動出席率</h2>
-          <ExportButton type="attendance" label="匯出 CSV" />
+          <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>{t("attendanceTitle")}</h2>
+          <ExportButton type="attendance" label={t("attendanceExport")} />
         </div>
 
         {attendanceData.length === 0 ? (
-          <p className="text-sm text-gray-400">尚無活動資料。</p>
+          <p className="text-sm text-gray-400">{t("attendanceEmpty")}</p>
         ) : (
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b" style={{ backgroundColor: `${PRIMARY}08` }}>
-                  {["活動名稱", "日期", "報名人數", "出席人數", "出席率"].map((h) => (
+                  {[t("attendanceTableEvent"), t("attendanceTableDate"), t("attendanceTableTotal"), t("attendanceTableAttended"), t("attendanceTableRate")].map((h) => (
                     <th
                       key={h}
                       className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide"
@@ -124,11 +122,10 @@ export default async function AdminReportsPage() {
         )}
       </section>
 
-      {/* ── 區塊二：成員成長 ── */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>成員成長（近 12 個月）</h2>
-          <ExportButton type="members" label="匯出 CSV" />
+          <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>{t("memberGrowthTitle")}</h2>
+          <ExportButton type="members" label={t("memberGrowthExport")} />
         </div>
 
         <div className="bg-white rounded-xl shadow-sm p-6">
@@ -157,7 +154,7 @@ export default async function AdminReportsPage() {
           </div>
 
           {memberData.every((d) => d.count === 0) && (
-            <p className="text-xs text-gray-400 text-center mt-4">近 12 個月無新增成員</p>
+            <p className="text-xs text-gray-400 text-center mt-4">{t("memberGrowthEmpty")}</p>
           )}
         </div>
       </section>

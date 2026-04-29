@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import TaskKanban from "./TaskKanban";
 import DiscussionPanel from "./DiscussionPanel";
 import VotePanel from "./VotePanel";
@@ -9,12 +10,6 @@ const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
 type Tab = "kanban" | "discussion" | "vote";
-
-const TABS: { key: Tab; label: string }[] = [
-  { key: "kanban", label: "看板" },
-  { key: "discussion", label: "討論區" },
-  { key: "vote", label: "投票" },
-];
 
 interface TaskMember {
   id: string;
@@ -51,7 +46,14 @@ export default function TaskGroupTabs({
   userId,
   canCreateVote,
 }: Props) {
+  const t = useTranslations("admin.taskGroups");
   const [activeTab, setActiveTab] = useState<Tab>("kanban");
+
+  const TABS: { key: Tab; label: string }[] = [
+    { key: "kanban", label: t("tabKanban") },
+    { key: "discussion", label: t("tabDiscussion") },
+    { key: "vote", label: t("tabVote") },
+  ];
 
   return (
     <div>

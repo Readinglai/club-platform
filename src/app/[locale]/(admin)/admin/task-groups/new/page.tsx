@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -11,6 +12,8 @@ export default function NewTaskGroupPage() {
   const router = useRouter();
   const params = useParams();
   const locale = (params.locale as string) ?? "zh";
+  const t = useTranslations("admin.taskGroups");
+  const tc = useTranslations("admin.common");
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -33,14 +36,14 @@ export default function NewTaskGroupPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error ?? "建立失敗");
+        setError(data.error ?? tc("createFailed"));
         return;
       }
 
       const taskGroup = await res.json();
       router.push(`/${locale}/admin/task-groups/${taskGroup.id}`);
     } catch {
-      setError("網路錯誤，請稍後再試");
+      setError(tc("networkErrorRetry"));
     } finally {
       setLoading(false);
     }
@@ -54,12 +57,12 @@ export default function NewTaskGroupPage() {
           className="text-xs hover:opacity-70"
           style={{ color: SECONDARY }}
         >
-          ← 任務小組列表
+          {t("backToList")}
         </Link>
       </div>
 
       <h1 className="text-2xl font-bold mb-8" style={{ color: PRIMARY }}>
-        建立任務小組
+        {t("newTitle")}
       </h1>
 
       <form
@@ -73,14 +76,14 @@ export default function NewTaskGroupPage() {
             className="block text-xs font-semibold mb-1.5"
             style={{ color: PRIMARY }}
           >
-            小組名稱 <span className="text-red-400">*</span>
+            {t("fieldName")}
           </label>
           <input
             id="name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="例：2025 年會籌備小組"
+            placeholder={t("namePlaceholder")}
             required
             className="w-full rounded-xl border px-4 py-2.5 text-sm outline-none focus:ring-2"
             style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
@@ -93,13 +96,13 @@ export default function NewTaskGroupPage() {
             className="block text-xs font-semibold mb-1.5"
             style={{ color: PRIMARY }}
           >
-            描述（選填）
+            {t("fieldDescription")}
           </label>
           <textarea
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="簡短說明此小組的任務與目標"
+            placeholder={t("descPlaceholder")}
             rows={3}
             className="w-full rounded-xl border px-4 py-2.5 text-sm outline-none focus:ring-2 resize-none"
             style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
@@ -114,7 +117,7 @@ export default function NewTaskGroupPage() {
           className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ backgroundColor: PRIMARY, color: SECONDARY }}
         >
-          {loading ? "建立中…" : "建立小組"}
+          {loading ? t("creating") : t("createGroupButton")}
         </button>
       </form>
     </div>

@@ -384,7 +384,7 @@ const DEFAULT_SECTIONS: SectionConfig[] = [
 async function getSectionsConfig(): Promise<SectionConfig[]> {
   try {
     const res = await fetch(`${getBaseUrl()}/api/admin/site-config?key=sections`, {
-      next: { revalidate: 300 },
+      cache: "no-store",
     });
     if (res.ok) {
       const { value } = await res.json();

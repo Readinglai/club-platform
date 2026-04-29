@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -35,10 +36,11 @@ interface Props {
   locale: string;
 }
 
-export default function SponsorEditForm({ sponsor, locale }: Props) {
+export default function SponsorEditForm({ sponsor, locale: _locale }: Props) {
+  const t = useTranslations("admin.sponsors");
+  const tc = useTranslations("admin.common");
   const router = useRouter();
 
-  // Basic info state
   const [name, setName] = useState(sponsor.name);
   const [logoUrl, setLogoUrl] = useState(sponsor.logoUrl ?? "");
   const [website, setWebsite] = useState(sponsor.website ?? "");
@@ -47,11 +49,9 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  // History state
   const [histories, setHistories] = useState<HistoryRow[]>(sponsor.histories);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // New history row state
   const [showAddHistory, setShowAddHistory] = useState(false);
   const [newYear, setNewYear] = useState(String(new Date().getFullYear()));
   const [newTier, setNewTier] = useState("gold");
@@ -59,7 +59,7 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
   const [addHistoryError, setAddHistoryError] = useState<string | null>(null);
 
   async function saveBasicInfo() {
-    if (!name.trim()) { setSaveError("名稱不能為空"); return; }
+    if (!name.trim()) { setSaveError(t("nameRequired")); return; }
     setSaving(true);
     setSaveError(null);
     setSaveSuccess(false);
@@ -79,10 +79,10 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
         router.refresh();
       } else {
         const d = await res.json();
-        setSaveError(d.error ?? "儲存失敗");
+        setSaveError(d.error ?? tc("saveFailed"));
       }
     } catch {
-      setSaveError("網路錯誤，請稍後再試");
+      setSaveError(tc("networkErrorRetry"));
     } finally {
       setSaving(false);
     }
@@ -91,7 +91,7 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
   async function addHistory() {
     const yearNum = parseInt(newYear, 10);
     if (isNaN(yearNum) || yearNum < 2000 || yearNum > 2100) {
-      setAddHistoryError("年份必須介於 2000–2100");
+      setAddHistoryError(t("historyYearInvalid"));
       return;
     }
     setAddingHistory(true);
@@ -114,17 +114,17 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
         setNewTier("gold");
       } else {
         const d = await res.json();
-        setAddHistoryError(d.error ?? "新增失敗");
+        setAddHistoryError(d.error ?? tc("createFailed"));
       }
     } catch {
-      setAddHistoryError("網路錯誤，請稍後再試");
+      setAddHistoryError(tc("networkErrorRetry"));
     } finally {
       setAddingHistory(false);
     }
   }
 
   async function deleteHistory(historyId: string) {
-    if (!confirm("確定要刪除這筆歷史記錄？此操作無法復原。")) return;
+    if (!confirm(t("historyConfirmDelete"))) return;
     setDeletingId(historyId);
     try {
       const res = await fetch(`/api/sponsors/${sponsor.id}/history/${historyId}`, {
@@ -134,10 +134,10 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
         setHistories((prev) => prev.filter((h) => h.id !== historyId));
       } else {
         const d = await res.json();
-        alert(d.error ?? "刪除失敗");
+        alert(d.error ?? tc("deleteFailed"));
       }
     } catch {
-      alert("網路錯誤，請稍後再試");
+      alert(tc("networkErrorRetry"));
     } finally {
       setDeletingId(null);
     }
@@ -145,10 +145,9 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* 基本資料 */}
       <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-5">
         <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: PRIMARY }}>
-          基本資料
+          {t("editBasicInfo")}
         </h2>
 
         {saveError && (
@@ -158,13 +157,13 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
         )}
         {saveSuccess && (
           <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">
-            已儲存
+            {tc("saved")}
           </p>
         )}
 
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 uppercase tracking-wide">名稱 *</label>
+            <label className="text-xs text-gray-500 uppercase tracking-wide">{t("fieldName")}</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -174,7 +173,7 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 uppercase tracking-wide">網站</label>
+            <label className="text-xs text-gray-500 uppercase tracking-wide">{t("fieldWebsite")}</label>
             <input
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
@@ -187,7 +186,7 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-gray-500 uppercase tracking-wide">Logo URL</label>
+          <label className="text-xs text-gray-500 uppercase tracking-wide">{t("fieldLogo")}</label>
           <div className="flex items-center gap-3">
             <input
               value={logoUrl}
@@ -210,14 +209,13 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-gray-500 uppercase tracking-wide">簡介</label>
+          <label className="text-xs text-gray-500 uppercase tracking-wide">{t("fieldDescription")}</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
             className="border rounded-lg px-3 py-2 text-sm focus:outline-none resize-none"
             style={{ borderColor: "#e5e7eb", color: PRIMARY }}
-            placeholder="贊助商簡介（選填）"
           />
         </div>
 
@@ -228,27 +226,25 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
             className="px-5 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
             style={{ backgroundColor: PRIMARY, color: SECONDARY }}
           >
-            {saving ? "儲存中…" : "儲存"}
+            {saving ? tc("saving") : tc("save")}
           </button>
         </div>
       </div>
 
-      {/* 歷史記錄 */}
       <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: PRIMARY }}>
-            贊助歷史
+            {t("historyTitle")}
           </h2>
           <button
             onClick={() => setShowAddHistory((v) => !v)}
             className="text-xs px-3 py-1.5 rounded-lg font-semibold transition-all hover:opacity-80"
             style={{ backgroundColor: PRIMARY, color: SECONDARY }}
           >
-            {showAddHistory ? "取消" : "+ 新增年份"}
+            {showAddHistory ? tc("cancel") : t("addYear")}
           </button>
         </div>
 
-        {/* 新增歷史表單 */}
         {showAddHistory && (
           <div className="rounded-lg p-4 flex flex-col gap-3" style={{ backgroundColor: `${PRIMARY}06` }}>
             {addHistoryError && (
@@ -258,7 +254,7 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
             )}
             <div className="flex items-end gap-3">
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-gray-500 uppercase tracking-wide">年份</label>
+                <label className="text-xs text-gray-500 uppercase tracking-wide">{t("historyFieldYear")}</label>
                 <input
                   value={newYear}
                   onChange={(e) => setNewYear(e.target.value)}
@@ -271,15 +267,15 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-gray-500 uppercase tracking-wide">等級</label>
+                <label className="text-xs text-gray-500 uppercase tracking-wide">{t("historyFieldTier")}</label>
                 <select
                   value={newTier}
                   onChange={(e) => setNewTier(e.target.value)}
                   className="border rounded-lg px-3 py-2 text-sm focus:outline-none"
                   style={{ borderColor: "#e5e7eb", color: PRIMARY }}
                 >
-                  {TIERS.map((t) => (
-                    <option key={t} value={t}>{t}</option>
+                  {TIERS.map((tier) => (
+                    <option key={tier} value={tier}>{tier}</option>
                   ))}
                 </select>
               </div>
@@ -289,21 +285,20 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
                 className="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
                 style={{ backgroundColor: PRIMARY, color: SECONDARY }}
               >
-                {addingHistory ? "新增中…" : "新增"}
+                {addingHistory ? t("historyAdding") : tc("add")}
               </button>
             </div>
           </div>
         )}
 
-        {/* 歷史列表 */}
         {histories.length === 0 ? (
-          <div className="text-center py-8 text-gray-400 text-sm">尚無贊助歷史記錄。</div>
+          <div className="text-center py-8 text-gray-400 text-sm">{t("historyEmpty")}</div>
         ) : (
           <div className="overflow-hidden rounded-lg border" style={{ borderColor: "#e5e7eb" }}>
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b" style={{ backgroundColor: `${PRIMARY}08` }}>
-                  {["年份", "贊助等級", "操作"].map((h) => (
+                  {[t("historyTableYear"), t("historyTableTier"), t("historyTableActions")].map((h) => (
                     <th
                       key={h}
                       className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide"
@@ -341,7 +336,7 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
                           className="text-xs px-2.5 py-1 rounded font-medium transition-all hover:opacity-70 disabled:opacity-40"
                           style={{ color: "#dc2626", backgroundColor: "#fee2e2" }}
                         >
-                          {deletingId === h.id ? "刪除中…" : "刪除"}
+                          {deletingId === h.id ? tc("deleting") : tc("delete")}
                         </button>
                       </td>
                     </tr>

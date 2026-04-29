@@ -1,11 +1,6 @@
-/**
- * admin/page.tsx — Admin 後台首頁
- *
- * 顯示歡迎訊息與快速統計：總成員數、本月活動數、未發布公告數。
- */
-
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getTranslations } from "next-intl/server";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -14,6 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   const session = await auth();
+  const t = await getTranslations("admin.dashboard");
 
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -29,16 +25,16 @@ export default async function AdminPage() {
     ]);
 
   const stats = [
-    { label: "總成員數", value: memberCount, unit: "人" },
-    { label: "本月活動數", value: monthlyEventCount, unit: "場" },
-    { label: "未發布公告", value: unpublishedAnnouncementCount, unit: "則" },
+    { label: t("statMembers"), value: memberCount, unit: t("statMembersUnit") },
+    { label: t("statEvents"), value: monthlyEventCount, unit: t("statEventsUnit") },
+    { label: t("statAnnouncements"), value: unpublishedAnnouncementCount, unit: t("statAnnouncementsUnit") },
   ];
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold mb-1" style={{ color: PRIMARY }}>
-          歡迎回來，{session?.user?.name ?? "管理員"}
+          {t("welcomeBack")}，{session?.user?.name ?? t("defaultAdmin")}
         </h1>
         <p className="text-sm text-gray-500">
           {now.toLocaleDateString("zh-TW", {
@@ -74,13 +70,13 @@ export default async function AdminPage() {
         style={{ borderColor: `${SECONDARY}44` }}
       >
         <h2 className="text-sm font-semibold mb-3" style={{ color: PRIMARY }}>
-          快速入口
+          {t("quickLinks")}
         </h2>
         <div className="flex flex-wrap gap-3">
           {[
-            { href: "/admin/members", label: "管理成員" },
-            { href: "/admin/events", label: "管理活動" },
-            { href: "/admin/announcements", label: "管理公告" },
+            { href: "/admin/members", label: t("manageMembers") },
+            { href: "/admin/events", label: t("manageEvents") },
+            { href: "/admin/announcements", label: t("manageAnnouncements") },
           ].map((item) => (
             <a
               key={item.href}

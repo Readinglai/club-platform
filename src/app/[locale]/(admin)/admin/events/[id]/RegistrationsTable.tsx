@@ -1,14 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
-
-const STATUS_LABEL: Record<string, string> = {
-  REGISTERED: "已報名",
-  CANCELLED: "已取消",
-};
 
 interface RegRow {
   id: string;
@@ -24,6 +20,7 @@ interface Props {
 }
 
 export default function RegistrationsTable({ eventId, registrations }: Props) {
+  const t = useTranslations("admin.events");
   const [rows, setRows] = useState<RegRow[]>(registrations);
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
@@ -50,7 +47,7 @@ export default function RegistrationsTable({ eventId, registrations }: Props) {
   }
 
   if (rows.length === 0) {
-    return <p className="text-sm text-gray-400">尚無報名記錄。</p>;
+    return <p className="text-sm text-gray-400">{t("regEmpty")}</p>;
   }
 
   return (
@@ -58,7 +55,13 @@ export default function RegistrationsTable({ eventId, registrations }: Props) {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b" style={{ backgroundColor: `${PRIMARY}08` }}>
-            {["姓名", "Email", "報名時間", "報名狀態", "出席打卡"].map((h) => (
+            {[
+              t("regTableName"),
+              t("regTableEmail"),
+              t("regTableCreatedAt"),
+              t("regTableStatus"),
+              t("regTableAttend"),
+            ].map((h) => (
               <th
                 key={h}
                 className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide"
@@ -72,6 +75,7 @@ export default function RegistrationsTable({ eventId, registrations }: Props) {
         <tbody>
           {rows.map((reg) => {
             const attended = reg.attendedAt !== null;
+            const statusLabel = reg.status === "REGISTERED" ? t("regStatusRegistered") : t("regStatusCancelled");
             return (
               <tr key={reg.id} className="border-b last:border-0 hover:bg-gray-50">
                 <td className="px-4 py-3 font-medium" style={{ color: PRIMARY }}>
@@ -79,7 +83,7 @@ export default function RegistrationsTable({ eventId, registrations }: Props) {
                 </td>
                 <td className="px-4 py-3 text-gray-500">{reg.user.email}</td>
                 <td className="px-4 py-3 text-gray-500">
-                  {new Date(reg.createdAt).toLocaleDateString("zh-TW")}
+                  {new Date(reg.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-3">
                   <span
@@ -90,7 +94,7 @@ export default function RegistrationsTable({ eventId, registrations }: Props) {
                         : { backgroundColor: "#f3f4f6", color: "#6b7280" }
                     }
                   >
-                    {STATUS_LABEL[reg.status] ?? reg.status}
+                    {statusLabel}
                   </span>
                 </td>
                 <td className="px-4 py-3">
@@ -104,11 +108,11 @@ export default function RegistrationsTable({ eventId, registrations }: Props) {
                         : { borderColor: `${SECONDARY}66`, color: PRIMARY, backgroundColor: "white" }
                     }
                   >
-                    {loadingId === reg.id ? "…" : attended ? "已出席" : "標記出席"}
+                    {loadingId === reg.id ? "…" : attended ? t("regAttended") : t("regMarkAttend")}
                   </button>
                   {attended && reg.attendedAt && (
                     <span className="ml-2 text-xs text-gray-400">
-                      {new Date(reg.attendedAt).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}
+                      {new Date(reg.attendedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </span>
                   )}
                 </td>

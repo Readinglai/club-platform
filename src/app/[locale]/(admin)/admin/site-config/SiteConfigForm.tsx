@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
 export default function SiteConfigForm({ heroImageUrl }: { heroImageUrl: string }) {
+  const t = useTranslations("admin.siteConfig");
+  const tc = useTranslations("admin.common");
   const [url, setUrl] = useState(heroImageUrl);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,10 +28,10 @@ export default function SiteConfigForm({ heroImageUrl }: { heroImageUrl: string 
         setSuccess(true);
       } else {
         const d = await res.json();
-        setError(d.error ?? "儲存失敗");
+        setError(d.error ?? t("saveFailed"));
       }
     } catch {
-      setError("網路錯誤，請稍後再試");
+      setError(t("networkError"));
     } finally {
       setSaving(false);
     }
@@ -37,18 +40,18 @@ export default function SiteConfigForm({ heroImageUrl }: { heroImageUrl: string 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-5">
       <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: PRIMARY }}>
-        Hero 背景圖
+        {t("heroTitle")}
       </h2>
 
       {error && (
         <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">{error}</p>
       )}
       {success && (
-        <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">已儲存</p>
+        <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">{t("saved")}</p>
       )}
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs text-gray-500 uppercase tracking-wide">圖片 URL</label>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">{t("heroImageLabel")}</label>
         <div className="flex items-center gap-3">
           <input
             value={url}
@@ -67,9 +70,7 @@ export default function SiteConfigForm({ heroImageUrl }: { heroImageUrl: string 
             />
           )}
         </div>
-        <p className="text-xs text-gray-400 mt-1">
-          建議尺寸：1920×1080 以上。留空則使用預設深藍色背景。
-        </p>
+        <p className="text-xs text-gray-400 mt-1">{t("heroImageHint")}</p>
       </div>
 
       <div className="flex justify-end">
@@ -79,7 +80,7 @@ export default function SiteConfigForm({ heroImageUrl }: { heroImageUrl: string 
           className="px-5 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
           style={{ backgroundColor: PRIMARY, color: SECONDARY }}
         >
-          {saving ? "儲存中…" : "儲存"}
+          {saving ? tc("saving") : tc("save")}
         </button>
       </div>
     </div>

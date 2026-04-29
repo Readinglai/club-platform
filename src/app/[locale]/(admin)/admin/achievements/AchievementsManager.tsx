@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 const PRIMARY = "#1a2744";
@@ -22,26 +23,26 @@ interface Props {
 const currentYear = new Date().getFullYear();
 
 export default function AchievementsManager({ achievements: initial, locale }: Props) {
+  const t = useTranslations("admin.achievements");
+  const tc = useTranslations("admin.common");
   const router = useRouter();
   const [achievements, setAchievements] = useState(initial);
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  // Create form state
   const [showNew, setShowNew] = useState(false);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [form, setForm] = useState({ title: "", year: String(currentYear), description: "", imageUrl: "" });
 
-  // Year filter
   const allYears = [...new Set(achievements.map((a) => a.year))].sort((a, b) => b - a);
   const [filterYear, setFilterYear] = useState<number | null>(null);
   const filtered = filterYear ? achievements.filter((a) => a.year === filterYear) : achievements;
 
   async function createAchievement() {
-    if (!form.title.trim()) { setCreateError("標題不能為空"); return; }
+    if (!form.title.trim()) { setCreateError(t("titleRequired")); return; }
     const year = parseInt(form.year, 10);
-    if (!year || year < 2000 || year > 2100) { setCreateError("請輸入有效的年份"); return; }
-    if (!form.description.trim()) { setCreateError("描述不能為空"); return; }
+    if (!year || year < 2000 || year > 2100) { setCreateError(t("yearInvalid")); return; }
+    if (!form.description.trim()) { setCreateError(t("descRequired")); return; }
     setCreating(true);
     setCreateError(null);
     try {
@@ -61,27 +62,27 @@ export default function AchievementsManager({ achievements: initial, locale }: P
         router.refresh();
       } else {
         const data = await res.json();
-        setCreateError(data.error ?? "建立失敗");
+        setCreateError(data.error ?? tc("createFailed"));
       }
     } catch {
-      setCreateError("網路錯誤");
+      setCreateError(tc("networkError"));
     } finally {
       setCreating(false);
     }
   }
 
   async function deleteAchievement(id: string) {
-    if (!confirm("確定要刪除此成果記錄？")) return;
+    if (!confirm(t("confirmDelete"))) return;
     setDeleting(id);
     try {
       const res = await fetch(`/api/admin/achievements/${id}`, { method: "DELETE" });
       if (res.ok) {
         setAchievements((prev) => prev.filter((a) => a.id !== id));
       } else {
-        alert("刪除失敗");
+        alert(tc("deleteFailed"));
       }
     } catch {
-      alert("網路錯誤");
+      alert(tc("networkError"));
     } finally {
       setDeleting(null);
     }
@@ -89,11 +90,9 @@ export default function AchievementsManager({ achievements: initial, locale }: P
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3">
-        {/* Year filter */}
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">篩選年份：</span>
+          <span className="text-sm text-gray-500">{t("filterYear")}</span>
           <button
             onClick={() => setFilterYear(null)}
             className="px-3 py-1 rounded-full text-xs font-medium border transition-all"
@@ -103,7 +102,7 @@ export default function AchievementsManager({ achievements: initial, locale }: P
                 : { backgroundColor: "white", color: PRIMARY, borderColor: "#d1d5db" }
             }
           >
-            全部
+            {t("filterAll")}
           </button>
           {allYears.map((y) => (
             <button
@@ -128,28 +127,26 @@ export default function AchievementsManager({ achievements: initial, locale }: P
           className="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-80"
           style={{ backgroundColor: PRIMARY, color: SECONDARY }}
         >
-          + 新增成果
+          {t("createButton")}
         </button>
       </div>
 
-      {/* Create form */}
       {showNew && (
         <div className="rounded-xl border bg-white p-5 shadow-sm flex flex-col gap-4" style={{ borderColor: "#e5e7eb" }}>
-          <h3 className="text-sm font-semibold" style={{ color: PRIMARY }}>新增過往成果</h3>
+          <h3 className="text-sm font-semibold" style={{ color: PRIMARY }}>{t("createFormTitle")}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-500">標題 *</label>
+              <label className="text-xs text-gray-500">{t("fieldTitle")}</label>
               <input
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                placeholder="例：台灣文化節 2024"
                 autoComplete="off"
                 className="border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2"
                 style={{ borderColor: "#d1d5db" }}
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-500">年份 *</label>
+              <label className="text-xs text-gray-500">{t("fieldYear")}</label>
               <input
                 type="number"
                 value={form.year}
@@ -161,7 +158,7 @@ export default function AchievementsManager({ achievements: initial, locale }: P
               />
             </div>
             <div className="flex flex-col gap-1 sm:col-span-2">
-              <label className="text-xs text-gray-500">圖片 URL</label>
+              <label className="text-xs text-gray-500">{t("fieldImageUrl")}</label>
               <input
                 value={form.imageUrl}
                 onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
@@ -172,12 +169,11 @@ export default function AchievementsManager({ achievements: initial, locale }: P
               />
             </div>
             <div className="flex flex-col gap-1 sm:col-span-2">
-              <label className="text-xs text-gray-500">描述 *</label>
+              <label className="text-xs text-gray-500">{t("fieldDescription")}</label>
               <textarea
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 rows={4}
-                placeholder="詳細描述..."
                 className="border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 resize-y"
                 style={{ borderColor: "#d1d5db" }}
               />
@@ -191,33 +187,32 @@ export default function AchievementsManager({ achievements: initial, locale }: P
               className="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
               style={{ backgroundColor: PRIMARY, color: SECONDARY }}
             >
-              {creating ? "建立中…" : "建立"}
+              {creating ? tc("creating") : tc("create")}
             </button>
             <button
               onClick={() => setShowNew(false)}
               className="px-4 py-2 rounded-lg text-sm font-medium border transition-all hover:opacity-80"
               style={{ borderColor: "#d1d5db", color: "#374151" }}
             >
-              取消
+              {tc("cancel")}
             </button>
           </div>
         </div>
       )}
 
-      {/* Table */}
       {filtered.length === 0 ? (
         <div className="text-center py-16 text-sm text-gray-400 rounded-xl bg-white border" style={{ borderColor: "#e5e7eb" }}>
-          {filterYear ? `${filterYear} 年暫無成果記錄` : "尚未建立任何成果記錄"}
+          {filterYear ? t("emptyYear", { year: filterYear }) : t("emptyAll")}
         </div>
       ) : (
         <div className="rounded-xl border bg-white overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left" style={{ borderColor: "#f3f4f6", backgroundColor: "#fafafa" }}>
-                <th className="px-5 py-3 text-xs font-semibold text-gray-500">年份</th>
-                <th className="px-5 py-3 text-xs font-semibold text-gray-500">標題</th>
-                <th className="px-5 py-3 text-xs font-semibold text-gray-500 hidden sm:table-cell">圖片</th>
-                <th className="px-5 py-3 text-xs font-semibold text-gray-500 text-right">操作</th>
+                <th className="px-5 py-3 text-xs font-semibold text-gray-500">{t("tableYear")}</th>
+                <th className="px-5 py-3 text-xs font-semibold text-gray-500">{t("tableTitle")}</th>
+                <th className="px-5 py-3 text-xs font-semibold text-gray-500 hidden sm:table-cell">{t("tableImage")}</th>
+                <th className="px-5 py-3 text-xs font-semibold text-gray-500 text-right">{t("tableActions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -247,7 +242,7 @@ export default function AchievementsManager({ achievements: initial, locale }: P
                         className="px-3 py-1 rounded text-xs font-medium border transition-all hover:opacity-80"
                         style={{ borderColor: PRIMARY, color: PRIMARY }}
                       >
-                        編輯
+                        {tc("edit")}
                       </Link>
                       <button
                         onClick={() => deleteAchievement(a.id)}
@@ -255,7 +250,7 @@ export default function AchievementsManager({ achievements: initial, locale }: P
                         className="px-3 py-1 rounded text-xs font-medium border transition-all hover:opacity-80 disabled:opacity-50"
                         style={{ borderColor: "#ef4444", color: "#ef4444" }}
                       >
-                        {deleting === a.id ? "刪除中…" : "刪除"}
+                        {deleting === a.id ? t("deleting") : tc("delete")}
                       </button>
                     </div>
                   </td>

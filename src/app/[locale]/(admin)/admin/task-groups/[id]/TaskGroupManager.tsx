@@ -1,15 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
-
-const STATUS_LABEL: Record<string, string> = {
-  ACTIVE: "進行中",
-  COMPLETED: "已完成",
-  ARCHIVED: "已封存",
-};
 
 const STATUS_COLOR: Record<string, string> = {
   ACTIVE: "#16a34a",
@@ -36,6 +31,7 @@ export default function TaskGroupManager({
   initialMembers,
   isCreator,
 }: Props) {
+  const t = useTranslations("admin.taskGroups");
   const [status, setStatus] = useState(initialStatus);
   const [members, setMembers] = useState<Member[]>(initialMembers);
   const [statusLoading, setStatusLoading] = useState(false);
@@ -45,6 +41,12 @@ export default function TaskGroupManager({
   const [addRole, setAddRole] = useState<"LEADER" | "MEMBER">("MEMBER");
   const [addLoading, setAddLoading] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
+
+  const STATUS_LABEL: Record<string, string> = {
+    ACTIVE: t("statusActive"),
+    COMPLETED: t("statusCompleted"),
+    ARCHIVED: t("statusArchived"),
+  };
 
   async function handleStatusChange(newStatus: string) {
     if (newStatus === status) return;
@@ -58,12 +60,12 @@ export default function TaskGroupManager({
       });
       if (!res.ok) {
         const data = await res.json();
-        setStatusError(data.error ?? "操作失敗");
+        setStatusError(data.error ?? t("operationFailed"));
       } else {
         setStatus(newStatus);
       }
     } catch {
-      setStatusError("網路錯誤");
+      setStatusError(t("networkError"));
     } finally {
       setStatusLoading(false);
     }
@@ -82,14 +84,14 @@ export default function TaskGroupManager({
       });
       const data = await res.json();
       if (!res.ok) {
-        setAddError(data.error ?? "新增失敗");
+        setAddError(data.error ?? t("operationFailed"));
       } else {
         setMembers((prev) => [...prev, data as Member]);
         setAddUserId("");
         setAddRole("MEMBER");
       }
     } catch {
-      setAddError("網路錯誤");
+      setAddError(t("networkError"));
     } finally {
       setAddLoading(false);
     }
@@ -136,7 +138,7 @@ export default function TaskGroupManager({
         style={{ borderColor: `${SECONDARY}44`, backgroundColor: "white" }}
       >
         <h2 className="text-sm font-bold mb-3" style={{ color: PRIMARY }}>
-          小組狀態
+          {t("sectionStatus")}
         </h2>
         <div className="flex items-center gap-3">
           <span
@@ -156,9 +158,9 @@ export default function TaskGroupManager({
               className="text-xs rounded-lg border px-2 py-1.5 disabled:opacity-50"
               style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
             >
-              <option value="ACTIVE">進行中</option>
-              <option value="COMPLETED">已完成</option>
-              <option value="ARCHIVED">已封存</option>
+              <option value="ACTIVE">{t("statusActive")}</option>
+              <option value="COMPLETED">{t("statusCompleted")}</option>
+              <option value="ARCHIVED">{t("statusArchived")}</option>
             </select>
           )}
         </div>
@@ -170,7 +172,7 @@ export default function TaskGroupManager({
         style={{ borderColor: `${SECONDARY}44`, backgroundColor: "white" }}
       >
         <h2 className="text-sm font-bold mb-3" style={{ color: PRIMARY }}>
-          成員（{members.length} 人）
+          {t("sectionMembers", { count: members.length })}
         </h2>
 
         <div className="flex flex-col gap-2 mb-4">
@@ -194,14 +196,14 @@ export default function TaskGroupManager({
                     className="text-xs rounded-lg border px-2 py-1"
                     style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
                   >
-                    <option value="LEADER">組長</option>
-                    <option value="MEMBER">組員</option>
+                    <option value="LEADER">{t("leaderRole")}</option>
+                    <option value="MEMBER">{t("memberRole")}</option>
                   </select>
                   <button
                     onClick={() => handleRemoveMember(m.user.id)}
                     className="text-xs text-red-400 hover:text-red-600 transition-colors px-1"
                   >
-                    移除
+                    {t("remove")}
                   </button>
                 </div>
               ) : (
@@ -209,7 +211,7 @@ export default function TaskGroupManager({
                   className="text-xs px-2 py-0.5 rounded-full"
                   style={{ backgroundColor: `${PRIMARY}12`, color: PRIMARY }}
                 >
-                  {m.role === "LEADER" ? "組長" : "組員"}
+                  {m.role === "LEADER" ? t("leaderRole") : t("memberRole")}
                 </span>
               )}
             </div>
@@ -219,7 +221,7 @@ export default function TaskGroupManager({
         {isCreator && (
           <form onSubmit={handleAddMember} className="flex flex-col gap-2 pt-3 border-t" style={{ borderColor: `${SECONDARY}33` }}>
             <p className="text-xs font-semibold" style={{ color: PRIMARY }}>
-              新增成員
+              {t("addMember")}
             </p>
             <div className="flex gap-2">
               <input
@@ -236,8 +238,8 @@ export default function TaskGroupManager({
                 className="rounded-xl border px-2 py-2 text-xs"
                 style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
               >
-                <option value="MEMBER">組員</option>
-                <option value="LEADER">組長</option>
+                <option value="MEMBER">{t("memberRole")}</option>
+                <option value="LEADER">{t("leaderRole")}</option>
               </select>
               <button
                 type="submit"
@@ -245,7 +247,7 @@ export default function TaskGroupManager({
                 className="px-3 py-2 rounded-xl text-xs font-semibold disabled:opacity-50"
                 style={{ backgroundColor: PRIMARY, color: SECONDARY }}
               >
-                {addLoading ? "…" : "新增"}
+                {addLoading ? "…" : t("add")}
               </button>
             </div>
             {addError && <p className="text-xs text-red-500">{addError}</p>}

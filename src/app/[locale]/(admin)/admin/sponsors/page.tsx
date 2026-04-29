@@ -1,12 +1,12 @@
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import SponsorsTable from "./SponsorsTable";
 
 export const dynamic = "force-dynamic";
 
 const PRIMARY = "#1a2744";
-const SECONDARY = "#c9b99a";
 
 export default async function AdminSponsorsPage({
   params,
@@ -17,6 +17,7 @@ export default async function AdminSponsorsPage({
   if (!session?.user) redirect("/login");
 
   const { locale } = await params;
+  const t = await getTranslations("admin.sponsors");
 
   const sponsors = await db.sponsor.findMany({
     orderBy: { name: "asc" },
@@ -30,9 +31,9 @@ export default async function AdminSponsorsPage({
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>
-            贊助商管理
+            {t("title")}
           </h1>
-          <p className="text-sm text-gray-500 mt-1">共 {sponsors.length} 家贊助商</p>
+          <p className="text-sm text-gray-500 mt-1">{t("count", { count: sponsors.length })}</p>
         </div>
       </div>
 

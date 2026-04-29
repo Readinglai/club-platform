@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import AnnouncementEditForm from "./AnnouncementEditForm";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export default async function AdminAnnouncementDetailPage({
   if (!session?.user) redirect("/login");
 
   const { locale, id } = await params;
+  const t = await getTranslations("admin.announcements");
 
   const announcement = await db.announcement.findUnique({
     where: { id },
@@ -41,17 +43,17 @@ export default async function AdminAnnouncementDetailPage({
           className="text-xs hover:opacity-70"
           style={{ color: SECONDARY }}
         >
-          ← 公告列表
+          {t("backToAnnouncements")}
         </Link>
       </div>
 
       <div className="flex items-start justify-between mb-8">
         <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>
-          編輯公告
+          {t("editTitle")}
         </h1>
         <span className="text-xs text-gray-400">
-          作者：{announcement.author.name} ·{" "}
-          {announcement.createdAt.toLocaleDateString("zh-TW")}
+          {t("authorLabel", { name: announcement.author.name ?? "—" })} ·{" "}
+          {announcement.createdAt.toLocaleDateString()}
         </span>
       </div>
 

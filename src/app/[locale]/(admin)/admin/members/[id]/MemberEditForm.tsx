@@ -2,16 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
-
-const ROLES = [
-  { value: "SUPER_ADMIN", label: "超級管理員" },
-  { value: "ADMIN",       label: "管理員" },
-  { value: "EXEC",        label: "執委" },
-  { value: "MEMBER",      label: "成員" },
-];
 
 interface Department {
   id: string;
@@ -32,9 +26,18 @@ interface Props {
 
 export default function MemberEditForm({ member, departments, locale }: Props) {
   const router = useRouter();
+  const t = useTranslations("admin.members");
+  const tc = useTranslations("admin.common");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  const ROLES = [
+    { value: "SUPER_ADMIN", label: t("roleSuperAdmin") },
+    { value: "ADMIN",       label: t("roleAdmin") },
+    { value: "EXEC",        label: t("roleExec") },
+    { value: "MEMBER",      label: t("roleMember") },
+  ];
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -60,7 +63,7 @@ export default function MemberEditForm({ member, departments, locale }: Props) {
       router.refresh();
     } else {
       const data = await res.json();
-      setError(data.error ?? "更新失敗，請稍後再試。");
+      setError(data.error ?? tc("updateFailed"));
     }
     setSubmitting(false);
   }
@@ -74,13 +77,13 @@ export default function MemberEditForm({ member, departments, locale }: Props) {
       )}
       {success && (
         <div className="px-4 py-3 rounded-lg bg-green-50 border border-green-200 text-sm text-green-700">
-          成員資料已更新。
+          {t("memberUpdated")}
         </div>
       )}
 
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b7280" }}>
-          姓名 *
+          {t("fieldName")}
         </label>
         <input
           name="name"
@@ -93,7 +96,7 @@ export default function MemberEditForm({ member, departments, locale }: Props) {
 
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b7280" }}>
-          角色
+          {t("fieldRole")}
         </label>
         <select
           name="role"
@@ -109,7 +112,7 @@ export default function MemberEditForm({ member, departments, locale }: Props) {
 
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b7280" }}>
-          部門
+          {t("fieldDepartment")}
         </label>
         <select
           name="departmentId"
@@ -117,7 +120,7 @@ export default function MemberEditForm({ member, departments, locale }: Props) {
           className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 bg-white"
           style={{ borderColor: "#e5e7eb", color: PRIMARY }}
         >
-          <option value="">— 不分配部門 —</option>
+          <option value="">{t("noDepartment")}</option>
           {departments.map((d) => (
             <option key={d.id} value={d.id}>{d.name}（{d.slug}）</option>
           ))}
@@ -131,7 +134,7 @@ export default function MemberEditForm({ member, departments, locale }: Props) {
           className="px-6 py-2.5 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
           style={{ backgroundColor: PRIMARY, color: SECONDARY }}
         >
-          {submitting ? "儲存中…" : "儲存變更"}
+          {submitting ? tc("saving") : tc("saveChanges")}
         </button>
         <button
           type="button"
@@ -139,7 +142,7 @@ export default function MemberEditForm({ member, departments, locale }: Props) {
           className="px-6 py-2.5 rounded-lg text-sm font-medium transition-all hover:opacity-70"
           style={{ color: PRIMARY, backgroundColor: `${PRIMARY}10` }}
         >
-          返回列表
+          {tc("backToList")}
         </button>
       </div>
     </form>

@@ -22,7 +22,12 @@ export async function GET(request: NextRequest) {
       where: {
         published: true,
         ...(upcoming
-          ? { startAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } }
+          ? {
+              OR: [
+                { startAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+                { endAt: { gte: new Date() } },
+              ],
+            }
           : {}),
       },
       orderBy: { startAt: "asc" },

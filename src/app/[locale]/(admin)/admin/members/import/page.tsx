@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import ImportForm from "./ImportForm";
 
 const PRIMARY = "#1a2744";
@@ -10,6 +11,7 @@ export default async function ImportMembersPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const t = await getTranslations("admin.members");
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -19,15 +21,15 @@ export default async function ImportMembersPage({
           className="text-xs hover:opacity-70"
           style={{ color: SECONDARY }}
         >
-          ← 成員列表
+          {t("backToMembers")}
         </Link>
       </div>
 
       <h1 className="text-2xl font-bold mb-2" style={{ color: PRIMARY }}>
-        批次匯入成員
+        {t("importTitle")}
       </h1>
       <p className="text-sm text-gray-500 mb-8">
-        已存在的 email 會更新姓名、角色與部門；新的 email 會建立帳號。
+        {t("importDesc")}
       </p>
 
       <ImportForm locale={locale} />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -25,6 +26,8 @@ interface Props {
 }
 
 export default function DiscussionPanel({ taskGroupId, userId }: Props) {
+  const t = useTranslations("admin.taskGroups");
+  const tc = useTranslations("admin.common");
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState("");
@@ -64,14 +67,14 @@ export default function DiscussionPanel({ taskGroupId, userId }: Props) {
       );
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "發送失敗");
+        setError(data.error ?? t("operationFailed"));
       } else {
         setComments((prev) => [...prev, data as Comment]);
         setContent("");
         setIsAnonymous(false);
       }
     } catch {
-      setError("網路錯誤");
+      setError(t("networkError"));
     } finally {
       setSubmitting(false);
     }
@@ -92,14 +95,14 @@ export default function DiscussionPanel({ taskGroupId, userId }: Props) {
   }
 
   if (loading) {
-    return <div className="py-12 text-center text-sm text-gray-400">載入中…</div>;
+    return <div className="py-12 text-center text-sm text-gray-400">{t("loading")}</div>;
   }
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3">
         {comments.length === 0 && (
-          <p className="text-center text-sm text-gray-400 py-8">還沒有留言，來第一個吧！</p>
+          <p className="text-center text-sm text-gray-400 py-8">{t("discussionEmpty")}</p>
         )}
         {comments.map((c) => {
           const isOwn = !c.isAnonymous && c.authorId === userId;
@@ -112,10 +115,10 @@ export default function DiscussionPanel({ taskGroupId, userId }: Props) {
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold" style={{ color: PRIMARY }}>
-                    {c.isAnonymous ? "匿名" : (c.author?.name ?? "未知")}
+                    {c.isAnonymous ? t("anonymous") : (c.author?.name ?? t("unknown"))}
                   </span>
                   <span className="text-[11px] text-gray-400">
-                    {new Date(c.createdAt).toLocaleString("zh-TW", {
+                    {new Date(c.createdAt).toLocaleString([], {
                       month: "2-digit",
                       day: "2-digit",
                       hour: "2-digit",
@@ -128,7 +131,7 @@ export default function DiscussionPanel({ taskGroupId, userId }: Props) {
                     onClick={() => handleDelete(c.id)}
                     className="text-[11px] text-red-300 hover:text-red-500 transition-colors"
                   >
-                    刪除
+                    {tc("delete")}
                   </button>
                 )}
               </div>
@@ -146,7 +149,7 @@ export default function DiscussionPanel({ taskGroupId, userId }: Props) {
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="輸入留言…"
+          placeholder={t("discussionPlaceholder")}
           rows={3}
           className="w-full rounded-xl border px-3 py-2 text-sm outline-none resize-none"
           style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
@@ -159,7 +162,7 @@ export default function DiscussionPanel({ taskGroupId, userId }: Props) {
               onChange={(e) => setIsAnonymous(e.target.checked)}
               className="rounded"
             />
-            匿名發言
+            {t("anonymousPost")}
           </label>
           <div className="flex items-center gap-3">
             {error && <span className="text-xs text-red-500">{error}</span>}
@@ -169,7 +172,7 @@ export default function DiscussionPanel({ taskGroupId, userId }: Props) {
               className="px-4 py-1.5 rounded-xl text-xs font-semibold disabled:opacity-50"
               style={{ backgroundColor: PRIMARY, color: SECONDARY }}
             >
-              {submitting ? "發送中…" : "發送"}
+              {submitting ? t("sending") : t("send")}
             </button>
           </div>
         </div>

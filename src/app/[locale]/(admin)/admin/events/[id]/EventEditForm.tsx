@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -24,12 +25,13 @@ interface Props {
 
 function toDatetimeLocal(iso: string | null): string {
   if (!iso) return "";
-  // Slice to "YYYY-MM-DDTHH:MM" format required by datetime-local input
   return new Date(iso).toISOString().slice(0, 16);
 }
 
 export default function EventEditForm({ event, locale }: Props) {
   const router = useRouter();
+  const t = useTranslations("admin.events");
+  const tc = useTranslations("admin.common");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -63,10 +65,10 @@ export default function EventEditForm({ event, locale }: Props) {
         router.refresh();
       } else {
         const data = await res.json();
-        setError(data.error ?? "更新失敗，請稍後再試。");
+        setError(data.error ?? tc("updateFailed"));
       }
     } catch {
-      setError("網路錯誤，請稍後再試。");
+      setError(tc("networkErrorRetry"));
     } finally {
       setSubmitting(false);
     }
@@ -81,11 +83,11 @@ export default function EventEditForm({ event, locale }: Props) {
       )}
       {success && (
         <div className="px-4 py-3 rounded-lg bg-green-50 border border-green-200 text-sm text-green-700">
-          活動已更新。
+          {t("eventUpdated")}
         </div>
       )}
 
-      <Field label="標題 *">
+      <Field label={t("fieldTitle")}>
         <input
           name="title"
           required
@@ -95,7 +97,7 @@ export default function EventEditForm({ event, locale }: Props) {
         />
       </Field>
 
-      <Field label="描述">
+      <Field label={t("fieldDescription")}>
         <textarea
           name="description"
           rows={3}
@@ -106,7 +108,7 @@ export default function EventEditForm({ event, locale }: Props) {
       </Field>
 
       <div className="grid grid-cols-2 gap-4">
-        <Field label="開始時間 *">
+        <Field label={t("fieldStartAt")}>
           <input
             name="startAt"
             type="datetime-local"
@@ -116,7 +118,7 @@ export default function EventEditForm({ event, locale }: Props) {
             style={{ borderColor: "#e5e7eb", color: PRIMARY }}
           />
         </Field>
-        <Field label="結束時間">
+        <Field label={t("fieldEndAt")}>
           <input
             name="endAt"
             type="datetime-local"
@@ -128,7 +130,7 @@ export default function EventEditForm({ event, locale }: Props) {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <Field label="地點">
+        <Field label={t("fieldLocation")}>
           <input
             name="location"
             defaultValue={event.location ?? ""}
@@ -136,7 +138,7 @@ export default function EventEditForm({ event, locale }: Props) {
             style={{ borderColor: "#e5e7eb", color: PRIMARY }}
           />
         </Field>
-        <Field label="容量上限（留空表示不限）">
+        <Field label={t("fieldCapacity")}>
           <input
             name="capacity"
             type="number"
@@ -155,7 +157,7 @@ export default function EventEditForm({ event, locale }: Props) {
           defaultChecked={event.published}
           className="w-4 h-4 rounded"
         />
-        已發布（取消勾選則切換為草稿）
+        {t("fieldPublishEdit")}
       </label>
 
       <div className="flex gap-3 pt-2">
@@ -165,7 +167,7 @@ export default function EventEditForm({ event, locale }: Props) {
           className="px-6 py-2.5 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
           style={{ backgroundColor: PRIMARY, color: SECONDARY }}
         >
-          {submitting ? "儲存中…" : "儲存變更"}
+          {submitting ? tc("saving") : t("saveChanges")}
         </button>
         <button
           type="button"
@@ -173,7 +175,7 @@ export default function EventEditForm({ event, locale }: Props) {
           className="px-6 py-2.5 rounded-lg text-sm font-medium transition-all hover:opacity-70"
           style={{ color: PRIMARY, backgroundColor: `${PRIMARY}10` }}
         >
-          返回列表
+          {tc("backToList")}
         </button>
       </div>
     </form>

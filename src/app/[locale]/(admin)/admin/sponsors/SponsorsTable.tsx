@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 const PRIMARY = "#1a2744";
@@ -29,6 +30,8 @@ interface Props {
 }
 
 export default function SponsorsTable({ sponsors: initial, locale }: Props) {
+  const t = useTranslations("admin.sponsors");
+  const tc = useTranslations("admin.common");
   const router = useRouter();
   const [sponsors, setSponsors] = useState(initial);
   const [loading, setLoading] = useState<string | null>(null);
@@ -40,7 +43,7 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
   const [createError, setCreateError] = useState<string | null>(null);
 
   async function createSponsor() {
-    if (!newName.trim()) { setCreateError("名稱不能為空"); return; }
+    if (!newName.trim()) { setCreateError(t("nameRequired")); return; }
     setCreating(true);
     setCreateError(null);
     try {
@@ -59,17 +62,17 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
         router.refresh();
       } else {
         const d = await res.json();
-        setCreateError(d.error ?? "新增失敗");
+        setCreateError(d.error ?? tc("createFailed"));
       }
     } catch {
-      setCreateError("網路錯誤，請稍後再試");
+      setCreateError(tc("networkErrorRetry"));
     } finally {
       setCreating(false);
     }
   }
 
   async function deleteSponsor(id: string, name: string) {
-    if (!confirm(`確定要刪除「${name}」？所有歷史記錄也會一併刪除，此操作無法復原。`)) return;
+    if (!confirm(t("confirmDelete", { name }))) return;
     setLoading(id);
     try {
       const res = await fetch(`/api/sponsors/${id}`, { method: "DELETE" });
@@ -77,10 +80,10 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
         setSponsors((prev) => prev.filter((s) => s.id !== id));
       } else {
         const d = await res.json();
-        alert(d.error ?? "刪除失敗");
+        alert(d.error ?? tc("deleteFailed"));
       }
     } catch {
-      alert("網路錯誤，請稍後再試");
+      alert(tc("networkErrorRetry"));
     } finally {
       setLoading(null);
       router.refresh();
@@ -89,37 +92,34 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* 新增按鈕 */}
       <div className="flex justify-end">
         <button
           onClick={() => setShowNew((v) => !v)}
           className="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-80"
           style={{ backgroundColor: PRIMARY, color: SECONDARY }}
         >
-          {showNew ? "取消" : "+ 新增贊助商"}
+          {showNew ? t("cancelCreate") : t("createButton")}
         </button>
       </div>
 
-      {/* 新增表單（inline） */}
       {showNew && (
         <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4">
-          <h2 className="text-sm font-semibold" style={{ color: PRIMARY }}>新增贊助商</h2>
+          <h2 className="text-sm font-semibold" style={{ color: PRIMARY }}>{t("createFormTitle")}</h2>
           {createError && (
             <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">{createError}</p>
           )}
           <div className="grid grid-cols-3 gap-3">
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-500 uppercase tracking-wide">名稱 *</label>
+              <label className="text-xs text-gray-500 uppercase tracking-wide">{t("fieldName")}</label>
               <input
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 className="border rounded-lg px-3 py-2 text-sm focus:outline-none"
                 style={{ borderColor: "#e5e7eb", color: PRIMARY }}
-                placeholder="公司名稱"
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-500 uppercase tracking-wide">Logo URL</label>
+              <label className="text-xs text-gray-500 uppercase tracking-wide">{t("fieldLogo")}</label>
               <input
                 value={newLogoUrl}
                 onChange={(e) => setNewLogoUrl(e.target.value)}
@@ -129,7 +129,7 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-500 uppercase tracking-wide">網站</label>
+              <label className="text-xs text-gray-500 uppercase tracking-wide">{t("fieldWebsite")}</label>
               <input
                 value={newWebsite}
                 onChange={(e) => setNewWebsite(e.target.value)}
@@ -146,21 +146,20 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
               className="px-5 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
               style={{ backgroundColor: PRIMARY, color: SECONDARY }}
             >
-              {creating ? "建立中…" : "建立"}
+              {creating ? tc("creating") : tc("create")}
             </button>
           </div>
         </div>
       )}
 
-      {/* 列表 */}
       {sponsors.length === 0 ? (
-        <div className="text-center py-16 text-gray-400 text-sm">尚無贊助商資料。</div>
+        <div className="text-center py-16 text-gray-400 text-sm">{t("emptyState")}</div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm overflow-hidden overflow-x-auto">
           <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="border-b" style={{ backgroundColor: `${PRIMARY}08` }}>
-                {["Logo", "名稱", "網站", "最新等級", "操作"].map((h) => (
+                {[t("tableLogo"), t("tableName"), t("tableWebsite"), t("tableTier"), t("tableActions")].map((h) => (
                   <th
                     key={h}
                     className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide"
@@ -220,7 +219,7 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
                           className="text-xs px-2.5 py-1 rounded font-medium transition-all hover:opacity-70"
                           style={{ color: PRIMARY, backgroundColor: `${PRIMARY}10` }}
                         >
-                          編輯
+                          {tc("edit")}
                         </Link>
                         <button
                           onClick={() => deleteSponsor(s.id, s.name)}
@@ -228,7 +227,7 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
                           className="text-xs px-2.5 py-1 rounded font-medium transition-all hover:opacity-70 disabled:opacity-40"
                           style={{ color: "#dc2626", backgroundColor: "#fee2e2" }}
                         >
-                          刪除
+                          {tc("delete")}
                         </button>
                       </div>
                     </td>

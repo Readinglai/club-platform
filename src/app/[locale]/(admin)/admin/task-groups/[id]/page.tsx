@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { ROLE_LEVEL } from "@/lib/rbac";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import TaskGroupManager from "./TaskGroupManager";
 import TaskGroupTabs from "./TaskGroupTabs";
 import type { Role } from "@/generated/prisma/client";
@@ -24,6 +25,8 @@ export default async function TaskGroupDetailPage({
   const session = await auth();
   const userId = session?.user?.id ?? "";
   const globalRole = (session?.user?.role as Role | undefined) ?? "MEMBER";
+
+  const t = await getTranslations("admin.taskGroups");
 
   const taskGroup = await db.taskGroup.findUnique({
     where: { id },
@@ -78,7 +81,7 @@ export default async function TaskGroupDetailPage({
           className="text-xs hover:opacity-70"
           style={{ color: SECONDARY }}
         >
-          ← 任務小組列表
+          {t("backToList")}
         </Link>
       </div>
 
@@ -90,8 +93,8 @@ export default async function TaskGroupDetailPage({
           <p className="text-sm text-gray-500">{taskGroup.description}</p>
         )}
         <p className="text-xs text-gray-400 mt-2">
-          建立者：{taskGroup.createdBy.name}　·　建立於{" "}
-          {taskGroup.createdAt.toLocaleDateString("zh-TW")}
+          {t("createdBy")}{taskGroup.createdBy.name}　·　{t("createdAt")}{" "}
+          {taskGroup.createdAt.toLocaleDateString()}
         </p>
       </div>
 

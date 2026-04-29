@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -37,6 +38,8 @@ interface CreateModalProps {
 }
 
 function CreateVoteModal({ loading, error, onSubmit, onClose }: CreateModalProps) {
+  const t = useTranslations("admin.taskGroups");
+  const tc = useTranslations("admin.common");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [options, setOptions] = useState(["", ""]);
@@ -66,27 +69,26 @@ function CreateVoteModal({ loading, error, onSubmit, onClose }: CreateModalProps
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold" style={{ color: PRIMARY }}>建立投票</h2>
+          <h2 className="text-base font-bold" style={{ color: PRIMARY }}>{t("createVoteTitle")}</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
         </div>
 
         <div className="flex flex-col gap-3">
           <div>
             <label className="block text-xs font-semibold mb-1" style={{ color: PRIMARY }}>
-              標題 <span className="text-red-400">*</span>
+              {t("voteFieldTitle")}
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="投票標題"
               className="w-full rounded-xl border px-3 py-2 text-sm outline-none"
               style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1" style={{ color: PRIMARY }}>描述（選填）</label>
+            <label className="block text-xs font-semibold mb-1" style={{ color: PRIMARY }}>{t("voteFieldDesc")}</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -98,7 +100,7 @@ function CreateVoteModal({ loading, error, onSubmit, onClose }: CreateModalProps
 
           <div>
             <label className="block text-xs font-semibold mb-2" style={{ color: PRIMARY }}>
-              選項（至少兩個）
+              {t("voteFieldOptions")}
             </label>
             <div className="flex flex-col gap-2">
               {options.map((opt, idx) => (
@@ -107,7 +109,7 @@ function CreateVoteModal({ loading, error, onSubmit, onClose }: CreateModalProps
                     type="text"
                     value={opt}
                     onChange={(e) => setOption(idx, e.target.value)}
-                    placeholder={`選項 ${idx + 1}`}
+                    placeholder={`${idx + 1}`}
                     className="flex-1 rounded-xl border px-3 py-1.5 text-sm outline-none"
                     style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
                   />
@@ -128,13 +130,13 @@ function CreateVoteModal({ loading, error, onSubmit, onClose }: CreateModalProps
                 className="text-xs text-left hover:opacity-70"
                 style={{ color: SECONDARY }}
               >
-                + 新增選項
+                {t("addOption")}
               </button>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1" style={{ color: PRIMARY }}>截止時間（選填）</label>
+            <label className="block text-xs font-semibold mb-1" style={{ color: PRIMARY }}>{t("voteFieldClosedAt")}</label>
             <input
               type="datetime-local"
               value={closedAt}
@@ -153,7 +155,7 @@ function CreateVoteModal({ loading, error, onSubmit, onClose }: CreateModalProps
             className="px-4 py-2 rounded-xl text-sm border"
             style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
           >
-            取消
+            {tc("cancel")}
           </button>
           <button
             onClick={() => onSubmit({ title, description, options, closedAt })}
@@ -161,7 +163,7 @@ function CreateVoteModal({ loading, error, onSubmit, onClose }: CreateModalProps
             className="px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-50"
             style={{ backgroundColor: PRIMARY, color: SECONDARY }}
           >
-            {loading ? "建立中…" : "建立投票"}
+            {loading ? t("creating") : t("createVoteButton")}
           </button>
         </div>
       </div>
@@ -178,6 +180,7 @@ interface VoteCardProps {
 }
 
 function VoteCard({ vote, userId, taskGroupId, onVoted, onClosed }: VoteCardProps) {
+  const t = useTranslations("admin.taskGroups");
   const isOwner = vote.createdById === userId;
   const isClosed = !!vote.closedAt && new Date(vote.closedAt) <= new Date();
   const totalVotes = vote.options.reduce((s, o) => s + o.count, 0);
@@ -217,14 +220,14 @@ function VoteCard({ vote, userId, taskGroupId, onVoted, onClosed }: VoteCardProp
               color: isClosed ? "#6b7280" : "#16a34a",
             }}
           >
-            {isClosed ? "已關閉" : "進行中"}
+            {isClosed ? t("voteClosed") : t("voteActive")}
           </span>
           {isOwner && !isClosed && (
             <button
               onClick={closeVote}
               className="text-[11px] text-red-400 hover:text-red-600 transition-colors"
             >
-              關閉投票
+              {t("closeVote")}
             </button>
           )}
         </div>
@@ -252,7 +255,7 @@ function VoteCard({ vote, userId, taskGroupId, onVoted, onClosed }: VoteCardProp
                   {opt.isMyVote ? "✓ " : ""}{opt.label}
                 </button>
                 <span className="text-xs text-gray-400 ml-2 shrink-0">
-                  {opt.count} 票 ({pct}%)
+                  {opt.count} ({pct}%)
                 </span>
               </div>
               <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "#f3f4f6" }}>
@@ -270,13 +273,14 @@ function VoteCard({ vote, userId, taskGroupId, onVoted, onClosed }: VoteCardProp
       </div>
 
       <p className="text-[11px] text-gray-400 mt-3">
-        共 {totalVotes} 票　·　建立者：{vote.createdBy.name}
+        {t("voteTotalCount", { count: totalVotes, name: vote.createdBy.name })}
       </p>
     </div>
   );
 }
 
 export default function VotePanel({ taskGroupId, userId, canCreate }: Props) {
+  const t = useTranslations("admin.taskGroups");
   const [votes, setVotes] = useState<Vote[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -320,13 +324,13 @@ export default function VotePanel({ taskGroupId, userId, canCreate }: Props) {
       });
       const json = await res.json();
       if (!res.ok) {
-        setModalError(json.error ?? "建立失敗");
+        setModalError(json.error ?? t("operationFailed"));
         return;
       }
       setVotes((prev) => [json as Vote, ...prev]);
       setShowModal(false);
     } catch {
-      setModalError("網路錯誤");
+      setModalError(t("networkError"));
     } finally {
       setModalLoading(false);
     }
@@ -363,7 +367,7 @@ export default function VotePanel({ taskGroupId, userId, canCreate }: Props) {
   }
 
   if (loading) {
-    return <div className="py-12 text-center text-sm text-gray-400">載入中…</div>;
+    return <div className="py-12 text-center text-sm text-gray-400">{t("loading")}</div>;
   }
 
   return (
@@ -375,13 +379,13 @@ export default function VotePanel({ taskGroupId, userId, canCreate }: Props) {
             className="px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
             style={{ backgroundColor: PRIMARY, color: SECONDARY }}
           >
-            + 建立投票
+            {t("createVote")}
           </button>
         </div>
       )}
 
       {votes.length === 0 && (
-        <p className="text-center text-sm text-gray-400 py-8">還沒有投票</p>
+        <p className="text-center text-sm text-gray-400 py-8">{t("votesEmpty")}</p>
       )}
 
       {votes.map((vote) => (

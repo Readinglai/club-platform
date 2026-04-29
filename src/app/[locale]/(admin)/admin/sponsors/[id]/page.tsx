@@ -1,13 +1,13 @@
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import SponsorEditForm from "./SponsorEditForm";
 
 export const dynamic = "force-dynamic";
 
 const PRIMARY = "#1a2744";
-const SECONDARY = "#c9b99a";
 
 export default async function SponsorDetailPage({
   params,
@@ -18,6 +18,7 @@ export default async function SponsorDetailPage({
   if (!session?.user) redirect("/login");
 
   const { locale, id } = await params;
+  const t = await getTranslations("admin.sponsors");
 
   const sponsor = await db.sponsor.findUnique({
     where: { id },
@@ -34,13 +35,13 @@ export default async function SponsorDetailPage({
           className="text-sm px-3 py-1.5 rounded-lg transition-all hover:opacity-70"
           style={{ color: PRIMARY, backgroundColor: `${PRIMARY}10` }}
         >
-          ← 返回列表
+          {t("backToSponsors")}
         </Link>
         <div>
           <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>
             {sponsor.name}
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">贊助商詳情 / 編輯</p>
+          <p className="text-sm text-gray-500 mt-0.5">{t("detailSubtitle")}</p>
         </div>
       </div>
 

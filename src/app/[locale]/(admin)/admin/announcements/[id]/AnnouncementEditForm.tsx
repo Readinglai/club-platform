@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -18,6 +19,8 @@ interface Props {
 
 export default function AnnouncementEditForm({ announcement, locale }: Props) {
   const router = useRouter();
+  const t = useTranslations("admin.announcements");
+  const tc = useTranslations("admin.common");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -47,10 +50,10 @@ export default function AnnouncementEditForm({ announcement, locale }: Props) {
         router.refresh();
       } else {
         const data = await res.json();
-        setError(data.error ?? "更新失敗，請稍後再試。");
+        setError(data.error ?? tc("updateFailed"));
       }
     } catch {
-      setError("網路錯誤，請稍後再試。");
+      setError(tc("networkErrorRetry"));
     } finally {
       setSubmitting(false);
     }
@@ -65,13 +68,13 @@ export default function AnnouncementEditForm({ announcement, locale }: Props) {
       )}
       {success && (
         <div className="px-4 py-3 rounded-lg bg-green-50 border border-green-200 text-sm text-green-700">
-          公告已更新。
+          {t("announcementUpdated")}
         </div>
       )}
 
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b7280" }}>
-          標題 *
+          {t("fieldTitle")}
         </label>
         <input
           name="title"
@@ -84,7 +87,7 @@ export default function AnnouncementEditForm({ announcement, locale }: Props) {
 
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b7280" }}>
-          內容 *
+          {t("fieldContent")}
         </label>
         <textarea
           name="content"
@@ -103,7 +106,7 @@ export default function AnnouncementEditForm({ announcement, locale }: Props) {
           defaultChecked={announcement.published}
           className="w-4 h-4 rounded"
         />
-        已發布（取消勾選則切換為草稿）
+        {t("fieldPublishEdit")}
       </label>
 
       <div className="flex gap-3 pt-2">
@@ -113,7 +116,7 @@ export default function AnnouncementEditForm({ announcement, locale }: Props) {
           className="px-6 py-2.5 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
           style={{ backgroundColor: PRIMARY, color: SECONDARY }}
         >
-          {submitting ? "儲存中…" : "儲存變更"}
+          {submitting ? tc("saving") : t("saveChanges")}
         </button>
         <button
           type="button"
@@ -121,7 +124,7 @@ export default function AnnouncementEditForm({ announcement, locale }: Props) {
           className="px-6 py-2.5 rounded-lg text-sm font-medium transition-all hover:opacity-70"
           style={{ color: PRIMARY, backgroundColor: `${PRIMARY}10` }}
         >
-          返回列表
+          {tc("backToList")}
         </button>
       </div>
     </form>

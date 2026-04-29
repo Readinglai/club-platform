@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -14,6 +15,8 @@ interface ImportResult {
 
 export default function ImportForm({ locale }: { locale: string }) {
   const router = useRouter();
+  const t = useTranslations("admin.members");
+  const tc = useTranslations("admin.common");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
@@ -34,7 +37,7 @@ export default function ImportForm({ locale }: { locale: string }) {
       if (!trimmed) continue;
       const parts = trimmed.split(",").map((p) => p.trim());
       if (parts.length < 2) {
-        setParseError(`格式錯誤（需至少兩欄）：${trimmed}`);
+        setParseError(t("importFormatError", { line: trimmed }));
         setSubmitting(false);
         return;
       }
@@ -48,7 +51,7 @@ export default function ImportForm({ locale }: { locale: string }) {
     }
 
     if (members.length === 0) {
-      setParseError("沒有可匯入的資料，請確認格式是否正確。");
+      setParseError(t("importNoData"));
       setSubmitting(false);
       return;
     }
@@ -64,10 +67,10 @@ export default function ImportForm({ locale }: { locale: string }) {
         setResult(data);
         router.refresh();
       } else {
-        setParseError(data.error ?? "匯入失敗");
+        setParseError(data.error ?? t("importFailed"));
       }
     } catch {
-      setParseError("網路錯誤，請稍後再試。");
+      setParseError(tc("networkErrorRetry"));
     } finally {
       setSubmitting(false);
     }
@@ -75,13 +78,12 @@ export default function ImportForm({ locale }: { locale: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* 格式說明 */}
       <div
         className="rounded-xl p-5 text-sm"
         style={{ backgroundColor: `${PRIMARY}08`, color: PRIMARY }}
       >
-        <p className="font-semibold mb-2">格式說明</p>
-        <p className="text-xs text-gray-500 mb-3">每行一筆，以逗號分隔，後兩欄選填：</p>
+        <p className="font-semibold mb-2">{t("importFormatTitle")}</p>
+        <p className="text-xs text-gray-500 mb-3">{t("importFormatDesc")}</p>
         <code
           className="block text-xs p-3 rounded-lg"
           style={{ backgroundColor: `${PRIMARY}12`, color: PRIMARY }}
@@ -104,11 +106,11 @@ export default function ImportForm({ locale }: { locale: string }) {
 
         {result && (
           <div className="px-4 py-4 rounded-lg bg-green-50 border border-green-200 text-sm">
-            <p className="font-semibold text-green-700 mb-1">匯入完成</p>
-            <p className="text-green-600">新建：{result.imported} 筆　更新：{result.updated} 筆</p>
+            <p className="font-semibold text-green-700 mb-1">{t("importComplete")}</p>
+            <p className="text-green-600">{t("importCreated", { imported: result.imported, updated: result.updated })}</p>
             {result.errors.length > 0 && (
               <div className="mt-2">
-                <p className="text-red-600 font-medium">錯誤（{result.errors.length} 筆）：</p>
+                <p className="text-red-600 font-medium">{t("importErrors", { count: result.errors.length })}</p>
                 <ul className="mt-1 text-xs text-red-500 list-disc list-inside">
                   {result.errors.map((err, i) => <li key={i}>{err}</li>)}
                 </ul>
@@ -119,7 +121,7 @@ export default function ImportForm({ locale }: { locale: string }) {
 
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b7280" }}>
-            成員資料（CSV 格式）
+            {t("importFieldCsv")}
           </label>
           <textarea
             name="csv"
@@ -138,7 +140,7 @@ export default function ImportForm({ locale }: { locale: string }) {
             className="px-6 py-2.5 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
             style={{ backgroundColor: PRIMARY, color: SECONDARY }}
           >
-            {submitting ? "匯入中…" : "開始匯入"}
+            {submitting ? t("importing") : t("importButton")}
           </button>
           <button
             type="button"
@@ -146,7 +148,7 @@ export default function ImportForm({ locale }: { locale: string }) {
             className="px-6 py-2.5 rounded-lg text-sm font-medium transition-all hover:opacity-70"
             style={{ color: PRIMARY, backgroundColor: `${PRIMARY}10` }}
           >
-            返回列表
+            {tc("backToList")}
           </button>
         </div>
       </form>

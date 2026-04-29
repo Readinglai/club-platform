@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -18,6 +19,8 @@ interface Props {
 }
 
 export default function AchievementEditForm({ id, initial, locale }: Props) {
+  const t = useTranslations("admin.achievements");
+  const tc = useTranslations("admin.common");
   const router = useRouter();
   const [form, setForm] = useState({
     title: initial.title,
@@ -30,10 +33,10 @@ export default function AchievementEditForm({ id, initial, locale }: Props) {
   const [success, setSuccess] = useState(false);
 
   async function save() {
-    if (!form.title.trim()) { setError("標題不能為空"); return; }
+    if (!form.title.trim()) { setError(t("titleRequired")); return; }
     const year = parseInt(form.year, 10);
-    if (!year || year < 2000 || year > 2100) { setError("請輸入有效的年份"); return; }
-    if (!form.description.trim()) { setError("描述不能為空"); return; }
+    if (!year || year < 2000 || year > 2100) { setError(t("yearInvalid")); return; }
+    if (!form.description.trim()) { setError(t("descRequired")); return; }
 
     setSaving(true);
     setError(null);
@@ -54,10 +57,10 @@ export default function AchievementEditForm({ id, initial, locale }: Props) {
         router.refresh();
       } else {
         const data = await res.json();
-        setError(data.error ?? "儲存失敗");
+        setError(data.error ?? tc("saveFailed"));
       }
     } catch {
-      setError("網路錯誤");
+      setError(tc("networkError"));
     } finally {
       setSaving(false);
     }
@@ -67,7 +70,7 @@ export default function AchievementEditForm({ id, initial, locale }: Props) {
     <div className="max-w-2xl flex flex-col gap-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex flex-col gap-1 sm:col-span-2">
-          <label className="text-xs font-medium text-gray-500">標題 *</label>
+          <label className="text-xs font-medium text-gray-500">{t("fieldTitle")}</label>
           <input
             value={form.title}
             onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
@@ -78,7 +81,7 @@ export default function AchievementEditForm({ id, initial, locale }: Props) {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-500">年份 *</label>
+          <label className="text-xs font-medium text-gray-500">{t("fieldYear")}</label>
           <input
             type="number"
             value={form.year}
@@ -91,7 +94,7 @@ export default function AchievementEditForm({ id, initial, locale }: Props) {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-500">圖片 URL</label>
+          <label className="text-xs font-medium text-gray-500">{t("fieldImageUrl")}</label>
           <input
             value={form.imageUrl}
             onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
@@ -110,7 +113,7 @@ export default function AchievementEditForm({ id, initial, locale }: Props) {
         )}
 
         <div className="flex flex-col gap-1 sm:col-span-2">
-          <label className="text-xs font-medium text-gray-500">描述 *</label>
+          <label className="text-xs font-medium text-gray-500">{t("fieldDescription")}</label>
           <textarea
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -118,12 +121,12 @@ export default function AchievementEditForm({ id, initial, locale }: Props) {
             className="border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-200 resize-y"
             style={{ borderColor: "#d1d5db" }}
           />
-          <p className="text-xs text-gray-400">段落間以空行（\n\n）分隔；以 - 開頭的行會被渲染為項目符號列表。</p>
+          <p className="text-xs text-gray-400">{t("descHint")}</p>
         </div>
       </div>
 
       {error && <p className="text-xs text-red-500">{error}</p>}
-      {success && <p className="text-xs text-green-600">已儲存！</p>}
+      {success && <p className="text-xs text-green-600">{t("savedSuccess")}</p>}
 
       <div className="flex gap-3">
         <button
@@ -132,14 +135,14 @@ export default function AchievementEditForm({ id, initial, locale }: Props) {
           className="px-5 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
           style={{ backgroundColor: PRIMARY, color: SECONDARY }}
         >
-          {saving ? "儲存中…" : "儲存變更"}
+          {saving ? tc("saving") : tc("saveChanges")}
         </button>
         <a
           href={`/${locale}/admin/achievements`}
           className="px-5 py-2 rounded-lg text-sm font-medium border transition-all hover:opacity-80"
           style={{ borderColor: "#d1d5db", color: "#374151" }}
         >
-          返回列表
+          {t("backToList")}
         </a>
       </div>
     </div>

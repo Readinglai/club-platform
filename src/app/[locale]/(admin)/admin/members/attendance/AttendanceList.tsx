@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -31,6 +32,7 @@ function rateStyle(rate: number) {
 }
 
 export default function AttendanceList({ events: initial }: { events: EventRow[] }) {
+  const t = useTranslations("admin.members");
   const [events, setEvents] = useState<EventRow[]>(initial);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -81,7 +83,7 @@ export default function AttendanceList({ events: initial }: { events: EventRow[]
   }
 
   if (events.length === 0) {
-    return <p className="text-sm text-gray-400 text-center py-16">尚無活動資料。</p>;
+    return <p className="text-sm text-gray-400 text-center py-16">{t("attendanceEmpty")}</p>;
   }
 
   return (
@@ -102,7 +104,7 @@ export default function AttendanceList({ events: initial }: { events: EventRow[]
                 {e.title}
               </span>
               <span className="text-xs text-gray-400 shrink-0">
-                {new Date(e.startAt).toLocaleDateString("zh-TW")}
+                {new Date(e.startAt).toLocaleDateString()}
               </span>
               <span className="text-xs text-gray-500 shrink-0 w-20 text-right">
                 {e.attended} / {e.totalRegistrations} 人
@@ -118,12 +120,12 @@ export default function AttendanceList({ events: initial }: { events: EventRow[]
             {isOpen && (
               <div className="border-t" style={{ borderColor: `${SECONDARY}22` }}>
                 {e.registrations.length === 0 ? (
-                  <p className="px-5 py-4 text-xs text-gray-400">無報名記錄</p>
+                  <p className="px-5 py-4 text-xs text-gray-400">{t("attendanceNoReg")}</p>
                 ) : (
                   <table className="w-full text-xs">
                     <thead>
                       <tr style={{ backgroundColor: `${PRIMARY}05` }}>
-                        {["姓名", "Email", "狀態", "出席時間", "操作"].map((h) => (
+                        {[t("attTableName"), "Email", t("attTableStatus"), t("attTableTime"), t("attTableActions")].map((h) => (
                           <th
                             key={h}
                             className="text-left px-5 py-2.5 font-semibold uppercase tracking-wide"
@@ -152,12 +154,12 @@ export default function AttendanceList({ events: initial }: { events: EventRow[]
                                     : { backgroundColor: "#f3f4f6", color: "#6b7280" }
                                 }
                               >
-                                {r.attended ? "已出席" : "未出席"}
+                                {r.attended ? t("attStatusAttended") : t("attStatusAbsent")}
                               </span>
                             </td>
                             <td className="px-5 py-2.5 text-gray-400">
                               {r.attendedAt
-                                ? new Date(r.attendedAt).toLocaleString("zh-TW")
+                                ? new Date(r.attendedAt).toLocaleString()
                                 : "—"}
                             </td>
                             <td className="px-5 py-2.5">
@@ -171,7 +173,7 @@ export default function AttendanceList({ events: initial }: { events: EventRow[]
                                     : { borderColor: `${SECONDARY}66`, color: PRIMARY, backgroundColor: "white" }
                                 }
                               >
-                                {loadingId === loadKey ? "…" : r.attended ? "取消出席" : "標記出席"}
+                                {loadingId === loadKey ? "…" : r.attended ? t("attCancelAttend") : t("attMarkAttend")}
                               </button>
                             </td>
                           </tr>

@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import AchievementsManager from "./AchievementsManager";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +17,7 @@ export default async function AdminAchievementsPage({
   if (!session?.user) redirect("/login");
 
   const { locale } = await params;
+  const t = await getTranslations("admin.achievements");
 
   const achievements = await db.achievement.findMany({
     orderBy: [{ year: "desc" }, { createdAt: "desc" }],
@@ -27,9 +29,9 @@ export default async function AdminAchievementsPage({
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>
-            過往成果管理
+            {t("title")}
           </h1>
-          <p className="text-sm text-gray-500 mt-1">共 {achievements.length} 筆記錄</p>
+          <p className="text-sm text-gray-500 mt-1">{t("count", { count: achievements.length })}</p>
         </div>
       </div>
 

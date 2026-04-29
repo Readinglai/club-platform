@@ -1,6 +1,7 @@
 import { requireAuth } from "@/lib/auth/guard";
 import { db } from "@/lib/db";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -14,6 +15,7 @@ export default async function DepartmentsPage({
 }) {
   await requireAuth(4);
   const { locale } = await params;
+  const t = await getTranslations("admin.departments");
 
   const departments = await db.department.findMany({
     orderBy: { name: "asc" },
@@ -25,11 +27,11 @@ export default async function DepartmentsPage({
   return (
     <div>
       <h1 className="text-2xl font-bold mb-8" style={{ color: PRIMARY }}>
-        部門總覽
+        {t("title")}
       </h1>
 
       {departments.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">尚無部門資料</div>
+        <div className="text-center py-16 text-gray-400">{t("emptyState")}</div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {departments.map((dept) => (
@@ -52,11 +54,11 @@ export default async function DepartmentsPage({
                   className="ml-4 shrink-0 text-xs px-2.5 py-1 rounded-full font-semibold"
                   style={{ backgroundColor: `${PRIMARY}12`, color: PRIMARY }}
                 >
-                  {dept._count.members} 人
+                  {t("memberCount", { count: dept._count.members })}
                 </span>
               </div>
               <div className="mt-4 text-xs font-medium" style={{ color: SECONDARY }}>
-                查看成員 →
+                {t("viewMembers")}
               </div>
             </Link>
           ))}

@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import MemberEditForm from "./MemberEditForm";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export default async function AdminMemberDetailPage({
   if (!session?.user) redirect("/login");
 
   const { locale, id } = await params;
+  const t = await getTranslations("admin.members");
 
   const [member, departments] = await Promise.all([
     db.user.findUnique({
@@ -47,12 +49,12 @@ export default async function AdminMemberDetailPage({
           className="text-xs hover:opacity-70"
           style={{ color: SECONDARY }}
         >
-          ← 成員列表
+          {t("backToMembers")}
         </Link>
       </div>
 
       <h1 className="text-2xl font-bold mb-2" style={{ color: PRIMARY }}>
-        編輯成員
+        {t("editTitle")}
       </h1>
       <p className="text-sm text-gray-400 mb-8">{member.email}</p>
 

@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import EventEditForm from "./EventEditForm";
 import RegistrationsTable from "./RegistrationsTable";
 
@@ -19,6 +20,7 @@ export default async function AdminEventDetailPage({
   if (!session?.user) redirect("/login");
 
   const { locale, id } = await params;
+  const t = await getTranslations("admin.events");
 
   const event = await db.event.findUnique({
     where: { id },
@@ -42,12 +44,12 @@ export default async function AdminEventDetailPage({
           className="text-xs hover:opacity-70"
           style={{ color: SECONDARY }}
         >
-          ← 活動列表
+          {t("backToEvents")}
         </Link>
       </div>
 
       <h1 className="text-2xl font-bold mb-8" style={{ color: PRIMARY }}>
-        編輯活動
+        {t("editTitle")}
       </h1>
 
       <EventEditForm
@@ -64,10 +66,9 @@ export default async function AdminEventDetailPage({
         locale={locale}
       />
 
-      {/* 報名名單 */}
       <div className="mt-10">
         <h2 className="text-lg font-semibold mb-4" style={{ color: PRIMARY }}>
-          報名名單（已報名 {registeredCount} 人 / 共 {event.registrations.length} 筆記錄）
+          {t("registrationsTitle", { registered: registeredCount, total: event.registrations.length })}
         </h2>
         <RegistrationsTable
           eventId={event.id}

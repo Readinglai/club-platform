@@ -1,15 +1,10 @@
 import { requireAuth } from "@/lib/auth/guard";
 import { db } from "@/lib/db";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
-
-const STATUS_LABEL: Record<string, string> = {
-  ACTIVE: "進行中",
-  COMPLETED: "已完成",
-  ARCHIVED: "已封存",
-};
 
 const STATUS_COLOR: Record<string, string> = {
   ACTIVE: "#16a34a",
@@ -26,6 +21,13 @@ export default async function TaskGroupsPage({
 }) {
   await requireAuth(3);
   const { locale } = await params;
+  const t = await getTranslations("admin.taskGroups");
+
+  const STATUS_LABEL: Record<string, string> = {
+    ACTIVE: t("statusActive"),
+    COMPLETED: t("statusCompleted"),
+    ARCHIVED: t("statusArchived"),
+  };
 
   const taskGroups = await db.taskGroup.findMany({
     orderBy: { createdAt: "desc" },
@@ -39,19 +41,19 @@ export default async function TaskGroupsPage({
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>
-          任務小組
+          {t("title")}
         </h1>
         <Link
           href={`/${locale}/admin/task-groups/new`}
           className="px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
           style={{ backgroundColor: PRIMARY, color: SECONDARY }}
         >
-          + 建立小組
+          {t("createButton")}
         </Link>
       </div>
 
       {taskGroups.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">尚無任務小組，點擊右上角建立第一個</div>
+        <div className="text-center py-16 text-gray-400">{t("emptyState")}</div>
       ) : (
         <div className="flex flex-col gap-3">
           {taskGroups.map((tg) => (
@@ -80,7 +82,7 @@ export default async function TaskGroupsPage({
                   <p className="text-xs text-gray-500 truncate">{tg.description}</p>
                 )}
                 <p className="text-xs text-gray-400 mt-1">
-                  建立者：{tg.createdBy.name}
+                  {t("createdBy")}{tg.createdBy.name}
                 </p>
               </div>
               <div className="ml-4 shrink-0 text-right">

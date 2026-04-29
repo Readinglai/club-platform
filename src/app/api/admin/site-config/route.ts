@@ -10,6 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireAuthJson } from "@/lib/auth/guard";
 
@@ -52,6 +53,13 @@ export async function PATCH(request: NextRequest) {
       create: { key, value },
       update: { value },
     });
+
+    // Revalidate homepage on any site-config change
+    revalidatePath("/");
+    revalidatePath("/zh");
+    revalidatePath("/en");
+    revalidatePath("/[locale]", "page");
+
     return NextResponse.json(record);
   } catch {
     return NextResponse.json({ error: "伺服器錯誤" }, { status: 500 });

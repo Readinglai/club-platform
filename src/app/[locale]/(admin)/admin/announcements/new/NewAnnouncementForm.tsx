@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
 export default function NewAnnouncementForm({ locale }: { locale: string }) {
   const router = useRouter();
+  const t = useTranslations("admin.announcements");
+  const tc = useTranslations("admin.common");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,11 +38,11 @@ export default function NewAnnouncementForm({ locale }: { locale: string }) {
         router.refresh();
       } else {
         const data = await res.json();
-        setError(data.error ?? "建立失敗，請稍後再試。");
+        setError(data.error ?? tc("createFailed"));
         setSubmitting(false);
       }
     } catch {
-      setError("網路錯誤，請稍後再試。");
+      setError(tc("networkErrorRetry"));
       setSubmitting(false);
     }
   }
@@ -54,7 +57,7 @@ export default function NewAnnouncementForm({ locale }: { locale: string }) {
 
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b7280" }}>
-          標題 *
+          {t("fieldTitle")}
         </label>
         <input
           name="title"
@@ -66,7 +69,7 @@ export default function NewAnnouncementForm({ locale }: { locale: string }) {
 
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b7280" }}>
-          內容 *
+          {t("fieldContent")}
         </label>
         <textarea
           name="content"
@@ -79,7 +82,7 @@ export default function NewAnnouncementForm({ locale }: { locale: string }) {
 
       <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: PRIMARY }}>
         <input type="checkbox" name="published" className="w-4 h-4 rounded" />
-        立即發布（取消勾選則儲存為草稿）
+        {t("fieldPublishNew")}
       </label>
 
       <div className="flex gap-3 pt-2">
@@ -89,7 +92,7 @@ export default function NewAnnouncementForm({ locale }: { locale: string }) {
           className="px-6 py-2.5 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
           style={{ backgroundColor: PRIMARY, color: SECONDARY }}
         >
-          {submitting ? "建立中…" : "建立公告"}
+          {submitting ? tc("creating") : t("createButton2")}
         </button>
         <button
           type="button"
@@ -97,7 +100,7 @@ export default function NewAnnouncementForm({ locale }: { locale: string }) {
           className="px-6 py-2.5 rounded-lg text-sm font-medium transition-all hover:opacity-70"
           style={{ color: PRIMARY, backgroundColor: `${PRIMARY}10` }}
         >
-          取消
+          {tc("cancel")}
         </button>
       </div>
     </form>

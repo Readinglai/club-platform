@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -30,12 +31,6 @@ interface Props {
   isMember: boolean;
   isLeader: boolean;
 }
-
-const COLUMNS: { key: TaskStatus; label: string; color: string }[] = [
-  { key: "TODO", label: "待辦", color: "#6b7280" },
-  { key: "IN_PROGRESS", label: "進行中", color: "#2563eb" },
-  { key: "DONE", label: "已完成", color: "#16a34a" },
-];
 
 interface TaskFormData {
   title: string;
@@ -74,6 +69,8 @@ function TaskModal({
   onSubmit,
   onClose,
 }: TaskModalProps) {
+  const t = useTranslations("admin.taskGroups");
+  const tc = useTranslations("admin.common");
   const [form, setForm] = useState<TaskFormData>({
     ...DEFAULT_FORM,
     status: defaultStatus ?? "TODO",
@@ -92,7 +89,7 @@ function TaskModal({
       >
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold" style={{ color: PRIMARY }}>
-            {mode === "create" ? "新增任務" : "編輯任務"}
+            {mode === "create" ? t("createTaskTitle") : t("editTaskTitle")}
           </h2>
           <button
             onClick={onClose}
@@ -105,13 +102,13 @@ function TaskModal({
         <div className="flex flex-col gap-3">
           <div>
             <label className="block text-xs font-semibold mb-1" style={{ color: PRIMARY }}>
-              標題 <span className="text-red-400">*</span>
+              {t("taskFieldTitle")}
             </label>
             <input
               type="text"
               value={form.title}
               onChange={(e) => set("title", e.target.value)}
-              placeholder="任務名稱"
+              placeholder={t("taskFieldTitle")}
               className="w-full rounded-xl border px-3 py-2 text-sm outline-none"
               style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
             />
@@ -119,13 +116,12 @@ function TaskModal({
 
           <div>
             <label className="block text-xs font-semibold mb-1" style={{ color: PRIMARY }}>
-              描述（選填）
+              {t("taskFieldDesc")}
             </label>
             <textarea
               value={form.description}
               onChange={(e) => set("description", e.target.value)}
               rows={2}
-              placeholder="任務說明"
               className="w-full rounded-xl border px-3 py-2 text-sm outline-none resize-none"
               style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
             />
@@ -133,7 +129,7 @@ function TaskModal({
 
           <div>
             <label className="block text-xs font-semibold mb-1" style={{ color: PRIMARY }}>
-              負責人（選填）
+              {t("taskFieldAssignee")}
             </label>
             <select
               value={form.assigneeId}
@@ -141,7 +137,7 @@ function TaskModal({
               className="w-full rounded-xl border px-3 py-2 text-sm"
               style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
             >
-              <option value="">未指派</option>
+              <option value="">{t("unassigned")}</option>
               {members.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.name}
@@ -152,7 +148,7 @@ function TaskModal({
 
           <div>
             <label className="block text-xs font-semibold mb-1" style={{ color: PRIMARY }}>
-              截止日期（選填）
+              {t("taskFieldDue")}
             </label>
             <input
               type="date"
@@ -166,7 +162,7 @@ function TaskModal({
           {mode === "edit" && (
             <div>
               <label className="block text-xs font-semibold mb-1" style={{ color: PRIMARY }}>
-                狀態
+                {t("taskFieldStatus")}
               </label>
               <select
                 value={form.status}
@@ -174,9 +170,9 @@ function TaskModal({
                 className="w-full rounded-xl border px-3 py-2 text-sm"
                 style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
               >
-                <option value="TODO">待辦</option>
-                <option value="IN_PROGRESS">進行中</option>
-                <option value="DONE">已完成</option>
+                <option value="TODO">{t("taskStatusTodo")}</option>
+                <option value="IN_PROGRESS">{t("taskStatusInProgress")}</option>
+                <option value="DONE">{t("taskStatusDone")}</option>
               </select>
             </div>
           )}
@@ -190,7 +186,7 @@ function TaskModal({
             className="px-4 py-2 rounded-xl text-sm border"
             style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
           >
-            取消
+            {tc("cancel")}
           </button>
           <button
             onClick={() => onSubmit(form)}
@@ -198,7 +194,7 @@ function TaskModal({
             className="px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-50"
             style={{ backgroundColor: PRIMARY, color: SECONDARY }}
           >
-            {loading ? "處理中…" : mode === "create" ? "建立" : "儲存"}
+            {loading ? tc("processing") : mode === "create" ? tc("create") : tc("save")}
           </button>
         </div>
       </div>
@@ -213,11 +209,19 @@ export default function TaskKanban({
   isMember,
   isLeader,
 }: Props) {
+  const t = useTranslations("admin.taskGroups");
+  const tc = useTranslations("admin.common");
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [createModal, setCreateModal] = useState<{ status: TaskStatus } | null>(null);
   const [editModal, setEditModal] = useState<Task | null>(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
+
+  const COLUMNS: { key: TaskStatus; label: string; color: string }[] = [
+    { key: "TODO", label: t("kanbanTodo"), color: "#6b7280" },
+    { key: "IN_PROGRESS", label: t("kanbanInProgress"), color: "#2563eb" },
+    { key: "DONE", label: t("kanbanDone"), color: "#16a34a" },
+  ];
 
   const tasksByStatus = useCallback(
     (status: TaskStatus) => tasks.filter((t) => t.status === status),
@@ -241,13 +245,13 @@ export default function TaskKanban({
       });
       const data = await res.json();
       if (!res.ok) {
-        setModalError(data.error ?? "建立失敗");
+        setModalError(data.error ?? tc("createFailed"));
         return;
       }
       setTasks((prev) => [...prev, data as Task]);
       setCreateModal(null);
     } catch {
-      setModalError("網路錯誤");
+      setModalError(tc("networkError"));
     } finally {
       setModalLoading(false);
     }
@@ -274,20 +278,20 @@ export default function TaskKanban({
       );
       const data = await res.json();
       if (!res.ok) {
-        setModalError(data.error ?? "更新失敗");
+        setModalError(data.error ?? tc("updateFailed"));
         return;
       }
       setTasks((prev) => prev.map((t) => (t.id === editModal.id ? (data as Task) : t)));
       setEditModal(null);
     } catch {
-      setModalError("網路錯誤");
+      setModalError(tc("networkError"));
     } finally {
       setModalLoading(false);
     }
   }
 
   async function handleDelete(taskId: string) {
-    if (!confirm("確定要刪除此任務？")) return;
+    if (!confirm(t("confirmDeleteTask"))) return;
     try {
       const res = await fetch(
         `/api/exec/task-groups/${taskGroupId}/tasks/${taskId}`,
@@ -304,7 +308,7 @@ export default function TaskKanban({
   return (
     <section className="mt-8">
       <h2 className="text-sm font-bold mb-4" style={{ color: PRIMARY }}>
-        任務看板
+        {t("kanbanTitle")}
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -332,7 +336,7 @@ export default function TaskKanban({
                   className="text-xs hover:opacity-70 transition-opacity"
                   style={{ color: SECONDARY }}
                 >
-                  + 新增
+                  {t("addTask")}
                 </button>
               )}
             </div>
@@ -357,7 +361,7 @@ export default function TaskKanban({
                           }}
                           className="text-[11px] text-gray-400 hover:text-gray-600"
                         >
-                          編輯
+                          {tc("edit")}
                         </button>
                       )}
                       {isLeader && (
@@ -365,7 +369,7 @@ export default function TaskKanban({
                           onClick={() => handleDelete(task.id)}
                           className="text-[11px] text-red-300 hover:text-red-500"
                         >
-                          刪除
+                          {tc("delete")}
                         </button>
                       )}
                     </div>
@@ -377,11 +381,11 @@ export default function TaskKanban({
                   )}
                   <div className="flex items-center justify-between mt-2">
                     <span className="text-[11px] text-gray-400">
-                      {task.assignee ? task.assignee.name : "未指派"}
+                      {task.assignee ? task.assignee.name : t("unassigned")}
                     </span>
                     {task.dueAt && (
                       <span className="text-[11px] text-gray-400">
-                        {new Date(task.dueAt).toLocaleDateString("zh-TW")}
+                        {new Date(task.dueAt).toLocaleDateString()}
                       </span>
                     )}
                   </div>

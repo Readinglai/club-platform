@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -12,6 +13,8 @@ interface Props {
 
 export default function NewEventForm({ locale }: Props) {
   const router = useRouter();
+  const t = useTranslations("admin.events");
+  const tc = useTranslations("admin.common");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,11 +46,11 @@ export default function NewEventForm({ locale }: Props) {
         router.refresh();
       } else {
         const data = await res.json();
-        setError(data.error ?? "建立失敗，請稍後再試。");
+        setError(data.error ?? tc("createFailed"));
         setSubmitting(false);
       }
     } catch {
-      setError("網路錯誤，請稍後再試。");
+      setError(tc("networkErrorRetry"));
       setSubmitting(false);
     }
   }
@@ -60,7 +63,7 @@ export default function NewEventForm({ locale }: Props) {
         </div>
       )}
 
-      <Field label="標題 *">
+      <Field label={t("fieldTitle")}>
         <input
           name="title"
           required
@@ -69,7 +72,7 @@ export default function NewEventForm({ locale }: Props) {
         />
       </Field>
 
-      <Field label="描述">
+      <Field label={t("fieldDescription")}>
         <textarea
           name="description"
           rows={3}
@@ -79,7 +82,7 @@ export default function NewEventForm({ locale }: Props) {
       </Field>
 
       <div className="grid grid-cols-2 gap-4">
-        <Field label="開始時間 *">
+        <Field label={t("fieldStartAt")}>
           <input
             name="startAt"
             type="datetime-local"
@@ -88,7 +91,7 @@ export default function NewEventForm({ locale }: Props) {
             style={{ borderColor: "#e5e7eb", color: PRIMARY }}
           />
         </Field>
-        <Field label="結束時間">
+        <Field label={t("fieldEndAt")}>
           <input
             name="endAt"
             type="datetime-local"
@@ -99,14 +102,14 @@ export default function NewEventForm({ locale }: Props) {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <Field label="地點">
+        <Field label={t("fieldLocation")}>
           <input
             name="location"
             className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
             style={{ borderColor: "#e5e7eb", color: PRIMARY }}
           />
         </Field>
-        <Field label="容量上限（留空表示不限）">
+        <Field label={t("fieldCapacity")}>
           <input
             name="capacity"
             type="number"
@@ -119,7 +122,7 @@ export default function NewEventForm({ locale }: Props) {
 
       <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: PRIMARY }}>
         <input type="checkbox" name="published" className="w-4 h-4 rounded" />
-        立即發布（取消勾選則儲存為草稿）
+        {t("fieldPublishNew")}
       </label>
 
       <div className="flex gap-3 pt-2">
@@ -129,7 +132,7 @@ export default function NewEventForm({ locale }: Props) {
           className="px-6 py-2.5 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
           style={{ backgroundColor: PRIMARY, color: SECONDARY }}
         >
-          {submitting ? "建立中…" : "建立活動"}
+          {submitting ? tc("creating") : t("newTitle")}
         </button>
         <button
           type="button"
@@ -137,7 +140,7 @@ export default function NewEventForm({ locale }: Props) {
           className="px-6 py-2.5 rounded-lg text-sm font-medium transition-all hover:opacity-70"
           style={{ color: PRIMARY, backgroundColor: `${PRIMARY}10` }}
         >
-          取消
+          {tc("cancel")}
         </button>
       </div>
     </form>

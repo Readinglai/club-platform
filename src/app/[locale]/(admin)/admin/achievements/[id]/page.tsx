@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import AchievementEditForm from "./AchievementEditForm";
 
@@ -18,16 +19,16 @@ export default async function AdminAchievementEditPage({
   if (!session?.user) redirect("/login");
 
   const { locale, id } = await params;
+  const t = await getTranslations("admin.achievements");
 
   const achievement = await db.achievement.findUnique({ where: { id } });
   if (!achievement) notFound();
 
   return (
     <div>
-      {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm mb-6 text-gray-500">
         <Link href={`/${locale}/admin/achievements`} className="hover:underline">
-          過往成果
+          {t("title")}
         </Link>
         <span>/</span>
         <span className="truncate max-w-xs" style={{ color: PRIMARY }}>{achievement.title}</span>
@@ -35,7 +36,7 @@ export default async function AdminAchievementEditPage({
 
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>
-          編輯成果
+          {t("editTitle")}
         </h1>
         <span
           className="px-3 py-1 rounded-full text-xs font-bold"

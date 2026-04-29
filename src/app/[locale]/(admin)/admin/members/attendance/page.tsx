@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import AttendanceList from "./AttendanceList";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +16,8 @@ export default async function AttendancePage({
   const session = await auth();
   if (!session?.user) redirect("/login");
   await params;
+
+  const t = await getTranslations("admin.members");
 
   const events = await db.event.findMany({
     orderBy: { startAt: "desc" },
@@ -35,7 +38,6 @@ export default async function AttendancePage({
   });
 
   const data = events.map((e) => {
-    // Denominator: REGISTERED only (CANCELLED excluded).
     const registered = e.registrations.filter((r) => r.status === "REGISTERED");
     const total = registered.length;
     const attended = registered.filter((r) => r.attendedAt !== null).length;
@@ -61,9 +63,9 @@ export default async function AttendancePage({
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>
-          出席記錄管理
+          {t("attendanceTitle")}
         </h1>
-        <p className="text-sm text-gray-500 mt-1">點擊活動名稱展開報名者出席狀態</p>
+        <p className="text-sm text-gray-500 mt-1">{t("attendanceSubtitle")}</p>
       </div>
       <AttendanceList events={data} />
     </div>

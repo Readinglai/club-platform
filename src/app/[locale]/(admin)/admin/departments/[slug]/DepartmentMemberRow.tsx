@@ -1,17 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
-
-const ROLE_LABELS: Record<string, string> = {
-  SUPER_ADMIN: "超級管理員",
-  ADMIN: "管理員",
-  EXEC: "執委",
-  MEMBER: "組員",
-  PUBLIC: "訪客",
-};
 
 interface Props {
   slug: string;
@@ -24,9 +17,18 @@ interface Props {
 }
 
 export default function DepartmentMemberRow({ slug, member }: Props) {
+  const t = useTranslations("admin.departments");
   const [role, setRole] = useState(member.role);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const ROLE_LABELS: Record<string, string> = {
+    SUPER_ADMIN: t("roleSuperAdmin"),
+    ADMIN: t("roleAdmin"),
+    EXEC: t("roleExec"),
+    MEMBER: t("roleMember"),
+    PUBLIC: t("rolePublic"),
+  };
 
   async function handleChange(newRole: string) {
     if (newRole === role) return;
@@ -43,12 +45,12 @@ export default function DepartmentMemberRow({ slug, member }: Props) {
       );
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error ?? "操作失敗");
+        setError(data.error ?? t("operationFailed"));
       } else {
         setRole(newRole);
       }
     } catch {
-      setError("網路錯誤");
+      setError(t("networkError"));
     } finally {
       setLoading(false);
     }
@@ -80,8 +82,8 @@ export default function DepartmentMemberRow({ slug, member }: Props) {
             backgroundColor: "white",
           }}
         >
-          <option value="EXEC">執委</option>
-          <option value="MEMBER">組員</option>
+          <option value="EXEC">{t("roleExec")}</option>
+          <option value="MEMBER">{t("roleMember")}</option>
         </select>
       ) : (
         <span
