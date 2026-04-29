@@ -122,6 +122,18 @@
 | GET | `/api/admin/reports/attendance` | 出席報表 | 4 (ADMIN) |
 | GET | `/api/admin/reports/export` | 匯出報表（CSV） | 4 (ADMIN) |
 | PATCH | `/api/exec/departments/[slug]/members/[userId]/role` | 更新部門成員全域角色（限 EXEC/MEMBER） | 5 (SUPER_ADMIN) |
+| GET | `/api/admin/feature-flags` | 列出所有功能開關（支援 Bearer） | 4 (ADMIN) |
+| PATCH | `/api/admin/feature-flags/[key]` | 更新功能開關狀態 | 4 (ADMIN) |
+| GET | `/api/admin/email-templates` | 列出所有 Email 模板（支援 Bearer） | 4 (ADMIN) |
+| PATCH | `/api/admin/email-templates/[key]` | 更新 Email 模板 | 4 (ADMIN) |
+| GET | `/api/admin/finance/records` | 列出財務記錄 | 3 (EXEC) |
+| POST | `/api/admin/finance/records` | 建立財務記錄 | 3 (EXEC) |
+| PATCH | `/api/admin/finance/records/[id]` | 更新財務記錄 | 3 (EXEC) |
+| DELETE | `/api/admin/finance/records/[id]` | 刪除財務記錄 | 3 (EXEC) |
+| GET | `/api/admin/finance/report` | 財務報表（收支摘要） | 3 (EXEC) |
+| GET | `/api/admin/finance/export` | 匯出財務記錄（CSV） | 3 (EXEC) |
+| GET | `/api/admin/finance/budget` | 列出月度預算 | 3 (EXEC) |
+| POST | `/api/admin/finance/budget` | 新增/更新月度預算 | 3 (EXEC) |
 
 ---
 

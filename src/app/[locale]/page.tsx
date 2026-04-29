@@ -368,15 +368,53 @@ function Footer() {
 
 // ─── 頁面主元件 ───────────────────────────────────────────────────────────────
 
+interface SectionConfig {
+  key: string;
+  visible: boolean;
+  order: number;
+}
+
+const DEFAULT_SECTIONS: SectionConfig[] = [
+  { key: "hero", visible: true, order: 0 },
+  { key: "about", visible: true, order: 1 },
+  { key: "upcoming_events", visible: true, order: 2 },
+  { key: "sponsors", visible: true, order: 3 },
+];
+
+async function getSectionsConfig(): Promise<SectionConfig[]> {
+  try {
+    const res = await fetch(`${getBaseUrl()}/api/admin/site-config?key=sections`, {
+      next: { revalidate: 300 },
+    });
+    if (res.ok) {
+      const { value } = await res.json();
+      if (value) {
+        const parsed = JSON.parse(value) as SectionConfig[];
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    }
+  } catch { /* use defaults */ }
+  return DEFAULT_SECTIONS;
+}
+
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const sections = await getSectionsConfig();
+  const ordered = [...sections].sort((a, b) => a.order - b.order);
+  const visible = new Set(ordered.filter((s) => s.visible).map((s) => s.key));
+  const sectionOrder = ordered.map((s) => s.key);
+
   return (
     <>
-      <HeroSection />
-      <AboutSection />
-      <UpcomingEventsSection />
-      <SponsorsSection />
+      {sectionOrder.map((key) => {
+        if (!visible.has(key)) return null;
+        if (key === "hero") return <HeroSection key="hero" />;
+        if (key === "about") return <AboutSection key="about" />;
+        if (key === "upcoming_events") return <UpcomingEventsSection key="upcoming_events" />;
+        if (key === "sponsors") return <SponsorsSection key="sponsors" />;
+        return null;
+      })}
       <Footer />
     </>
   );

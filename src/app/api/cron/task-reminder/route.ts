@@ -22,12 +22,22 @@ export async function GET(request: Request) {
   }
 
   const now = new Date();
-  const threeDaysLater = new Date(now);
-  threeDaysLater.setDate(threeDaysLater.getDate() + 3);
+
+  // Read reminder window from SiteConfig; default 72 hours (3 days)
+  let reminderHours = 72;
+  try {
+    const cfg = await db.siteConfig.findUnique({ where: { key: "reminder_hours_before" } });
+    if (cfg) {
+      const parsed = parseInt(cfg.value, 10);
+      if (!isNaN(parsed) && parsed > 0) reminderHours = parsed;
+    }
+  } catch { /* use default */ }
+
+  const cutoff = new Date(now.getTime() + reminderHours * 60 * 60 * 1000);
 
   const tasks = await db.task.findMany({
     where: {
-      dueAt: { gte: now, lte: threeDaysLater },
+      dueAt: { gte: now, lte: cutoff },
       status: { not: "DONE" },
       assigneeId: { not: null },
     },
