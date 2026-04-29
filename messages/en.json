@@ -293,6 +293,7 @@
       "fieldName": "Name *",
       "fieldRole": "Role",
       "fieldDepartment": "Department",
+      "fieldAvatar": "Avatar",
       "noDepartment": "— No Department —",
       "memberUpdated": "Member updated.",
       "saveChanges": "Save Changes",

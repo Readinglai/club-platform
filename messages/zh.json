@@ -293,6 +293,7 @@
       "fieldName": "姓名 *",
       "fieldRole": "角色",
       "fieldDepartment": "部門",
+      "fieldAvatar": "頭像",
       "noDepartment": "— 不分配部門 —",
       "memberUpdated": "成員資料已更新。",
       "saveChanges": "儲存變更",

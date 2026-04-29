@@ -30,6 +30,7 @@ export default async function AdminMemberDetailPage({
         email: true,
         role: true,
         departmentId: true,
+        image: true,
         createdAt: true,
       },
     }),
@@ -64,6 +65,7 @@ export default async function AdminMemberDetailPage({
           name: member.name,
           role: member.role,
           departmentId: member.departmentId,
+          image: member.image,
         }}
         departments={departments}
         locale={locale}

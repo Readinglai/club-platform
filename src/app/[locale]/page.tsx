@@ -11,6 +11,7 @@ import Image from "next/image";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { MotionCard } from "@/components/motion/MotionCard";
 import { MotionLogo } from "@/components/motion/MotionLogo";
+import { SponsorLogoImg } from "@/components/motion/SponsorLogoImg";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -309,12 +310,11 @@ async function SponsorsSection() {
                     title={s.name}
                   >
                     {s.logoUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <SponsorLogoImg
                         src={s.logoUrl}
                         alt={s.name}
-                        className="object-contain"
-                        style={{ height: tier === "platinum" ? 64 : tier === "gold" ? 52 : 40, maxWidth: 160 }}
+                        height={tier === "platinum" ? 64 : tier === "gold" ? 52 : 40}
+                        maxWidth={160}
                       />
                     ) : (
                       <span className="text-sm font-semibold" style={{ color: PRIMARY }}>{s.name}</span>

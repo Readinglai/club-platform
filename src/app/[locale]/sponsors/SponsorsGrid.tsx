@@ -37,6 +37,42 @@ interface Props {
   defaultYear: number;
 }
 
+function SponsorCard({ sponsor: s, locale }: { sponsor: SponsorRow & { tier: string }; locale: string }) {
+  const [imgFailed, setImgFailed] = useState(false);
+  return (
+    <Link
+      href={`/${locale}/sponsors/${s.id}`}
+      className="group flex flex-col items-center gap-3 p-5 rounded-2xl bg-white border transition-all hover:shadow-md hover:border-gray-300"
+      style={{ borderColor: "#e5e7eb" }}
+    >
+      <div
+        className="relative w-full rounded-xl overflow-hidden flex items-center justify-center"
+        style={{ height: "80px", backgroundColor: `${PRIMARY}06` }}
+      >
+        {s.logoUrl && !imgFailed ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={s.logoUrl}
+            alt={s.name}
+            className="absolute inset-0 w-full h-full object-contain p-2"
+            onError={() => setImgFailed(true)}
+          />
+        ) : (
+          <span className="text-3xl font-bold select-none" style={{ color: `${PRIMARY}55` }}>
+            {s.name.charAt(0).toUpperCase()}
+          </span>
+        )}
+      </div>
+      <p
+        className="text-sm font-semibold text-center leading-snug group-hover:opacity-80 transition-opacity"
+        style={{ color: PRIMARY }}
+      >
+        {s.name}
+      </p>
+    </Link>
+  );
+}
+
 export default function SponsorsGrid({ sponsors, years, locale, defaultYear }: Props) {
   const t = useTranslations("sponsors");
   const [selectedYear, setSelectedYear] = useState(defaultYear);
@@ -107,55 +143,9 @@ export default function SponsorsGrid({ sponsors, years, locale, defaultYear }: P
                 </div>
 
                 {/* Sponsor cards */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {tierSponsors.map((s) => (
-                    <Link
-                      key={s.id}
-                      href={`/${locale}/sponsors/${s.id}`}
-                      className="group flex flex-col items-center gap-3 p-5 rounded-2xl bg-white border transition-all hover:shadow-md hover:border-gray-300"
-                      style={{ borderColor: "#e5e7eb" }}
-                    >
-                      {/* Logo or placeholder */}
-                      <div
-                        className="w-full flex items-center justify-center rounded-xl overflow-hidden"
-                        style={{ height: "80px", backgroundColor: `${PRIMARY}06` }}
-                      >
-                        {s.logoUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={s.logoUrl}
-                            alt={s.name}
-                            className="max-h-full max-w-full object-contain px-2"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = "none";
-                              const parent = target.parentElement;
-                              if (parent) {
-                                parent.textContent = s.name.charAt(0).toUpperCase();
-                                parent.style.fontSize = "2rem";
-                                parent.style.fontWeight = "700";
-                                parent.style.color = `${PRIMARY}66`;
-                              }
-                            }}
-                          />
-                        ) : (
-                          <span
-                            className="text-3xl font-bold select-none"
-                            style={{ color: `${PRIMARY}55` }}
-                          >
-                            {s.name.charAt(0).toUpperCase()}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Name */}
-                      <p
-                        className="text-sm font-semibold text-center leading-snug group-hover:opacity-80 transition-opacity"
-                        style={{ color: PRIMARY }}
-                      >
-                        {s.name}
-                      </p>
-                    </Link>
+                    <SponsorCard key={s.id} sponsor={s} locale={locale} />
                   ))}
                 </div>
               </section>
