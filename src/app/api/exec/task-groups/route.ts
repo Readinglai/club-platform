@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     }
 
     const userRole = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[userRole] < 4) {
+    if (ROLE_LEVEL[userRole] < 3) {
       return NextResponse.json({ error: "權限不足，需要 EXEC 以上" }, { status: 403 });
     }
 

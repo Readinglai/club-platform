@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * DepartmentMemberRow.tsx — 部門成員角色下拉選單
- *
- * Client Component：顯示成員資訊，並提供角色修改的下拉選單。
- */
-
 import { useState } from "react";
 
 const PRIMARY = "#1a2744";

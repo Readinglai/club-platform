@@ -14,7 +14,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { role } = await requireAuth(4);
+  const { role, level } = await requireAuth(3);
   // requireAuth 通過後 session 必然存在，再次取得以讀取 name/email
   const session = await auth();
   const userName = session?.user?.name ?? session?.user?.email ?? "";
@@ -24,6 +24,7 @@ export default async function AdminLayout({
       <AdminSidebar
         userName={userName}
         userRole={role}
+        userLevel={level}
       />
       <main className="flex-1 px-8 py-10 overflow-y-auto">
         {children}

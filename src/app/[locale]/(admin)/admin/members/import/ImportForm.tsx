@@ -91,7 +91,7 @@ export default function ImportForm({ locale }: { locale: string }) {
           bob@mail.utoronto.ca,Bob Wang,MEMBER,dept_id_here
         </code>
         <p className="text-xs text-gray-400 mt-3">
-          角色可填：SUPER_ADMIN / EXEC / TEAM_LEAD / MEMBER（預設 MEMBER）
+          角色可填：SUPER_ADMIN / ADMIN / EXEC / MEMBER（預設 MEMBER）
         </p>
       </div>
 

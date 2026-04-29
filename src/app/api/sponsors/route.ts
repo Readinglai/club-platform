@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const guard = await requireAuthJson(4, request);
+    const guard = await requireAuthJson(3, request);
     if (guard.error) return guard.error;
 
     const body = await request.json();

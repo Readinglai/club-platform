@@ -6,8 +6,8 @@
  *
  * 角色層級（數字越大，權限越高）：
  *   SUPER_ADMIN = 5  跨社團最高管理員
- *   EXEC        = 4  社團執行委員
- *   TEAM_LEAD   = 3  各部門組長
+ *   ADMIN       = 4  社團管理員
+ *   EXEC        = 3  社團執行委員
  *   MEMBER      = 2  一般社員
  *   PUBLIC      = 1  未登入訪客
  */
@@ -22,8 +22,8 @@ import type { Role } from "@/generated/prisma/client";
 /** 每個角色對應的數字層級 */
 export const ROLE_LEVEL: Record<Role | "PUBLIC", number> = {
   SUPER_ADMIN: 5,
-  EXEC:        4,
-  TEAM_LEAD:   3,
+  ADMIN:       4,
+  EXEC:        3,
   MEMBER:      2,
   PUBLIC:      1,
 };
@@ -42,8 +42,8 @@ export const ROLE_LEVEL: Record<Role | "PUBLIC", number> = {
  * @returns true 代表有權限，false 代表無權限
  *
  * @example
- * hasRole("EXEC", "MEMBER")      // true  （EXEC 層級 4 ≥ MEMBER 層級 2）
- * hasRole("MEMBER", "TEAM_LEAD") // false （MEMBER 層級 2 < TEAM_LEAD 層級 3）
+ * hasRole("EXEC", "MEMBER")   // true  （EXEC 層級 3 ≥ MEMBER 層級 2）
+ * hasRole("MEMBER", "EXEC")   // false （MEMBER 層級 2 < EXEC 層級 3）
  */
 export function hasRole(
   userRole: Role | "PUBLIC",
@@ -78,9 +78,9 @@ export async function requireAuth() {
  * @throws Error 若未登入或角色不足
  *
  * @example
- * // 在 Server Action 中保護只有 EXEC 以上才能操作
- * const user = await requireRole("EXEC");
- * // user.role 一定是 EXEC 或以上
+ * // 在 Server Action 中保護只有 ADMIN 以上才能操作
+ * const user = await requireRole("ADMIN");
+ * // user.role 一定是 ADMIN 或以上
  */
 export async function requireRole(requiredRole: Role | "PUBLIC") {
   const user = await requireAuth();

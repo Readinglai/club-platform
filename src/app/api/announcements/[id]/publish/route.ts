@@ -13,7 +13,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     if (!session?.user?.id) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
     const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "權限不足" }, { status: 403 });
+    if (ROLE_LEVEL[role] < 3) return NextResponse.json({ error: "權限不足" }, { status: 403 });
 
     const { id } = await params;
     const body = await request.json();

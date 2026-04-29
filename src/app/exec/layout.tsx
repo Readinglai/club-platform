@@ -29,7 +29,7 @@ export default async function ExecLayout({
   if (!session?.user) redirect("/login");
 
   const role = (session.user.role as Role | undefined) ?? "MEMBER";
-  if (ROLE_LEVEL[role] < 4) redirect("/unauthorized");
+  if (ROLE_LEVEL[role] < 3) redirect("/unauthorized");
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f9f7f4" }}>

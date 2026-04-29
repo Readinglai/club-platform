@@ -21,7 +21,7 @@ declare module "next-auth" {
     user: {
       /** 使用者在資料庫中的唯一 ID（cuid） */
       id: string;
-      /** 使用者在社團中的角色（SUPER_ADMIN / EXEC / TEAM_LEAD / MEMBER） */
+      /** 使用者在社團中的角色（SUPER_ADMIN / ADMIN / EXEC / MEMBER） */
       role: Role;
     } & DefaultSession["user"];
   }

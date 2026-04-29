@@ -22,8 +22,8 @@ datasource db {
 /// 使用者角色，對應 config.yaml roles，數字越大權限越高
 enum Role {
   SUPER_ADMIN /// 超級管理員（等級 5）：跨社團最高權限
-  EXEC        /// 執行委員（等級 4）：社團主要負責人
-  TEAM_LEAD   /// 組長（等級 3）：各部門負責人
+  ADMIN       /// 管理員（等級 4）：社團管理層
+  EXEC        /// 執行委員（等級 3）：社團主要執行人員
   MEMBER      /// 一般成員（等級 2）：已加入社團的成員
 }
 

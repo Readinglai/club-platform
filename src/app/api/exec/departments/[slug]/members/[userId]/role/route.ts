@@ -2,7 +2,7 @@
  * route.ts — 部門成員角色修改 API
  *
  * 功能：修改指定成員的全域角色（User.role），限定為 team_lead 或 member
- * 輸入：URL [slug] 部門識別碼、[userId] 成員 ID；body: { role: "TEAM_LEAD" | "MEMBER" }
+ * 輸入：URL [slug] 部門識別碼、[userId] 成員 ID；body: { role: "EXEC" | "MEMBER" }
  * 輸出：更新後的 user 物件（id, name, role）
  * 驗證：僅 SUPER_ADMIN（level 5）可操作
  */
@@ -37,9 +37,9 @@ export async function PATCH(
   }
 
   const { role } = body as { role?: unknown };
-  if (role !== "TEAM_LEAD" && role !== "MEMBER") {
+  if (role !== "EXEC" && role !== "MEMBER") {
     return NextResponse.json(
-      { error: "role 必須為 TEAM_LEAD 或 MEMBER" },
+      { error: "role 必須為 EXEC 或 MEMBER" },
       { status: 400 }
     );
   }

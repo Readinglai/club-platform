@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const deptBySlug = new Map(allDepts.map((d) => [d.slug, d.id]));
     const deptById = new Set(allDepts.map((d) => d.id));
 
-    const VALID_ROLES = ["SUPER_ADMIN", "EXEC", "TEAM_LEAD", "MEMBER"];
+    const VALID_ROLES = ["SUPER_ADMIN", "ADMIN", "EXEC", "MEMBER"];
     let imported = 0;
     let updated = 0;
     const errors: string[] = [];

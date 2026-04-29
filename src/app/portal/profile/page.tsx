@@ -18,8 +18,8 @@ const SECONDARY = "#c9b99a";
 /** 角色顯示名稱對照 */
 const ROLE_LABELS: Record<string, string> = {
   SUPER_ADMIN: "超級管理員",
+  ADMIN: "管理員",
   EXEC: "執行委員",
-  TEAM_LEAD: "組長",
   MEMBER: "一般成員",
 };
 

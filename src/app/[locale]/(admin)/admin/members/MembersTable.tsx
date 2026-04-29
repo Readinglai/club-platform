@@ -7,12 +7,12 @@ import Link from "next/link";
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
-type Role = "SUPER_ADMIN" | "EXEC" | "TEAM_LEAD" | "MEMBER";
+type Role = "SUPER_ADMIN" | "ADMIN" | "EXEC" | "MEMBER";
 
 const ROLE_STYLE: Record<Role, { bg: string; color: string; label: string }> = {
   SUPER_ADMIN: { bg: "#fee2e2", color: "#991b1b", label: "超級管理員" },
+  ADMIN:       { bg: "#dbeafe", color: "#1e40af", label: "管理員" },
   EXEC:        { bg: "#ffedd5", color: "#9a3412", label: "執委" },
-  TEAM_LEAD:   { bg: "#dbeafe", color: "#1e40af", label: "組長" },
   MEMBER:      { bg: "#f3f4f6", color: "#6b7280", label: "成員" },
 };
 

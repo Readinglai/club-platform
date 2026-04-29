@@ -92,7 +92,7 @@ export async function POST(
   }
 
   const globalRole = (session.user.role as Role | undefined) ?? "MEMBER";
-  const canCreate = member.role === "LEADER" || ROLE_LEVEL[globalRole] >= 4;
+  const canCreate = member.role === "LEADER" || ROLE_LEVEL[globalRole] >= 3;
   if (!canCreate) {
     return NextResponse.json({ error: "只有組長或執委可以建立投票" }, { status: 403 });
   }

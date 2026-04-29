@@ -8,8 +8,8 @@ const SECONDARY = "#c9b99a";
 
 const ROLES = [
   { value: "SUPER_ADMIN", label: "超級管理員" },
+  { value: "ADMIN",       label: "管理員" },
   { value: "EXEC",        label: "執委" },
-  { value: "TEAM_LEAD",   label: "組長" },
   { value: "MEMBER",      label: "成員" },
 ];
 

@@ -6,6 +6,15 @@
 - **Cookie session**：NextAuth 標準 cookie（瀏覽器）
 - **Bearer token**：`Authorization: Bearer <JWT>`（行動 App，使用 `/api/auth/token` 取得）
 
+角色等級（RBAC）：
+| 角色 | Level |
+|------|-------|
+| SUPER_ADMIN | 5 |
+| ADMIN | 4 |
+| EXEC | 3 |
+| MEMBER | 2 |
+| PUBLIC | 1 |
+
 ---
 
 ## 公開端點（無需登入）
@@ -34,26 +43,26 @@
 | PATCH | `/api/user/profile` | 更新個人資料（name, image） | 2 (MEMBER) |
 | POST | `/api/events/[id]/register` | 報名活動（含容量檢查） | 2 (MEMBER) |
 | DELETE | `/api/events/[id]/register` | 取消報名 | 2 (MEMBER) |
-| GET | `/api/exec/task-groups` | 列出任務群組 | 3 (TEAM_LEAD) |
-| POST | `/api/exec/task-groups` | 建立任務群組 | 4 (EXEC) |
-| GET | `/api/exec/task-groups/[id]/tasks` | 列出群組任務 | 3 (TEAM_LEAD) |
-| POST | `/api/exec/task-groups/[id]/tasks` | 新增群組任務 | 3 (TEAM_LEAD) |
-| PATCH | `/api/exec/task-groups/[id]/tasks/[taskId]` | 更新任務 | 3 (TEAM_LEAD) |
-| DELETE | `/api/exec/task-groups/[id]/tasks/[taskId]` | 刪除任務 | 4 (EXEC) |
-| GET | `/api/exec/task-groups/[id]/members` | 列出群組成員 | 3 (TEAM_LEAD) |
-| POST | `/api/exec/task-groups/[id]/members` | 新增群組成員 | 4 (EXEC) |
-| DELETE | `/api/exec/task-groups/[id]/members/[userId]` | 移除群組成員 | 4 (EXEC) |
-| PATCH | `/api/exec/task-groups/[id]/members/[userId]/role` | 更新群組成員角色 | 4 (EXEC) |
-| PATCH | `/api/exec/task-groups/[id]/status` | 更新群組狀態 | 4 (EXEC) |
-| GET | `/api/exec/task-groups/[id]/discussion` | 取得群組討論區 | 3 (TEAM_LEAD) |
-| GET | `/api/exec/task-groups/[id]/discussion/comments` | 列出討論留言 | 3 (TEAM_LEAD) |
-| POST | `/api/exec/task-groups/[id]/discussion/comments` | 新增討論留言 | 3 (TEAM_LEAD) |
-| PATCH | `/api/exec/task-groups/[id]/discussion/comments/[commentId]` | 更新討論留言 | 3 (TEAM_LEAD) |
-| DELETE | `/api/exec/task-groups/[id]/discussion/comments/[commentId]` | 刪除討論留言 | 3 (TEAM_LEAD) |
-| GET | `/api/exec/task-groups/[id]/votes` | 列出群組投票 | 3 (TEAM_LEAD) |
-| POST | `/api/exec/task-groups/[id]/votes` | 建立投票 | 4 (EXEC) |
-| POST | `/api/exec/task-groups/[id]/votes/[voteId]/respond` | 投票回應 | 3 (TEAM_LEAD) |
-| PATCH | `/api/exec/task-groups/[id]/votes/[voteId]/close` | 關閉投票 | 4 (EXEC) |
+| GET | `/api/exec/task-groups` | 列出任務群組 | 3 (EXEC) |
+| POST | `/api/exec/task-groups` | 建立任務群組 | 3 (EXEC) |
+| GET | `/api/exec/task-groups/[id]/tasks` | 列出群組任務 | 3 (EXEC) |
+| POST | `/api/exec/task-groups/[id]/tasks` | 新增群組任務 | 3 (EXEC) |
+| PATCH | `/api/exec/task-groups/[id]/tasks/[taskId]` | 更新任務 | 3 (EXEC) |
+| DELETE | `/api/exec/task-groups/[id]/tasks/[taskId]` | 刪除任務（群組 Leader 或全域 level≥3） | 3 (EXEC) |
+| GET | `/api/exec/task-groups/[id]/members` | 列出群組成員 | 3 (EXEC) |
+| POST | `/api/exec/task-groups/[id]/members` | 新增群組成員 | 3 (EXEC) |
+| DELETE | `/api/exec/task-groups/[id]/members/[userId]` | 移除群組成員 | 3 (EXEC) |
+| PATCH | `/api/exec/task-groups/[id]/members/[userId]/role` | 更新群組成員角色 | 3 (EXEC) |
+| PATCH | `/api/exec/task-groups/[id]/status` | 更新群組狀態 | 3 (EXEC) |
+| GET | `/api/exec/task-groups/[id]/discussion` | 取得群組討論區 | 3 (EXEC) |
+| GET | `/api/exec/task-groups/[id]/discussion/comments` | 列出討論留言 | 3 (EXEC) |
+| POST | `/api/exec/task-groups/[id]/discussion/comments` | 新增討論留言 | 3 (EXEC) |
+| PATCH | `/api/exec/task-groups/[id]/discussion/comments/[commentId]` | 更新討論留言 | 3 (EXEC) |
+| DELETE | `/api/exec/task-groups/[id]/discussion/comments/[commentId]` | 刪除討論留言 | 3 (EXEC) |
+| GET | `/api/exec/task-groups/[id]/votes` | 列出群組投票 | 3 (EXEC) |
+| POST | `/api/exec/task-groups/[id]/votes` | 建立投票（群組 Leader 或全域 level≥3） | 3 (EXEC) |
+| POST | `/api/exec/task-groups/[id]/votes/[voteId]/respond` | 投票回應 | 3 (EXEC) |
+| PATCH | `/api/exec/task-groups/[id]/votes/[voteId]/close` | 關閉投票（投票建立者） | 3 (EXEC) |
 
 ### Portal 版端點（行動 App 優先，支援 Bearer token）
 
@@ -65,44 +74,54 @@
 
 ---
 
-## Admin 端點（EXEC+，level ≥ 4）
+## Exec 端點（EXEC+，level ≥ 3）
 
 | Method | Path | Description | Min Level |
 |--------|------|-------------|-----------|
-| GET | `/api/admin/members` | 列出所有成員（含 department） | 4 (EXEC) |
-| PATCH | `/api/admin/members/[id]` | 更新成員角色或部門 | 4 (EXEC) |
-| POST | `/api/admin/members/import` | 批次匯入成員 | 4 (EXEC) |
-| GET | `/api/admin/events` | 列出所有活動（含草稿） | 4 (EXEC) |
-| POST | `/api/admin/events` | 建立新活動 | 4 (EXEC) |
-| GET | `/api/admin/events/[id]` | 取得活動詳情（後台） | 4 (EXEC) |
-| PATCH | `/api/admin/events/[id]` | 更新活動 | 4 (EXEC) |
-| DELETE | `/api/admin/events/[id]` | 刪除活動 | 4 (EXEC) |
-| PATCH | `/api/admin/events/[id]/publish` | 發布 / 取消發布活動 | 4 (EXEC) |
-| PATCH | `/api/admin/events/[id]/registrations/[registrationId]/attend` | 標記出席 | 4 (EXEC) |
-| GET | `/api/admin/achievements` | 列出所有成果（後台，含未發布） | 4 (EXEC) |
-| POST | `/api/admin/achievements` | 建立新成果 | 4 (EXEC) |
-| PATCH | `/api/admin/achievements/[id]` | 更新成果 | 4 (EXEC) |
-| DELETE | `/api/admin/achievements/[id]` | 刪除成果 | 4 (EXEC) |
+| GET | `/api/admin/events` | 列出所有活動（含草稿） | 3 (EXEC) |
+| POST | `/api/admin/events` | 建立新活動 | 3 (EXEC) |
+| GET | `/api/admin/events/[id]` | 取得活動詳情（後台） | 3 (EXEC) |
+| PUT | `/api/admin/events/[id]` | 更新活動 | 3 (EXEC) |
+| DELETE | `/api/admin/events/[id]` | 刪除活動 | 5 (SUPER_ADMIN) |
+| PATCH | `/api/admin/events/[id]/publish` | 發布 / 取消發布活動 | 3 (EXEC) |
+| PATCH | `/api/admin/events/[id]/registrations/[registrationId]/attend` | 標記出席 | 3 (EXEC) |
+| POST | `/api/announcements` | 建立公告 | 3 (EXEC) |
+| PUT | `/api/announcements/[id]` | 更新公告 | 3 (EXEC) |
+| DELETE | `/api/announcements/[id]` | 刪除公告 | 3 (EXEC) |
+| PATCH | `/api/announcements/[id]/publish` | 發布 / 取消發布公告 | 3 (EXEC) |
+| POST | `/api/sponsors` | 新增贊助商 | 3 (EXEC) |
+| GET | `/api/sponsors/[id]` | 取得單一贊助商（後台，含歷史記錄） | 3 (EXEC) |
+| PATCH | `/api/sponsors/[id]` | 更新贊助商 | 3 (EXEC) |
+| DELETE | `/api/sponsors/[id]` | 刪除贊助商 | 3 (EXEC) |
+| GET | `/api/sponsors/[id]/history` | 列出贊助年度記錄 | 3 (EXEC) |
+| POST | `/api/sponsors/[id]/history` | 新增贊助年度記錄 | 3 (EXEC) |
+| DELETE | `/api/sponsors/[id]/history/[historyId]` | 刪除贊助年度記錄 | 3 (EXEC) |
+
+---
+
+## Admin 端點（ADMIN+，level ≥ 4）
+
+| Method | Path | Description | Min Level |
+|--------|------|-------------|-----------|
+| GET | `/api/admin/departments` | 列出所有部門（含成員數） | 4 (ADMIN) |
+| GET | `/api/admin/departments/[id]/members` | 取得指定部門成員列表（id 或 slug） | 4 (ADMIN) |
+| GET | `/api/admin/members` | 列出所有成員（含 department） | 4 (ADMIN) |
+| PATCH | `/api/admin/members/[id]` | 更新成員角色或部門 | 4 (ADMIN) |
+| POST | `/api/admin/members/import` | 批次匯入成員 | 4 (ADMIN) |
+| GET | `/api/admin/achievements` | 列出所有成果（後台，含未發布） | 4 (ADMIN) |
+| POST | `/api/admin/achievements` | 建立新成果 | 4 (ADMIN) |
+| PATCH | `/api/admin/achievements/[id]` | 更新成果 | 4 (ADMIN) |
+| DELETE | `/api/admin/achievements/[id]` | 刪除成果 | 4 (ADMIN) |
 | GET | `/api/admin/site-config` | 讀取單一設定值（?key=...） | 公開 |
-| PATCH | `/api/admin/site-config` | 更新設定值 | 4 (EXEC) |
-| GET | `/api/admin/alumni` | 列出所有校友（含隱藏記錄） | 4 (EXEC) |
-| POST | `/api/admin/alumni` | 建立新校友記錄 | 4 (EXEC) |
-| PATCH | `/api/admin/alumni/[id]` | 更新校友資料 | 4 (EXEC) |
-| DELETE | `/api/admin/alumni/[id]` | 刪除校友記錄 | 4 (EXEC) |
-| GET | `/api/admin/reports/members` | 成員報表 | 4 (EXEC) |
-| GET | `/api/admin/reports/attendance` | 出席報表 | 4 (EXEC) |
-| GET | `/api/admin/reports/export` | 匯出報表（CSV） | 4 (EXEC) |
-| GET | `/api/announcements` | 列出公告（後台包含草稿） | 4 (EXEC) |
-| POST | `/api/announcements` | 建立公告 | 4 (EXEC) |
-| PATCH | `/api/announcements/[id]/publish` | 發布 / 取消發布公告 | 4 (EXEC) |
-| POST | `/api/sponsors` | 新增贊助商 | 4 (EXEC) |
-| PATCH | `/api/sponsors/[id]` | 更新贊助商 | 4 (EXEC) |
-| DELETE | `/api/sponsors/[id]` | 刪除贊助商 | 4 (EXEC) |
-| POST | `/api/sponsors/[id]/history` | 新增贊助年度記錄 | 4 (EXEC) |
-| PATCH | `/api/sponsors/[id]/history/[historyId]` | 更新贊助年度記錄 | 4 (EXEC) |
-| DELETE | `/api/sponsors/[id]/history/[historyId]` | 刪除贊助年度記錄 | 4 (EXEC) |
-| GET | `/api/exec/departments/[slug]/members/[userId]/role` | 取得成員在部門的角色 | 4 (EXEC) |
-| PATCH | `/api/exec/departments/[slug]/members/[userId]/role` | 更新成員在部門的角色 | 4 (EXEC) |
+| PATCH | `/api/admin/site-config` | 更新設定值 | 4 (ADMIN) |
+| GET | `/api/admin/alumni` | 列出所有校友（含隱藏記錄） | 4 (ADMIN) |
+| POST | `/api/admin/alumni` | 建立新校友記錄 | 4 (ADMIN) |
+| PATCH | `/api/admin/alumni/[id]` | 更新校友資料 | 4 (ADMIN) |
+| DELETE | `/api/admin/alumni/[id]` | 刪除校友記錄 | 4 (ADMIN) |
+| GET | `/api/admin/reports/members` | 成員報表 | 4 (ADMIN) |
+| GET | `/api/admin/reports/attendance` | 出席報表 | 4 (ADMIN) |
+| GET | `/api/admin/reports/export` | 匯出報表（CSV） | 4 (ADMIN) |
+| PATCH | `/api/exec/departments/[slug]/members/[userId]/role` | 更新部門成員全域角色（限 EXEC/MEMBER） | 5 (SUPER_ADMIN) |
 
 ---
 
