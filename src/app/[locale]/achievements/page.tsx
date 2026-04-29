@@ -1,12 +1,19 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { db } from "@/lib/db";
-import { getAllAchievements, getAchievementYears } from "@/lib/data/achievements";
+import { getAllAchievements } from "@/lib/data/achievements";
 import AchievementsGrid from "@/components/AchievementsGrid";
 
 export const dynamic = "force-dynamic";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
+
+interface AchievementItem {
+  id: string;
+  title: string;
+  year: number;
+  description: string;
+  imageUrl: string | null;
+}
 
 interface AchievementsPageProps {
   params: Promise<{ locale: string }>;
@@ -17,20 +24,24 @@ export default async function AchievementsPage({ params }: AchievementsPageProps
   setRequestLocale(locale);
   const t = await getTranslations("achievements");
 
-  // Try DB first; fall back to static mock data
+  const baseUrl = (process.env.NEXTAUTH_URL ?? "http://localhost:3000").replace(/\/$/, "");
+
   let achievements: { id: string; title: string; year: number; description: string; image: string }[];
   try {
-    const rows = await db.achievement.findMany({
-      orderBy: [{ year: "desc" }, { createdAt: "desc" }],
-    });
-    if (rows.length > 0) {
-      achievements = rows.map((r) => ({
-        id: r.id,
-        title: r.title,
-        year: r.year,
-        description: r.description,
-        image: r.imageUrl ?? `https://placehold.co/800x450/1a2744/c9b99a?text=${r.year}`,
-      }));
+    const res = await fetch(`${baseUrl}/api/achievements`, { cache: "no-store" });
+    if (res.ok) {
+      const rows = (await res.json()) as AchievementItem[];
+      if (rows.length > 0) {
+        achievements = rows.map((r) => ({
+          id: r.id,
+          title: r.title,
+          year: r.year,
+          description: r.description,
+          image: r.imageUrl ?? `https://placehold.co/800x450/1a2744/c9b99a?text=${r.year}`,
+        }));
+      } else {
+        achievements = getAllAchievements();
+      }
     } else {
       achievements = getAllAchievements();
     }

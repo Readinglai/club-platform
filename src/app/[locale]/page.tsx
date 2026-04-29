@@ -8,7 +8,6 @@ import { useTranslations } from "next-intl";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
-import { db } from "@/lib/db";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -16,15 +15,26 @@ const SECONDARY = "#c9b99a";
 const TIER_ORDER = ["platinum", "gold", "silver", "bronze"] as const;
 type Tier = (typeof TIER_ORDER)[number];
 
+function getBaseUrl() {
+  return (process.env.NEXTAUTH_URL ?? "http://localhost:3000").replace(/\/$/, "");
+}
+
 // ─── Hero Section ─────────────────────────────────────────────────────────────
 
 async function HeroSection() {
   const locale = await getLocale();
   let heroImageUrl: string | null = null;
   try {
-    const heroConfig = await db.siteConfig.findUnique({ where: { key: "heroImageUrl" } });
-    const rawUrl = heroConfig?.value?.trim() ?? "";
-    heroImageUrl = /^(https?:\/\/|\/)/.test(rawUrl) ? rawUrl : "/assets/hero.jpg";
+    const res = await fetch(`${getBaseUrl()}/api/site-config`, {
+      next: { revalidate: 3600 },
+    });
+    if (res.ok) {
+      const config = (await res.json()) as Record<string, string>;
+      const rawUrl = config["heroImageUrl"]?.trim() ?? "";
+      heroImageUrl = /^(https?:\/\/|\/)/.test(rawUrl) ? rawUrl : "/assets/hero.jpg";
+    } else {
+      heroImageUrl = "/assets/hero.jpg";
+    }
   } catch {
     heroImageUrl = "/assets/hero.jpg";
   }
@@ -138,18 +148,25 @@ function AboutSection() {
 
 // ─── Upcoming Events Section ──────────────────────────────────────────────────
 
+interface EventItem {
+  id: string;
+  title: string;
+  startAt: string;
+  endAt: string | null;
+  location: string | null;
+  capacity: number | null;
+}
+
 async function UpcomingEventsSection() {
   const locale = await getLocale();
   const t = await getTranslations("home");
   const tEvents = await getTranslations("events");
-  let events: { id: string; title: string; startAt: Date; endAt: Date | null; location: string | null; capacity: number | null }[] = [];
+  let events: EventItem[] = [];
   try {
-    events = await db.event.findMany({
-      where: { published: true, startAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
-      orderBy: { startAt: "asc" },
-      take: 3,
-      select: { id: true, title: true, startAt: true, endAt: true, location: true, capacity: true },
+    const res = await fetch(`${getBaseUrl()}/api/events?upcoming=true&limit=3`, {
+      cache: "no-store",
     });
+    if (res.ok) events = (await res.json()) as EventItem[];
   } catch {
     // DB unreachable or table missing — skip section
   }
@@ -165,8 +182,9 @@ async function UpcomingEventsSection() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {events.map((ev) => {
-            const dateStr = ev.startAt.toLocaleDateString(locale === "en" ? "en-CA" : "zh-TW", { year: "numeric", month: "long", day: "numeric", timeZone: "America/Toronto" });
-            const timeStr = ev.startAt.toLocaleTimeString(locale === "en" ? "en-CA" : "zh-TW", { hour: "2-digit", minute: "2-digit", timeZone: "America/Toronto" });
+            const startAt = new Date(ev.startAt);
+            const dateStr = startAt.toLocaleDateString(locale === "en" ? "en-CA" : "zh-TW", { year: "numeric", month: "long", day: "numeric", timeZone: "America/Toronto" });
+            const timeStr = startAt.toLocaleTimeString(locale === "en" ? "en-CA" : "zh-TW", { hour: "2-digit", minute: "2-digit", timeZone: "America/Toronto" });
             return (
               <div key={ev.id} className="rounded-2xl border flex flex-col gap-3 p-6 hover:shadow-md transition-shadow" style={{ borderColor: `${SECONDARY}44` }}>
                 <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: SECONDARY }}>{dateStr} {timeStr}</p>
@@ -206,24 +224,42 @@ async function UpcomingEventsSection() {
 
 // ─── Sponsors Section ─────────────────────────────────────────────────────────
 
+interface SponsorHistory {
+  id: string;
+  sponsorId: string;
+  year: number;
+  tier: string;
+  createdAt: string;
+}
+
+interface SponsorItem {
+  id: string;
+  name: string;
+  logoUrl: string | null;
+  website: string | null;
+  description: string | null;
+  histories: SponsorHistory[];
+}
+
 async function SponsorsSection() {
   const t = await getTranslations("sponsors");
-  let sponsors: { id: string; name: string; logoUrl: string | null; website: string | null; description: string | null; createdAt: Date; updatedAt: Date; histories: { id: string; sponsorId: string; year: number; tier: string; createdAt: Date }[] }[] = [];
+  let sponsors: SponsorItem[] = [];
   try {
-    sponsors = await db.sponsor.findMany({
-      where: { histories: { some: {} } },
-      include: { histories: { orderBy: { year: "desc" }, take: 1 } },
-      orderBy: { name: "asc" },
+    const res = await fetch(`${getBaseUrl()}/api/sponsors`, {
+      next: { revalidate: 3600 },
     });
+    if (res.ok) {
+      const all = (await res.json()) as SponsorItem[];
+      sponsors = all.filter((s) => s.histories.length > 0);
+    }
   } catch {
     // DB unreachable — skip section
   }
 
   if (sponsors.length === 0) return null;
 
-  type SponsorWithHistory = (typeof sponsors)[number];
   // Group by most-recent tier
-  const byTier: Record<string, SponsorWithHistory[]> = {};
+  const byTier: Record<string, SponsorItem[]> = {};
   for (const s of sponsors) {
     const tier = s.histories[0]?.tier ?? "bronze";
     if (!byTier[tier]) byTier[tier] = [];

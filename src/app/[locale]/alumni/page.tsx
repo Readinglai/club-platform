@@ -7,13 +7,24 @@
  */
 
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { db } from "@/lib/db";
 import AlumniPhotoCard from "./AlumniPhotoCard";
 
 export const dynamic = "force-dynamic";
 
 const PRIMARY   = "#1a2744";
 const SECONDARY = "#c9b99a";
+
+interface AlumniItem {
+  id: string;
+  name: string;
+  graduationYear: number | null;
+  position: string | null;
+  department: string | null;
+  bio: string | null;
+  linkedinUrl: string | null;
+  instagramUrl: string | null;
+  photoUrl: string | null;
+}
 
 interface AlumniPageProps {
   params: Promise<{ locale: string }>;
@@ -24,37 +35,13 @@ export default async function AlumniPage({ params }: AlumniPageProps) {
   setRequestLocale(locale);
   const t = await getTranslations("alumni");
 
-  // 從資料庫讀取公開校友，依離開年份降冪排列
-  let alumniList: {
-    id: string;
-    name: string;
-    graduationYear: number | null;
-    position: string | null;
-    department: string | null;
-    bio: string | null;
-    linkedinUrl: string | null;
-    instagramUrl: string | null;
-    photoUrl: string | null;
-  }[] = [];
+  const baseUrl = (process.env.NEXTAUTH_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
+  let alumniList: AlumniItem[] = [];
   try {
-    alumniList = await db.alumni.findMany({
-      where: { isPublic: true },
-      orderBy: [{ graduationYear: "desc" }, { createdAt: "desc" }],
-      select: {
-        id: true,
-        name: true,
-        graduationYear: true,
-        position: true,
-        department: true,
-        bio: true,
-        linkedinUrl: true,
-        instagramUrl: true,
-        photoUrl: true,
-      },
-    });
+    const res = await fetch(`${baseUrl}/api/alumni`, { cache: "no-store" });
+    if (res.ok) alumniList = (await res.json()) as AlumniItem[];
   } catch {
-    // DB 錯誤時顯示空清單，不中斷頁面
     alumniList = [];
   }
 
