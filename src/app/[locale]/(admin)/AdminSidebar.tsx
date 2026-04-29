@@ -22,6 +22,7 @@ const NAV_ITEMS: NavItem[] = [
   { slug: "announcements", labelKey: "navAnnouncements", minLevel: 3 },
   { slug: "task-groups",   labelKey: "navTaskGroups",    minLevel: 3 },
   { slug: "achievements",  labelKey: "navAchievements",  minLevel: 4 },
+  { slug: "alumni",        labelKey: "navAlumni",        minLevel: 4 },
   { slug: "sponsors",      labelKey: "navSponsors",      minLevel: 3 },
   { slug: "finance",       labelKey: "navFinance",       minLevel: 3 },
   { slug: "reports",       labelKey: "navReports",       minLevel: 4 },

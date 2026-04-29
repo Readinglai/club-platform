@@ -24,12 +24,12 @@ function getErrorKey(error: string | undefined): string | null {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const session = await auth();
   if (session?.user) {
-    redirect("/dashboard");
+    redirect("/api/auth/post-login");
   }
 
   const params = await searchParams;
   const errorKey = getErrorKey(params.error);
-  const callbackUrl = params.callbackUrl ?? "/dashboard";
+  const callbackUrl = params.callbackUrl ?? "/api/auth/post-login";
   const t = await getTranslations("auth");
 
   return (
