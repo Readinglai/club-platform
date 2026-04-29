@@ -168,6 +168,7 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
+              autoComplete="off"
               className="border rounded-lg px-3 py-2 text-sm focus:outline-none"
               style={{ borderColor: "#e5e7eb", color: PRIMARY }}
             />
@@ -177,6 +178,7 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
             <input
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
+              autoComplete="off"
               className="border rounded-lg px-3 py-2 text-sm focus:outline-none"
               style={{ borderColor: "#e5e7eb", color: PRIMARY }}
               placeholder="https://..."
@@ -190,6 +192,7 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
             <input
               value={logoUrl}
               onChange={(e) => setLogoUrl(e.target.value)}
+              autoComplete="off"
               className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none"
               style={{ borderColor: "#e5e7eb", color: PRIMARY }}
               placeholder="https://..."
@@ -262,6 +265,7 @@ export default function SponsorEditForm({ sponsor, locale }: Props) {
                   type="number"
                   min={2000}
                   max={2100}
+                  autoComplete="off"
                   className="border rounded-lg px-3 py-2 text-sm focus:outline-none w-28"
                   style={{ borderColor: "#e5e7eb", color: PRIMARY }}
                 />

@@ -80,7 +80,17 @@
     "calPrevious": "Back",
     "calNext": "Next",
     "calNoEvents": "No events in this range",
-    "calShowMore": "{count} more"
+    "calShowMore": "{count} more",
+    "loginToRegister": "Sign In to Register",
+    "registrationComingSoonShort": "Registration coming soon",
+    "registrationFull": "Registration Full",
+    "registrationSuccess": "Successfully Registered",
+    "cancelRegistration": "Cancel Registration",
+    "processing": "Processing...",
+    "remainingSpots": "Remaining spots: ",
+    "registerError": "Registration failed. Please try again.",
+    "cancelError": "Cancellation failed. Please try again.",
+    "networkError": "Network error. Please try again."
   },
   "members": {
     "title": "Members",

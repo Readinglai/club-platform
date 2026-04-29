@@ -108,10 +108,12 @@ export default function Navbar() {
             </button>
 
             <button
+              type="button"
               onClick={() => setMenuOpen((prev) => !prev)}
-              className="p-1 rounded transition-opacity hover:opacity-80"
+              className="p-2 rounded transition-opacity hover:opacity-80"
               style={{ color: SECONDARY, touchAction: "manipulation" }}
               aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
               aria-label={menuOpen ? "關閉選單" : "開啟選單"}
             >
               {menuOpen ? (
@@ -130,7 +132,7 @@ export default function Navbar() {
 
       {/* Mobile dropdown */}
       {menuOpen && (
-        <div className="md:hidden border-t" style={{ borderColor: `${SECONDARY}33`, backgroundColor: PRIMARY }}>
+        <div id="mobile-menu" className="md:hidden border-t" style={{ borderColor: `${SECONDARY}33`, backgroundColor: PRIMARY }}>
           <div className="px-4 py-3 flex flex-col gap-1">
             {NAV_LINKS.map(({ key, href }) => {
               const fullHref = localizedHref(href);

@@ -143,6 +143,7 @@ export default function AchievementsManager({ achievements: initial, locale }: P
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                 placeholder="例：台灣文化節 2024"
+                autoComplete="off"
                 className="border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2"
                 style={{ borderColor: "#d1d5db" }}
               />
@@ -165,6 +166,7 @@ export default function AchievementsManager({ achievements: initial, locale }: P
                 value={form.imageUrl}
                 onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
                 placeholder="https://..."
+                autoComplete="off"
                 className="border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2"
                 style={{ borderColor: "#d1d5db" }}
               />

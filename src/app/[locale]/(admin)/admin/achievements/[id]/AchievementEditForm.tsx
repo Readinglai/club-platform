@@ -71,6 +71,7 @@ export default function AchievementEditForm({ id, initial, locale }: Props) {
           <input
             value={form.title}
             onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+            autoComplete="off"
             className="border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-200"
             style={{ borderColor: "#d1d5db" }}
           />
@@ -95,6 +96,7 @@ export default function AchievementEditForm({ id, initial, locale }: Props) {
             value={form.imageUrl}
             onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
             placeholder="https://..."
+            autoComplete="off"
             className="border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-200"
             style={{ borderColor: "#d1d5db" }}
           />

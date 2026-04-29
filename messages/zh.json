@@ -80,7 +80,17 @@
     "calPrevious": "上一頁",
     "calNext": "下一頁",
     "calNoEvents": "此時段沒有活動",
-    "calShowMore": "另外 {count} 場"
+    "calShowMore": "另外 {count} 場",
+    "loginToRegister": "請登入後報名",
+    "registrationComingSoonShort": "報名功能即將推出",
+    "registrationFull": "名額已滿",
+    "registrationSuccess": "已成功報名",
+    "cancelRegistration": "取消報名",
+    "processing": "處理中…",
+    "remainingSpots": "剩餘名額：",
+    "registerError": "報名失敗，請稍後再試",
+    "cancelError": "取消失敗，請稍後再試",
+    "networkError": "網路錯誤，請稍後再試"
   },
   "members": {
     "title": "成員介紹",

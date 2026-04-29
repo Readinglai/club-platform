@@ -127,7 +127,7 @@ function MemberCard({ member, locale }: MemberCardProps) {
         className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity"
         style={{ color: SECONDARY }}
       >
-        查看個人介紹 →
+        {t("viewProfile")} →
       </span>
     </Link>
   );

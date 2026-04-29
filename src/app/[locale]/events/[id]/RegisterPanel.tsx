@@ -9,6 +9,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const RegistrationStatus = {
   REGISTERED: "REGISTERED",
@@ -34,6 +35,7 @@ export function RegisterPanel({
   remainingSpots,
   locale,
 }: RegisterPanelProps) {
+  const t = useTranslations("events");
   const [status, setStatus] = useState<RegistrationStatus | null>(initialStatus);
   const [spots, setSpots] = useState(remainingSpots);
   const [loading, setLoading] = useState(false);
@@ -47,7 +49,7 @@ export function RegisterPanel({
         className="mt-6 block w-full py-3 rounded-xl text-sm font-semibold text-center transition-all hover:opacity-90"
         style={{ backgroundColor: PRIMARY, color: SECONDARY }}
       >
-        請登入後報名
+        {t("loginToRegister")}
       </Link>
     );
   }
@@ -58,7 +60,7 @@ export function RegisterPanel({
         className="mt-6 rounded-lg px-4 py-3 text-xs text-center"
         style={{ backgroundColor: "#f3f4f6", color: "#9ca3af" }}
       >
-        報名功能即將推出
+        {t("registrationComingSoonShort")}
       </div>
     );
   }
@@ -74,10 +76,10 @@ export function RegisterPanel({
         if (spots !== null) setSpots((prev) => (prev !== null ? prev - 1 : null));
         router.refresh();
       } else {
-        setError(data.error ?? "報名失敗，請稍後再試");
+        setError(data.error ?? t("registerError"));
       }
     } catch {
-      setError("網路錯誤，請稍後再試");
+      setError(t("networkError"));
     } finally {
       setLoading(false);
     }
@@ -94,10 +96,10 @@ export function RegisterPanel({
         if (spots !== null) setSpots((prev) => (prev !== null ? prev + 1 : null));
         router.refresh();
       } else {
-        setError(data.error ?? "取消失敗，請稍後再試");
+        setError(data.error ?? t("cancelError"));
       }
     } catch {
-      setError("網路錯誤，請稍後再試");
+      setError(t("networkError"));
     } finally {
       setLoading(false);
     }
@@ -110,22 +112,22 @@ export function RegisterPanel({
           className="rounded-lg px-4 py-3 text-sm font-medium text-center"
           style={{ backgroundColor: "#dcfce7", color: "#16a34a" }}
         >
-          已成功報名
+          {t("registrationSuccess")}
         </div>
         {error && <p className="text-xs text-red-500 text-center">{error}</p>}
         <button
+          type="button"
           onClick={handleCancel}
           disabled={loading}
           className="w-full py-2.5 rounded-xl text-sm font-medium border transition-all hover:opacity-80 disabled:opacity-50"
           style={{ borderColor: "#e5e7eb", color: "#6b7280" }}
         >
-          {loading ? "處理中…" : "取消報名"}
+          {loading ? t("processing") : t("cancelRegistration")}
         </button>
       </div>
     );
   }
 
-  // 未報名或已取消
   const isFull = spots !== null && spots <= 0;
 
   if (isFull) {
@@ -135,7 +137,7 @@ export function RegisterPanel({
           className="rounded-lg px-4 py-3 text-sm font-medium text-center"
           style={{ backgroundColor: "#fee2e2", color: "#991b1b" }}
         >
-          名額已滿
+          {t("registrationFull")}
         </div>
       </div>
     );
@@ -145,7 +147,7 @@ export function RegisterPanel({
     <div className="mt-6 flex flex-col gap-3">
       {spots !== null && (
         <p className="text-xs text-center" style={{ color: "#9ca3af" }}>
-          剩餘名額：
+          {t("remainingSpots")}
           <span className="font-semibold" style={{ color: PRIMARY }}>
             {spots}
           </span>
@@ -153,12 +155,13 @@ export function RegisterPanel({
       )}
       {error && <p className="text-xs text-red-500 text-center">{error}</p>}
       <button
+        type="button"
         onClick={handleRegister}
         disabled={loading}
         className="w-full py-3 rounded-xl text-sm font-semibold transition-all hover:opacity-90 disabled:opacity-50"
         style={{ backgroundColor: PRIMARY, color: SECONDARY }}
       >
-        {loading ? "處理中…" : "立即報名"}
+        {loading ? t("processing") : t("register")}
       </button>
     </div>
   );
