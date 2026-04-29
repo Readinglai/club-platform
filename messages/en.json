@@ -21,7 +21,13 @@
     "title": "About Us",
     "paragraph1": "ROCSAUT (The Republic of China Student Association at University of Toronto) is the Taiwanese student association at the University of Toronto, founded in 2020.",
     "paragraph2": "We are dedicated to providing a warm sense of belonging for Taiwanese students studying in Toronto, helping members integrate into campus life through various activities and resources.",
-    "paragraph3": "Whether it's academic exchange, cultural promotion, or social activities, we welcome your participation."
+    "paragraph3": "Whether it's academic exchange, cultural promotion, or social activities, we welcome your participation.",
+    "feature1Title": "Events",
+    "feature1Desc": "Regular social, cultural & networking events",
+    "feature2Title": "Community",
+    "feature2Desc": "Connecting Taiwanese students across Toronto",
+    "feature3Title": "Culture",
+    "feature3Desc": "Sharing Taiwanese heritage with the world"
   },
   "home": {
     "statMembers": "Members",

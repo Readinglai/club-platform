@@ -21,6 +21,8 @@ type DbUser = {
   name: string;
   image: string | null;
   role: Role;
+  bio: string | null;
+  major: string | null;
   department: { id: string; name: string; slug: string } | null;
 };
 
@@ -40,6 +42,99 @@ function getInitials(name: string): string {
     .slice(0, 2)
     .join("");
 }
+
+// ─── Exec Row (horizontal, large avatar) ─────────────────────────────────────
+
+interface ExecRowProps {
+  member: DbUser;
+  locale: string;
+}
+
+function ExecRow({ member, locale }: ExecRowProps) {
+  const t = useTranslations("members");
+  const deptSlug = member.department?.slug ?? "";
+  const deptColor = DEPARTMENT_COLORS[deptSlug] ?? { bg: "#f3f4f6", text: "#374151" };
+  const initials = getInitials(member.name);
+
+  return (
+    <Link
+      href={`/${locale}/members/${member.id}`}
+      className="group flex items-center gap-6 p-5 sm:p-6 rounded-2xl border bg-white
+                 transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5"
+      style={{ borderColor: "#e5e7eb" }}
+      aria-label={t("viewProfileOf", { name: member.name })}
+    >
+      {/* 128px circular avatar */}
+      <div
+        className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden flex items-center justify-center
+                   text-xl sm:text-2xl font-black tracking-wide select-none flex-shrink-0"
+        style={member.image ? {} : { backgroundColor: PRIMARY, color: SECONDARY }}
+        aria-hidden="true"
+      >
+        {member.image ? (
+          <Image
+            src={member.image}
+            alt={member.name}
+            width={128}
+            height={128}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          initials
+        )}
+      </div>
+
+      {/* Details */}
+      <div className="flex flex-col gap-2 flex-1 min-w-0">
+        <h3
+          className="text-xl sm:text-2xl font-bold leading-tight truncate group-hover:opacity-80 transition-opacity"
+          style={{ color: PRIMARY }}
+        >
+          {member.name}
+        </h3>
+
+        {/* Role badge */}
+        <span
+          className="inline-block self-start text-xs font-bold px-3 py-1 rounded-full"
+          style={{ backgroundColor: SECONDARY, color: PRIMARY }}
+        >
+          {t(ROLE_I18N_KEY[member.role])}
+        </span>
+
+        {/* Department */}
+        {member.department && (
+          <span
+            className="inline-block self-start text-xs font-semibold px-2.5 py-0.5 rounded-full"
+            style={{ backgroundColor: deptColor.bg, color: deptColor.text }}
+          >
+            {member.department.name}
+          </span>
+        )}
+
+        {/* Bio (line-clamp to 2 lines) */}
+        {member.bio && (
+          <p
+            className="text-sm leading-relaxed line-clamp-2 mt-0.5"
+            style={{ color: "#777" }}
+          >
+            {member.bio}
+          </p>
+        )}
+      </div>
+
+      {/* Arrow hint */}
+      <span
+        className="text-sm font-semibold shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+        style={{ color: SECONDARY }}
+        aria-hidden="true"
+      >
+        →
+      </span>
+    </Link>
+  );
+}
+
+// ─── General Member Card (grid card, unchanged layout) ───────────────────────
 
 interface MemberCardProps {
   member: DbUser;
@@ -82,12 +177,12 @@ function MemberCard({ member, locale }: MemberCardProps) {
 
       {/* Name + role */}
       <div className="flex flex-col items-center gap-1 text-center">
-        <h2
+        <h3
           className="text-base font-bold group-hover:opacity-80 transition-opacity"
           style={{ color: PRIMARY }}
         >
           {member.name}
-        </h2>
+        </h3>
         <p className="text-sm font-medium" style={{ color: `${PRIMARY}99` }}>
           {t(ROLE_I18N_KEY[member.role])}
         </p>
@@ -103,7 +198,6 @@ function MemberCard({ member, locale }: MemberCardProps) {
         </span>
       )}
 
-      {/* View profile hint */}
       <span
         className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity"
         style={{ color: SECONDARY }}
@@ -113,6 +207,8 @@ function MemberCard({ member, locale }: MemberCardProps) {
     </Link>
   );
 }
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 interface MembersPageProps {
   params: Promise<{ locale: string }>;
@@ -130,6 +226,8 @@ export default async function MembersPage({ params }: MembersPageProps) {
       name: true,
       image: true,
       role: true,
+      bio: true,
+      major: true,
       department: { select: { id: true, name: true, slug: true } },
     },
     orderBy: { name: "asc" },
@@ -142,29 +240,29 @@ export default async function MembersPage({ params }: MembersPageProps) {
     <div className="min-h-screen" style={{ backgroundColor: "#f9f7f4" }}>
       {/* Banner */}
       <section
-        className="px-4 py-16 sm:py-20 text-center"
+        className="px-4 py-16 sm:py-24 text-center"
         style={{ backgroundColor: PRIMARY }}
       >
         <div className="max-w-3xl mx-auto flex flex-col items-center gap-4">
           <h1
-            className="text-4xl sm:text-5xl font-bold tracking-wide"
+            className="text-5xl sm:text-7xl font-black leading-tight"
             style={{ color: SECONDARY }}
           >
             {t("title")}
           </h1>
           <div
-            className="w-12 h-0.5 rounded-full"
-            style={{ backgroundColor: `${SECONDARY}88` }}
+            className="w-14 h-0.5 rounded-full"
+            style={{ backgroundColor: `${SECONDARY}66` }}
           />
-          <p className="text-base" style={{ color: `${SECONDARY}99` }}>
+          <p className="text-base sm:text-lg" style={{ color: `${SECONDARY}88` }}>
             {t("subtitle")}
           </p>
         </div>
       </section>
 
-      {/* Members grid */}
-      <div className="max-w-6xl mx-auto px-4 py-12 flex flex-col gap-12">
-        {/* Executive section */}
+      {/* Members list */}
+      <div className="max-w-4xl mx-auto px-4 py-12 flex flex-col gap-14">
+        {/* Executive section — horizontal rows */}
         {execMembers.length > 0 && (
           <section aria-label={t("exec")}>
             <SectionTitle
@@ -173,15 +271,15 @@ export default async function MembersPage({ params }: MembersPageProps) {
               color={PRIMARY}
               accent={SECONDARY}
             />
-            <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 mt-6">
+            <div className="flex flex-col gap-4 mt-6">
               {execMembers.map((m) => (
-                <MemberCard key={m.id} member={m} locale={locale} />
+                <ExecRow key={m.id} member={m} locale={locale} />
               ))}
             </div>
           </section>
         )}
 
-        {/* General members section */}
+        {/* General members section — card grid */}
         {generalMembers.length > 0 && (
           <section aria-label={t("general")}>
             <SectionTitle
@@ -190,7 +288,7 @@ export default async function MembersPage({ params }: MembersPageProps) {
               color={PRIMARY}
               accent={SECONDARY}
             />
-            <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 mt-6">
+            <div className="grid gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 mt-6">
               {generalMembers.map((m) => (
                 <MemberCard key={m.id} member={m} locale={locale} />
               ))}
@@ -208,6 +306,8 @@ export default async function MembersPage({ params }: MembersPageProps) {
   );
 }
 
+// ─── SectionTitle ─────────────────────────────────────────────────────────────
+
 interface SectionTitleProps {
   label: string;
   count: number;
@@ -218,16 +318,16 @@ interface SectionTitleProps {
 function SectionTitle({ label, count, color, accent }: SectionTitleProps) {
   return (
     <div className="flex items-center gap-3">
-      <h2 className="text-xl font-bold" style={{ color }}>
+      <h2 className="text-2xl font-extrabold" style={{ color }}>
         {label}
       </h2>
       <span
-        className="text-xs font-semibold px-2 py-0.5 rounded-full"
+        className="text-xs font-bold px-2.5 py-0.5 rounded-full"
         style={{ backgroundColor: `${accent}33`, color }}
       >
         {count}
       </span>
-      <div className="flex-1 h-px" style={{ backgroundColor: `${color}22` }} />
+      <div className="flex-1 h-px" style={{ backgroundColor: `${color}18` }} />
     </div>
   );
 }

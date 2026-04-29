@@ -21,7 +21,13 @@
     "title": "關於我們",
     "paragraph1": "ROCSAUT（The Republic of China Student Association at University of Toronto）是多倫多大學的台灣學生聯合會，成立於 2020 年。",
     "paragraph2": "我們致力於為在多倫多求學的台灣學生提供一個溫暖的歸屬感，透過各種活動與資源協助成員融入校園生活。",
-    "paragraph3": "無論是學術交流、文化推廣還是社交活動，我們都歡迎你的參與。"
+    "paragraph3": "無論是學術交流、文化推廣還是社交活動，我們都歡迎你的參與。",
+    "feature1Title": "辦活動",
+    "feature1Desc": "定期舉辦聚會、交流、文化體驗活動",
+    "feature2Title": "建社群",
+    "feature2Desc": "連結在多倫多的台灣學生網絡",
+    "feature3Title": "推文化",
+    "feature3Desc": "傳承台灣文化，拓展國際視野"
   },
   "home": {
     "statMembers": "成員",
