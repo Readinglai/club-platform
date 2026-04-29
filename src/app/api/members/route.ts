@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 
 export async function GET() {
   const members = await db.user.findMany({
-    where: { role: { notIn: ["SUPER_ADMIN", "ADMIN"] } },
+    where: { role: { in: ["EXEC", "MEMBER"] } },
     select: {
       id: true,
       name: true,

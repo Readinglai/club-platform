@@ -124,6 +124,7 @@ export default async function MembersPage({ params }: MembersPageProps) {
   const t = await getTranslations("members");
 
   const members = await db.user.findMany({
+    where: { role: { in: [Role.EXEC, Role.MEMBER] } },
     select: {
       id: true,
       name: true,
@@ -134,9 +135,7 @@ export default async function MembersPage({ params }: MembersPageProps) {
     orderBy: { name: "asc" },
   });
 
-  const execMembers = members.filter(
-    (m) => m.role === Role.EXEC || m.role === Role.SUPER_ADMIN || m.role === Role.ADMIN
-  );
+  const execMembers = members.filter((m) => m.role === Role.EXEC);
   const generalMembers = members.filter((m) => m.role === Role.MEMBER);
 
   return (
