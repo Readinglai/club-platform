@@ -71,6 +71,14 @@
 | GET | `/api/portal/profile` | 取得當前使用者個人資料（支援 Bearer） | 2 (MEMBER) |
 | PATCH | `/api/portal/profile` | 更新個人資料（支援 Bearer） | 2 (MEMBER) |
 | POST | `/api/portal/announcements/[id]/read` | 標記公告為已讀（支援 Bearer） | 2 (MEMBER) |
+| GET | `/api/portal/announcements` | 列出所有已發布公告（支援 Bearer） | 2 (MEMBER) |
+| GET | `/api/portal/announcements/[id]` | 取得公告詳情（含已讀狀態，支援 Bearer） | 2 (MEMBER) |
+| GET | `/api/portal/tasks` | 列出當前使用者被指派的任務（支援 Bearer） | 2 (MEMBER) |
+| GET | `/api/portal/tasks/[id]` | 取得任務詳情（支援 Bearer） | 2 (MEMBER) |
+| PATCH | `/api/portal/tasks/[id]/accept` | 接受任務（TODO→IN_PROGRESS，僅被指派者，支援 Bearer） | 2 (MEMBER) |
+| PATCH | `/api/portal/tasks/[id]/complete` | 完成任務（IN_PROGRESS→DONE，僅被指派者，支援 Bearer） | 2 (MEMBER) |
+| POST | `/api/portal/push/subscribe` | 儲存 Web Push 訂閱（支援 Bearer） | 2 (MEMBER) |
+| DELETE | `/api/portal/push/unsubscribe` | 刪除 Web Push 訂閱（支援 Bearer） | 2 (MEMBER) |
 
 ---
 

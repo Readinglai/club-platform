@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ROLE_LEVEL } from "@/lib/rbac";
 import type { Role } from "@/generated/prisma/client";
+import { sendPushNotification } from "@/lib/webpush";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -27,6 +28,20 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       where: { id },
       data: { published },
     });
+
+    // Send push notifications to all subscribers when publishing
+    if (published) {
+      const subscriptions = await db.pushSubscription.findMany();
+      await Promise.allSettled(
+        subscriptions.map((sub) =>
+          sendPushNotification(sub, {
+            title: "新公告",
+            body: announcement.title,
+            url: "/portal/announcements",
+          })
+        )
+      );
+    }
 
     return NextResponse.json(announcement);
   } catch {

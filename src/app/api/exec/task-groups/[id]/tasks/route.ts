@@ -9,6 +9,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { sendPushNotification } from "@/lib/webpush";
 
 async function getMember(taskGroupId: string, userId: string) {
   return db.taskGroupMember.findUnique({
@@ -117,6 +118,22 @@ export async function POST(
       assignee: { select: { id: true, name: true, email: true } },
     },
   });
+
+  // Send push to assignee if they have a subscription
+  if (task.assigneeId) {
+    const subs = await db.pushSubscription.findMany({
+      where: { userId: task.assigneeId },
+    });
+    await Promise.allSettled(
+      subs.map((sub) =>
+        sendPushNotification(sub, {
+          title: "新任務指派",
+          body: task.title,
+          url: "/portal/tasks",
+        })
+      )
+    );
+  }
 
   return NextResponse.json(task, { status: 201 });
 }
