@@ -11,6 +11,8 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { ROLE_LEVEL } from "@/lib/rbac";
+import type { Role } from "@/generated/prisma/client";
 import { SignInButton } from "./SignInButton";
 
 interface LoginPageProps {
@@ -34,15 +36,17 @@ function getErrorMessage(error: string | undefined): string | null {
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  /* 已登入的使用者直接導向儀表板，不顯示登入頁 */
+  /* 已登入的使用者直接依角色導向，不顯示登入頁 */
   const session = await auth();
   if (session?.user) {
-    redirect("/dashboard");
+    const role = (session.user.role as Role | undefined) ?? "MEMBER";
+    const level = ROLE_LEVEL[role] ?? ROLE_LEVEL.MEMBER;
+    redirect(level >= 3 ? "/zh/admin" : "/zh");
   }
 
   const params = await searchParams;
   const errorMessage = getErrorMessage(params.error);
-  const callbackUrl = params.callbackUrl ?? "/dashboard";
+  const callbackUrl = params.callbackUrl ?? "/api/auth/post-login";
 
   return (
     /* 全螢幕置中容器，使用主色深藍作為背景 */

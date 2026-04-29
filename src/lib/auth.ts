@@ -45,6 +45,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     ...authConfig.callbacks,
 
+    /**
+     * redirect callback — remaps the old /dashboard landing to the role-aware
+     * post-login router so existing callbackUrl=/dashboard links still work.
+     * All other URLs follow standard NextAuth behaviour.
+     */
+    async redirect({ url, baseUrl }) {
+      if (url === `${baseUrl}/dashboard`) {
+        return `${baseUrl}/api/auth/post-login`;
+      }
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      if (url.startsWith(baseUrl)) return url;
+      return baseUrl;
+    },
+
     async signIn({ user }) {
       const email = user.email ?? "";
       if (!email) return false;
