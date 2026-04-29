@@ -1,14 +1,17 @@
 "use client";
 
-/**
- * AlumniPhotoCard — Client Component
- *
- * 獨立為 Client Component 的原因：
- * alumni/page.tsx 是 Server Component，但 <img onError> 是 client-side 事件。
- * 在 React 19 / Next.js App Router 的 Server Component 中使用事件 handler
- * 會導致 production build 的 render 崩潰（digest: 3287442906）。
- * 將圖片區塊抽出為 Client Component 可完全解決此問題。
- */
+import { useState } from "react";
+
+const PRIMARY = "#1a2744";
+const SECONDARY = "#c9b99a";
+
+function getInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+}
 
 interface Props {
   photoUrl: string | null;
@@ -16,16 +19,31 @@ interface Props {
 }
 
 export default function AlumniPhotoCard({ photoUrl, name }: Props) {
-  if (!photoUrl) return null;
+  const [imgError, setImgError] = useState(false);
+
+  if (!photoUrl || imgError) {
+    return (
+      <div
+        className="w-full h-full flex items-center justify-center"
+        style={{ backgroundColor: PRIMARY }}
+      >
+        <span
+          className="text-4xl font-bold select-none"
+          style={{ color: SECONDARY }}
+        >
+          {getInitials(name)}
+        </span>
+      </div>
+    );
+  }
+
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={photoUrl}
       alt={name}
-      className="w-20 h-20 rounded-full object-cover border-4 border-white shadow mb-3 mx-auto"
-      onError={(e) => {
-        (e.currentTarget as HTMLImageElement).style.display = "none";
-      }}
+      className="w-full h-full object-cover"
+      onError={() => setImgError(true)}
     />
   );
 }

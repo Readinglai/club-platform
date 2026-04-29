@@ -24,6 +24,7 @@ type DbEvent = {
   id: string;
   title: string;
   description: string | null;
+  imageUrl: string | null;
   startAt: Date;
   location: string | null;
   capacity: number | null;
@@ -46,7 +47,18 @@ function EventCard({ event, locale, t }: EventCardProps) {
       className="group flex flex-col rounded-2xl border overflow-hidden transition-shadow duration-200 hover:shadow-lg"
       style={{ borderColor: "#e5e7eb" }}
     >
-      <div className="h-1.5" style={{ backgroundColor: PRIMARY }} />
+      {event.imageUrl ? (
+        <div className="h-44 overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={event.imageUrl}
+            alt={event.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ) : (
+        <div className="h-1.5" style={{ backgroundColor: PRIMARY }} />
+      )}
 
       <div className="flex flex-col gap-4 p-6">
         {/* Date */}
@@ -171,6 +183,7 @@ export default async function EventsPage({ params }: EventsPageProps) {
       id: true,
       title: true,
       description: true,
+      imageUrl: true,
       startAt: true,
       location: true,
       capacity: true,

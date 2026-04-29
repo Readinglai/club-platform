@@ -168,10 +168,24 @@ export default async function EventDetailPage({
     <div className="min-h-screen" style={{ backgroundColor: "#f9f7f4" }}>
       {/* Banner */}
       <section
-        className="px-4 py-14 sm:py-20"
-        style={{ backgroundColor: PRIMARY }}
+        className="relative px-4 py-14 sm:py-20"
+        style={
+          event.imageUrl
+            ? {
+                backgroundImage: `url(${event.imageUrl})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }
+            : { backgroundColor: PRIMARY }
+        }
       >
-        <div className="max-w-4xl mx-auto">
+        {event.imageUrl && (
+          <div
+            className="absolute inset-0"
+            style={{ backgroundColor: `${PRIMARY}dd` }}
+          />
+        )}
+        <div className="relative max-w-4xl mx-auto">
           <nav
             className="flex items-center gap-2 text-sm mb-6"
             aria-label="麵包屑"

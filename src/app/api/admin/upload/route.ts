@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuthJson } from "@/lib/auth/guard";
 
+export const maxDuration = 60;
+
 const SUPABASE_URL = "https://rbwchvwiuazfrsoabwni.supabase.co";
 const BUCKET = "images";
 
@@ -49,8 +51,7 @@ export async function POST(request: NextRequest) {
   const filename = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
   try {
-    const arrayBuffer = await file.arrayBuffer();
-
+    // Pass File (Blob) directly — no ArrayBuffer conversion, avoids body-read issues
     const res = await fetch(
       `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`,
       {
@@ -58,16 +59,18 @@ export async function POST(request: NextRequest) {
         headers: {
           Authorization: `Bearer ${key}`,
           "Content-Type": file.type,
-          "x-upsert": "false",
+          "x-upsert": "true",
         },
-        body: arrayBuffer,
+        body: file,
       }
     );
 
+    // Drain the response body regardless of status to avoid memory leaks
+    const responseText = await res.text().catch(() => "");
+
     if (!res.ok) {
-      const text = await res.text().catch(() => res.statusText);
       return NextResponse.json(
-        { error: `Storage upload failed (${res.status}): ${text}` },
+        { error: `Storage upload failed (${res.status}): ${responseText || res.statusText}` },
         { status: 500 }
       );
     }

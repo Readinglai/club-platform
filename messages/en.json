@@ -132,7 +132,11 @@
     "subtitle": "Celebrating those who shaped ROCSAUT",
     "totalAlumni": "alumni",
     "yearSpan": "Year range",
-    "noAlumni": "No alumni records yet"
+    "noAlumni": "No alumni records yet",
+    "backToList": "Back to Alumni",
+    "bio": "Biography",
+    "linkedinProfile": "LinkedIn",
+    "instagramProfile": "Instagram"
   },
   "sponsors": {
     "title": "Sponsors",

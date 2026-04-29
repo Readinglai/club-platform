@@ -132,7 +132,11 @@
     "subtitle": "感謝每一位形塑 ROCSAUT 的前成員",
     "totalAlumni": "位校友",
     "yearSpan": "年份區間",
-    "noAlumni": "尚無校友記錄"
+    "noAlumni": "尚無校友記錄",
+    "backToList": "返回校友列表",
+    "bio": "個人簡介",
+    "linkedinProfile": "LinkedIn",
+    "instagramProfile": "Instagram"
   },
   "sponsors": {
     "title": "贊助商",
