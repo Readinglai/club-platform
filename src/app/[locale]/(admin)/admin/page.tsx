@@ -1,13 +1,21 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // 設定 locale 讓 getTranslations 讀到正確語言
+  const { locale } = await params;
+  setRequestLocale(locale);
+
   const session = await auth();
   const t = await getTranslations("admin.dashboard");
 
@@ -37,7 +45,7 @@ export default async function AdminPage() {
           {t("welcomeBack")}，{session?.user?.name ?? t("defaultAdmin")}
         </h1>
         <p className="text-sm text-gray-500">
-          {now.toLocaleDateString("zh-TW", {
+          {now.toLocaleDateString(locale === "en" ? "en-CA" : "zh-TW", {
             year: "numeric",
             month: "long",
             day: "numeric",
