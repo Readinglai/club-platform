@@ -26,6 +26,7 @@ const NAV_ITEMS: NavItem[] = [
   { slug: "finance",       labelKey: "navFinance",       minLevel: 3 },
   { slug: "reports",       labelKey: "navReports",       minLevel: 4 },
   { slug: "site-config",   labelKey: "navSiteConfig",    minLevel: 4 },
+  { slug: "i18n",          labelKey: "navI18n",          minLevel: 4 },
 ];
 
 interface Props {

@@ -3,17 +3,19 @@ import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import SiteConfigForm from "./SiteConfigForm";
 import SiteConfigManager from "./SiteConfigManager";
+import TeamContactsEditor from "./TeamContactsEditor";
 
 export default async function SiteConfigPage() {
   await requireAuth(4);
   const t = await getTranslations("admin.siteConfig");
 
-  const [heroRecord, flags, templates, sectionsRow, reminderRow] = await Promise.all([
+  const [heroRecord, flags, templates, sectionsRow, reminderRow, teamContactsRow] = await Promise.all([
     db.siteConfig.findUnique({ where: { key: "heroImageUrl" } }).catch(() => null),
     db.featureFlag.findMany({ orderBy: { key: "asc" } }).catch(() => []),
     db.emailTemplate.findMany({ orderBy: { key: "asc" } }).catch(() => []),
     db.siteConfig.findUnique({ where: { key: "sections" } }).catch(() => null),
     db.siteConfig.findUnique({ where: { key: "reminder_hours_before" } }).catch(() => null),
+    db.siteConfig.findUnique({ where: { key: "teamContacts" } }).catch(() => null),
   ]);
 
   const defaultSections = [
@@ -39,6 +41,14 @@ export default async function SiteConfigPage() {
 
   const reminderHours = reminderRow ? parseInt(reminderRow.value, 10) || 72 : 72;
 
+  let initialTeamContacts: { title: string; name: string; email: string }[] = [];
+  try {
+    if (teamContactsRow?.value) {
+      const parsed = JSON.parse(teamContactsRow.value) as typeof initialTeamContacts;
+      if (Array.isArray(parsed)) initialTeamContacts = parsed;
+    }
+  } catch { /* use empty */ }
+
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
       <div>
@@ -52,6 +62,7 @@ export default async function SiteConfigPage() {
         initialSections={sections}
         initialReminderHours={reminderHours}
       />
+      <TeamContactsEditor initialContacts={initialTeamContacts} />
     </div>
   );
 }

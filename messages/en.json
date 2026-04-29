@@ -187,7 +187,8 @@
       "navSponsors": "Sponsors",
       "navFinance": "Finance",
       "navReports": "Reports",
-      "navSiteConfig": "Site Config"
+      "navSiteConfig": "Site Config",
+      "navI18n": "Translations"
     },
     "dashboard": {
       "welcomeBack": "Welcome back",
@@ -610,7 +611,24 @@
       "sectionHeroLabel": "Hero Banner",
       "sectionAboutLabel": "About Us",
       "sectionUpcomingEventsLabel": "Upcoming Events",
-      "sectionSponsorsLabel": "Sponsors"
+      "sectionSponsorsLabel": "Sponsors",
+      "teamContactsTitle": "Executive Contacts",
+      "teamContactsHint": "These contacts appear on the public Contact page.",
+      "addContact": "+ Add Contact",
+      "contactFieldTitle": "Title",
+      "contactFieldName": "Name",
+      "contactFieldEmail": "Email",
+      "confirmDeleteContact": "Delete this contact?",
+      "noContacts": "No contacts configured.",
+      "contactSaved": "Contacts saved."
+    },
+    "i18n": {
+      "title": "Translation Management",
+      "subtitle": "Browse and edit i18n strings. Changes take effect immediately.",
+      "keyColumn": "Key",
+      "enColumn": "English",
+      "zhColumn": "Chinese",
+      "saved": "Saved"
     }
   }
 }

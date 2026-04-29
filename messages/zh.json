@@ -187,7 +187,8 @@
       "navSponsors": "贊助商管理",
       "navFinance": "財務管理",
       "navReports": "數據報表",
-      "navSiteConfig": "網站設定"
+      "navSiteConfig": "網站設定",
+      "navI18n": "翻譯管理"
     },
     "dashboard": {
       "welcomeBack": "歡迎回來",
@@ -610,7 +611,24 @@
       "sectionHeroLabel": "Hero 橫幅",
       "sectionAboutLabel": "關於我們",
       "sectionUpcomingEventsLabel": "即將到來的活動",
-      "sectionSponsorsLabel": "贊助商"
+      "sectionSponsorsLabel": "贊助商",
+      "teamContactsTitle": "執委聯絡資訊",
+      "teamContactsHint": "這些聯絡資訊將顯示在公開的聯絡頁面。",
+      "addContact": "+ 新增聯絡人",
+      "contactFieldTitle": "職稱",
+      "contactFieldName": "姓名",
+      "contactFieldEmail": "Email",
+      "confirmDeleteContact": "確定要刪除此聯絡人？",
+      "noContacts": "尚無聯絡人資料。",
+      "contactSaved": "聯絡資訊已儲存。"
+    },
+    "i18n": {
+      "title": "翻譯管理",
+      "subtitle": "瀏覽並編輯 i18n 字串，修改立即生效。",
+      "keyColumn": "Key",
+      "enColumn": "英文",
+      "zhColumn": "中文",
+      "saved": "已儲存"
     }
   }
 }

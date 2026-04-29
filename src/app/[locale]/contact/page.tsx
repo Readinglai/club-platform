@@ -1,9 +1,16 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { db } from "@/lib/db";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
-const TEAM_CONTACTS = [
+interface TeamContact {
+  title: string;
+  name: string;
+  email: string;
+}
+
+const FALLBACK_CONTACTS: TeamContact[] = [
   { title: "President",         name: "David Chen",  email: "david.chen@mail.utoronto.ca" },
   { title: "VP of Events",      name: "Sarah Lin",   email: "sarah.lin@mail.utoronto.ca" },
   { title: "VP of Marketing",   name: "Kevin Wu",    email: "kevin.wu@mail.utoronto.ca" },
@@ -14,6 +21,15 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("contact");
+
+  let contacts: TeamContact[] = FALLBACK_CONTACTS;
+  try {
+    const record = await db.siteConfig.findUnique({ where: { key: "teamContacts" } });
+    if (record?.value) {
+      const parsed = JSON.parse(record.value) as TeamContact[];
+      if (Array.isArray(parsed) && parsed.length > 0) contacts = parsed;
+    }
+  } catch { /* use fallback */ }
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: "#f9f7f4" }}>
@@ -32,7 +48,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
         <div className="flex flex-col gap-4">
           <h2 className="text-sm font-semibold uppercase tracking-widest" style={{ color: `${PRIMARY}88` }}>{t("teamContactsTitle")}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {TEAM_CONTACTS.map(({ title, name, email }) => (
+            {contacts.map(({ title, name, email }) => (
               <div
                 key={email}
                 className="bg-white rounded-xl p-5 flex flex-col gap-1 shadow-sm"
