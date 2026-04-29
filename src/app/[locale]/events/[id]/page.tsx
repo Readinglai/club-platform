@@ -1,39 +1,16 @@
-/**
- * app/[locale]/events/[id]/page.tsx — 活動詳情頁（Async Server Component）
- *
- * 動態路由：根據 URL 中的 [id] 參數從假資料查找對應活動。
- * 找不到活動時呼叫 notFound() 回傳 404。
- *
- * 顯示完整活動資訊：
- * - 標題、開始/結束日期時間、地點
- * - 完整描述（支援換行與列表段落）
- * - 報名截止日、活動名額
- * - 返回列表 / 查看日曆 導覽連結
- * - 若已登入：顯示報名狀態與操作按鈕（RegisterPanel）
- * - 若未登入：顯示「請登入後報名」連結
- *
- * ⚠️ async Server Component 使用 getTranslations（非 useTranslations hook）
- */
-
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { getEventById } from "@/lib/data/events";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { RegistrationStatus } from "@/generated/prisma/client";
 import { RegisterPanel } from "./RegisterPanel";
 
-// 頁面為動態渲染（含 auth() 與 DB 查詢）
 export const dynamic = "force-dynamic";
 
-// 主題色
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
-// ─── 日期格式化工具 ───────────────────────────────────────────────────────────
-
-/** formatFullDate — 詳細日期格式（含星期、年月日、時間、時區） */
 function formatFullDate(date: Date, locale: string): string {
   return new Intl.DateTimeFormat(locale === "zh" ? "zh-TW" : "en-CA", {
     year: "numeric",
@@ -45,18 +22,6 @@ function formatFullDate(date: Date, locale: string): string {
     timeZoneName: "short",
   }).format(date);
 }
-
-/** formatDeadline — 報名截止日格式（只顯示日期） */
-function formatDeadline(date: Date, locale: string): string {
-  return new Intl.DateTimeFormat(locale === "zh" ? "zh-TW" : "en-CA", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    weekday: "short",
-  }).format(date);
-}
-
-// ─── Info Row 元件（圖示 + 標籤 + 值） ───────────────────────────────────────
 
 interface InfoRowProps {
   icon: React.ReactNode;
@@ -80,8 +45,6 @@ function InfoRow({ icon, label, value }: InfoRowProps) {
   );
 }
 
-// ─── 頁面主元件 ───────────────────────────────────────────────────────────────
-
 interface EventDetailPageProps {
   params: Promise<{ locale: string; id: string }>;
 }
@@ -92,24 +55,11 @@ export default async function EventDetailPage({
   const { locale, id } = await params;
   setRequestLocale(locale);
 
-  // async Server Component 使用 getTranslations
   const t = await getTranslations("events");
 
-  // 查找活動資料；找不到則回傳 404
-  const event = getEventById(id);
-  if (!event) {
-    notFound();
-  }
-
-  // ─── 報名狀態（從資料庫查詢）────────────────────────────────────────────────
-  const session = await auth();
-  const userId = session?.user?.id ?? null;
-
-  // 查詢 DB 中的活動（mock 資料不在 DB 中時為 null）
-  const dbEvent = await db.event.findUnique({
+  const event = await db.event.findUnique({
     where: { id, published: true },
-    select: {
-      capacity: true,
+    include: {
       registrations: {
         where: { status: RegistrationStatus.REGISTERED },
         select: { id: true },
@@ -117,44 +67,111 @@ export default async function EventDetailPage({
     },
   });
 
-  // 使用者目前的報名記錄
-  const userRegistration = userId && dbEvent
+  if (!event) notFound();
+
+  const session = await auth();
+  const userId = session?.user?.id ?? null;
+
+  const userRegistration = userId
     ? await db.registration.findUnique({
         where: { userId_eventId: { userId, eventId: id } },
         select: { status: true },
       })
     : null;
 
-  // 計算初始狀態與剩餘名額
-  const initialStatus: RegistrationStatus | null = userRegistration?.status
-    ? (userRegistration.status === RegistrationStatus.CANCELLED
-        ? null
-        : userRegistration.status)
-    : dbEvent
-    ? null
-    : null;
+  const initialStatus: RegistrationStatus | null =
+    userRegistration?.status === RegistrationStatus.CANCELLED
+      ? null
+      : (userRegistration?.status ?? null);
 
-  const registeredCount = dbEvent?.registrations.length ?? 0;
+  const registeredCount = event.registrations.length;
   const remainingSpots =
-    dbEvent?.capacity != null
-      ? Math.max(0, dbEvent.capacity - registeredCount)
+    event.capacity != null
+      ? Math.max(0, event.capacity - registeredCount)
       : null;
 
-  // 將描述依 \n\n 分段（每段可能是段落文字或以「-」開頭的列表）
-  const descParagraphs = event.description
+  const descParagraphs = (event.description ?? "")
     .split("\n\n")
     .map((p) => p.trim())
     .filter(Boolean);
 
+  const calendarIcon = (
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+      />
+    </svg>
+  );
+
+  const clockIcon = (
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  );
+
+  const pinIcon = (
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+      />
+    </svg>
+  );
+
+  const peopleIcon = (
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
+      />
+    </svg>
+  );
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f9f7f4" }}>
-      {/* ── 頁首 Banner ── */}
+      {/* Banner */}
       <section
         className="px-4 py-14 sm:py-20"
         style={{ backgroundColor: PRIMARY }}
       >
         <div className="max-w-4xl mx-auto">
-          {/* 麵包屑導覽 */}
           <nav
             className="flex items-center gap-2 text-sm mb-6"
             aria-label="麵包屑"
@@ -175,7 +192,6 @@ export default async function EventDetailPage({
             </span>
           </nav>
 
-          {/* 活動標題 */}
           <h1
             className="text-3xl sm:text-4xl font-bold leading-tight"
             style={{ color: SECONDARY }}
@@ -185,10 +201,10 @@ export default async function EventDetailPage({
         </div>
       </section>
 
-      {/* ── 主要內容區 ── */}
+      {/* Main content */}
       <div className="max-w-4xl mx-auto px-4 py-10">
         <div className="grid gap-8 lg:grid-cols-3">
-          {/* 左欄：活動描述（佔 2/3） */}
+          {/* Description (2/3) */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             <div
               className="rounded-2xl bg-white p-6 sm:p-8 shadow-sm"
@@ -201,50 +217,52 @@ export default async function EventDetailPage({
                 {t("descriptionTitle")}
               </h2>
 
-              {/* 逐段顯示描述 */}
-              <div className="flex flex-col gap-4">
-                {descParagraphs.map((para, idx) => {
-                  // 以「-」開頭的行視為列表
-                  if (para.startsWith("-")) {
-                    const items = para
-                      .split("\n")
-                      .map((l) => l.replace(/^-\s*/, "").trim())
-                      .filter(Boolean);
-                    return (
-                      <ul
-                        key={idx}
-                        className="list-none flex flex-col gap-1.5 pl-2"
-                      >
-                        {items.map((item, i) => (
-                          <li
-                            key={i}
-                            className="flex items-start gap-2 text-sm text-gray-600"
-                          >
-                            <span
-                              style={{ color: SECONDARY }}
-                              className="mt-1 flex-shrink-0"
+              {descParagraphs.length > 0 ? (
+                <div className="flex flex-col gap-4">
+                  {descParagraphs.map((para, idx) => {
+                    if (para.startsWith("-")) {
+                      const items = para
+                        .split("\n")
+                        .map((l) => l.replace(/^-\s*/, "").trim())
+                        .filter(Boolean);
+                      return (
+                        <ul
+                          key={idx}
+                          className="list-none flex flex-col gap-1.5 pl-2"
+                        >
+                          {items.map((item, i) => (
+                            <li
+                              key={i}
+                              className="flex items-start gap-2 text-sm text-gray-600"
                             >
-                              ▸
-                            </span>
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
+                              <span
+                                style={{ color: SECONDARY }}
+                                className="mt-1 flex-shrink-0"
+                              >
+                                ▸
+                              </span>
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      );
+                    }
+                    return (
+                      <p
+                        key={idx}
+                        className="text-sm text-gray-600 leading-relaxed"
+                      >
+                        {para}
+                      </p>
                     );
-                  }
-                  return (
-                    <p
-                      key={idx}
-                      className="text-sm text-gray-600 leading-relaxed"
-                    >
-                      {para}
-                    </p>
-                  );
-                })}
-              </div>
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400">{t("noEvents")}</p>
+              )}
             </div>
 
-            {/* 底部導覽按鈕 */}
+            {/* Nav buttons */}
             <div className="flex flex-wrap gap-3">
               <Link
                 href={`/${locale}/events`}
@@ -290,13 +308,12 @@ export default async function EventDetailPage({
             </div>
           </div>
 
-          {/* 右欄：活動資訊側邊欄（1/3） */}
+          {/* Sidebar (1/3) */}
           <aside>
             <div
               className="rounded-2xl bg-white p-6 shadow-sm sticky top-20"
               style={{ border: "1px solid #e5e7eb" }}
             >
-              {/* 側邊欄標題 */}
               <div
                 className="pb-4 mb-4 border-b"
                 style={{ borderColor: "#f3f4f6" }}
@@ -310,126 +327,42 @@ export default async function EventDetailPage({
               </div>
 
               <div className="flex flex-col gap-5">
-                {/* 開始時間 */}
+                {/* Start time */}
                 <InfoRow
-                  icon={
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                  }
+                  icon={calendarIcon}
                   label={t("startTime")}
                   value={
-                    <time dateTime={event.date.toISOString()}>
-                      {formatFullDate(event.date, locale)}
+                    <time dateTime={event.startAt.toISOString()}>
+                      {formatFullDate(event.startAt, locale)}
                     </time>
                   }
                 />
 
-                {/* 結束時間 */}
-                <InfoRow
-                  icon={
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  }
-                  label={t("endTime")}
-                  value={
-                    <time dateTime={event.endDate.toISOString()}>
-                      {formatFullDate(event.endDate, locale)}
-                    </time>
-                  }
-                />
-
-                {/* 地點 */}
-                <InfoRow
-                  icon={
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  }
-                  label={t("location")}
-                  value={event.location}
-                />
-
-                {/* 報名截止日（有值才顯示） */}
-                {event.registrationDeadline !== null && (
+                {/* End time (optional) */}
+                {event.endAt && (
                   <InfoRow
-                    icon={
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                        />
-                      </svg>
-                    }
-                    label={t("registrationDeadline")}
+                    icon={clockIcon}
+                    label={t("endTime")}
                     value={
-                      <time dateTime={event.registrationDeadline.toISOString()}>
-                        {formatDeadline(event.registrationDeadline, locale)}
+                      <time dateTime={event.endAt.toISOString()}>
+                        {formatFullDate(event.endAt, locale)}
                       </time>
                     }
                   />
                 )}
 
-                {/* 名額 */}
+                {/* Location (optional) */}
+                {event.location && (
+                  <InfoRow
+                    icon={pinIcon}
+                    label={t("location")}
+                    value={event.location}
+                  />
+                )}
+
+                {/* Capacity */}
                 <InfoRow
-                  icon={
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  }
+                  icon={peopleIcon}
                   label={t("capacity")}
                   value={
                     event.capacity !== null
@@ -439,11 +372,10 @@ export default async function EventDetailPage({
                 />
               </div>
 
-              {/* 報名操作區（Client Component） */}
               <RegisterPanel
                 eventId={id}
                 isLoggedIn={!!userId}
-                initialStatus={dbEvent ? initialStatus : null}
+                initialStatus={initialStatus}
                 remainingSpots={remainingSpots}
                 locale={locale}
               />

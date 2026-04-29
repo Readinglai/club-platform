@@ -81,6 +81,7 @@
     "calNext": "下一頁",
     "calNoEvents": "此時段沒有活動",
     "calShowMore": "另外 {count} 場",
+    "calEventsCount": "共 {count} 場活動，點擊活動查看詳情",
     "loginToRegister": "請登入後報名",
     "registrationComingSoonShort": "報名功能即將推出",
     "registrationFull": "名額已滿",
@@ -107,8 +108,10 @@
     "teamOperation": "Operation Team",
     "roleExec": "執行委員",
     "roleTeamLead": "Team Lead",
+    "roleAdmin": "管理員",
     "roleMember": "成員",
-    "roleSuperAdmin": "超級管理員"
+    "roleSuperAdmin": "超級管理員",
+    "noMembers": "目前沒有成員記錄"
   },
   "achievements": {
     "title": "過往成果",
@@ -148,5 +151,27 @@
     "year": "年份",
     "tier": "等級",
     "descriptionTitle": "關於"
+  },
+  "auth": {
+    "platformName": "社團成員管理平台",
+    "emailRestriction": "僅限 {domain} 信箱",
+    "googleSignIn": "用 Google 帳號登入",
+    "signOut": "登出",
+    "termsNote": "登入即代表您同意遵守社團規範。",
+    "contactNote": "如有問題請聯繫 exec 團隊。",
+    "errorAccessDenied": "僅限 utoronto.ca 或 mail.utoronto.ca 信箱登入，請使用校園帳號。",
+    "errorOAuth": "Google 登入發生錯誤，請稍後再試。",
+    "errorUnknown": "登入時發生未知錯誤，請稍後再試。"
+  },
+  "dashboard": {
+    "welcomeBack": "歡迎回來",
+    "defaultName": "成員",
+    "roleLabel": "角色",
+    "comingSoon": "更多功能即將推出，敬請期待。"
+  },
+  "errors": {
+    "unauthorized": "權限不足",
+    "unauthorizedDescription": "您沒有存取此頁面的權限。請聯絡執委確認您的帳號角色。",
+    "backToProfile": "返回個人資料"
   }
 }

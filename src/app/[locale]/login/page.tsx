@@ -1,15 +1,6 @@
-/**
- * login/page.tsx — 登入頁面
- *
- * 社團成員登入入口，使用 Google OAuth。
- * 僅限 utoronto.ca 或 mail.utoronto.ca 信箱。
- *
- * 此頁面為 Server Component，SignInButton 是 Client Component
- * 負責呼叫 next-auth/react 的 signIn()。
- */
-
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { SignInButton } from "./SignInButton";
 
@@ -17,43 +8,37 @@ interface LoginPageProps {
   searchParams: Promise<{ error?: string; callbackUrl?: string }>;
 }
 
-/**
- * 將 NextAuth 的錯誤代碼轉換成中文提示訊息
- */
-function getErrorMessage(error: string | undefined): string | null {
+function getErrorKey(error: string | undefined): string | null {
   if (!error) return null;
   switch (error) {
     case "AccessDenied":
-      return "僅限 utoronto.ca 或 mail.utoronto.ca 信箱登入，請使用校園帳號。";
+      return "errorAccessDenied";
     case "OAuthSignin":
     case "OAuthCallback":
-      return "Google 登入發生錯誤，請稍後再試。";
+      return "errorOAuth";
     default:
-      return "登入時發生未知錯誤，請稍後再試。";
+      return "errorUnknown";
   }
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  /* 已登入的使用者直接導向儀表板，不顯示登入頁 */
   const session = await auth();
   if (session?.user) {
     redirect("/dashboard");
   }
 
   const params = await searchParams;
-  const errorMessage = getErrorMessage(params.error);
+  const errorKey = getErrorKey(params.error);
   const callbackUrl = params.callbackUrl ?? "/dashboard";
+  const t = await getTranslations("auth");
 
   return (
-    /* 全螢幕置中容器，使用主色深藍作為背景 */
     <div
       className="min-h-screen flex items-center justify-center px-4"
       style={{ backgroundColor: "#1a2744" }}
     >
-      {/* 登入卡片 */}
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl px-8 py-10 flex flex-col items-center gap-6">
-
-        {/* Logo 與社團名稱 */}
+        {/* Logo */}
         <div className="flex flex-col items-center gap-3">
           <div className="relative w-20 h-20">
             <Image
@@ -72,36 +57,34 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </h1>
         </div>
 
-        {/* 分隔線 */}
         <div className="w-full h-px" style={{ backgroundColor: "#c9b99a" }} />
 
-        {/* 說明文字 */}
+        {/* Description */}
         <div className="text-center">
           <p className="text-sm text-gray-600 leading-relaxed">
-            社團成員管理平台
+            {t("platformName")}
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            僅限 <span className="font-medium text-gray-500">utoronto.ca</span> 信箱
+            {t("emailRestriction", { domain: "utoronto.ca" })}
           </p>
         </div>
 
-        {/* 錯誤提示（登入失敗時顯示） */}
-        {errorMessage && (
+        {/* Error message */}
+        {errorKey && (
           <div className="w-full rounded-lg px-4 py-3 bg-red-50 border border-red-200">
             <p className="text-xs text-red-600 text-center leading-relaxed">
-              {errorMessage}
+              {t(errorKey as "errorAccessDenied" | "errorOAuth" | "errorUnknown")}
             </p>
           </div>
         )}
 
-        {/* Google 登入按鈕（Client Component） */}
         <SignInButton callbackUrl={callbackUrl} />
 
-        {/* 頁腳說明 */}
+        {/* Footer note */}
         <p className="text-xs text-gray-400 text-center leading-relaxed">
-          登入即代表您同意遵守社團規範。
+          {t("termsNote")}
           <br />
-          如有問題請聯繫 exec 團隊。
+          {t("contactNote")}
         </p>
       </div>
     </div>

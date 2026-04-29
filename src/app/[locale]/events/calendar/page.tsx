@@ -139,9 +139,7 @@ export default async function CalendarPage({ params }: CalendarPageProps) {
 
         {/* 活動數量提示 */}
         <p className="text-center text-xs text-gray-400 mt-4">
-          {locale === "zh"
-            ? `共 ${events.length} 場活動，點擊活動查看詳情`
-            : `${events.length} events total — click an event to view details`}
+          {t("calEventsCount", { count: events.length })}
         </p>
       </section>
     </div>

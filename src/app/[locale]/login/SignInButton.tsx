@@ -1,27 +1,21 @@
-/**
- * SignInButton.tsx — Google 登入按鈕（Client Component）
- *
- * 由於 signIn() 是 next-auth/react 的 client-side 函數，
- * 必須在 Client Component 中呼叫，故獨立抽出此元件。
- */
-
 "use client";
 
 import { signIn } from "next-auth/react";
+import { useTranslations } from "next-intl";
 
 interface SignInButtonProps {
-  /** 登入成功後的導向路徑 */
   callbackUrl: string;
 }
 
 export function SignInButton({ callbackUrl }: SignInButtonProps) {
+  const t = useTranslations("auth");
+
   return (
     <button
       onClick={() => signIn("google", { callbackUrl })}
       className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 hover:opacity-90 active:scale-95 cursor-pointer"
       style={{ backgroundColor: "#1a2744", color: "#ffffff" }}
     >
-      {/* Google SVG icon */}
       <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0" aria-hidden="true">
         <path
           d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -40,7 +34,7 @@ export function SignInButton({ callbackUrl }: SignInButtonProps) {
           fill="#EA4335"
         />
       </svg>
-      用 Google 帳號登入
+      {t("googleSignIn")}
     </button>
   );
 }

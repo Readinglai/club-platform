@@ -81,6 +81,7 @@
     "calNext": "Next",
     "calNoEvents": "No events in this range",
     "calShowMore": "{count} more",
+    "calEventsCount": "{count} events total — click an event to view details",
     "loginToRegister": "Sign In to Register",
     "registrationComingSoonShort": "Registration coming soon",
     "registrationFull": "Registration Full",
@@ -107,8 +108,10 @@
     "teamOperation": "Operation Team",
     "roleExec": "Executive",
     "roleTeamLead": "Team Lead",
+    "roleAdmin": "Admin",
     "roleMember": "Member",
-    "roleSuperAdmin": "Super Admin"
+    "roleSuperAdmin": "Super Admin",
+    "noMembers": "No members found"
   },
   "achievements": {
     "title": "Achievements",
@@ -148,5 +151,27 @@
     "year": "Year",
     "tier": "Tier",
     "descriptionTitle": "About"
+  },
+  "auth": {
+    "platformName": "Club Member Management Platform",
+    "emailRestriction": "{domain} email required",
+    "googleSignIn": "Sign in with Google",
+    "signOut": "Sign Out",
+    "termsNote": "By signing in you agree to abide by club policies.",
+    "contactNote": "If you have questions, contact the exec team.",
+    "errorAccessDenied": "Only utoronto.ca or mail.utoronto.ca emails are allowed. Please use your campus account.",
+    "errorOAuth": "A Google sign-in error occurred. Please try again later.",
+    "errorUnknown": "An unknown error occurred during sign-in. Please try again later."
+  },
+  "dashboard": {
+    "welcomeBack": "Welcome back",
+    "defaultName": "Member",
+    "roleLabel": "Role",
+    "comingSoon": "More features coming soon."
+  },
+  "errors": {
+    "unauthorized": "Access Denied",
+    "unauthorizedDescription": "You do not have permission to access this page. Please contact an executive to confirm your account role.",
+    "backToProfile": "Back to Profile"
   }
 }
