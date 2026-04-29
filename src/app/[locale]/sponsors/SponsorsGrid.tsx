@@ -42,29 +42,24 @@ function SponsorCard({ sponsor: s, locale }: { sponsor: SponsorRow & { tier: str
   return (
     <Link
       href={`/${locale}/sponsors/${s.id}`}
-      className="group flex flex-col items-center gap-3 p-5 rounded-2xl bg-white border transition-all hover:shadow-md hover:border-gray-300"
-      style={{ borderColor: "#e5e7eb" }}
+      className="group flex flex-col items-center gap-3 py-4 transition-opacity hover:opacity-70"
     >
-      <div
-        className="relative w-full rounded-xl overflow-hidden flex items-center justify-center"
-        style={{ height: "80px", backgroundColor: `${PRIMARY}06` }}
-      >
-        {s.logoUrl && !imgFailed ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={s.logoUrl}
-            alt={s.name}
-            className="absolute inset-0 w-full h-full object-contain p-2"
-            onError={() => setImgFailed(true)}
-          />
-        ) : (
-          <span className="text-3xl font-bold select-none" style={{ color: `${PRIMARY}55` }}>
-            {s.name.charAt(0).toUpperCase()}
-          </span>
-        )}
-      </div>
+      {s.logoUrl && !imgFailed ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={s.logoUrl}
+          alt={s.name}
+          className="object-contain"
+          style={{ height: "64px", maxWidth: "160px" }}
+          onError={() => setImgFailed(true)}
+        />
+      ) : (
+        <span className="text-3xl font-bold select-none" style={{ color: `${PRIMARY}55` }}>
+          {s.name.charAt(0).toUpperCase()}
+        </span>
+      )}
       <p
-        className="text-sm font-semibold text-center leading-snug group-hover:opacity-80 transition-opacity"
+        className="text-sm font-semibold text-center leading-snug"
         style={{ color: PRIMARY }}
       >
         {s.name}

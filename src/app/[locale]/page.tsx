@@ -299,14 +299,14 @@ async function SponsorsSection() {
               <h3 className="text-center text-xs font-semibold uppercase tracking-widest" style={{ color: `${PRIMARY}88` }}>
                 {t(tier)}
               </h3>
-              <div className="flex flex-wrap justify-center items-center gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 items-center">
                 {byTier[tier].map((s) => (
                   <MotionLogo
                     key={s.id}
                     href={s.website ?? undefined}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center"
+                    className="flex items-center justify-center py-4"
                     title={s.name}
                   >
                     {s.logoUrl ? (

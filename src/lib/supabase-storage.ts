@@ -1,16 +1,12 @@
-import { createClient } from "@supabase/supabase-js";
-
 const BUCKET = "images";
 
-function getClient() {
+function getConfig() {
   const url = process.env.STORAGE_URL;
   const key = process.env.SUPABASE_ANON_KEY;
   if (!url || !key) {
-    throw new Error(
-      "Missing STORAGE_URL or SUPABASE_ANON_KEY environment variables"
-    );
+    throw new Error("Missing STORAGE_URL or SUPABASE_ANON_KEY environment variables");
   }
-  return createClient(url, key);
+  return { url, key };
 }
 
 export async function uploadImage(
@@ -18,17 +14,25 @@ export async function uploadImage(
   filename: string,
   contentType: string
 ): Promise<string> {
-  const supabase = getClient();
-  const storageUrl = process.env.STORAGE_URL!;
+  const { url, key } = getConfig();
 
   const ext = filename.split(".").pop()?.toLowerCase() ?? "bin";
   const path = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-  const { error } = await supabase.storage
-    .from(BUCKET)
-    .upload(path, buffer, { contentType, upsert: false });
+  const res = await fetch(`${url}/storage/v1/object/${BUCKET}/${path}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": contentType,
+      "x-upsert": "false",
+    },
+    body: new Blob([buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer], { type: contentType }),
+  });
 
-  if (error) throw new Error(error.message);
+  if (!res.ok) {
+    const text = await res.text().catch(() => res.statusText);
+    throw new Error(`Storage upload failed (${res.status}): ${text}`);
+  }
 
-  return `${storageUrl}/storage/v1/object/public/${BUCKET}/${path}`;
+  return `${url}/storage/v1/object/public/${BUCKET}/${path}`;
 }

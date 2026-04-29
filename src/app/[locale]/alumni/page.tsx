@@ -96,17 +96,16 @@ export default async function AlumniPage({ params }: AlumniPageProps) {
         {alumniList.length === 0 ? (
           <p className="text-center text-gray-400 py-20">{t("noAlumni")}</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
             {alumniList.map((alumni) => (
               <div
                 key={alumni.id}
                 className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200"
               >
-                {/* 大頭貼（Client Component，因 onError 為 client-side 事件） */}
-                <AlumniPhotoCard photoUrl={alumni.photoUrl} name={alumni.name} />
-
                 {/* 卡片內容 */}
                 <div className="p-5">
+                  {/* 大頭貼（Client Component，因 onError 為 client-side 事件） */}
+                  <AlumniPhotoCard photoUrl={alumni.photoUrl} name={alumni.name} />
                   <h2 className="text-lg font-bold truncate" style={{ color: PRIMARY }}>
                     {alumni.name}
                   </h2>
