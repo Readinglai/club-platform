@@ -7,7 +7,8 @@
     "sponsors": "Sponsors",
     "alumni": "Alumni",
     "contact": "Contact",
-    "switchLang": "中文"
+    "switchLang": "中文",
+    "editProfile": "Profile"
   },
   "hero": {
     "title": "ROCSAUT",
@@ -111,7 +112,30 @@
     "roleAdmin": "Admin",
     "roleMember": "Member",
     "roleSuperAdmin": "Super Admin",
-    "noMembers": "No members found"
+    "noMembers": "No members found",
+    "major": "Major",
+    "rocsautYear": "ROCSAUT Year"
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Edit your public profile",
+    "sectionBasic": "Basic Info",
+    "sectionAbout": "About Me",
+    "sectionSocial": "Social Links",
+    "name": "Name",
+    "image": "Avatar",
+    "imageHint": "Square image recommended. JPG / PNG / WebP, max 5 MB",
+    "bio": "Bio",
+    "bioPlaceholder": "Write a short introduction…",
+    "major": "Major",
+    "majorPlaceholder": "e.g. Computer Science",
+    "rocsautYear": "ROCSAUT Year",
+    "instagram": "Instagram",
+    "linkedin": "LinkedIn",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "saveError": "Save failed, please try again"
   },
   "achievements": {
     "title": "Achievements",

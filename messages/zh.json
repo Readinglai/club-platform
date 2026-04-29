@@ -7,7 +7,8 @@
     "sponsors": "贊助商",
     "alumni": "校友",
     "contact": "聯絡我們",
-    "switchLang": "EN"
+    "switchLang": "EN",
+    "editProfile": "個人資料"
   },
   "hero": {
     "title": "ROCSAUT",
@@ -111,7 +112,30 @@
     "roleAdmin": "管理員",
     "roleMember": "成員",
     "roleSuperAdmin": "超級管理員",
-    "noMembers": "目前沒有成員記錄"
+    "noMembers": "目前沒有成員記錄",
+    "major": "主修科系",
+    "rocsautYear": "ROCSAUT 資歷"
+  },
+  "profile": {
+    "title": "個人資料",
+    "subtitle": "編輯你的公開個人介紹",
+    "sectionBasic": "基本資料",
+    "sectionAbout": "關於我",
+    "sectionSocial": "社群連結",
+    "name": "姓名",
+    "image": "頭像",
+    "imageHint": "建議使用正方形圖片，JPG / PNG / WebP，最大 5 MB",
+    "bio": "個人簡介",
+    "bioPlaceholder": "寫一段自我介紹讓大家認識你…",
+    "major": "主修科系",
+    "majorPlaceholder": "例如：Computer Science",
+    "rocsautYear": "ROCSAUT 第幾年",
+    "instagram": "Instagram",
+    "linkedin": "LinkedIn",
+    "save": "儲存",
+    "saving": "儲存中…",
+    "saved": "已儲存",
+    "saveError": "儲存失敗，請稍後再試"
   },
   "achievements": {
     "title": "過往成果",

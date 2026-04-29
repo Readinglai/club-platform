@@ -21,8 +21,18 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
+}
+
+export type UserAvgAggregateOutputType = {
+  rocsautYear: number | null
+}
+
+export type UserSumAggregateOutputType = {
+  rocsautYear: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -33,6 +43,11 @@ export type UserMinAggregateOutputType = {
   emailVerified: Date | null
   role: $Enums.Role | null
   departmentId: string | null
+  bio: string | null
+  major: string | null
+  rocsautYear: number | null
+  instagram: string | null
+  linkedin: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -45,6 +60,11 @@ export type UserMaxAggregateOutputType = {
   emailVerified: Date | null
   role: $Enums.Role | null
   departmentId: string | null
+  bio: string | null
+  major: string | null
+  rocsautYear: number | null
+  instagram: string | null
+  linkedin: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -57,11 +77,24 @@ export type UserCountAggregateOutputType = {
   emailVerified: number
   role: number
   departmentId: number
+  bio: number
+  major: number
+  rocsautYear: number
+  instagram: number
+  linkedin: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type UserAvgAggregateInputType = {
+  rocsautYear?: true
+}
+
+export type UserSumAggregateInputType = {
+  rocsautYear?: true
+}
 
 export type UserMinAggregateInputType = {
   id?: true
@@ -71,6 +104,11 @@ export type UserMinAggregateInputType = {
   emailVerified?: true
   role?: true
   departmentId?: true
+  bio?: true
+  major?: true
+  rocsautYear?: true
+  instagram?: true
+  linkedin?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -83,6 +121,11 @@ export type UserMaxAggregateInputType = {
   emailVerified?: true
   role?: true
   departmentId?: true
+  bio?: true
+  major?: true
+  rocsautYear?: true
+  instagram?: true
+  linkedin?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -95,6 +138,11 @@ export type UserCountAggregateInputType = {
   emailVerified?: true
   role?: true
   departmentId?: true
+  bio?: true
+  major?: true
+  rocsautYear?: true
+  instagram?: true
+  linkedin?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -138,6 +186,18 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: UserAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: UserSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -168,6 +228,8 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
+  _avg?: UserAvgAggregateInputType
+  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
@@ -180,9 +242,16 @@ export type UserGroupByOutputType = {
   emailVerified: Date | null
   role: $Enums.Role
   departmentId: string | null
+  bio: string | null
+  major: string | null
+  rocsautYear: number | null
+  instagram: string | null
+  linkedin: string | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
@@ -213,6 +282,11 @@ export type UserWhereInput = {
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   departmentId?: Prisma.StringNullableFilter<"User"> | string | null
+  bio?: Prisma.StringNullableFilter<"User"> | string | null
+  major?: Prisma.StringNullableFilter<"User"> | string | null
+  rocsautYear?: Prisma.IntNullableFilter<"User"> | number | null
+  instagram?: Prisma.StringNullableFilter<"User"> | string | null
+  linkedin?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   department?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
@@ -239,6 +313,11 @@ export type UserOrderByWithRelationInput = {
   emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
   departmentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  bio?: Prisma.SortOrderInput | Prisma.SortOrder
+  major?: Prisma.SortOrderInput | Prisma.SortOrder
+  rocsautYear?: Prisma.SortOrderInput | Prisma.SortOrder
+  instagram?: Prisma.SortOrderInput | Prisma.SortOrder
+  linkedin?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   department?: Prisma.DepartmentOrderByWithRelationInput
@@ -268,6 +347,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   departmentId?: Prisma.StringNullableFilter<"User"> | string | null
+  bio?: Prisma.StringNullableFilter<"User"> | string | null
+  major?: Prisma.StringNullableFilter<"User"> | string | null
+  rocsautYear?: Prisma.IntNullableFilter<"User"> | number | null
+  instagram?: Prisma.StringNullableFilter<"User"> | string | null
+  linkedin?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   department?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
@@ -294,11 +378,18 @@ export type UserOrderByWithAggregationInput = {
   emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
   departmentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  bio?: Prisma.SortOrderInput | Prisma.SortOrder
+  major?: Prisma.SortOrderInput | Prisma.SortOrder
+  rocsautYear?: Prisma.SortOrderInput | Prisma.SortOrder
+  instagram?: Prisma.SortOrderInput | Prisma.SortOrder
+  linkedin?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
+  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
+  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -312,6 +403,11 @@ export type UserScalarWhereWithAggregatesInput = {
   emailVerified?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   role?: Prisma.EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
   departmentId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  bio?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  major?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  rocsautYear?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
+  instagram?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  linkedin?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -323,6 +419,11 @@ export type UserCreateInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -349,6 +450,11 @@ export type UserUncheckedCreateInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -373,6 +479,11 @@ export type UserUpdateInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -399,6 +510,11 @@ export type UserUncheckedUpdateInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -424,6 +540,11 @@ export type UserCreateManyInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -435,6 +556,11 @@ export type UserUpdateManyMutationInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -447,6 +573,11 @@ export type UserUncheckedUpdateManyInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -459,8 +590,17 @@ export type UserCountOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   role?: Prisma.SortOrder
   departmentId?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
+  major?: Prisma.SortOrder
+  rocsautYear?: Prisma.SortOrder
+  instagram?: Prisma.SortOrder
+  linkedin?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type UserAvgOrderByAggregateInput = {
+  rocsautYear?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -471,6 +611,11 @@ export type UserMaxOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   role?: Prisma.SortOrder
   departmentId?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
+  major?: Prisma.SortOrder
+  rocsautYear?: Prisma.SortOrder
+  instagram?: Prisma.SortOrder
+  linkedin?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -483,8 +628,17 @@ export type UserMinOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   role?: Prisma.SortOrder
   departmentId?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
+  major?: Prisma.SortOrder
+  rocsautYear?: Prisma.SortOrder
+  instagram?: Prisma.SortOrder
+  linkedin?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type UserSumOrderByAggregateInput = {
+  rocsautYear?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -521,6 +675,14 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
 
 export type EnumRoleFieldUpdateOperationsInput = {
   set?: $Enums.Role
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -762,6 +924,11 @@ export type UserCreateWithoutAccountsInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -787,6 +954,11 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -826,6 +998,11 @@ export type UserUpdateWithoutAccountsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -851,6 +1028,11 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -874,6 +1056,11 @@ export type UserCreateWithoutSessionsInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -899,6 +1086,11 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -938,6 +1130,11 @@ export type UserUpdateWithoutSessionsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -963,6 +1160,11 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -986,6 +1188,11 @@ export type UserCreateWithoutDepartmentInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -1010,6 +1217,11 @@ export type UserUncheckedCreateWithoutDepartmentInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -1064,6 +1276,11 @@ export type UserScalarWhereInput = {
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   departmentId?: Prisma.StringNullableFilter<"User"> | string | null
+  bio?: Prisma.StringNullableFilter<"User"> | string | null
+  major?: Prisma.StringNullableFilter<"User"> | string | null
+  rocsautYear?: Prisma.IntNullableFilter<"User"> | number | null
+  instagram?: Prisma.StringNullableFilter<"User"> | string | null
+  linkedin?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
 }
@@ -1075,6 +1292,11 @@ export type UserCreateWithoutRegistrationsInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -1100,6 +1322,11 @@ export type UserUncheckedCreateWithoutRegistrationsInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -1139,6 +1366,11 @@ export type UserUpdateWithoutRegistrationsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -1164,6 +1396,11 @@ export type UserUncheckedUpdateWithoutRegistrationsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -1187,6 +1424,11 @@ export type UserCreateWithoutCommentsInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -1212,6 +1454,11 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -1251,6 +1498,11 @@ export type UserUpdateWithoutCommentsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -1276,6 +1528,11 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -1299,6 +1556,11 @@ export type UserCreateWithoutAnnouncementsInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -1324,6 +1586,11 @@ export type UserUncheckedCreateWithoutAnnouncementsInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -1363,6 +1630,11 @@ export type UserUpdateWithoutAnnouncementsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -1388,6 +1660,11 @@ export type UserUncheckedUpdateWithoutAnnouncementsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -1411,6 +1688,11 @@ export type UserCreateWithoutAnnouncementReadsInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -1436,6 +1718,11 @@ export type UserUncheckedCreateWithoutAnnouncementReadsInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -1475,6 +1762,11 @@ export type UserUpdateWithoutAnnouncementReadsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -1500,6 +1792,11 @@ export type UserUncheckedUpdateWithoutAnnouncementReadsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -1523,6 +1820,11 @@ export type UserCreateWithoutCreatedTaskGroupsInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -1548,6 +1850,11 @@ export type UserUncheckedCreateWithoutCreatedTaskGroupsInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -1587,6 +1894,11 @@ export type UserUpdateWithoutCreatedTaskGroupsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -1612,6 +1924,11 @@ export type UserUncheckedUpdateWithoutCreatedTaskGroupsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -1635,6 +1952,11 @@ export type UserCreateWithoutTaskGroupsInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -1660,6 +1982,11 @@ export type UserUncheckedCreateWithoutTaskGroupsInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -1699,6 +2026,11 @@ export type UserUpdateWithoutTaskGroupsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -1724,6 +2056,11 @@ export type UserUncheckedUpdateWithoutTaskGroupsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -1747,6 +2084,11 @@ export type UserCreateWithoutAssignedTasksInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -1772,6 +2114,11 @@ export type UserUncheckedCreateWithoutAssignedTasksInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -1811,6 +2158,11 @@ export type UserUpdateWithoutAssignedTasksInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -1836,6 +2188,11 @@ export type UserUncheckedUpdateWithoutAssignedTasksInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -1859,6 +2216,11 @@ export type UserCreateWithoutCreatedVotesInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -1884,6 +2246,11 @@ export type UserUncheckedCreateWithoutCreatedVotesInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -1923,6 +2290,11 @@ export type UserUpdateWithoutCreatedVotesInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -1948,6 +2320,11 @@ export type UserUncheckedUpdateWithoutCreatedVotesInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -1971,6 +2348,11 @@ export type UserCreateWithoutVoteResponsesInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -1996,6 +2378,11 @@ export type UserUncheckedCreateWithoutVoteResponsesInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -2035,6 +2422,11 @@ export type UserUpdateWithoutVoteResponsesInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -2060,6 +2452,11 @@ export type UserUncheckedUpdateWithoutVoteResponsesInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -2083,6 +2480,11 @@ export type UserCreateWithoutFinanceRecordsInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -2108,6 +2510,11 @@ export type UserUncheckedCreateWithoutFinanceRecordsInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -2147,6 +2554,11 @@ export type UserUpdateWithoutFinanceRecordsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -2172,6 +2584,11 @@ export type UserUncheckedUpdateWithoutFinanceRecordsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -2195,6 +2612,11 @@ export type UserCreateWithoutPushSubscriptionsInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
@@ -2220,6 +2642,11 @@ export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
   emailVerified?: Date | string | null
   role?: $Enums.Role
   departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -2259,6 +2686,11 @@ export type UserUpdateWithoutPushSubscriptionsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
@@ -2284,6 +2716,11 @@ export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -2307,6 +2744,11 @@ export type UserCreateManyDepartmentInput = {
   image?: string | null
   emailVerified?: Date | string | null
   role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2318,6 +2760,11 @@ export type UserUpdateWithoutDepartmentInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
@@ -2342,6 +2789,11 @@ export type UserUncheckedUpdateWithoutDepartmentInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -2366,6 +2818,11 @@ export type UserUncheckedUpdateManyWithoutDepartmentInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2517,6 +2974,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   emailVerified?: boolean
   role?: boolean
   departmentId?: boolean
+  bio?: boolean
+  major?: boolean
+  rocsautYear?: boolean
+  instagram?: boolean
+  linkedin?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   department?: boolean | Prisma.User$departmentArgs<ExtArgs>
@@ -2544,6 +3006,11 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailVerified?: boolean
   role?: boolean
   departmentId?: boolean
+  bio?: boolean
+  major?: boolean
+  rocsautYear?: boolean
+  instagram?: boolean
+  linkedin?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   department?: boolean | Prisma.User$departmentArgs<ExtArgs>
@@ -2557,6 +3024,11 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailVerified?: boolean
   role?: boolean
   departmentId?: boolean
+  bio?: boolean
+  major?: boolean
+  rocsautYear?: boolean
+  instagram?: boolean
+  linkedin?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   department?: boolean | Prisma.User$departmentArgs<ExtArgs>
@@ -2570,11 +3042,16 @@ export type UserSelectScalar = {
   emailVerified?: boolean
   role?: boolean
   departmentId?: boolean
+  bio?: boolean
+  major?: boolean
+  rocsautYear?: boolean
+  instagram?: boolean
+  linkedin?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "image" | "emailVerified" | "role" | "departmentId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "image" | "emailVerified" | "role" | "departmentId" | "bio" | "major" | "rocsautYear" | "instagram" | "linkedin" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   department?: boolean | Prisma.User$departmentArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
@@ -2676,6 +3153,26 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
      * 所屬部門（可為 null，尚未分配或為 exec 層級）
      */
     departmentId: string | null
+    /**
+     * 個人簡介
+     */
+    bio: string | null
+    /**
+     * 主修科系
+     */
+    major: string | null
+    /**
+     * 加入 ROCSAUT 的第幾年
+     */
+    rocsautYear: number | null
+    /**
+     * Instagram 帳號 URL
+     */
+    instagram: string | null
+    /**
+     * LinkedIn 個人頁 URL
+     */
+    linkedin: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -3122,6 +3619,11 @@ export interface UserFieldRefs {
   readonly emailVerified: Prisma.FieldRef<"User", 'DateTime'>
   readonly role: Prisma.FieldRef<"User", 'Role'>
   readonly departmentId: Prisma.FieldRef<"User", 'String'>
+  readonly bio: Prisma.FieldRef<"User", 'String'>
+  readonly major: Prisma.FieldRef<"User", 'String'>
+  readonly rocsautYear: Prisma.FieldRef<"User", 'Int'>
+  readonly instagram: Prisma.FieldRef<"User", 'String'>
+  readonly linkedin: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }

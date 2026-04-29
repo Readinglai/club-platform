@@ -12,6 +12,7 @@ interface Props {
   label?: string;
   hint?: string;
   previewClassName?: string;
+  uploadEndpoint?: string;
 }
 
 export default function ImageUpload({
@@ -20,6 +21,7 @@ export default function ImageUpload({
   label,
   hint,
   previewClassName = "h-20 object-contain",
+  uploadEndpoint = "/api/admin/upload",
 }: Props) {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -32,7 +34,7 @@ export default function ImageUpload({
     const fd = new FormData();
     fd.append("file", file);
     try {
-      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      const res = await fetch(uploadEndpoint, { method: "POST", body: fd });
       let data: { url?: string; error?: string } = {};
       try {
         data = (await res.json()) as typeof data;

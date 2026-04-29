@@ -78,6 +78,16 @@ model User {
   /// 所屬部門（可為 null，尚未分配或為 exec 層級）
   departmentId  String?
   department    Department? @relation(fields: [departmentId], references: [id])
+  /// 個人簡介
+  bio           String?
+  /// 主修科系
+  major         String?
+  /// 加入 ROCSAUT 的第幾年
+  rocsautYear   Int?
+  /// Instagram 帳號 URL
+  instagram     String?
+  /// LinkedIn 個人頁 URL
+  linkedin      String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

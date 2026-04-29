@@ -1,38 +1,24 @@
-/**
- * route.ts — 個人資料 API
- *
- * 功能：取得與更新當前登入使用者的個人資料
- * 輸入：
- *   GET  — 無 body（從 session 識別使用者）
- *   PATCH — body: { name?: string; image?: string }
- * 輸出：
- *   GET  — UserProfile（id, name, email, image, role, department, createdAt）
- *   PATCH — 更新後的 UserProfile
- * 驗證：未登入回傳 401
- */
-
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-/** 回傳的使用者欄位（不含密碼或敏感 token） */
 const USER_SELECT = {
   id: true,
   name: true,
   email: true,
   image: true,
   role: true,
+  bio: true,
+  major: true,
+  rocsautYear: true,
+  instagram: true,
+  linkedin: true,
   createdAt: true,
   department: {
-    select: {
-      id: true,
-      slug: true,
-      name: true,
-    },
+    select: { id: true, slug: true, name: true },
   },
 } as const;
 
-/** GET /api/user/profile — 取得當前登入使用者資料 */
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) {
@@ -51,7 +37,6 @@ export async function GET() {
   return NextResponse.json(user);
 }
 
-/** PATCH /api/user/profile — 更新當前登入使用者的 name 和/或 image */
 export async function PATCH(request: Request) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -69,14 +54,43 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "請求格式錯誤" }, { status: 400 });
   }
 
-  const { name, image } = body as { name?: unknown; image?: unknown };
-  const updateData: { name?: string; image?: string } = {};
+  const { name, image, bio, major, rocsautYear, instagram, linkedin } =
+    body as Record<string, unknown>;
+
+  const updateData: {
+    name?: string;
+    image?: string | null;
+    bio?: string | null;
+    major?: string | null;
+    rocsautYear?: number | null;
+    instagram?: string | null;
+    linkedin?: string | null;
+  } = {};
 
   if (typeof name === "string" && name.trim().length > 0) {
     updateData.name = name.trim();
   }
   if (typeof image === "string") {
-    updateData.image = image;
+    updateData.image = image || null;
+  }
+  if (typeof bio === "string") {
+    updateData.bio = bio.trim() || null;
+  }
+  if (typeof major === "string") {
+    updateData.major = major.trim() || null;
+  }
+  if (rocsautYear === null || rocsautYear === undefined) {
+    // omit — don't wipe unless explicitly sent
+  } else if (typeof rocsautYear === "number" && rocsautYear >= 1 && rocsautYear <= 10) {
+    updateData.rocsautYear = rocsautYear;
+  } else if (rocsautYear === 0) {
+    updateData.rocsautYear = null;
+  }
+  if (typeof instagram === "string") {
+    updateData.instagram = instagram.trim() || null;
+  }
+  if (typeof linkedin === "string") {
+    updateData.linkedin = linkedin.trim() || null;
   }
 
   if (Object.keys(updateData).length === 0) {
