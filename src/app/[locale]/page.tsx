@@ -129,7 +129,7 @@ function AboutSection() {
   const stats = [
     { key: "statMembers", value: "100+" },
     { key: "statEvents", value: "50+" },
-    { key: "statFounded", value: "2020" },
+    { key: "statFounded", value: "1993" },
   ] as const;
   return (
     <section id="about" className="px-4 py-20 sm:py-28" style={{ backgroundColor: "#f9f7f4" }} aria-label="About section">
