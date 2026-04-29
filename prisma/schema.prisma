@@ -179,6 +179,8 @@ model Event {
   location    String?
   /// 活動容量上限（null 表示不限人數）
   capacity    Int?
+  /// 活動封面圖 URL（選填，用於首頁卡片展示）
+  imageUrl    String?
   /// 是否已對外發布；false 代表草稿狀態
   published   Boolean   @default(false)
   createdAt   DateTime  @default(now())

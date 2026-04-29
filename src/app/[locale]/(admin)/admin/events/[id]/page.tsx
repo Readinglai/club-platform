@@ -62,6 +62,7 @@ export default async function AdminEventDetailPage({
           location: event.location,
           capacity: event.capacity,
           published: event.published,
+          imageUrl: event.imageUrl ?? null,
         }}
         locale={locale}
       />

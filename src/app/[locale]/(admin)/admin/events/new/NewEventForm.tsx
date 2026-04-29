@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -17,6 +18,7 @@ export default function NewEventForm({ locale }: Props) {
   const tc = useTranslations("admin.common");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -32,6 +34,7 @@ export default function NewEventForm({ locale }: Props) {
       location: fd.get("location") as string || undefined,
       capacity: fd.get("capacity") ? Number(fd.get("capacity")) : undefined,
       published: fd.get("published") === "on",
+      imageUrl: imageUrl || undefined,
     };
 
     try {
@@ -79,6 +82,10 @@ export default function NewEventForm({ locale }: Props) {
           className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 resize-none"
           style={{ borderColor: "#e5e7eb", color: PRIMARY }}
         />
+      </Field>
+
+      <Field label={t("fieldImageUrl")}>
+        <ImageUpload value={imageUrl} onChange={setImageUrl} previewClassName="h-40 w-full object-cover" />
       </Field>
 
       <div className="grid grid-cols-2 gap-4">

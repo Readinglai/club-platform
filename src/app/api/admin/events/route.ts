@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     if (ROLE_LEVEL[role] < 3) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const body = await request.json();
-    const { title, description, startAt, endAt, location, capacity, published } = body;
+    const { title, description, startAt, endAt, location, capacity, published, imageUrl } = body;
 
     if (!title || !startAt) {
       return NextResponse.json({ error: "title and startAt are required" }, { status: 400 });
@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
         location: location ?? null,
         capacity: capacity ? Number(capacity) : null,
         published: published ?? false,
+        imageUrl: typeof imageUrl === "string" && imageUrl.trim() ? imageUrl.trim() : null,
       },
     });
 

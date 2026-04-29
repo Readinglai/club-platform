@@ -255,6 +255,7 @@
       "fieldEndAt": "結束時間",
       "fieldLocation": "地點",
       "fieldCapacity": "容量上限（留空表示不限）",
+      "fieldImageUrl": "活動封面圖",
       "fieldPublishNew": "立即發布（取消勾選則儲存為草稿）",
       "fieldPublishEdit": "已發布（取消勾選則切換為草稿）",
       "saveChanges": "儲存變更",

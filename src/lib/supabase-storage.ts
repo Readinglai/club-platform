@@ -1,32 +1,25 @@
+const SUPABASE_URL = "https://rbwchvwiuazfrsoabwni.supabase.co";
 const BUCKET = "images";
 
-function getConfig() {
-  const url = process.env.STORAGE_URL;
-  const key = process.env.SUPABASE_ANON_KEY;
-  if (!url || !key) {
-    throw new Error("Missing STORAGE_URL or SUPABASE_ANON_KEY environment variables");
-  }
-  return { url, key };
-}
-
 export async function uploadImage(
-  buffer: Buffer,
+  arrayBuffer: ArrayBuffer,
   filename: string,
   contentType: string
 ): Promise<string> {
-  const { url, key } = getConfig();
+  const key = process.env.SUPABASE_ANON_KEY;
+  if (!key) throw new Error("Missing SUPABASE_ANON_KEY environment variable");
 
   const ext = filename.split(".").pop()?.toLowerCase() ?? "bin";
   const path = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-  const res = await fetch(`${url}/storage/v1/object/${BUCKET}/${path}`, {
-    method: "POST",
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
+    method: "PUT",
     headers: {
       Authorization: `Bearer ${key}`,
       "Content-Type": contentType,
       "x-upsert": "false",
     },
-    body: new Blob([buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer], { type: contentType }),
+    body: arrayBuffer,
   });
 
   if (!res.ok) {
@@ -34,5 +27,5 @@ export async function uploadImage(
     throw new Error(`Storage upload failed (${res.status}): ${text}`);
   }
 
-  return `${url}/storage/v1/object/public/${BUCKET}/${path}`;
+  return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`;
 }

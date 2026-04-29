@@ -2539,6 +2539,7 @@ export const EventScalarFieldEnum = {
   endAt: 'endAt',
   location: 'location',
   capacity: 'capacity',
+  imageUrl: 'imageUrl',
   published: 'published',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

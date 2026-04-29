@@ -255,6 +255,7 @@
       "fieldEndAt": "End Time",
       "fieldLocation": "Location",
       "fieldCapacity": "Capacity (leave blank for unlimited)",
+      "fieldImageUrl": "Cover Image",
       "fieldPublishNew": "Publish immediately (uncheck to save as draft)",
       "fieldPublishEdit": "Published (uncheck to switch to draft)",
       "saveChanges": "Save Changes",

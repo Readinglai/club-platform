@@ -40,7 +40,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
 
     const { id } = await params;
     const body = await request.json();
-    const { title, description, startAt, endAt, location, capacity, published } = body;
+    const { title, description, startAt, endAt, location, capacity, published, imageUrl } = body;
 
     const event = await db.event.update({
       where: { id },
@@ -52,6 +52,9 @@ export async function PUT(request: NextRequest, { params }: Params) {
         ...(location !== undefined && { location }),
         ...(capacity !== undefined && { capacity: capacity ? Number(capacity) : null }),
         ...(published !== undefined && { published }),
+        ...(imageUrl !== undefined && {
+          imageUrl: typeof imageUrl === "string" && imageUrl.trim() ? imageUrl.trim() : null,
+        }),
       },
     });
 

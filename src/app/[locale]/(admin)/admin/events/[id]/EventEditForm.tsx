@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -16,6 +17,7 @@ interface EventData {
   location: string | null;
   capacity: number | null;
   published: boolean;
+  imageUrl: string | null;
 }
 
 interface Props {
@@ -35,6 +37,7 @@ export default function EventEditForm({ event, locale }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [imageUrl, setImageUrl] = useState(event.imageUrl ?? "");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -51,6 +54,7 @@ export default function EventEditForm({ event, locale }: Props) {
       location: fd.get("location") as string || null,
       capacity: fd.get("capacity") ? Number(fd.get("capacity")) : null,
       published: fd.get("published") === "on",
+      imageUrl: imageUrl || null,
     };
 
     try {
@@ -105,6 +109,10 @@ export default function EventEditForm({ event, locale }: Props) {
           className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 resize-none"
           style={{ borderColor: "#e5e7eb", color: PRIMARY }}
         />
+      </Field>
+
+      <Field label={t("fieldImageUrl")}>
+        <ImageUpload value={imageUrl} onChange={setImageUrl} previewClassName="h-40 w-full object-cover" />
       </Field>
 
       <div className="grid grid-cols-2 gap-4">

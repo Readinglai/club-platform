@@ -170,6 +170,7 @@ interface EventItem {
   endAt: string | null;
   location: string | null;
   capacity: number | null;
+  imageUrl: string | null;
 }
 
 async function UpcomingEventsSection() {
@@ -202,7 +203,58 @@ async function UpcomingEventsSection() {
             const startAt = new Date(ev.startAt);
             const dateStr = startAt.toLocaleDateString(locale === "en" ? "en-CA" : "zh-TW", { year: "numeric", month: "long", day: "numeric", timeZone: "America/Toronto" });
             const timeStr = startAt.toLocaleTimeString(locale === "en" ? "en-CA" : "zh-TW", { hour: "2-digit", minute: "2-digit", timeZone: "America/Toronto" });
-            return (
+            return ev.imageUrl ? (
+              /* Image card with hover overlay effect */
+              <MotionCard
+                key={ev.id}
+                className="group rounded-2xl border overflow-hidden flex flex-col"
+                style={{ borderColor: `${SECONDARY}44` }}
+                delay={idx * 0.12}
+              >
+                {/* Cover image with hover overlay */}
+                <Link href={`/${locale}/events/${ev.id}`} className="relative block aspect-video overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={ev.imageUrl}
+                    alt={ev.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  {/* Dark overlay — fades in on hover */}
+                  <div className="absolute inset-0 bg-[#1a2744]/0 group-hover:bg-[#1a2744]/60 transition-all duration-300" />
+                  {/* Title floats up on hover */}
+                  <div className="absolute inset-0 flex items-end p-4 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 pointer-events-none">
+                    <h3 className="text-white text-sm font-bold leading-snug drop-shadow-md line-clamp-2">
+                      {ev.title}
+                    </h3>
+                  </div>
+                </Link>
+                {/* Card body */}
+                <div className="flex flex-col gap-3 p-5">
+                  <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: SECONDARY }}>{dateStr} {timeStr}</p>
+                  <h3 className="text-base font-bold leading-snug" style={{ color: PRIMARY }}>{ev.title}</h3>
+                  {ev.location && (
+                    <p className="text-xs text-gray-500 flex items-center gap-1">
+                      <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      {ev.location}
+                    </p>
+                  )}
+                  {ev.capacity && (
+                    <p className="text-xs text-gray-400">{t("capacityFormat", { count: ev.capacity })}</p>
+                  )}
+                  <Link
+                    href={`/${locale}/events/${ev.id}`}
+                    className="mt-auto inline-block text-xs font-semibold px-4 py-2 rounded-lg text-center transition-all hover:opacity-80"
+                    style={{ backgroundColor: PRIMARY, color: SECONDARY }}
+                  >
+                    {tEvents("readMore")}
+                  </Link>
+                </div>
+              </MotionCard>
+            ) : (
+              /* Text-only card (no image) */
               <MotionCard key={ev.id} className="rounded-2xl border flex flex-col gap-3 p-6" style={{ borderColor: `${SECONDARY}44` }} delay={idx * 0.12}>
                 <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: SECONDARY }}>{dateStr} {timeStr}</p>
                 <h3 className="text-base font-bold leading-snug" style={{ color: PRIMARY }}>{ev.title}</h3>
