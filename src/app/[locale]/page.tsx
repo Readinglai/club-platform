@@ -35,12 +35,10 @@ async function HeroSection() {
     if (res.ok) {
       const config = (await res.json()) as Record<string, string>;
       const rawUrl = config["heroImageUrl"]?.trim() ?? "";
-      heroImageUrl = /^(https?:\/\/|\/)/.test(rawUrl) ? rawUrl : "/assets/hero.jpg";
-    } else {
-      heroImageUrl = "/assets/hero.jpg";
+      heroImageUrl = /^(https?:\/\/|\/)/.test(rawUrl) ? rawUrl : null;
     }
   } catch {
-    heroImageUrl = "/assets/hero.jpg";
+    heroImageUrl = null;
   }
   return <HeroClient heroImageUrl={heroImageUrl} locale={locale} />;
 }
@@ -49,7 +47,7 @@ function HeroClient({ heroImageUrl, locale }: { heroImageUrl: string | null; loc
   const t = useTranslations("hero");
   return (
     <section
-      className="relative flex flex-col items-center justify-center text-center px-4 py-28 sm:py-40 overflow-hidden"
+      className="relative flex items-center min-h-screen px-8 sm:px-16 lg:px-24 py-16 overflow-hidden"
       style={{
         backgroundColor: PRIMARY,
         ...(heroImageUrl && {
@@ -62,49 +60,67 @@ function HeroClient({ heroImageUrl, locale }: { heroImageUrl: string | null; loc
     >
       {/* Dark overlay when image is present */}
       {heroImageUrl && (
-        <div className="absolute inset-0" style={{ backgroundColor: `${PRIMARY}cc` }} />
+        <div className="absolute inset-0" style={{ backgroundColor: `${PRIMARY}d4` }} />
       )}
 
-      {/* Subtle radial overlay (no image) */}
-      {!heroImageUrl && (
-        <div
-          className="absolute inset-0 opacity-5 pointer-events-none"
-          aria-hidden="true"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 50%, #c9b99a 0%, transparent 50%), radial-gradient(circle at 80% 20%, #c9b99a 0%, transparent 40%)",
-          }}
-        />
-      )}
+      {/* Atmospheric radial glow */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          backgroundImage:
+            "radial-gradient(ellipse at 70% 50%, rgba(201,185,154,0.06) 0%, transparent 60%), radial-gradient(ellipse at 10% 80%, rgba(201,185,154,0.04) 0%, transparent 50%)",
+        }}
+      />
 
-      <div className="relative z-10 flex flex-col items-center gap-6 max-w-3xl">
+      {/* Left-aligned content */}
+      <div className="relative z-10 flex flex-col gap-6 max-w-2xl">
         <FadeIn direction="down" delay={0}>
-          <h1 className="text-5xl sm:text-7xl font-bold tracking-[0.15em]" style={{ color: SECONDARY }}>
-            ROCSAUT
-          </h1>
+          {/* Vertical gold line + big title */}
+          <div className="flex items-stretch gap-5">
+            <div
+              className="w-1 rounded-full shrink-0"
+              style={{ backgroundColor: SECONDARY }}
+            />
+            <h1
+              className="text-7xl sm:text-8xl font-bold tracking-[0.2em] leading-tight"
+              style={{ color: SECONDARY }}
+            >
+              ROCSAUT
+            </h1>
+          </div>
         </FadeIn>
+
         <FadeIn delay={0.15}>
-          <p className="text-lg sm:text-xl font-light tracking-wide" style={{ color: `${SECONDARY}cc` }}>
+          <p
+            className="text-lg sm:text-xl font-light tracking-wide pl-6"
+            style={{ color: `${SECONDARY}cc` }}
+          >
             {t("subtitle")}
           </p>
         </FadeIn>
+
         <FadeIn delay={0.3}>
-          <p className="text-sm sm:text-base leading-relaxed max-w-md" style={{ color: `${SECONDARY}99` }}>
+          <p
+            className="text-sm sm:text-base leading-relaxed max-w-md pl-6"
+            style={{ color: `${SECONDARY}99` }}
+          >
             {t("description")}
           </p>
         </FadeIn>
+
         <FadeIn direction="up" delay={0.5}>
-          <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
+          <div className="flex flex-row items-center gap-4 mt-2 pl-6 flex-wrap">
             <a
               href="#about"
-              className="px-8 py-3 rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 hover:opacity-90 active:scale-95"
+              className="px-10 py-4 rounded-2xl text-sm font-semibold tracking-wide transition-all duration-200 hover:opacity-90 active:scale-95"
               style={{ backgroundColor: SECONDARY, color: PRIMARY }}
             >
               {t("ctaPrimary")}
             </a>
             <Link
               href={`/${locale}/contact`}
-              className="px-8 py-3 rounded-xl text-sm font-semibold tracking-wide border transition-all duration-200 hover:opacity-90 active:scale-95"
+              className="px-10 py-4 rounded-2xl text-sm font-semibold tracking-wide border transition-all duration-200 hover:bg-white/5 active:scale-95"
               style={{ borderColor: `${SECONDARY}88`, color: `${SECONDARY}cc` }}
             >
               {t("ctaSecondary")}
@@ -113,7 +129,12 @@ function HeroClient({ heroImageUrl, locale }: { heroImageUrl: string | null; loc
         </FadeIn>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce" aria-hidden="true" style={{ color: `${SECONDARY}55` }}>
+      {/* Scroll indicator */}
+      <div
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce"
+        aria-hidden="true"
+        style={{ color: `${SECONDARY}55` }}
+      >
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
@@ -133,29 +154,76 @@ function AboutSection() {
     { key: "statFounded", value: "1993" },
   ] as const;
   return (
-    <section id="about" className="px-4 py-20 sm:py-28" style={{ backgroundColor: "#f9f7f4" }} aria-label="About section">
-      <div className="max-w-3xl mx-auto flex flex-col items-center gap-8">
+    <section
+      id="about"
+      className="px-4 py-16 sm:py-24"
+      style={{ backgroundColor: "#f9f7f4" }}
+      aria-label="About section"
+    >
+      <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-12 items-start">
+        {/* Left: title + year decoration */}
         <FadeIn delay={0}>
-          <div className="flex flex-col items-center gap-3 text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-wide" style={{ color: PRIMARY }}>{t("title")}</h2>
-            <div className="w-12 h-0.5 rounded-full" style={{ backgroundColor: SECONDARY }} />
+          <div className="relative flex flex-col gap-5 pt-4">
+            {/* Large year ghost text */}
+            <span
+              className="absolute -top-2 -left-2 text-[8rem] sm:text-[10rem] font-black select-none pointer-events-none leading-none"
+              style={{ color: PRIMARY, opacity: 0.04 }}
+              aria-hidden="true"
+            >
+              1993
+            </span>
+            {/* Gold accent line */}
+            <div className="w-1 h-12 rounded-full" style={{ backgroundColor: SECONDARY }} />
+            <h2
+              className="text-3xl sm:text-4xl font-bold tracking-wide"
+              style={{ color: PRIMARY }}
+            >
+              {t("title")}
+            </h2>
           </div>
         </FadeIn>
-        <div className="flex flex-col gap-5 text-center">
-          <FadeIn delay={0.1}><p className="text-base sm:text-lg leading-relaxed" style={{ color: "#555" }}>{t("paragraph1")}</p></FadeIn>
-          <FadeIn delay={0.2}><p className="text-base sm:text-lg leading-relaxed" style={{ color: "#555" }}>{t("paragraph2")}</p></FadeIn>
-          <FadeIn delay={0.3}><p className="text-base sm:text-lg leading-relaxed" style={{ color: "#555" }}>{t("paragraph3")}</p></FadeIn>
+
+        {/* Right: paragraphs */}
+        <div className="flex flex-col gap-5">
+          <FadeIn delay={0.1}>
+            <p className="text-base sm:text-lg leading-relaxed" style={{ color: "#555" }}>
+              {t("paragraph1")}
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.2}>
+            <p className="text-base sm:text-lg leading-relaxed" style={{ color: "#555" }}>
+              {t("paragraph2")}
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.3}>
+            <p className="text-base sm:text-lg leading-relaxed" style={{ color: "#555" }}>
+              {t("paragraph3")}
+            </p>
+          </FadeIn>
         </div>
-        <div className="grid grid-cols-3 gap-6 mt-4 w-full">
-          {stats.map(({ key, value }, si) => (
-            <FadeIn key={key} direction="up" delay={0.15 + si * 0.1}>
-              <div className="flex flex-col items-center gap-1 p-4 rounded-xl" style={{ backgroundColor: "#fff", boxShadow: "0 1px 8px #0001" }}>
-                <span className="text-2xl font-bold" style={{ color: PRIMARY }}>{value}</span>
-                <span className="text-xs text-gray-500">{tHome(key)}</span>
-              </div>
-            </FadeIn>
-          ))}
-        </div>
+      </div>
+
+      {/* Stats row at bottom */}
+      <div className="max-w-5xl mx-auto grid grid-cols-3 gap-5 mt-12">
+        {stats.map(({ key, value }, si) => (
+          <FadeIn key={key} direction="up" delay={0.15 + si * 0.1}>
+            <div
+              className="flex flex-col gap-1 p-5 rounded-xl border-l-4"
+              style={{
+                backgroundColor: PRIMARY,
+                borderColor: SECONDARY,
+                boxShadow: "0 4px 16px rgba(26,39,68,0.15)",
+              }}
+            >
+              <span className="text-2xl font-bold" style={{ color: SECONDARY }}>
+                {value}
+              </span>
+              <span className="text-xs" style={{ color: `${SECONDARY}99` }}>
+                {tHome(key)}
+              </span>
+            </div>
+          </FadeIn>
+        ))}
       </div>
     </section>
   );
@@ -190,38 +258,60 @@ async function UpcomingEventsSection() {
   if (events.length === 0) return null;
 
   return (
-    <section className="px-4 py-20 sm:py-28 bg-white" aria-label="Upcoming Events">
+    <section
+      className="px-4 py-16 sm:py-24"
+      style={{ backgroundColor: PRIMARY }}
+      aria-label="Upcoming Events"
+    >
       <div className="max-w-5xl mx-auto flex flex-col gap-10">
         <FadeIn>
           <div className="flex flex-col items-center gap-3 text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-wide" style={{ color: PRIMARY }}>{t("upcomingEventsTitle")}</h2>
+            <h2
+              className="text-3xl sm:text-4xl font-bold tracking-wide"
+              style={{ color: SECONDARY }}
+            >
+              {t("upcomingEventsTitle")}
+            </h2>
             <div className="w-12 h-0.5 rounded-full" style={{ backgroundColor: SECONDARY }} />
           </div>
         </FadeIn>
+
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {events.map((ev, idx) => {
             const startAt = new Date(ev.startAt);
-            const dateStr = startAt.toLocaleDateString(locale === "en" ? "en-CA" : "zh-TW", { year: "numeric", month: "long", day: "numeric", timeZone: "America/Toronto" });
-            const timeStr = startAt.toLocaleTimeString(locale === "en" ? "en-CA" : "zh-TW", { hour: "2-digit", minute: "2-digit", timeZone: "America/Toronto" });
+            const dateStr = startAt.toLocaleDateString(
+              locale === "en" ? "en-CA" : "zh-TW",
+              { year: "numeric", month: "long", day: "numeric", timeZone: "America/Toronto" }
+            );
+            const timeStr = startAt.toLocaleTimeString(
+              locale === "en" ? "en-CA" : "zh-TW",
+              { hour: "2-digit", minute: "2-digit", timeZone: "America/Toronto" }
+            );
+            const cardClass =
+              "group rounded-2xl border border-white/[0.12] overflow-hidden flex flex-col transition-colors duration-300 hover:border-[#c9b99a]";
+            const cardStyle = {
+              backgroundColor: "rgba(255,255,255,0.08)",
+            };
+
             return ev.imageUrl ? (
-              /* Image card with hover overlay effect */
               <MotionCard
                 key={ev.id}
-                className="group rounded-2xl border overflow-hidden flex flex-col"
-                style={{ borderColor: `${SECONDARY}44` }}
+                className={cardClass}
+                style={cardStyle}
                 delay={idx * 0.12}
               >
                 {/* Cover image with hover overlay */}
-                <Link href={`/${locale}/events/${ev.id}`} className="relative block aspect-video overflow-hidden">
+                <Link
+                  href={`/${locale}/events/${ev.id}`}
+                  className="relative block aspect-video overflow-hidden"
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={ev.imageUrl}
                     alt={ev.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  {/* Dark overlay — fades in on hover */}
-                  <div className="absolute inset-0 bg-[#1a2744]/0 group-hover:bg-[#1a2744]/60 transition-all duration-300" />
-                  {/* Title floats up on hover */}
+                  <div className="absolute inset-0 bg-[#1a2744]/0 group-hover:bg-[#1a2744]/50 transition-all duration-300" />
                   <div className="absolute inset-0 flex items-end p-4 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 pointer-events-none">
                     <h3 className="text-white text-sm font-bold leading-snug drop-shadow-md line-clamp-2">
                       {ev.title}
@@ -230,10 +320,23 @@ async function UpcomingEventsSection() {
                 </Link>
                 {/* Card body */}
                 <div className="flex flex-col gap-3 p-5">
-                  <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: SECONDARY }}>{dateStr} {timeStr}</p>
-                  <h3 className="text-base font-bold leading-snug" style={{ color: PRIMARY }}>{ev.title}</h3>
+                  <p
+                    className="text-xs font-semibold uppercase tracking-widest"
+                    style={{ color: SECONDARY }}
+                  >
+                    {dateStr} {timeStr}
+                  </p>
+                  <h3
+                    className="text-base font-bold leading-snug"
+                    style={{ color: "#fff" }}
+                  >
+                    {ev.title}
+                  </h3>
                   {ev.location && (
-                    <p className="text-xs text-gray-500 flex items-center gap-1">
+                    <p
+                      className="text-xs flex items-center gap-1"
+                      style={{ color: `${SECONDARY}aa` }}
+                    >
                       <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -242,12 +345,14 @@ async function UpcomingEventsSection() {
                     </p>
                   )}
                   {ev.capacity && (
-                    <p className="text-xs text-gray-400">{t("capacityFormat", { count: ev.capacity })}</p>
+                    <p className="text-xs" style={{ color: `${SECONDARY}66` }}>
+                      {t("capacityFormat", { count: ev.capacity })}
+                    </p>
                   )}
                   <Link
                     href={`/${locale}/events/${ev.id}`}
                     className="mt-auto inline-block text-xs font-semibold px-4 py-2 rounded-lg text-center transition-all hover:opacity-80"
-                    style={{ backgroundColor: PRIMARY, color: SECONDARY }}
+                    style={{ backgroundColor: SECONDARY, color: PRIMARY }}
                   >
                     {tEvents("readMore")}
                   </Link>
@@ -255,34 +360,61 @@ async function UpcomingEventsSection() {
               </MotionCard>
             ) : (
               /* Text-only card (no image) */
-              <MotionCard key={ev.id} className="rounded-2xl border flex flex-col gap-3 p-6" style={{ borderColor: `${SECONDARY}44` }} delay={idx * 0.12}>
-                <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: SECONDARY }}>{dateStr} {timeStr}</p>
-                <h3 className="text-base font-bold leading-snug" style={{ color: PRIMARY }}>{ev.title}</h3>
-                {ev.location && (
-                  <p className="text-xs text-gray-500 flex items-center gap-1">
-                    <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    {ev.location}
+              <MotionCard
+                key={ev.id}
+                className={`${cardClass} p-6`}
+                style={cardStyle}
+                delay={idx * 0.12}
+              >
+                <div className="flex flex-col gap-3 h-full">
+                  <p
+                    className="text-xs font-semibold uppercase tracking-widest"
+                    style={{ color: SECONDARY }}
+                  >
+                    {dateStr} {timeStr}
                   </p>
-                )}
-                {ev.capacity && (
-                  <p className="text-xs text-gray-400">{t("capacityFormat", { count: ev.capacity })}</p>
-                )}
-                <Link
-                  href={`/${locale}/events/${ev.id}`}
-                  className="mt-auto inline-block text-xs font-semibold px-4 py-2 rounded-lg text-center transition-all hover:opacity-80"
-                  style={{ backgroundColor: PRIMARY, color: SECONDARY }}
-                >
-                  {tEvents("readMore")}
-                </Link>
+                  <h3
+                    className="text-base font-bold leading-snug"
+                    style={{ color: "#fff" }}
+                  >
+                    {ev.title}
+                  </h3>
+                  {ev.location && (
+                    <p
+                      className="text-xs flex items-center gap-1"
+                      style={{ color: `${SECONDARY}aa` }}
+                    >
+                      <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      {ev.location}
+                    </p>
+                  )}
+                  {ev.capacity && (
+                    <p className="text-xs" style={{ color: `${SECONDARY}66` }}>
+                      {t("capacityFormat", { count: ev.capacity })}
+                    </p>
+                  )}
+                  <Link
+                    href={`/${locale}/events/${ev.id}`}
+                    className="mt-auto inline-block text-xs font-semibold px-4 py-2 rounded-lg text-center transition-all hover:opacity-80"
+                    style={{ backgroundColor: SECONDARY, color: PRIMARY }}
+                  >
+                    {tEvents("readMore")}
+                  </Link>
+                </div>
               </MotionCard>
             );
           })}
         </div>
+
         <div className="text-center">
-          <Link href={`/${locale}/events`} className="text-sm font-semibold transition-opacity hover:opacity-70" style={{ color: PRIMARY }}>
+          <Link
+            href={`/${locale}/events`}
+            className="text-sm font-semibold transition-opacity hover:opacity-70"
+            style={{ color: `${SECONDARY}cc` }}
+          >
             {t("viewAllEvents")}
           </Link>
         </div>
@@ -327,6 +459,13 @@ async function SponsorsSection() {
 
   if (sponsors.length === 0) return null;
 
+  const logoHeight: Record<string, number> = {
+    platinum: 120,
+    gold: 96,
+    silver: 72,
+    bronze: 56,
+  };
+
   // Group by most-recent tier
   const byTier: Record<string, SponsorItem[]> = {};
   for (const s of sponsors) {
@@ -336,21 +475,37 @@ async function SponsorsSection() {
   }
 
   return (
-    <section className="px-4 py-20 sm:py-28" style={{ backgroundColor: "#f9f7f4" }} aria-label="Sponsors">
+    <section
+      className="px-4 py-16 sm:py-24"
+      style={{ backgroundColor: "#f9f7f4" }}
+      aria-label="Sponsors"
+    >
       <div className="max-w-5xl mx-auto flex flex-col gap-12">
         <FadeIn>
           <div className="flex flex-col items-center gap-3 text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-wide" style={{ color: PRIMARY }}>{t("title")}</h2>
+            <h2
+              className="text-3xl sm:text-4xl font-bold tracking-wide"
+              style={{ color: PRIMARY }}
+            >
+              {t("title")}
+            </h2>
             <div className="w-12 h-0.5 rounded-full" style={{ backgroundColor: SECONDARY }} />
             <p className="text-sm text-gray-500">{t("subtitle")}</p>
           </div>
         </FadeIn>
+
         {TIER_ORDER.filter((tier) => byTier[tier]?.length).map((tier, ti) => (
           <FadeIn key={tier} delay={ti * 0.15}>
-            <div className="flex flex-col gap-5">
-              <h3 className="text-center text-xs font-semibold uppercase tracking-widest" style={{ color: `${PRIMARY}88` }}>
-                {t(tier)}
-              </h3>
+            <div className="flex flex-col gap-6">
+              {/* Badge-style tier label */}
+              <div className="flex justify-center">
+                <span
+                  className="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full"
+                  style={{ backgroundColor: SECONDARY, color: PRIMARY }}
+                >
+                  {t(tier)}
+                </span>
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 items-center">
                 {byTier[tier].map((s) => (
                   <MotionLogo
@@ -358,18 +513,23 @@ async function SponsorsSection() {
                     href={s.website ?? undefined}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center py-4"
+                    className="flex items-center justify-center py-5"
                     title={s.name}
                   >
                     {s.logoUrl ? (
                       <SponsorLogoImg
                         src={s.logoUrl}
                         alt={s.name}
-                        height={tier === "platinum" ? 64 : tier === "gold" ? 52 : 40}
-                        maxWidth={160}
+                        height={logoHeight[tier] ?? 56}
+                        maxWidth={200}
                       />
                     ) : (
-                      <span className="text-sm font-semibold" style={{ color: PRIMARY }}>{s.name}</span>
+                      <span
+                        className="text-sm font-semibold"
+                        style={{ color: PRIMARY }}
+                      >
+                        {s.name}
+                      </span>
                     )}
                   </MotionLogo>
                 ))}
@@ -432,7 +592,10 @@ function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t px-6 py-4 text-center text-xs" style={{ borderColor: `${SECONDARY}22`, color: `${SECONDARY}55` }}>
+        <div
+          className="border-t px-6 py-4 text-center text-xs"
+          style={{ borderColor: `${SECONDARY}22`, color: `${SECONDARY}55` }}
+        >
           © 2025 ROCSAUT
         </div>
       </footer>
