@@ -153,3 +153,28 @@ export type Alumni = Prisma.AlumniModel
  * 記錄贊助商每年的贊助等級（tier），同一贊助商同一年份唯一
  */
 export type SponsorHistory = Prisma.SponsorHistoryModel
+/**
+ * Model FinanceRecord
+ * 財務收支記錄表
+ */
+export type FinanceRecord = Prisma.FinanceRecordModel
+/**
+ * Model Budget
+ * 月度預算表
+ */
+export type Budget = Prisma.BudgetModel
+/**
+ * Model FeatureFlag
+ * 功能開關表
+ */
+export type FeatureFlag = Prisma.FeatureFlagModel
+/**
+ * Model EmailTemplate
+ * Email 模板表
+ */
+export type EmailTemplate = Prisma.EmailTemplateModel
+/**
+ * Model PushSubscription
+ * Web Push 訂閱表
+ */
+export type PushSubscription = Prisma.PushSubscriptionModel

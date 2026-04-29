@@ -22,6 +22,7 @@ const NAV_ITEMS: NavItem[] = [
   { slug: "task-groups",   label: "任務小組",   minLevel: 3 },
   { slug: "achievements",  label: "過往成果",   minLevel: 4 },
   { slug: "sponsors",      label: "贊助商管理", minLevel: 3 },
+  { slug: "finance",       label: "財務管理",   minLevel: 3 },
   { slug: "reports",       label: "數據報表",   minLevel: 4 },
   { slug: "site-config",   label: "網站設定",   minLevel: 4 },
 ];

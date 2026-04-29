@@ -51,3 +51,11 @@ export const TaskGroupRole = {
 } as const
 
 export type TaskGroupRole = (typeof TaskGroupRole)[keyof typeof TaskGroupRole]
+
+
+export const FinanceType = {
+  INCOME: 'INCOME',
+  EXPENSE: 'EXPENSE'
+} as const
+
+export type FinanceType = (typeof FinanceType)[keyof typeof FinanceType]

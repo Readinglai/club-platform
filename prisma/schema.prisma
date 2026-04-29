@@ -53,6 +53,12 @@ enum TaskGroupRole {
   MEMBER /// 一般成員
 }
 
+/// 財務記錄類型
+enum FinanceType {
+  INCOME  /// 收入
+  EXPENSE /// 支出
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Models
 // ─────────────────────────────────────────────────────────────────────────────
@@ -97,6 +103,10 @@ model User {
   createdVotes      Vote[]           @relation("VoteCreator")
   /// 該使用者的投票回應
   voteResponses     VoteResponse[]
+  /// 該使用者建立的財務記錄
+  financeRecords    FinanceRecord[]  @relation("FinanceRecordCreator")
+  /// 該使用者的推播訂閱
+  pushSubscriptions PushSubscription[]
 }
 
 /// NextAuth：OAuth 帳號表
@@ -430,4 +440,59 @@ model SponsorHistory {
   createdAt DateTime @default(now())
 
   @@unique([sponsorId, year])
+}
+
+/// 財務收支記錄表
+model FinanceRecord {
+  id          String      @id @default(cuid())
+  type        FinanceType
+  amount      Decimal     @db.Decimal(12, 2)
+  currency    String      @default("CAD")
+  category    String
+  description String?
+  date        DateTime
+  createdById String
+  createdBy   User        @relation("FinanceRecordCreator", fields: [createdById], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+/// 月度預算表
+model Budget {
+  id        String   @id @default(cuid())
+  year      Int
+  month     Int
+  category  String
+  amount    Decimal  @db.Decimal(12, 2)
+  currency  String   @default("CAD")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([year, month, category])
+}
+
+/// 功能開關表
+model FeatureFlag {
+  key       String   @id
+  enabled   Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+/// Email 模板表
+model EmailTemplate {
+  key       String   @id
+  subject   String
+  body      String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
+/// Web Push 訂閱表
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
 }
