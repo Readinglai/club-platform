@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 const PRIMARY   = "#1a2744";
 
@@ -82,7 +83,7 @@ function AlumniFormFields({ form, onChange, labels }: FormFieldsProps) {
         <Field label={labels.department} value={form.department} onChange={(v) => onChange("department", v)} />
         <Field label="LinkedIn URL" value={form.linkedinUrl} onChange={(v) => onChange("linkedinUrl", v)} placeholder="https://linkedin.com/in/..." />
         <Field label="Instagram URL" value={form.instagramUrl} onChange={(v) => onChange("instagramUrl", v)} placeholder="https://instagram.com/..." />
-        <Field label={labels.photo} value={form.photoUrl} onChange={(v) => onChange("photoUrl", v)} placeholder="https://..." />
+        <ImageUpload label={labels.photo} value={form.photoUrl} onChange={(v) => onChange("photoUrl", v)} previewClassName="h-12 w-12 object-cover rounded-full" />
       </div>
       <div>
         <label className="block text-xs font-medium text-gray-600 mb-1">{labels.bio}</label>

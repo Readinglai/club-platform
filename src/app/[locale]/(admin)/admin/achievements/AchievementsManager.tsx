@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -157,15 +158,12 @@ export default function AchievementsManager({ achievements: initial, locale }: P
                 style={{ borderColor: "#d1d5db" }}
               />
             </div>
-            <div className="flex flex-col gap-1 sm:col-span-2">
-              <label className="text-xs text-gray-500">{t("fieldImageUrl")}</label>
-              <input
+            <div className="sm:col-span-2">
+              <ImageUpload
+                label={t("fieldImageUrl")}
                 value={form.imageUrl}
-                onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
-                placeholder="https://..."
-                autoComplete="off"
-                className="border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2"
-                style={{ borderColor: "#d1d5db" }}
+                onChange={(v) => setForm((f) => ({ ...f, imageUrl: v }))}
+                previewClassName="h-14 w-24 object-cover"
               />
             </div>
             <div className="flex flex-col gap-1 sm:col-span-2">

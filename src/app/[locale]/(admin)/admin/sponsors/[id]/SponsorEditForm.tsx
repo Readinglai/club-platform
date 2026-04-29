@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -185,28 +186,12 @@ export default function SponsorEditForm({ sponsor, locale: _locale }: Props) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-gray-500 uppercase tracking-wide">{t("fieldLogo")}</label>
-          <div className="flex items-center gap-3">
-            <input
-              value={logoUrl}
-              onChange={(e) => setLogoUrl(e.target.value)}
-              autoComplete="off"
-              className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none"
-              style={{ borderColor: "#e5e7eb", color: PRIMARY }}
-              placeholder="https://..."
-            />
-            {logoUrl && (
-              <img
-                src={logoUrl}
-                alt="logo preview"
-                className="h-10 w-auto object-contain rounded border"
-                style={{ borderColor: "#e5e7eb" }}
-                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-              />
-            )}
-          </div>
-        </div>
+        <ImageUpload
+          label={t("fieldLogo")}
+          value={logoUrl}
+          onChange={setLogoUrl}
+          previewClassName="h-10 w-auto object-contain"
+        />
 
         <div className="flex flex-col gap-1">
           <label className="text-xs text-gray-500 uppercase tracking-wide">{t("fieldDescription")}</label>

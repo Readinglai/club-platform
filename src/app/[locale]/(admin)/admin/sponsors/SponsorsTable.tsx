@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -118,16 +119,12 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
                 style={{ borderColor: "#e5e7eb", color: PRIMARY }}
               />
             </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-500 uppercase tracking-wide">{t("fieldLogo")}</label>
-              <input
-                value={newLogoUrl}
-                onChange={(e) => setNewLogoUrl(e.target.value)}
-                className="border rounded-lg px-3 py-2 text-sm focus:outline-none"
-                style={{ borderColor: "#e5e7eb", color: PRIMARY }}
-                placeholder="https://..."
-              />
-            </div>
+            <ImageUpload
+              label={t("fieldLogo")}
+              value={newLogoUrl}
+              onChange={setNewLogoUrl}
+              previewClassName="h-10 w-auto object-contain"
+            />
             <div className="flex flex-col gap-1">
               <label className="text-xs text-gray-500 uppercase tracking-wide">{t("fieldWebsite")}</label>
               <input

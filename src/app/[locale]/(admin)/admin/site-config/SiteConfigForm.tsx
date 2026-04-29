@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -50,28 +51,13 @@ export default function SiteConfigForm({ heroImageUrl }: { heroImageUrl: string 
         <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">{t("saved")}</p>
       )}
 
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs text-gray-500 uppercase tracking-wide">{t("heroImageLabel")}</label>
-        <div className="flex items-center gap-3">
-          <input
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none"
-            style={{ borderColor: "#e5e7eb", color: PRIMARY }}
-            placeholder="https://..."
-          />
-          {url && (
-            <img
-              src={url}
-              alt="preview"
-              className="h-14 w-24 object-cover rounded border"
-              style={{ borderColor: "#e5e7eb" }}
-              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-            />
-          )}
-        </div>
-        <p className="text-xs text-gray-400 mt-1">{t("heroImageHint")}</p>
-      </div>
+      <ImageUpload
+        label={t("heroImageLabel")}
+        value={url}
+        onChange={setUrl}
+        hint={t("heroImageHint")}
+        previewClassName="h-14 w-24 object-cover"
+      />
 
       <div className="flex justify-end">
         <button
