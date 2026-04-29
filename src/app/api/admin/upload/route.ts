@@ -51,7 +51,9 @@ export async function POST(request: NextRequest) {
   const filename = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
   try {
-    // Pass File (Blob) directly — no ArrayBuffer conversion, avoids body-read issues
+    // Read into ArrayBuffer first — avoids File streaming issues in Node.js server fetch
+    const arrayBuffer = await file.arrayBuffer();
+
     const res = await fetch(
       `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`,
       {
@@ -59,21 +61,23 @@ export async function POST(request: NextRequest) {
         headers: {
           Authorization: `Bearer ${key}`,
           "Content-Type": file.type,
+          "Content-Length": String(arrayBuffer.byteLength),
           "x-upsert": "true",
         },
-        body: file,
+        body: arrayBuffer,
       }
     );
 
-    // Drain the response body regardless of status to avoid memory leaks
-    const responseText = await res.text().catch(() => "");
-
     if (!res.ok) {
+      const text = await res.text().catch(() => "");
       return NextResponse.json(
-        { error: `Storage upload failed (${res.status}): ${responseText || res.statusText}` },
+        { error: `Storage upload failed (${res.status}): ${text || res.statusText}` },
         { status: 500 }
       );
     }
+
+    // Discard success body immediately — don't block on it
+    res.body?.cancel().catch(() => {});
 
     const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${filename}`;
     return NextResponse.json({ url: publicUrl });
