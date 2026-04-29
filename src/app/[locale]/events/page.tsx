@@ -39,52 +39,52 @@ interface EventCardProps {
 function EventCard({ event, locale, t }: EventCardProps) {
   const href = `/${locale}/events/${event.id}`;
   const desc = event.description ?? "";
-  const shortDesc = desc.replace(/\n/g, " ").slice(0, 120);
-  const isDescTruncated = desc.replace(/\n/g, " ").length > 120;
+  const shortDesc = desc.replace(/\n/g, " ").slice(0, 160);
+  const isDescTruncated = desc.replace(/\n/g, " ").length > 160;
 
   return (
     <article
-      className="group flex flex-col rounded-2xl border overflow-hidden transition-shadow duration-200 hover:shadow-lg"
+      className="group grid grid-cols-1 sm:grid-cols-[260px_1fr] rounded-2xl border overflow-hidden bg-white transition-shadow duration-200 hover:shadow-lg"
       style={{ borderColor: "#e5e7eb" }}
     >
-      {event.imageUrl ? (
-        <div className="h-44 overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+      {/* Left: cover image only, or deep-blue placeholder */}
+      <Link href={href} className="relative block overflow-hidden" style={{ minHeight: "200px" }}>
+        {event.imageUrl ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={event.imageUrl}
             alt={event.title}
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
-        </div>
-      ) : (
-        <div className="h-1.5" style={{ backgroundColor: PRIMARY }} />
-      )}
+        ) : (
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ backgroundColor: PRIMARY }}
+          >
+            <svg
+              className="w-14 h-14 opacity-20"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+              style={{ color: SECONDARY }}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        )}
+      </Link>
 
-      <div className="flex flex-col gap-4 p-6">
+      {/* Right: event details only */}
+      <div className="flex flex-col gap-3 p-6">
         {/* Date */}
-        <div className="flex items-center gap-2">
-          <svg
-            className="w-4 h-4 flex-shrink-0"
-            style={{ color: SECONDARY }}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-            />
-          </svg>
-          <time
-            dateTime={event.startAt.toISOString()}
-            className="text-sm font-medium"
-            style={{ color: SECONDARY }}
-          >
-            {formatEventDate(event.startAt, locale)}
-          </time>
-        </div>
+        <time
+          dateTime={event.startAt.toISOString()}
+          className="text-xs font-bold uppercase tracking-widest"
+          style={{ color: SECONDARY }}
+        >
+          {formatEventDate(event.startAt, locale)}
+        </time>
 
         {/* Title */}
         <h2
@@ -96,49 +96,26 @@ function EventCard({ event, locale, t }: EventCardProps) {
 
         {/* Location */}
         {event.location && (
-          <div className="flex items-start gap-2">
-            <svg
-              className="w-4 h-4 flex-shrink-0 mt-0.5"
-              style={{ color: "#9ca3af" }}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-              />
+          <p className="text-sm text-gray-500 flex items-center gap-1.5">
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <span className="text-sm text-gray-500 leading-relaxed">
-              {event.location}
-            </span>
-          </div>
+            {event.location}
+          </p>
         )}
 
         {/* Description */}
         {desc && (
           <p className="text-sm text-gray-600 leading-relaxed flex-1">
-            {shortDesc}
-            {isDescTruncated && "…"}
+            {shortDesc}{isDescTruncated && "…"}
           </p>
         )}
 
         {/* Footer */}
-        <div
-          className="flex items-center justify-between pt-2 border-t"
-          style={{ borderColor: "#f3f4f6" }}
-        >
+        <div className="flex items-center justify-between pt-3 mt-auto border-t" style={{ borderColor: "#f3f4f6" }}>
           {event.capacity !== null ? (
-            <span className="text-xs text-gray-400">
-              {t("capacity")}: {event.capacity}
-            </span>
+            <span className="text-xs text-gray-400">{t("capacity")}: {event.capacity}</span>
           ) : (
             <span className="text-xs text-gray-400">{t("noCapacityLimit")}</span>
           )}
@@ -148,18 +125,8 @@ function EventCard({ event, locale, t }: EventCardProps) {
             style={{ color: PRIMARY }}
           >
             {t("readMore")}
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 5l7 7-7 7"
-              />
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </Link>
         </div>
@@ -243,7 +210,7 @@ export default async function EventsPage({ params }: EventsPageProps) {
             <p className="text-lg">{t("noEvents")}</p>
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2">
+          <div className="flex flex-col gap-5">
             {events.map((event) => (
               <EventCard
                 key={event.id}

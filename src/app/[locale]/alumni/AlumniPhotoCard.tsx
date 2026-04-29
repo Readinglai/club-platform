@@ -27,12 +27,18 @@ export default function AlumniPhotoCard({ photoUrl, name }: Props) {
         className="w-full h-full flex items-center justify-center"
         style={{ backgroundColor: PRIMARY }}
       >
-        <span
-          className="text-4xl font-bold select-none"
-          style={{ color: SECONDARY }}
+        {/* 96px circle with initials — does not fill the whole card */}
+        <div
+          className="w-24 h-24 rounded-full flex items-center justify-center select-none"
+          style={{
+            backgroundColor: "rgba(201,185,154,0.15)",
+            border: "1.5px solid rgba(201,185,154,0.45)",
+          }}
         >
-          {getInitials(name)}
-        </span>
+          <span className="text-2xl font-bold" style={{ color: SECONDARY }}>
+            {getInitials(name)}
+          </span>
+        </div>
       </div>
     );
   }
