@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 
 const NAV_LINKS = [
   { key: "home", href: "/" },
@@ -25,7 +24,6 @@ export default function Navbar() {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session } = useSession();
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -40,9 +38,6 @@ export default function Navbar() {
 
   const localizedHref = (href: string) =>
     href === "/" ? `/${locale}` : `/${locale}${href}`;
-
-  const profileHref = localizedHref("/profile");
-  const isProfileActive = pathname === profileHref;
 
   return (
     <nav
@@ -89,20 +84,6 @@ export default function Navbar() {
                 </Link>
               );
             })}
-
-            {/* Profile link — only when logged in */}
-            {session?.user && (
-              <Link
-                href={profileHref}
-                className="text-sm font-medium transition-all duration-150 hover:opacity-100 pb-0.5"
-                style={{
-                  color: isProfileActive ? SECONDARY : `${SECONDARY}bb`,
-                  borderBottom: isProfileActive ? `2px solid ${SECONDARY}` : "2px solid transparent",
-                }}
-              >
-                {t("editProfile")}
-              </Link>
-            )}
 
             <button
               onClick={handleLangSwitch}
@@ -170,19 +151,6 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            {session?.user && (
-              <Link
-                href={profileHref}
-                onClick={() => setMenuOpen(false)}
-                className="block px-3 py-2 rounded-md text-sm font-medium transition-all duration-150"
-                style={{
-                  color: isProfileActive ? PRIMARY : SECONDARY,
-                  backgroundColor: isProfileActive ? SECONDARY : "transparent",
-                }}
-              >
-                {t("editProfile")}
-              </Link>
-            )}
           </div>
         </div>
       )}
