@@ -17,7 +17,7 @@ export default async function DepartmentDetailPage({
 }) {
   const { level } = await requireAuth(4);
   const { locale, slug } = await params;
-  const isSuperAdmin = level >= 5;
+  const isSuperAdmin = level >= 4;
 
   const t = await getTranslations("admin.departments");
 

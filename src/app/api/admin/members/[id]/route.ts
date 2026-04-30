@@ -53,7 +53,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     }
 
     const body = await request.json();
-    const { name, role, departmentId } = body;
+    const { name, role, departmentId, bio, major, rocsautYear, instagram, linkedin } = body;
 
     const user = await db.user.update({
       where: { id },
@@ -63,6 +63,11 @@ export async function PUT(request: NextRequest, { params }: Params) {
         ...(departmentId !== undefined && {
           departmentId: departmentId === "" ? null : departmentId,
         }),
+        ...(bio !== undefined && { bio: bio === "" ? null : bio }),
+        ...(major !== undefined && { major: major === "" ? null : major }),
+        ...(rocsautYear !== undefined && { rocsautYear: rocsautYear === null ? null : Number(rocsautYear) }),
+        ...(instagram !== undefined && { instagram: instagram === "" ? null : instagram }),
+        ...(linkedin !== undefined && { linkedin: linkedin === "" ? null : linkedin }),
       },
       select: { id: true, name: true, email: true, role: true, departmentId: true },
     });

@@ -21,6 +21,11 @@ interface Props {
     role: string;
     departmentId: string | null;
     image: string | null;
+    bio: string | null;
+    major: string | null;
+    rocsautYear: number | null;
+    instagram: string | null;
+    linkedin: string | null;
   };
   departments: Department[];
   locale: string;
@@ -52,10 +57,16 @@ export default function MemberEditForm({ member, departments, locale }: Props) {
     setSuccess(false);
 
     const fd = new FormData(e.currentTarget);
+    const rocsautYearRaw = fd.get("rocsautYear") as string;
     const body = {
       name: fd.get("name") as string,
       role: fd.get("role") as string,
-      departmentId: fd.get("departmentId") as string || null,
+      departmentId: (fd.get("departmentId") as string) || null,
+      bio: (fd.get("bio") as string) || null,
+      major: (fd.get("major") as string) || null,
+      rocsautYear: rocsautYearRaw ? parseInt(rocsautYearRaw, 10) : null,
+      instagram: (fd.get("instagram") as string) || null,
+      linkedin: (fd.get("linkedin") as string) || null,
     };
 
     const res = await fetch(`/api/admin/members/${member.id}`, {
@@ -174,6 +185,69 @@ export default function MemberEditForm({ member, departments, locale }: Props) {
               <option key={d.id} value={d.id}>{d.name}（{d.slug}）</option>
             ))}
           </select>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b7280" }}>
+            Bio
+          </label>
+          <textarea
+            name="bio"
+            rows={3}
+            defaultValue={member.bio ?? ""}
+            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 resize-none"
+            style={{ borderColor: "#e5e7eb", color: PRIMARY }}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b7280" }}>
+            Major
+          </label>
+          <input
+            name="major"
+            defaultValue={member.major ?? ""}
+            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+            style={{ borderColor: "#e5e7eb", color: PRIMARY }}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b7280" }}>
+            ROCSAUT Year
+          </label>
+          <input
+            name="rocsautYear"
+            type="number"
+            min={1}
+            defaultValue={member.rocsautYear ?? ""}
+            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+            style={{ borderColor: "#e5e7eb", color: PRIMARY }}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b7280" }}>
+            Instagram
+          </label>
+          <input
+            name="instagram"
+            defaultValue={member.instagram ?? ""}
+            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+            style={{ borderColor: "#e5e7eb", color: PRIMARY }}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b7280" }}>
+            LinkedIn
+          </label>
+          <input
+            name="linkedin"
+            defaultValue={member.linkedin ?? ""}
+            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+            style={{ borderColor: "#e5e7eb", color: PRIMARY }}
+          />
         </div>
 
         <div className="flex gap-3 pt-2">

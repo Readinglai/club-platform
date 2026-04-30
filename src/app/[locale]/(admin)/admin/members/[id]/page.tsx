@@ -31,6 +31,11 @@ export default async function AdminMemberDetailPage({
         role: true,
         departmentId: true,
         image: true,
+        bio: true,
+        major: true,
+        rocsautYear: true,
+        instagram: true,
+        linkedin: true,
         createdAt: true,
       },
     }),
@@ -66,6 +71,11 @@ export default async function AdminMemberDetailPage({
           role: member.role,
           departmentId: member.departmentId,
           image: member.image,
+          bio: member.bio,
+          major: member.major,
+          rocsautYear: member.rocsautYear,
+          instagram: member.instagram,
+          linkedin: member.linkedin,
         }}
         departments={departments}
         locale={locale}
