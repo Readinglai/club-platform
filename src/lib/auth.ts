@@ -20,8 +20,8 @@ const SUPER_ADMIN_EMAILS = ["flyincloud2001@gmail.com"];
 // UofT email domains: allowed if email exists in User table
 const UOFT_DOMAINS = ["utoronto.ca", "mail.utoronto.ca"];
 
-// Gmail users need to exist in DB with EXEC or above
-const EXEC_AND_ABOVE = ["SUPER_ADMIN", "EXEC"] as const;
+// Gmail users need to exist in DB with ADMIN or above
+const EXEC_AND_ABOVE = ["SUPER_ADMIN", "ADMIN", "EXEC"] as const;
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
