@@ -8,6 +8,7 @@
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ROLE_LEVEL } from "@/lib/rbac";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -27,6 +28,10 @@ export default async function ProfilePage() {
   const session = await auth();
   if (!session?.user?.id) {
     redirect("/login");
+  }
+
+  if (ROLE_LEVEL[session.user.role] < 5) {
+    redirect("/portal");
   }
 
   const user = await db.user.findUnique({

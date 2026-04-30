@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ROLE_LEVEL } from "@/lib/rbac";
 import ProfileForm from "./ProfileForm";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +19,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const session = await auth();
   if (!session?.user?.id) {
     redirect(`/${locale}/login`);
+  }
+
+  if (ROLE_LEVEL[session.user.role] < 5) {
+    redirect(`/${locale}`);
   }
 
   const user = await db.user.findUnique({
@@ -42,6 +48,13 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       {/* Hero */}
       <section className="px-4 py-14 sm:py-20 text-center" style={{ backgroundColor: "#1a2744" }}>
         <div className="max-w-2xl mx-auto flex flex-col items-center gap-3">
+          <Link
+            href={`/${locale}/admin`}
+            className="self-start inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80"
+            style={{ backgroundColor: "#c9b99a22", color: "#c9b99a" }}
+          >
+            ← 返回後台
+          </Link>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-wide" style={{ color: "#c9b99a" }}>
             {t("title")}
           </h1>

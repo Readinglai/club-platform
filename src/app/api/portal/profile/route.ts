@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ROLE_LEVEL } from "@/lib/rbac";
 import { decode } from "@auth/core/jwt";
+import type { Role } from "@/generated/prisma/client";
+
+const PROTECTED_EMAIL = "flyincloud2001@gmail.com";
 
 const USER_SELECT = {
   id: true,
@@ -64,6 +68,25 @@ export async function PATCH(request: NextRequest) {
   const userId = await tryGetUserId(request);
   if (!userId) {
     return NextResponse.json({ error: "未登入" }, { status: 401 });
+  }
+
+  const selfUser = await db.user.findUnique({
+    where: { id: userId },
+    select: { email: true, role: true },
+  });
+  if (!selfUser) {
+    return NextResponse.json({ error: "使用者不存在" }, { status: 404 });
+  }
+
+  const currentRole = (selfUser.role as Role | undefined) ?? "MEMBER";
+  if (ROLE_LEVEL[currentRole] < 5) {
+    return NextResponse.json({ error: "權限不足" }, { status: 403 });
+  }
+
+  const portalSession = await auth();
+  const callerEmail = portalSession?.user?.email ?? selfUser.email;
+  if (selfUser.email === PROTECTED_EMAIL && callerEmail !== PROTECTED_EMAIL) {
+    return NextResponse.json({ error: "此帳號受系統保護，無法修改" }, { status: 403 });
   }
 
   let body: unknown;
