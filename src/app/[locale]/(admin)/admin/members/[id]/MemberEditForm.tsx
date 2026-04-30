@@ -40,10 +40,9 @@ export default function MemberEditForm({ member, departments, locale }: Props) {
   const [avatarSaved, setAvatarSaved] = useState(false);
 
   const ROLES = [
-    { value: "SUPER_ADMIN", label: t("roleSuperAdmin") },
-    { value: "ADMIN",       label: t("roleAdmin") },
-    { value: "EXEC",        label: t("roleExec") },
-    { value: "MEMBER",      label: t("roleMember") },
+    { value: "ADMIN",  label: t("roleAdmin") },
+    { value: "EXEC",   label: t("roleExec") },
+    { value: "MEMBER", label: t("roleMember") },
   ];
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {

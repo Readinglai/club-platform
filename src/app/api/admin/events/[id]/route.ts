@@ -70,7 +70,7 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 5) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const { id } = await params;
     await db.event.delete({ where: { id } });

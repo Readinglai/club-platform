@@ -43,7 +43,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
     const currentRole = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[currentRole] < 5) return NextResponse.json({ error: "需要 SUPER_ADMIN 權限" }, { status: 403 });
+    if (ROLE_LEVEL[currentRole] < 4) return NextResponse.json({ error: "需要 ADMIN 以上權限" }, { status: 403 });
 
     const { id } = await params;
 
@@ -79,7 +79,7 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
     const currentRole = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[currentRole] < 5) return NextResponse.json({ error: "需要 SUPER_ADMIN 權限" }, { status: 403 });
+    if (ROLE_LEVEL[currentRole] < 4) return NextResponse.json({ error: "需要 ADMIN 以上權限" }, { status: 403 });
 
     const { id } = await params;
 

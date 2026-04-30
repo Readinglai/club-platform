@@ -21,7 +21,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     redirect(`/${locale}/login`);
   }
 
-  if (ROLE_LEVEL[session.user.role] < 5) {
+  if (ROLE_LEVEL[session.user.role] < 4) {
     redirect(`/${locale}`);
   }
 

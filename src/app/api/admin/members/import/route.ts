@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
     const currentRole = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[currentRole] < 5) return NextResponse.json({ error: "需要 SUPER_ADMIN 權限" }, { status: 403 });
+    if (ROLE_LEVEL[currentRole] < 4) return NextResponse.json({ error: "需要 ADMIN 以上權限" }, { status: 403 });
 
     const body = await request.json();
     const { members }: { members: MemberInput[] } = body;

@@ -79,7 +79,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   const currentRole = (selfUser.role as Role | undefined) ?? "MEMBER";
-  if (ROLE_LEVEL[currentRole] < 5) {
+  if (ROLE_LEVEL[currentRole] < 4) {
     return NextResponse.json({ error: "權限不足" }, { status: 403 });
   }
 

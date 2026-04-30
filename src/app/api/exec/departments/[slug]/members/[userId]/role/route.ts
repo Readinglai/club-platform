@@ -23,8 +23,8 @@ export async function PATCH(
   }
 
   const userRole = (session.user.role as Role | undefined) ?? "MEMBER";
-  if (ROLE_LEVEL[userRole] < 5) {
-    return NextResponse.json({ error: "權限不足，需要 SUPER_ADMIN" }, { status: 403 });
+  if (ROLE_LEVEL[userRole] < 4) {
+    return NextResponse.json({ error: "權限不足，需要 ADMIN 以上" }, { status: 403 });
   }
 
   const { slug, userId } = await params;
