@@ -1,4 +1,4 @@
-/**
+﻿/**
  * /api/events/[id]
  *
  * 公開活動詳情 API，不需登入即可讀取已發布活動的基本資訊。
@@ -35,7 +35,7 @@ async function tryGetUserId(request: NextRequest): Promise<string | null> {
     try {
       const decoded = await decode({
         token,
-        secret: process.env.AUTH_SECRET!,
+        secret: (process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET)!,
         salt: "authjs.session-token",
       });
       if (decoded?.sub) return decoded.sub;

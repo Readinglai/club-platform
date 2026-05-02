@@ -1,4 +1,4 @@
-/**
+﻿/**
  * route.ts — 公告已讀標記 API（Portal 版本）
  *
  * 功能：將指定公告標記為已讀（upsert，避免重複記錄）
@@ -30,7 +30,7 @@ async function tryGetUserId(request: NextRequest): Promise<string | null> {
     try {
       const decoded = await decode({
         token,
-        secret: process.env.AUTH_SECRET!,
+        secret: (process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET)!,
         salt: "authjs.session-token",
       });
       if (decoded?.sub) return decoded.sub;
