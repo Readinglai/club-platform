@@ -6,7 +6,7 @@ import type { Role } from "@/generated/prisma/client";
 
 type Params = { params: Promise<{ id: string }> };
 
-export async function GET(_req: NextRequest, { params }: Params) {
+export async function GET(request: NextRequest, { params }: Params) {
   try {
     const sessionUser = await getSessionUser(request);
     if (!sessionUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -63,7 +63,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: Params) {
+export async function DELETE(request: NextRequest, { params }: Params) {
   try {
     const sessionUser = await getSessionUser(request);
     if (!sessionUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -8,7 +8,7 @@ const PROTECTED_EMAIL = "flyincloud2001@gmail.com";
 
 type Params = { params: Promise<{ id: string }> };
 
-export async function GET(_req: NextRequest, { params }: Params) {
+export async function GET(request: NextRequest, { params }: Params) {
   try {
     const sessionUser = await getSessionUser(request);
     if (!sessionUser) return NextResponse.json({ error: "未登入" }, { status: 401 });
@@ -78,7 +78,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: Params) {
+export async function DELETE(request: NextRequest, { params }: Params) {
   try {
     const sessionUser = await getSessionUser(request);
     if (!sessionUser) return NextResponse.json({ error: "未登入" }, { status: 401 });
