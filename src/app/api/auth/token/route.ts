@@ -249,6 +249,16 @@ export async function POST(request: NextRequest) {
     const maxAge = 30 * 24 * 60 * 60; // 30 天（秒）
     const expiresAt = new Date(Date.now() + maxAge * 1000);
 
+    // AUTH_SECRET（v5 命名）或 NEXTAUTH_SECRET（v4 命名）皆可
+    const jwtSecret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+    if (!jwtSecret) {
+      console.error("[auth/token] AUTH_SECRET and NEXTAUTH_SECRET are both unset");
+      return NextResponse.json(
+        { error: "Server configuration error: missing JWT secret" },
+        { status: 500, headers: corsHdrs }
+      );
+    }
+
     const token = await encode({
       token: {
         sub: user.id,
@@ -256,7 +266,7 @@ export async function POST(request: NextRequest) {
         email: user.email,
         name: user.name,
       },
-      secret: process.env.AUTH_SECRET!,
+      secret: jwtSecret,
       salt: "authjs.session-token",
       maxAge,
     });
