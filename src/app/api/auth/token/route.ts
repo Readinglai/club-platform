@@ -1,24 +1,72 @@
 /**
  * /api/auth/token
  *
- * 行動 App 用端點。接受 Google OAuth 授權碼，交換並驗證後
- * 回傳與 NextAuth v5 相容的 JWT access token。
+ * 行動 App 用端點。接受 Google OAuth 授權碼（PKCE 流程），交換並驗證後
+ * 回傳 JWT access token 與 user 資料。
  *
- * Body:     { code: string; redirectUri: string }
- * Response: { token: string; expiresAt: string }
+ * Body:     { code: string; redirectUri: string; codeVerifier?: string }
+ * Response: { token: string; user: { id, email, name, role }; expiresAt: string }
  *
  * 流程：
- *   1. 用 Google OAuth2 token endpoint 交換 code 取得 id_token
+ *   1. 用 Google OAuth2 token endpoint 交換 code（若有 codeVerifier 則帶入 PKCE）
  *   2. Decode id_token payload 取得 email
  *   3. 在 DB 查 User（email 必須存在）
  *   4. 若不存在 → 403
  *   5. 用 @auth/core/jwt encode 產生 NextAuth 相容 JWT
- *   6. 回傳 { token, expiresAt }
+ *   6. 回傳 { token, user, expiresAt }
+ *
+ * CORS：允許本地 Expo dev server 與生產環境呼叫。
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { encode } from "@auth/core/jwt";
 import { db } from "@/lib/db";
+
+// ── CORS 設定 ────────────────────────────────────────────────────────────────
+
+/** 允許的 CORS origins（包含本地 Expo web dev server 與生產域名） */
+const ALLOWED_ORIGINS = [
+  "http://localhost:8083",
+  "http://localhost:19006",
+  "http://localhost:8081",
+  "http://localhost:3000",
+  "exp://localhost:8083",
+  "https://rocsaut-club-platform.vercel.app",
+];
+
+/**
+ * 根據 request origin 產生 CORS response headers。
+ * 若 origin 在白名單內則直接回傳，否則回傳第一個預設值。
+ *
+ * @param origin Request 的 Origin header 值
+ * @returns CORS headers 物件
+ */
+function getCorsHeaders(origin: string | null): Record<string, string> {
+  const allowed = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowed,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Max-Age": "86400",
+    "Vary": "Origin",
+  };
+}
+
+// ── OPTIONS handler（CORS preflight） ────────────────────────────────────────
+
+/**
+ * OPTIONS /api/auth/token — CORS preflight
+ * 瀏覽器在跨域 POST 前會先送 OPTIONS，這裡回傳 204 並附上正確的 CORS headers。
+ */
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  return new NextResponse(null, {
+    status: 204,
+    headers: getCorsHeaders(origin),
+  });
+}
+
+// ── 型別定義 ─────────────────────────────────────────────────────────────────
 
 /** Google Token Endpoint 回應型別 */
 interface GoogleTokenResponse {
@@ -41,6 +89,8 @@ interface GoogleIdTokenPayload {
   exp: number;
 }
 
+// ── 工具函數 ─────────────────────────────────────────────────────────────────
+
 /**
  * 解碼 JWT payload（不驗證簽名）。
  * 由於 id_token 是直接從 Google token endpoint 取得，信任度足夠。
@@ -53,17 +103,18 @@ function decodeJwtPayload<T>(jwt: string): T {
   if (parts.length !== 3) {
     throw new Error("Invalid JWT format");
   }
-  // Base64URL → Base64 → Buffer → JSON
   const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
   const json = Buffer.from(base64, "base64").toString("utf-8");
   return JSON.parse(json) as T;
 }
 
+// ── POST handler ─────────────────────────────────────────────────────────────
+
 /**
- * POST /api/auth/token — 行動 App Google OAuth code exchange
+ * POST /api/auth/token — 行動 App Google OAuth code exchange（支援 PKCE）
  *
- * @param request Body: { code: string; redirectUri: string }
- * @returns { token: string; expiresAt: string }
+ * @param request Body: { code: string; redirectUri: string; codeVerifier?: string }
+ * @returns { token: string; user: { id, email, name, role }; expiresAt: string }
  *
  * Error responses:
  *   400 — 缺少必要欄位或 Google 交換失敗
@@ -71,25 +122,45 @@ function decodeJwtPayload<T>(jwt: string): T {
  *   500 — 伺服器錯誤
  */
 export async function POST(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  const corsHdrs = getCorsHeaders(origin);
+
   try {
     let body: unknown;
     try {
       body = await request.json();
     } catch {
-      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid JSON body" },
+        { status: 400, headers: corsHdrs }
+      );
     }
 
     if (!body || typeof body !== "object") {
-      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid request body" },
+        { status: 400, headers: corsHdrs }
+      );
     }
 
-    const { code, redirectUri } = body as { code?: unknown; redirectUri?: unknown };
+    // codeVerifier 是 PKCE 必要參數，從 App 傳入
+    const { code, redirectUri, codeVerifier } = body as {
+      code?: unknown;
+      redirectUri?: unknown;
+      codeVerifier?: unknown;
+    };
 
     if (typeof code !== "string" || !code.trim()) {
-      return NextResponse.json({ error: "code is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "code is required" },
+        { status: 400, headers: corsHdrs }
+      );
     }
     if (typeof redirectUri !== "string" || !redirectUri.trim()) {
-      return NextResponse.json({ error: "redirectUri is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "redirectUri is required" },
+        { status: 400, headers: corsHdrs }
+      );
     }
 
     const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -97,20 +168,30 @@ export async function POST(request: NextRequest) {
 
     if (!clientId || !clientSecret) {
       console.error("[auth/token] GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET not set");
-      return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500, headers: corsHdrs }
+      );
     }
 
-    // Step 1: 向 Google 交換 id_token
+    // Step 1: 向 Google 交換 id_token（PKCE 流程須帶 code_verifier）
+    const tokenParams: Record<string, string> = {
+      code,
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUri,
+      grant_type: "authorization_code",
+    };
+
+    // 若有 codeVerifier 則加入（PKCE S256 流程必須）
+    if (typeof codeVerifier === "string" && codeVerifier.trim()) {
+      tokenParams.code_verifier = codeVerifier;
+    }
+
     const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        code,
-        client_id: clientId,
-        client_secret: clientSecret,
-        redirect_uri: redirectUri,
-        grant_type: "authorization_code",
-      }),
+      body: new URLSearchParams(tokenParams),
     });
 
     if (!tokenRes.ok) {
@@ -118,14 +199,17 @@ export async function POST(request: NextRequest) {
       console.error("[auth/token] Google token exchange failed:", tokenRes.status, errorBody);
       return NextResponse.json(
         { error: "Google OAuth code exchange failed", detail: errorBody },
-        { status: 400 }
+        { status: 400, headers: corsHdrs }
       );
     }
 
     const googleToken = (await tokenRes.json()) as GoogleTokenResponse;
 
     if (!googleToken.id_token) {
-      return NextResponse.json({ error: "Google did not return id_token" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Google did not return id_token" },
+        { status: 400, headers: corsHdrs }
+      );
     }
 
     // Step 2: Decode id_token payload 取得 email
@@ -133,12 +217,18 @@ export async function POST(request: NextRequest) {
     try {
       payload = decodeJwtPayload<GoogleIdTokenPayload>(googleToken.id_token);
     } catch {
-      return NextResponse.json({ error: "Failed to decode Google id_token" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Failed to decode Google id_token" },
+        { status: 400, headers: corsHdrs }
+      );
     }
 
     const email = payload.email;
     if (!email) {
-      return NextResponse.json({ error: "Email not found in id_token" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Email not found in id_token" },
+        { status: 400, headers: corsHdrs }
+      );
     }
 
     // Step 3: 在 DB 查 User
@@ -151,7 +241,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "User not registered in this platform" },
-        { status: 403 }
+        { status: 403, headers: corsHdrs }
       );
     }
 
@@ -171,13 +261,27 @@ export async function POST(request: NextRequest) {
       maxAge,
     });
 
-    // Step 6: 回傳 token 與過期時間
-    return NextResponse.json({
-      token,
-      expiresAt: expiresAt.toISOString(),
-    });
+    // Step 6: 回傳 token、user 與過期時間
+    // user 欄位供 App 直接使用（設定 useAuthStore）
+    return NextResponse.json(
+      {
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        },
+        expiresAt: expiresAt.toISOString(),
+      },
+      { headers: corsHdrs }
+    );
   } catch (err) {
+    const origin2 = request.headers.get("origin");
     console.error("[auth/token] Unexpected error:", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500, headers: getCorsHeaders(origin2) }
+    );
   }
 }
