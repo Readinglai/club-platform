@@ -6,10 +6,10 @@
  * 驗證：session 必須是該 TaskGroup 的成員
  */
 
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { sendPushNotification } from "@/lib/webpush";
+import { requireAuthJson } from "@/lib/auth/guard";
 
 async function getMember(taskGroupId: string, userId: string) {
   return db.taskGroupMember.findUnique({
@@ -18,17 +18,15 @@ async function getMember(taskGroupId: string, userId: string) {
 }
 
 export async function GET(
-  _request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "未登入" }, { status: 401 });
-  }
+  const guard = await requireAuthJson(2, request);
+  if (guard.error) return guard.error;
 
   const { id: taskGroupId } = await params;
 
-  const member = await getMember(taskGroupId, session.user.id);
+  const member = await getMember(taskGroupId, guard.userId);
   if (!member) {
     return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
   }
@@ -45,17 +43,15 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "未登入" }, { status: 401 });
-  }
+  const guard = await requireAuthJson(2, request);
+  if (guard.error) return guard.error;
 
   const { id: taskGroupId } = await params;
 
-  const member = await getMember(taskGroupId, session.user.id);
+  const member = await getMember(taskGroupId, guard.userId);
   if (!member) {
     return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
   }
@@ -94,7 +90,6 @@ export async function POST(
     return NextResponse.json({ error: "title 為必填欄位" }, { status: 400 });
   }
 
-  // 確認 assignee 是該群組成員
   if (assigneeId !== undefined && assigneeId !== null) {
     if (typeof assigneeId !== "string") {
       return NextResponse.json({ error: "assigneeId 格式錯誤" }, { status: 400 });

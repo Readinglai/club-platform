@@ -1,28 +1,21 @@
 /**
- * route.ts — 任務小組成員移除 API
- *
- * 功能：從任務小組移除指定成員
- * 輸入：URL [id] 任務小組 ID、[userId] 成員 ID
- * 輸出：204 No Content
- * 驗證：role level >= 4 且必須是小組建立者
+ * DELETE /api/exec/task-groups/[id]/members/[userId] — 移除小組成員
  */
 
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ROLE_LEVEL } from "@/lib/rbac";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import type { Role } from "@/generated/prisma/client";
+import { requireAuthJson } from "@/lib/auth/guard";
 
 export async function DELETE(
-  _request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string; userId: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "未登入" }, { status: 401 });
-  }
+  const guard = await requireAuthJson(2, request);
+  if (guard.error) return guard.error;
 
-  const userRole = (session.user.role as Role | undefined) ?? "MEMBER";
+  const userRole = guard.role as Role;
   if (ROLE_LEVEL[userRole] < 3) {
     return NextResponse.json({ error: "權限不足" }, { status: 403 });
   }
@@ -38,7 +31,7 @@ export async function DELETE(
     return NextResponse.json({ error: "任務小組不存在" }, { status: 404 });
   }
 
-  if (taskGroup.createdById !== session.user.id) {
+  if (taskGroup.createdById !== guard.userId) {
     return NextResponse.json({ error: "只有建立者可以管理成員" }, { status: 403 });
   }
 
@@ -46,8 +39,7 @@ export async function DELETE(
     return NextResponse.json({ error: "此小組已完成或封存，無法修改" }, { status: 409 });
   }
 
-  // 不允許移除建立者自己
-  if (userId === session.user.id) {
+  if (userId === guard.userId) {
     return NextResponse.json({ error: "不能移除小組建立者" }, { status: 400 });
   }
 

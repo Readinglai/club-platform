@@ -8,10 +8,10 @@
  * DELETE 驗證：session 是 TaskGroup 的 LEADER 或任務建立者（用 createdAt 近似：目前 Task 無 createdById，以 LEADER 判斷）
  */
 
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { sendTaskStatusEmail } from "@/lib/email";
+import { requireAuthJson } from "@/lib/auth/guard";
 
 async function getMember(taskGroupId: string, userId: string) {
   return db.taskGroupMember.findUnique({
@@ -20,17 +20,15 @@ async function getMember(taskGroupId: string, userId: string) {
 }
 
 export async function PATCH(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string; taskId: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "未登入" }, { status: 401 });
-  }
+  const guard = await requireAuthJson(2, request);
+  if (guard.error) return guard.error;
 
   const { id: taskGroupId, taskId } = await params;
 
-  const member = await getMember(taskGroupId, session.user.id);
+  const member = await getMember(taskGroupId, guard.userId);
   if (!member) {
     return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
   }
@@ -134,17 +132,15 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string; taskId: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "未登入" }, { status: 401 });
-  }
+  const guard = await requireAuthJson(2, request);
+  if (guard.error) return guard.error;
 
   const { id: taskGroupId, taskId } = await params;
 
-  const member = await getMember(taskGroupId, session.user.id);
+  const member = await getMember(taskGroupId, guard.userId);
   if (!member) {
     return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
   }
