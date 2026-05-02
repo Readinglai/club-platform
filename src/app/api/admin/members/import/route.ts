@@ -13,7 +13,7 @@ interface MemberInput {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
+    const sessionUser = await getSessionUser(request);
     if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
     const currentRole = (sessionUser.role as Role | undefined) ?? "MEMBER";

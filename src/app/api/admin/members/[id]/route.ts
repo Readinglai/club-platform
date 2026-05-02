@@ -10,7 +10,7 @@ type Params = { params: Promise<{ id: string }> };
 
 export async function GET(_req: NextRequest, { params }: Params) {
   try {
-    const session = await auth();
+    const sessionUser = await getSessionUser(request);
     if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
     const role = (sessionUser.role as Role | undefined) ?? "MEMBER";
@@ -39,7 +39,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
-    const session = await auth();
+    const sessionUser = await getSessionUser(request);
     if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
     const currentRole = (sessionUser.role as Role | undefined) ?? "MEMBER";
@@ -80,7 +80,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
-    const session = await auth();
+    const sessionUser = await getSessionUser(request);
     if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
     const currentRole = (sessionUser.role as Role | undefined) ?? "MEMBER";

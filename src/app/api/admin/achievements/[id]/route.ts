@@ -9,7 +9,7 @@ type Params = { params: Promise<{ id: string }> };
 /** GET /api/admin/achievements/[id] */
 export async function GET(_req: NextRequest, { params }: Params) {
   try {
-    const session = await auth();
+    const sessionUser = await getSessionUser(request);
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const role = (sessionUser.role as Role | undefined) ?? "MEMBER";
     if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -26,7 +26,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
 /** PATCH /api/admin/achievements/[id] */
 export async function PATCH(request: NextRequest, { params }: Params) {
   try {
-    const session = await auth();
+    const sessionUser = await getSessionUser(request);
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const role = (sessionUser.role as Role | undefined) ?? "MEMBER";
     if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -64,7 +64,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 /** DELETE /api/admin/achievements/[id] */
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
-    const session = await auth();
+    const sessionUser = await getSessionUser(request);
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const role = (sessionUser.role as Role | undefined) ?? "MEMBER";
     if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });

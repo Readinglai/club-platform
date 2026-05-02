@@ -6,7 +6,7 @@ import type { Role } from "@/generated/prisma/client";
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
+    const sessionUser = await getSessionUser(request);
     if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
     const role = (sessionUser.role as Role | undefined) ?? "MEMBER";
