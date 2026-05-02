@@ -7,6 +7,11 @@
  *
  * createNextIntlPlugin 接受 request.ts 的路徑，
  * 預設為 ./src/i18n/request.ts，可省略參數。
+ *
+ * CORS 設定：
+ * headers() 在 Vercel CDN 層套用 CORS headers，覆蓋所有 /api/* 路由。
+ * App 使用 Authorization: Bearer token（非 credentials: include），
+ * 可安全使用 * wildcard。middleware.ts 負責動態 origin 白名單檢查。
  */
 
 import createNextIntlPlugin from "next-intl/plugin";
@@ -28,6 +33,36 @@ const nextConfig: NextConfig = {
         pathname: "/storage/v1/object/public/**",
       },
     ],
+  },
+
+  /**
+   * CORS headers：在 CDN 層對所有 /api/* 路由加入 CORS 設定。
+   * OPTIONS preflight 由此處靜態 headers 處理，不依賴 middleware。
+   * App 使用 JWT（非 cookie），可用 wildcard origin。
+   */
+  async headers() {
+    return [
+      {
+        // 套用到所有 /api/* 路由
+        source: "/api/:path*",
+        headers: [
+          // 允許任何 origin（JWT 模式無 credentials: include，可用 *）
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          // 允許的 HTTP 方法
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+          },
+          // 允許的 request headers（含 Authorization 用於 JWT）
+          {
+            key: "Access-Control-Allow-Headers",
+            value: "Content-Type, Authorization",
+          },
+          // preflight 結果快取時間（秒）
+          { key: "Access-Control-Max-Age", value: "86400" },
+        ],
+      },
+    ];
   },
 };
 
