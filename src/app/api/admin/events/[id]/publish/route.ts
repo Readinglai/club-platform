@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+﻿import { NextRequest, NextResponse } from "next/server";
+import { getSessionUser } from "@/lib/get-session-user";
 import { db } from "@/lib/db";
 import { ROLE_LEVEL } from "@/lib/rbac";
 import type { Role } from "@/generated/prisma/client";
@@ -8,11 +8,10 @@ type Params = { params: Promise<{ id: string }> };
 
 export async function PATCH(request: NextRequest, { params }: Params) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const sessionUser = await getSessionUser(request);
+    if (!sessionUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 3) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (sessionUser.roleLevel < 3) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const { id } = await params;
     const body = await request.json();

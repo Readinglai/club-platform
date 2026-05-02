@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+﻿import { NextRequest, NextResponse } from "next/server";
+import { getSessionUser } from "@/lib/get-session-user";
 import { db } from "@/lib/db";
 import { ROLE_LEVEL } from "@/lib/rbac";
 import type { Role } from "@/generated/prisma/client";
@@ -13,7 +13,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
+    const role = (sessionUser.role as Role | undefined) ?? "MEMBER";
     if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "權限不足" }, { status: 403 });
 
     const { id } = await params;
@@ -42,13 +42,13 @@ export async function PUT(request: NextRequest, { params }: Params) {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
-    const currentRole = (session.user.role as Role | undefined) ?? "MEMBER";
+    const currentRole = (sessionUser.role as Role | undefined) ?? "MEMBER";
     if (ROLE_LEVEL[currentRole] < 4) return NextResponse.json({ error: "需要 ADMIN 以上權限" }, { status: 403 });
 
     const { id } = await params;
 
     const target = await db.user.findUnique({ where: { id }, select: { email: true } });
-    if (target?.email === PROTECTED_EMAIL && session.user.email !== PROTECTED_EMAIL) {
+    if (target?.email === PROTECTED_EMAIL && (await db.user.findUnique({ where: { id: sessionUser.id }, select: { email: true } }))?.email !== PROTECTED_EMAIL) {
       return NextResponse.json({ error: "此帳號受系統保護，無法修改" }, { status: 403 });
     }
 
@@ -83,7 +83,7 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
-    const currentRole = (session.user.role as Role | undefined) ?? "MEMBER";
+    const currentRole = (sessionUser.role as Role | undefined) ?? "MEMBER";
     if (ROLE_LEVEL[currentRole] < 4) return NextResponse.json({ error: "需要 ADMIN 以上權限" }, { status: 403 });
 
     const { id } = await params;
@@ -92,11 +92,11 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     if (!target) {
       return NextResponse.json({ error: "成員不存在" }, { status: 404 });
     }
-    if (target.email === PROTECTED_EMAIL && session.user.email !== PROTECTED_EMAIL) {
+    if (target.email === PROTECTED_EMAIL && (await db.user.findUnique({ where: { id: sessionUser.id }, select: { email: true } }))?.email !== PROTECTED_EMAIL) {
       return NextResponse.json({ error: "此帳號受系統保護，無法修改" }, { status: 403 });
     }
 
-    if (session.user.id === id) {
+    if (sessionUser.id === id) {
       return NextResponse.json({ error: "不能刪除自己的帳號" }, { status: 400 });
     }
 

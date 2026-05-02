@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+﻿import { NextRequest, NextResponse } from "next/server";
+import { getSessionUser } from "@/lib/get-session-user";
 import { db } from "@/lib/db";
 import { ROLE_LEVEL } from "@/lib/rbac";
 import type { Role } from "@/generated/prisma/client";
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
-    const currentRole = (session.user.role as Role | undefined) ?? "MEMBER";
+    const currentRole = (sessionUser.role as Role | undefined) ?? "MEMBER";
     if (ROLE_LEVEL[currentRole] < 4) return NextResponse.json({ error: "需要 ADMIN 以上權限" }, { status: 403 });
 
     const body = await request.json();

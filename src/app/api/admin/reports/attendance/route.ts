@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+﻿import { NextResponse } from "next/server";
+import { getSessionUser } from "@/lib/get-session-user";
 import { db } from "@/lib/db";
 import { ROLE_LEVEL } from "@/lib/rbac";
 import type { Role } from "@/generated/prisma/client";
@@ -9,7 +9,7 @@ export async function GET() {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
+    const role = (sessionUser.role as Role | undefined) ?? "MEMBER";
     if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "權限不足" }, { status: 403 });
 
     const events = await db.event.findMany({
