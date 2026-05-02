@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ROLE_LEVEL } from "@/lib/rbac";
@@ -34,7 +34,7 @@ async function tryGetUserId(request: NextRequest): Promise<string | null> {
     try {
       const decoded = await decode({
         token,
-        secret: process.env.AUTH_SECRET!,
+        secret: (process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET)!,
         salt: "authjs.session-token",
       });
       if (decoded?.sub) return decoded.sub;
@@ -49,7 +49,7 @@ async function tryGetUserId(request: NextRequest): Promise<string | null> {
 export async function GET(request: NextRequest) {
   const userId = await tryGetUserId(request);
   if (!userId) {
-    return NextResponse.json({ error: "未登入" }, { status: 401 });
+    return NextResponse.json({ error: "æœªç™»å…¥" }, { status: 401 });
   }
 
   const user = await db.user.findUnique({
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
   });
 
   if (!user) {
-    return NextResponse.json({ error: "使用者不存在" }, { status: 404 });
+    return NextResponse.json({ error: "ä½¿ç”¨è€…ä¸å­˜åœ¨" }, { status: 404 });
   }
 
   return NextResponse.json(user);
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   const userId = await tryGetUserId(request);
   if (!userId) {
-    return NextResponse.json({ error: "未登入" }, { status: 401 });
+    return NextResponse.json({ error: "æœªç™»å…¥" }, { status: 401 });
   }
 
   const selfUser = await db.user.findUnique({
@@ -75,29 +75,29 @@ export async function PATCH(request: NextRequest) {
     select: { email: true, role: true },
   });
   if (!selfUser) {
-    return NextResponse.json({ error: "使用者不存在" }, { status: 404 });
+    return NextResponse.json({ error: "ä½¿ç”¨è€…ä¸å­˜åœ¨" }, { status: 404 });
   }
 
   const currentRole = (selfUser.role as Role | undefined) ?? "MEMBER";
   if (ROLE_LEVEL[currentRole] < 4) {
-    return NextResponse.json({ error: "權限不足" }, { status: 403 });
+    return NextResponse.json({ error: "æ¬Šé™ä¸è¶³" }, { status: 403 });
   }
 
   const portalSession = await auth();
   const callerEmail = portalSession?.user?.email ?? selfUser.email;
   if (selfUser.email === PROTECTED_EMAIL && callerEmail !== PROTECTED_EMAIL) {
-    return NextResponse.json({ error: "此帳號受系統保護，無法修改" }, { status: 403 });
+    return NextResponse.json({ error: "æ­¤å¸³è™Ÿå—ç³»çµ±ä¿è­·ï¼Œç„¡æ³•ä¿®æ”¹" }, { status: 403 });
   }
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "請求格式錯誤" }, { status: 400 });
+    return NextResponse.json({ error: "è«‹æ±‚æ ¼å¼éŒ¯èª¤" }, { status: 400 });
   }
 
   if (!body || typeof body !== "object") {
-    return NextResponse.json({ error: "請求格式錯誤" }, { status: 400 });
+    return NextResponse.json({ error: "è«‹æ±‚æ ¼å¼éŒ¯èª¤" }, { status: 400 });
   }
 
   const { name, image, bio, major, rocsautYear, instagram, linkedin } =
@@ -140,7 +140,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   if (Object.keys(updateData).length === 0) {
-    return NextResponse.json({ error: "無有效更新欄位" }, { status: 400 });
+    return NextResponse.json({ error: "ç„¡æœ‰æ•ˆæ›´æ–°æ¬„ä½" }, { status: 400 });
   }
 
   const user = await db.user.update({
@@ -151,3 +151,4 @@ export async function PATCH(request: NextRequest) {
 
   return NextResponse.json(user);
 }
+
