@@ -278,9 +278,12 @@ export async function POST(request: NextRequest) {
     );
   } catch (err) {
     const origin2 = request.headers.get("origin");
+    // DEBUG: 回傳詳細錯誤訊息，找到 root cause 後移除
+    const msg = err instanceof Error ? err.message : String(err);
+    const stack = err instanceof Error ? err.stack?.slice(0, 500) : "";
     console.error("[auth/token] Unexpected error:", err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", debug_message: msg, debug_stack: stack },
       { status: 500, headers: getCorsHeaders(origin2) }
     );
   }
