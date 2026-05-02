@@ -19,9 +19,10 @@ export interface PushPayload {
   title: string;
   body?: string;
   url?: string;
+  data?: Record<string, string>;
 }
 
-export async function sendPushNotification(
+export async function sendWebPushNotification(
   subscription: { endpoint: string; p256dh: string; auth: string },
   payload: PushPayload
 ): Promise<void> {
@@ -36,6 +37,54 @@ export async function sendPushNotification(
       JSON.stringify(payload)
     );
   } catch (err) {
-    console.error("[webpush] Failed to send notification:", err);
+    console.error("[webpush] Failed to send web push notification:", err);
+  }
+}
+
+export async function sendExpoPushNotification(
+  expoToken: string,
+  payload: PushPayload
+): Promise<void> {
+  try {
+    const message = {
+      to: expoToken,
+      sound: "default",
+      title: payload.title,
+      body: payload.body ?? "",
+      data: payload.data ?? {},
+    };
+    const response = await fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Accept-Encoding": "gzip, deflate",
+      },
+      body: JSON.stringify(message),
+    });
+    if (!response.ok) {
+      console.error("[webpush] Expo push failed:", await response.text());
+    }
+  } catch (err) {
+    console.error("[webpush] Failed to send Expo push notification:", err);
+  }
+}
+
+export async function sendPushNotification(
+  subscription: {
+    endpoint?: string | null;
+    p256dh?: string | null;
+    auth?: string | null;
+    expoToken?: string | null;
+  },
+  payload: PushPayload
+): Promise<void> {
+  if (subscription.expoToken) {
+    await sendExpoPushNotification(subscription.expoToken, payload);
+  } else if (subscription.endpoint && subscription.p256dh && subscription.auth) {
+    await sendWebPushNotification(
+      { endpoint: subscription.endpoint, p256dh: subscription.p256dh, auth: subscription.auth },
+      payload
+    );
   }
 }

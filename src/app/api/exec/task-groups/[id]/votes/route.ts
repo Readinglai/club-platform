@@ -6,10 +6,10 @@
  * POST 驗證：session 是 TaskGroup LEADER 或全域 role level >= 4
  */
 
-import { auth } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { ROLE_LEVEL } from "@/lib/rbac";
-import { NextResponse } from "next/server";
+import { requireAuthJson } from "@/lib/auth/guard";
 import type { Role } from "@/generated/prisma/client";
 
 async function getMember(taskGroupId: string, userId: string) {
@@ -19,17 +19,15 @@ async function getMember(taskGroupId: string, userId: string) {
 }
 
 export async function GET(
-  _request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "未登入" }, { status: 401 });
-  }
+  const guard = await requireAuthJson(2, request);
+  if (guard.error) return guard.error;
 
   const { id: taskGroupId } = await params;
 
-  const member = await getMember(taskGroupId, session.user.id);
+  const member = await getMember(taskGroupId, guard.userId);
   if (!member) {
     return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
   }
@@ -47,7 +45,7 @@ export async function GET(
     }),
     db.voteResponse.findMany({
       where: {
-        userId: session.user.id,
+        userId: guard.userId,
         voteOption: { vote: { taskGroupId } },
       },
       select: { voteOptionId: true },
@@ -76,22 +74,20 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "未登入" }, { status: 401 });
-  }
+  const guard = await requireAuthJson(2, request);
+  if (guard.error) return guard.error;
 
   const { id: taskGroupId } = await params;
 
-  const member = await getMember(taskGroupId, session.user.id);
+  const member = await getMember(taskGroupId, guard.userId);
   if (!member) {
     return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
   }
 
-  const globalRole = (session.user.role as Role | undefined) ?? "MEMBER";
+  const globalRole = guard.role as Role;
   const canCreate = member.role === "LEADER" || ROLE_LEVEL[globalRole] >= 3;
   if (!canCreate) {
     return NextResponse.json({ error: "只有組長或執委可以建立投票" }, { status: 403 });
@@ -136,7 +132,7 @@ export async function POST(
   const vote = await db.vote.create({
     data: {
       taskGroupId,
-      createdById: session.user.id,
+      createdById: guard.userId,
       title: title.trim(),
       description: typeof description === "string" ? description.trim() || null : null,
       closedAt: typeof closedAt === "string" ? new Date(closedAt) : null,

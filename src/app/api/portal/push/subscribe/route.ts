@@ -6,10 +6,32 @@ export async function POST(request: NextRequest) {
   const guard = await requireAuthJson(2, request);
   if (guard.error) return guard.error;
 
-  const { endpoint, keys } = await request.json();
+  const body = await request.json();
+  const { endpoint, keys, expoToken } = body;
 
+  // Expo Push Token path
+  if (expoToken) {
+    const sub = await db.pushSubscription.upsert({
+      where: { endpoint: expoToken },
+      create: {
+        userId: guard.userId,
+        expoToken,
+        endpoint: expoToken,
+      },
+      update: {
+        userId: guard.userId,
+        expoToken,
+      },
+    });
+    return NextResponse.json({ id: sub.id }, { status: 201 });
+  }
+
+  // Web Push path
   if (!endpoint || !keys?.p256dh || !keys?.auth) {
-    return NextResponse.json({ error: "endpoint, keys.p256dh and keys.auth are required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Either expoToken or endpoint+keys are required" },
+      { status: 400 }
+    );
   }
 
   const sub = await db.pushSubscription.upsert({

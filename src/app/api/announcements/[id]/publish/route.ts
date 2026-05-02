@@ -38,6 +38,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
             title: "新公告",
             body: announcement.title,
             url: "/portal/announcements",
+            data: { type: "announcement", announcementId: announcement.id },
           })
         )
       );

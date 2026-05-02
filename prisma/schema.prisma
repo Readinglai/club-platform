@@ -500,11 +500,12 @@ model EmailTemplate {
 
 /// Web Push 訂閱表
 model PushSubscription {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  endpoint  String   @unique
-  p256dh    String
-  auth      String
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint   String?  @unique
+  p256dh     String?
+  auth       String?
+  expoToken  String?
+  createdAt  DateTime @default(now())
 }

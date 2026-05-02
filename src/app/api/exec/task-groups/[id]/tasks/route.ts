@@ -130,6 +130,7 @@ export async function POST(
           title: "新任務指派",
           body: task.title,
           url: "/portal/tasks",
+          data: { type: "task", taskId: task.id },
         })
       )
     );

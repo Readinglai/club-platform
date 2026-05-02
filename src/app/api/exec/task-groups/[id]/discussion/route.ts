@@ -1,26 +1,24 @@
 /**
  * GET /api/exec/task-groups/[id]/discussion
  * 取得（或自動建立）該 TaskGroup 的 Discussion，含所有留言與作者姓名。
- * 驗證：session 是該 TaskGroup 的成員。
+ * 驗證：Bearer token 或 session 且是該 TaskGroup 的成員。
  */
 
-import { auth } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { requireAuthJson } from "@/lib/auth/guard";
 
 export async function GET(
-  _request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "未登入" }, { status: 401 });
-  }
+  const guard = await requireAuthJson(2, request);
+  if (guard.error) return guard.error;
 
   const { id: taskGroupId } = await params;
 
   const member = await db.taskGroupMember.findUnique({
-    where: { taskGroupId_userId: { taskGroupId, userId: session.user.id } },
+    where: { taskGroupId_userId: { taskGroupId, userId: guard.userId } },
   });
   if (!member) {
     return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });

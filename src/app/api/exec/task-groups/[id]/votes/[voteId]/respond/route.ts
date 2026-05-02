@@ -1,27 +1,25 @@
 /**
  * POST /api/exec/task-groups/[id]/votes/[voteId]/respond
  * 投票（單選）。先刪除本人在此 Vote 的既有回應，再新增。
- * body: { voteOptionId: string }
- * 驗證：session 是 TaskGroup 成員、voteOptionId 屬於此 Vote、投票尚未關閉。
+ * body: { voteOptionId: string } or { optionId: string }
+ * 支援 Bearer token 認證。
  */
 
-import { auth } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { requireAuthJson } from "@/lib/auth/guard";
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string; voteId: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "未登入" }, { status: 401 });
-  }
+  const guard = await requireAuthJson(2, request);
+  if (guard.error) return guard.error;
 
   const { id: taskGroupId, voteId } = await params;
 
   const member = await db.taskGroupMember.findUnique({
-    where: { taskGroupId_userId: { taskGroupId, userId: session.user.id } },
+    where: { taskGroupId_userId: { taskGroupId, userId: guard.userId } },
   });
   if (!member) {
     return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
@@ -55,26 +53,26 @@ export async function POST(
     return NextResponse.json({ error: "請求格式錯誤" }, { status: 400 });
   }
 
-  const { voteOptionId } = body as { voteOptionId?: unknown };
-  if (typeof voteOptionId !== "string") {
+  const { voteOptionId, optionId } = body as { voteOptionId?: unknown; optionId?: unknown };
+  const selectedOptionId = voteOptionId ?? optionId;
+  if (typeof selectedOptionId !== "string") {
     return NextResponse.json({ error: "voteOptionId 為必填欄位" }, { status: 400 });
   }
 
   const validOptionIds = new Set(vote.options.map((o) => o.id));
-  if (!validOptionIds.has(voteOptionId)) {
+  if (!validOptionIds.has(selectedOptionId)) {
     return NextResponse.json({ error: "選項不屬於此投票" }, { status: 400 });
   }
 
-  // 刪除此 user 在此 vote 的所有既有回應，再新增（實現單選換票）
   await db.voteResponse.deleteMany({
     where: {
-      userId: session.user.id,
+      userId: guard.userId,
       voteOption: { voteId },
     },
   });
 
   const response = await db.voteResponse.create({
-    data: { voteOptionId, userId: session.user.id },
+    data: { voteOptionId: selectedOptionId, userId: guard.userId },
   });
 
   return NextResponse.json(response, { status: 201 });
