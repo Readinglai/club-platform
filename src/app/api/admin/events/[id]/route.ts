@@ -9,7 +9,7 @@ type Params = { params: Promise<{ id: string }> };
 export async function GET(_req: NextRequest, { params }: Params) {
   try {
     const sessionUser = await getSessionUser(request);
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!sessionUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { id } = await params;
     const event = await db.event.findUnique({

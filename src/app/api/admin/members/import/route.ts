@@ -14,7 +14,7 @@ interface MemberInput {
 export async function POST(request: NextRequest) {
   try {
     const sessionUser = await getSessionUser(request);
-    if (!session?.user) return NextResponse.json({ error: "未登入" }, { status: 401 });
+    if (!sessionUser) return NextResponse.json({ error: "未登入" }, { status: 401 });
 
     const currentRole = (sessionUser.role as Role | undefined) ?? "MEMBER";
     if (ROLE_LEVEL[currentRole] < 4) return NextResponse.json({ error: "需要 ADMIN 以上權限" }, { status: 403 });
