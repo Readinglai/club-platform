@@ -1,14 +1,14 @@
-/**
+﻿/**
  * lib/auth/guard.ts
  *
- * 統一權限驗證工具
+ * çµ±ä¸€æ¬Šé™é©—è­‰å·¥å…·
  *
- * requireAuth(minLevel)              — 用於 Server Components，未通過則 redirect
- * requireAuthJson(minLevel, request) — 用於 API Routes，未通過則回傳 JSON error
+ * requireAuth(minLevel)              â€” ç”¨æ–¼ Server Componentsï¼Œæœªé€šéŽå‰‡ redirect
+ * requireAuthJson(minLevel, request) â€” ç”¨æ–¼ API Routesï¼Œæœªé€šéŽå‰‡å›žå‚³ JSON error
  *
- * requireAuthJson 同時支援：
- *  - Cookie session（NextAuth 標準流程）
- *  - Authorization: Bearer <token>（行動 App JWT）
+ * requireAuthJson åŒæ™‚æ”¯æ´ï¼š
+ *  - Cookie sessionï¼ˆNextAuth æ¨™æº–æµç¨‹ï¼‰
+ *  - Authorization: Bearer <token>ï¼ˆè¡Œå‹• App JWTï¼‰
  */
 
 import { redirect } from "next/navigation";
@@ -18,24 +18,24 @@ import { ROLE_LEVEL } from "@/lib/rbac";
 import { decode } from "@auth/core/jwt";
 import type { Role } from "@/generated/prisma/client";
 
-/** Guard 通過時的回傳型別 */
+/** Guard é€šéŽæ™‚çš„å›žå‚³åž‹åˆ¥ */
 type GuardSuccess = { error: null; userId: string; role: Role; level: number };
 
-/** Guard 失敗時的回傳型別（包含 JSON error response） */
+/** Guard å¤±æ•—æ™‚çš„å›žå‚³åž‹åˆ¥ï¼ˆåŒ…å« JSON error responseï¼‰ */
 type GuardFailure = { error: NextResponse };
 
-/** Guard 結果聯合型別 */
+/** Guard çµæžœè¯åˆåž‹åˆ¥ */
 type GuardResult = GuardSuccess | GuardFailure;
 
 /**
- * Server Component 用：驗證 session 並確認角色層級。
- * 未登入時 redirect 到 /login，角色不足時 redirect 到 /unauthorized。
+ * Server Component ç”¨ï¼šé©—è­‰ session ä¸¦ç¢ºèªè§’è‰²å±¤ç´šã€‚
+ * æœªç™»å…¥æ™‚ redirect åˆ° /loginï¼Œè§’è‰²ä¸è¶³æ™‚ redirect åˆ° /unauthorizedã€‚
  *
- * @param minLevel 最低所需角色層級（預設為 1，即任何登入使用者）
- * @returns 包含 userId、role、level 的物件（error 永遠為 null）
+ * @param minLevel æœ€ä½Žæ‰€éœ€è§’è‰²å±¤ç´šï¼ˆé è¨­ç‚º 1ï¼Œå³ä»»ä½•ç™»å…¥ä½¿ç”¨è€…ï¼‰
+ * @returns åŒ…å« userIdã€roleã€level çš„ç‰©ä»¶ï¼ˆerror æ°¸é ç‚º nullï¼‰
  *
  * @example
- * // 在 admin layout 中確認 EXEC 以上
+ * // åœ¨ admin layout ä¸­ç¢ºèª EXEC ä»¥ä¸Š
  * const { userId, role } = await requireAuth(4);
  */
 export async function requireAuth(minLevel: number = 1): Promise<GuardSuccess> {
@@ -48,28 +48,28 @@ export async function requireAuth(minLevel: number = 1): Promise<GuardSuccess> {
 }
 
 /**
- * API Route 用：驗證 session 或 Bearer token，確認角色層級。
- * 同時支援 cookie session（NextAuth）和 Authorization: Bearer <JWT>（行動 App）。
+ * API Route ç”¨ï¼šé©—è­‰ session æˆ– Bearer tokenï¼Œç¢ºèªè§’è‰²å±¤ç´šã€‚
+ * åŒæ™‚æ”¯æ´ cookie sessionï¼ˆNextAuthï¼‰å’Œ Authorization: Bearer <JWT>ï¼ˆè¡Œå‹• Appï¼‰ã€‚
  *
- * 回傳 GuardFailure 時，直接 `return guard.error` 即可回傳 JSON error response。
- * 回傳 GuardSuccess 時（guard.error === null），可讀取 guard.userId / guard.role / guard.level。
+ * å›žå‚³ GuardFailure æ™‚ï¼Œç›´æŽ¥ `return guard.error` å³å¯å›žå‚³ JSON error responseã€‚
+ * å›žå‚³ GuardSuccess æ™‚ï¼ˆguard.error === nullï¼‰ï¼Œå¯è®€å– guard.userId / guard.role / guard.levelã€‚
  *
- * @param minLevel 最低所需角色層級
- * @param request  NextRequest 物件（用於讀取 Authorization header）
- * @returns GuardResult（通過或失敗）
+ * @param minLevel æœ€ä½Žæ‰€éœ€è§’è‰²å±¤ç´š
+ * @param request  NextRequest ç‰©ä»¶ï¼ˆç”¨æ–¼è®€å– Authorization headerï¼‰
+ * @returns GuardResultï¼ˆé€šéŽæˆ–å¤±æ•—ï¼‰
  *
  * @example
  * export async function GET(request: NextRequest) {
  *   const guard = await requireAuthJson(4, request);
  *   if (guard.error) return guard.error;
- *   // guard.userId, guard.role, guard.level 可用
+ *   // guard.userId, guard.role, guard.level å¯ç”¨
  * }
  */
 export async function requireAuthJson(
   minLevel: number,
   request: NextRequest
 ): Promise<GuardResult> {
-  // 1. 嘗試 cookie session（NextAuth 標準流程）
+  // 1. å˜—è©¦ cookie sessionï¼ˆNextAuth æ¨™æº–æµç¨‹ï¼‰
   const session = await auth();
   if (session?.user) {
     const role = (session.user.role as Role | undefined) ?? "MEMBER";
@@ -82,14 +82,14 @@ export async function requireAuthJson(
     return { error: null, userId: session.user.id!, role, level };
   }
 
-  // 2. 嘗試 Authorization: Bearer <token>（行動 App JWT）
+  // 2. å˜—è©¦ Authorization: Bearer <token>ï¼ˆè¡Œå‹• App JWTï¼‰
   const authHeader = request.headers.get("authorization");
   if (authHeader?.startsWith("Bearer ")) {
     const token = authHeader.slice(7);
     try {
       const decoded = await decode({
         token,
-        secret: process.env.AUTH_SECRET!,
+        secret: (process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET)!,
         salt: "authjs.session-token",
       });
       if (decoded?.sub) {
@@ -103,7 +103,7 @@ export async function requireAuthJson(
         return { error: null, userId: decoded.sub, role, level };
       }
     } catch {
-      // token 無效，繼續落到 401
+      // token ç„¡æ•ˆï¼Œç¹¼çºŒè½åˆ° 401
     }
   }
 
@@ -111,3 +111,4 @@ export async function requireAuthJson(
     error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
   };
 }
+
