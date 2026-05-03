@@ -40,6 +40,8 @@ npm run dev
 
 需要 `.env.local`，包含 `DATABASE_URL`、`NEXTAUTH_SECRET`、`GOOGLE_CLIENT_ID`、`GOOGLE_CLIENT_SECRET`、`RESEND_API_KEY`、`VAPID_PUBLIC_KEY`、`VAPID_PRIVATE_KEY`、`CRON_SECRET`。
 
+開發時若需要讓 Expo Go（React Native App）繞過 Google OAuth，可在 Vercel 設定 `ALLOW_DEV_BYPASS=true`。此環境變數允許 `POST /api/auth/token` 以 `{ devBypass: true, email }` 直接簽發 JWT，**不應在正式 production 以外使用**。
+
 ## 部署
 
 Vercel + Supabase。
