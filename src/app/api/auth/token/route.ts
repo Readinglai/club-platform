@@ -143,8 +143,53 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const bodyObj = body as Record<string, unknown>;
+
+    // Dev bypass：跳過 Google OAuth，直接以 email 查 user 並簽發 JWT
+    // 僅在 NODE_ENV !== "production" 時生效
+    if (process.env.NODE_ENV !== "production" && bodyObj.devBypass === true) {
+      const devEmail =
+        typeof bodyObj.email === "string" && bodyObj.email.trim()
+          ? bodyObj.email.trim()
+          : "flyincloud2001@gmail.com";
+
+      const devUser = await db.user.findUnique({
+        where: { email: devEmail },
+        select: { id: true, email: true, name: true, role: true },
+      });
+
+      if (!devUser) {
+        return NextResponse.json(
+          { error: `Dev bypass: user ${devEmail} not found` },
+          { status: 403, headers: corsHdrs }
+        );
+      }
+
+      const jwtSecret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+      if (!jwtSecret) {
+        return NextResponse.json(
+          { error: "Server configuration error: missing JWT secret" },
+          { status: 500, headers: corsHdrs }
+        );
+      }
+
+      const maxAge = 30 * 24 * 60 * 60;
+      const expiresAt = new Date(Date.now() + maxAge * 1000);
+      const token = await encode({
+        token: { sub: devUser.id, role: devUser.role, email: devUser.email, name: devUser.name },
+        secret: jwtSecret,
+        salt: "authjs.session-token",
+        maxAge,
+      });
+
+      return NextResponse.json(
+        { token, user: devUser, expiresAt: expiresAt.toISOString() },
+        { headers: corsHdrs }
+      );
+    }
+
     // codeVerifier 是 PKCE 必要參數，從 App 傳入
-    const { code, redirectUri, codeVerifier } = body as {
+    const { code, redirectUri, codeVerifier } = bodyObj as {
       code?: unknown;
       redirectUri?: unknown;
       codeVerifier?: unknown;
