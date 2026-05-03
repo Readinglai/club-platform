@@ -146,8 +146,8 @@ export async function POST(request: NextRequest) {
     const bodyObj = body as Record<string, unknown>;
 
     // Dev bypass：跳過 Google OAuth，直接以 email 查 user 並簽發 JWT
-    // 僅在 NODE_ENV !== "production" 時生效
-    if (process.env.NODE_ENV !== "production" && bodyObj.devBypass === true) {
+    // 僅在 ALLOW_DEV_BYPASS === "true" 時生效
+    if (process.env.ALLOW_DEV_BYPASS === "true" && bodyObj.devBypass === true) {
       const devEmail =
         typeof bodyObj.email === "string" && bodyObj.email.trim()
           ? bodyObj.email.trim()
