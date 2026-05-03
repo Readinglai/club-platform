@@ -22,10 +22,15 @@
 | Method | Path | Description | Query Params |
 |--------|------|-------------|--------------|
 | GET | `/api/achievements` | 列出所有成果 | `year?` — 年份篩選 |
-| GET | `/api/site-config` | 取得所有網站全域設定（key-value 物件） | — |
-| GET | `/api/sponsors` | 列出所有贊助商（含歷年贊助記錄） | `year?` — 篩選有該年度贊助的贊助商 |
+| GET | `/api/alumni` | 列出公開校友記錄 | `year?` — 畢業年份篩選 |
+| GET | `/api/events` | 列出已發布活動 | `upcoming=true` — 僅未來活動；`limit=N` — 限制筆數 |
 | GET | `/api/events/[id]` | 取得單一活動詳情（已發布）；若攜帶有效 token 一併回傳報名狀態 | — |
+| GET | `/api/members` | 列出公開成員（EXEC 及 MEMBER 角色） | — |
+| GET | `/api/site-config` | 取得所有網站全域設定（key-value 物件） | — |
+| GET | `/api/site-config/team-contacts` | 取得幹部聯絡資訊陣列（公開） | — |
+| GET | `/api/sponsors` | 列出所有贊助商（含歷年贊助記錄） | `year?` — 篩選有該年度贊助的贊助商 |
 | POST | `/api/auth/token` | 行動 App Google OAuth code exchange，回傳 JWT token | — |
+| GET | `/api/auth/post-login` | 登入後依角色導向（EXEC+→/zh/admin，MEMBER→/zh） | — |
 | POST | `/api/contact` | 聯絡表單送出 | — |
 
 ---
@@ -43,6 +48,7 @@
 | PATCH | `/api/user/profile` | 更新個人資料（name, image） | 2 (MEMBER) |
 | POST | `/api/events/[id]/register` | 報名活動（含容量檢查） | 2 (MEMBER) |
 | DELETE | `/api/events/[id]/register` | 取消報名 | 2 (MEMBER) |
+| POST | `/api/upload` | 上傳圖片至 Supabase Storage（社員個人照片等） | 2 (MEMBER) |
 | GET | `/api/exec/task-groups` | 列出任務群組 | 3 (EXEC) |
 | POST | `/api/exec/task-groups` | 建立任務群組 | 3 (EXEC) |
 | GET | `/api/exec/task-groups/[id]/tasks` | 列出群組任務 | 3 (EXEC) |
@@ -120,6 +126,11 @@
 | POST | `/api/admin/achievements` | 建立新成果 | 4 (ADMIN) |
 | PATCH | `/api/admin/achievements/[id]` | 更新成果 | 4 (ADMIN) |
 | DELETE | `/api/admin/achievements/[id]` | 刪除成果 | 4 (ADMIN) |
+| POST | `/api/admin/upload` | 上傳圖片至 Supabase Storage（後台用，活動封面等） | 3 (EXEC) |
+| GET | `/api/admin/members/[id]/avatar` | 取得成員頭像上傳 URL | 4 (ADMIN) |
+| PATCH | `/api/admin/members/[id]/avatar` | 更新成員頭像（Supabase Storage） | 4 (ADMIN) |
+| GET | `/api/admin/i18n` | 取得所有翻譯 key-value（後台 i18n 管理） | 4 (ADMIN) |
+| PATCH | `/api/admin/i18n` | 更新翻譯內容 | 4 (ADMIN) |
 | GET | `/api/admin/site-config` | 讀取單一設定值（?key=...） | 公開 |
 | PATCH | `/api/admin/site-config` | 更新設定值 | 4 (ADMIN) |
 | GET | `/api/admin/alumni` | 列出所有校友（含隱藏記錄） | 4 (ADMIN) |

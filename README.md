@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ROCSAUT Club Platform
 
-## Getting Started
+UofT 校園社團管理平台。為 ROCSAUT（Event / Marketing / Operation 三部門）設計，架構可複製給其他社團使用。
 
-First, run the development server:
+## 技術棧
+
+- **Framework**: Next.js 16, React 19
+- **Styling**: Tailwind CSS 4
+- **Language**: TypeScript
+- **ORM**: Prisma 7
+- **Database**: Supabase (PostgreSQL)
+- **Auth**: NextAuth v5 beta (Google OAuth + JWT Bearer)
+- **Email**: Resend
+- **Deployment**: Vercel
+
+## 功能模組
+
+| 模組 | 說明 |
+|------|------|
+| 首頁 | Hero / About / Upcoming Events / Sponsors / Footer |
+| 後台 (Admin) | 成員管理、活動、公告、財務、部門、任務群組、校友、贊助商、報表、Site Config |
+| Portal | 社員公告、任務追蹤、個人資料 |
+| 活動系統 | 報名、容量管理、出席標記 |
+| 財務系統 | 收支紀錄、月度預算、CSV 匯出 |
+| Push 通知 | Web Push (VAPID) |
+
+## 配套 App
+
+React Native + Expo iOS App 位於 [flyincloud2001/club-platform-app](https://github.com/flyincloud2001/club-platform-app)。
+
+App 透過本專案的 REST API 運作，認證使用 JWT Bearer token（`POST /api/auth/token`）。
+
+## 本地開發
 
 ```bash
+npm install
+npx prisma generate
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+需要 `.env.local`，包含 `DATABASE_URL`、`NEXTAUTH_SECRET`、`GOOGLE_CLIENT_ID`、`GOOGLE_CLIENT_SECRET`、`RESEND_API_KEY`、`VAPID_PUBLIC_KEY`、`VAPID_PRIVATE_KEY`、`CRON_SECRET`。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 部署
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Vercel + Supabase。
 
-## Learn More
+- 正式站：[rocsaut-club-platform.vercel.app](https://rocsaut-club-platform.vercel.app)
+- Supabase 連線必須使用 connection pooler（port 6543）
 
-To learn more about Next.js, take a look at the following resources:
+## API 文件
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+見 [API_ROUTES.md](./API_ROUTES.md)。
