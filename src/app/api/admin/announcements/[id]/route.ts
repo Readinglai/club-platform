@@ -14,10 +14,13 @@ import { requireAuthJson } from "@/lib/auth/guard";
 /** PUT /api/admin/announcements/[id] — 編輯公告 */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const guard = await requireAuthJson(3, request);
   if (guard.error) return guard.error;
+
+  // Next.js 15：params 為 Promise，需先 await 解構
+  const { id } = await params;
 
   try {
     const body = await request.json();
@@ -30,7 +33,7 @@ export async function PUT(
     }
 
     const announcement = await db.announcement.update({
-      where: { id: params.id },
+      where: { id },
       data: { title, content },
       select: {
         id: true,
@@ -53,13 +56,16 @@ export async function PUT(
 /** DELETE /api/admin/announcements/[id] — 刪除公告 */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const guard = await requireAuthJson(3, request);
   if (guard.error) return guard.error;
 
+  // Next.js 15：params 為 Promise，需先 await 解構
+  const { id } = await params;
+
   try {
-    await db.announcement.delete({ where: { id: params.id } });
+    await db.announcement.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "伺服器錯誤" }, { status: 500 });
