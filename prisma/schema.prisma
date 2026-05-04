@@ -117,6 +117,8 @@ model User {
   financeRecords    FinanceRecord[]  @relation("FinanceRecordCreator")
   /// 該使用者的推播訂閱
   pushSubscriptions PushSubscription[]
+  /// 該使用者的任務查看記錄（用於計算未讀討論數）
+  taskViews         TaskView[]
 }
 
 /// NextAuth：OAuth 帳號表
@@ -334,6 +336,8 @@ model Task {
   dueAt        DateTime?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
+  /// 該任務的使用者查看記錄
+  views        TaskView[]
 }
 
 /// 投票表
@@ -508,4 +512,20 @@ model PushSubscription {
   auth       String?
   expoToken  String?
   createdAt  DateTime @default(now())
+}
+
+/// 任務查看記錄表
+/// 記錄每位使用者最後查看任務詳情頁的時間，
+/// 用於前端計算「進入任務後 badge 歸零」的邏輯。
+model TaskView {
+  id       String   @id @default(cuid())
+  taskId   String
+  task     Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// 最後查看時間；每次進入任務詳情頁時更新
+  viewedAt DateTime @default(now())
+
+  /// 同一使用者對同一任務只有一筆記錄（upsert 更新）
+  @@unique([taskId, userId])
 }
