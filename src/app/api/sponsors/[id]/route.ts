@@ -1,19 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
-import type { Role } from "@/generated/prisma/client";
+import { requireAuthJson } from "@/lib/auth/guard";
 
 type Params = { params: Promise<{ id: string }> };
 
 /** GET /api/sponsors/[id] — 取得單一贊助商（含所有 histories） */
-export async function GET(_req: NextRequest, { params }: Params) {
+export async function GET(req: NextRequest, { params }: Params) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 3) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requireAuthJson(3, req);
+    if (guard.error) return guard.error;
 
     const { id } = await params;
     const sponsor = await db.sponsor.findUnique({
@@ -31,11 +26,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
 /** PATCH /api/sponsors/[id] — 更新贊助商基本資料 */
 export async function PATCH(request: NextRequest, { params }: Params) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 3) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requireAuthJson(3, request);
+    if (guard.error) return guard.error;
 
     const { id } = await params;
     const body = await request.json();
@@ -65,13 +57,10 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 }
 
 /** DELETE /api/sponsors/[id] — 刪除贊助商（histories cascade 刪除） */
-export async function DELETE(_req: NextRequest, { params }: Params) {
+export async function DELETE(req: NextRequest, { params }: Params) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 3) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requireAuthJson(3, req);
+    if (guard.error) return guard.error;
 
     const { id } = await params;
     await db.sponsor.delete({ where: { id } });

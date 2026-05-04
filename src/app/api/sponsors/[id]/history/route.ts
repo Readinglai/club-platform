@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
-import type { Role } from "@/generated/prisma/client";
+import { requireAuthJson } from "@/lib/auth/guard";
 
 const VALID_TIERS = ["platinum", "gold", "silver", "bronze"];
 const YEAR_MIN = 2000;
@@ -11,13 +9,10 @@ const YEAR_MAX = 2100;
 type Params = { params: Promise<{ id: string }> };
 
 /** GET /api/sponsors/[id]/history — 取得某贊助商的所有歷史記錄 */
-export async function GET(_req: NextRequest, { params }: Params) {
+export async function GET(req: NextRequest, { params }: Params) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 3) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requireAuthJson(3, req);
+    if (guard.error) return guard.error;
 
     const { id } = await params;
 
@@ -38,11 +33,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
 /** POST /api/sponsors/[id]/history — 新增某年的贊助記錄 */
 export async function POST(request: NextRequest, { params }: Params) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 3) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requireAuthJson(3, request);
+    if (guard.error) return guard.error;
 
     const { id } = await params;
 
@@ -67,7 +59,6 @@ export async function POST(request: NextRequest, { params }: Params) {
       );
     }
 
-    // 檢查同一 sponsor 同年是否已有記錄（給出比 DB unique 錯誤更清楚的訊息）
     const existing = await db.sponsorHistory.findUnique({
       where: { sponsorId_year: { sponsorId: id, year: yearNum } },
     });
