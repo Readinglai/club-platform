@@ -13,15 +13,18 @@ import { requireAuthJson } from "@/lib/auth/guard";
 /** PATCH /api/admin/announcements/[id]/publish — 切換發布狀態 */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const guard = await requireAuthJson(3, request);
   if (guard.error) return guard.error;
 
+  // Next.js 15：params 為 Promise，需先 await 解構
+  const { id } = await params;
+
   try {
     // 取得目前狀態
     const current = await db.announcement.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { published: true },
     });
 
@@ -31,7 +34,7 @@ export async function PATCH(
 
     // 切換 published 狀態
     const announcement = await db.announcement.update({
-      where: { id: params.id },
+      where: { id },
       data: { published: !current.published },
       select: {
         id: true,
