@@ -178,3 +178,10 @@ export type EmailTemplate = Prisma.EmailTemplateModel
  * Web Push 訂閱表
  */
 export type PushSubscription = Prisma.PushSubscriptionModel
+/**
+ * Model TaskView
+ * 任務查看記錄表
+ * 記錄每位使用者最後查看任務詳情頁的時間，
+ * 用於前端計算「進入任務後 badge 歸零」的邏輯。
+ */
+export type TaskView = Prisma.TaskViewModel

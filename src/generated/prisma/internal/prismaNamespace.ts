@@ -410,7 +410,8 @@ export const ModelName = {
   Budget: 'Budget',
   FeatureFlag: 'FeatureFlag',
   EmailTemplate: 'EmailTemplate',
-  PushSubscription: 'PushSubscription'
+  PushSubscription: 'PushSubscription',
+  TaskView: 'TaskView'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -426,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "department" | "event" | "registration" | "discussion" | "comment" | "announcement" | "announcementRead" | "taskGroup" | "taskGroupMember" | "task" | "vote" | "voteOption" | "voteResponse" | "sponsor" | "siteConfig" | "achievement" | "alumni" | "sponsorHistory" | "financeRecord" | "budget" | "featureFlag" | "emailTemplate" | "pushSubscription"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "department" | "event" | "registration" | "discussion" | "comment" | "announcement" | "announcementRead" | "taskGroup" | "taskGroupMember" | "task" | "vote" | "voteOption" | "voteResponse" | "sponsor" | "siteConfig" | "achievement" | "alumni" | "sponsorHistory" | "financeRecord" | "budget" | "featureFlag" | "emailTemplate" | "pushSubscription" | "taskView"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2428,6 +2429,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    TaskView: {
+      payload: Prisma.$TaskViewPayload<ExtArgs>
+      fields: Prisma.TaskViewFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TaskViewFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskViewPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TaskViewFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskViewPayload>
+        }
+        findFirst: {
+          args: Prisma.TaskViewFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskViewPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TaskViewFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskViewPayload>
+        }
+        findMany: {
+          args: Prisma.TaskViewFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskViewPayload>[]
+        }
+        create: {
+          args: Prisma.TaskViewCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskViewPayload>
+        }
+        createMany: {
+          args: Prisma.TaskViewCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TaskViewCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskViewPayload>[]
+        }
+        delete: {
+          args: Prisma.TaskViewDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskViewPayload>
+        }
+        update: {
+          args: Prisma.TaskViewUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskViewPayload>
+        }
+        deleteMany: {
+          args: Prisma.TaskViewDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TaskViewUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TaskViewUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskViewPayload>[]
+        }
+        upsert: {
+          args: Prisma.TaskViewUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskViewPayload>
+        }
+        aggregate: {
+          args: Prisma.TaskViewAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTaskView>
+        }
+        groupBy: {
+          args: Prisma.TaskViewGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaskViewGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TaskViewCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaskViewCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2808,6 +2883,16 @@ export const PushSubscriptionScalarFieldEnum = {
 export type PushSubscriptionScalarFieldEnum = (typeof PushSubscriptionScalarFieldEnum)[keyof typeof PushSubscriptionScalarFieldEnum]
 
 
+export const TaskViewScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  userId: 'userId',
+  viewedAt: 'viewedAt'
+} as const
+
+export type TaskViewScalarFieldEnum = (typeof TaskViewScalarFieldEnum)[keyof typeof TaskViewScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3120,6 +3205,7 @@ export type GlobalOmitConfig = {
   featureFlag?: Prisma.FeatureFlagOmit
   emailTemplate?: Prisma.EmailTemplateOmit
   pushSubscription?: Prisma.PushSubscriptionOmit
+  taskView?: Prisma.TaskViewOmit
 }
 
 /* Types for Logging */

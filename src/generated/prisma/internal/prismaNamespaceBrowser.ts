@@ -77,7 +77,8 @@ export const ModelName = {
   Budget: 'Budget',
   FeatureFlag: 'FeatureFlag',
   EmailTemplate: 'EmailTemplate',
-  PushSubscription: 'PushSubscription'
+  PushSubscription: 'PushSubscription',
+  TaskView: 'TaskView'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -435,6 +436,16 @@ export const PushSubscriptionScalarFieldEnum = {
 } as const
 
 export type PushSubscriptionScalarFieldEnum = (typeof PushSubscriptionScalarFieldEnum)[keyof typeof PushSubscriptionScalarFieldEnum]
+
+
+export const TaskViewScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  userId: 'userId',
+  viewedAt: 'viewedAt'
+} as const
+
+export type TaskViewScalarFieldEnum = (typeof TaskViewScalarFieldEnum)[keyof typeof TaskViewScalarFieldEnum]
 
 
 export const SortOrder = {
