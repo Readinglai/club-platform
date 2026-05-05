@@ -208,10 +208,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const clientId = process.env.GOOGLE_CLIENT_ID;
-    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const webClientId = process.env.GOOGLE_CLIENT_ID;
+    const webClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
-    if (!clientId || !clientSecret) {
+    if (!webClientId || !webClientSecret) {
       console.error("[auth/token] GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET not set");
       return NextResponse.json(
         { error: "Server configuration error" },
@@ -219,14 +219,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // iOS native public client 偵測：redirect URI 格式為 com.googleusercontent.apps.{id}:/...
+    // iOS 應用屬於 public client，不需要 client_secret；client_id 從 redirect URI 反推
+    const iosClientMatch = (redirectUri as string).match(
+      /^com\.googleusercontent\.apps\.([^:/]+):/
+    );
+
     // Step 1: 向 Google 交換 id_token（PKCE 流程須帶 code_verifier）
     const tokenParams: Record<string, string> = {
       code,
-      client_id: clientId,
-      client_secret: clientSecret,
       redirect_uri: redirectUri,
       grant_type: "authorization_code",
     };
+
+    if (iosClientMatch) {
+      // iOS native public client：client_id 從 redirect URI 中提取，無 client_secret
+      tokenParams.client_id = `${iosClientMatch[1]}.apps.googleusercontent.com`;
+    } else {
+      // Web client：使用後端環境變數中的 web client_id + secret
+      tokenParams.client_id = webClientId;
+      tokenParams.client_secret = webClientSecret;
+    }
 
     // 若有 codeVerifier 則加入（PKCE S256 流程必須）
     if (typeof codeVerifier === "string" && codeVerifier.trim()) {
