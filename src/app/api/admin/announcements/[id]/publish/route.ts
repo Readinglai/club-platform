@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuthJson } from "@/lib/auth/guard";
+import { sendPushNotification } from "@/lib/webpush";
 
 /** PATCH /api/admin/announcements/[id]/publish — 切換發布狀態 */
 export async function PATCH(
@@ -44,6 +45,21 @@ export async function PATCH(
         createdAt: true,
       },
     });
+
+    // 發布時推播給所有有 expoToken 的訂閱者
+    if (announcement.published) {
+      const subscriptions = await db.pushSubscription.findMany();
+      await Promise.allSettled(
+        subscriptions.map((sub) =>
+          sendPushNotification(sub, {
+            title: "新公告",
+            body: announcement.title,
+            url: "/portal/announcements",
+            data: { type: "announcement", announcementId: announcement.id },
+          })
+        )
+      );
+    }
 
     return NextResponse.json({
       ...announcement,

@@ -114,22 +114,28 @@ export async function POST(
     },
   });
 
-  // Send push to assignee if they have a subscription
-  if (task.assigneeId) {
-    const subs = await db.pushSubscription.findMany({
-      where: { userId: task.assigneeId },
-    });
-    await Promise.allSettled(
-      subs.map((sub) =>
-        sendPushNotification(sub, {
-          title: "新任務指派",
-          body: task.title,
-          url: "/portal/tasks",
-          data: { type: "task", taskId: task.id },
-        })
-      )
-    );
-  }
+  // 推播給所有有 expoToken 的群組成員
+  const groupMemberUserIds = await db.taskGroupMember.findMany({
+    where: { taskGroupId },
+    select: { userId: true },
+  });
+  const memberIds = groupMemberUserIds.map((m) => m.userId);
+  const subs = await db.pushSubscription.findMany({
+    where: {
+      userId: { in: memberIds },
+      expoToken: { not: null },
+    },
+  });
+  await Promise.allSettled(
+    subs.map((sub) =>
+      sendPushNotification(sub, {
+        title: "新任務指派",
+        body: task.title,
+        url: "/portal/tasks",
+        data: { type: "task", taskId: task.id },
+      })
+    )
+  );
 
   return NextResponse.json(task, { status: 201 });
 }
