@@ -27,8 +27,11 @@ export async function GET(
 
   const { id: taskGroupId } = await params;
 
-  const member = await getMember(taskGroupId, guard.userId);
-  if (!member) {
+  const [member, taskGroup] = await Promise.all([
+    getMember(taskGroupId, guard.userId),
+    db.taskGroup.findUnique({ where: { id: taskGroupId }, select: { createdById: true } }),
+  ]);
+  if (!member && taskGroup?.createdById !== guard.userId) {
     return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
   }
 
@@ -82,24 +85,25 @@ export async function POST(
 
   const { id: taskGroupId } = await params;
 
-  const member = await getMember(taskGroupId, guard.userId);
-  if (!member) {
+  const [member, taskGroupForPost] = await Promise.all([
+    getMember(taskGroupId, guard.userId),
+    db.taskGroup.findUnique({ where: { id: taskGroupId }, select: { status: true, createdById: true } }),
+  ]);
+  if (!taskGroupForPost) {
+    return NextResponse.json({ error: "任務小組不存在" }, { status: 404 });
+  }
+  const isFounder = taskGroupForPost.createdById === guard.userId;
+  if (!member && !isFounder) {
     return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
   }
 
   const globalRole = guard.role as Role;
-  const canCreate = member.role === "LEADER" || ROLE_LEVEL[globalRole] >= 3;
+  const canCreate = member?.role === "LEADER" || isFounder || ROLE_LEVEL[globalRole] >= 3;
   if (!canCreate) {
     return NextResponse.json({ error: "只有組長或執委可以建立投票" }, { status: 403 });
   }
 
-  const taskGroup = await db.taskGroup.findUnique({
-    where: { id: taskGroupId },
-    select: { status: true },
-  });
-  if (!taskGroup) {
-    return NextResponse.json({ error: "任務小組不存在" }, { status: 404 });
-  }
+  const taskGroup = taskGroupForPost;
   if (taskGroup.status !== "ACTIVE") {
     return NextResponse.json({ error: "此小組已完成或封存，無法修改" }, { status: 409 });
   }

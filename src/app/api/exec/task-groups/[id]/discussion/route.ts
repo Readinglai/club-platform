@@ -17,10 +17,11 @@ export async function GET(
 
   const { id: taskGroupId } = await params;
 
-  const member = await db.taskGroupMember.findUnique({
-    where: { taskGroupId_userId: { taskGroupId, userId: guard.userId } },
-  });
-  if (!member) {
+  const [member, taskGroup] = await Promise.all([
+    db.taskGroupMember.findUnique({ where: { taskGroupId_userId: { taskGroupId, userId: guard.userId } } }),
+    db.taskGroup.findUnique({ where: { id: taskGroupId }, select: { createdById: true } }),
+  ]);
+  if (!member && taskGroup?.createdById !== guard.userId) {
     return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
   }
 

@@ -18,19 +18,16 @@ export async function POST(
 
   const { id: taskGroupId } = await params;
 
-  const member = await db.taskGroupMember.findUnique({
-    where: { taskGroupId_userId: { taskGroupId, userId: guard.userId } },
-  });
-  if (!member) {
-    return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
-  }
+  const [member, taskGroup] = await Promise.all([
+    db.taskGroupMember.findUnique({ where: { taskGroupId_userId: { taskGroupId, userId: guard.userId } } }),
+    db.taskGroup.findUnique({ where: { id: taskGroupId }, select: { status: true, createdById: true } }),
+  ]);
 
-  const taskGroup = await db.taskGroup.findUnique({
-    where: { id: taskGroupId },
-    select: { status: true },
-  });
   if (!taskGroup) {
     return NextResponse.json({ error: "任務小組不存在" }, { status: 404 });
+  }
+  if (!member && taskGroup.createdById !== guard.userId) {
+    return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
   }
   if (taskGroup.status !== "ACTIVE") {
     return NextResponse.json({ error: "此小組已完成或封存，無法修改" }, { status: 409 });
