@@ -188,6 +188,89 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // idToken 直接驗證路徑（@react-native-google-signin/google-signin 送來）
+    if (typeof bodyObj.idToken === "string" && bodyObj.idToken.trim()) {
+      const idToken = bodyObj.idToken.trim();
+
+      // 透過 Google tokeninfo endpoint 驗證 idToken 並取得 email
+      const tokenInfoRes = await fetch(
+        `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`
+      );
+      if (!tokenInfoRes.ok) {
+        const errText = await tokenInfoRes.text();
+        console.error("[auth/token] Google tokeninfo failed:", tokenInfoRes.status, errText);
+        return NextResponse.json(
+          { error: "Invalid id_token" },
+          { status: 400, headers: corsHdrs }
+        );
+      }
+
+      const tokenInfo = (await tokenInfoRes.json()) as {
+        email?: string;
+        email_verified?: string;
+        aud?: string;
+      };
+
+      // 驗證 audience，防止其他應用的 idToken 被接受
+      const validAudiences = [
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_IOS_CLIENT_ID,
+      ].filter(Boolean);
+
+      if (!tokenInfo.aud || !validAudiences.includes(tokenInfo.aud)) {
+        console.error("[auth/token] idToken aud mismatch:", tokenInfo.aud, "expected one of:", validAudiences);
+        return NextResponse.json(
+          { error: "id_token audience mismatch" },
+          { status: 400, headers: corsHdrs }
+        );
+      }
+
+      if (!tokenInfo.email) {
+        return NextResponse.json(
+          { error: "Email not found in id_token" },
+          { status: 400, headers: corsHdrs }
+        );
+      }
+
+      const idTokenUser = await db.user.findUnique({
+        where: { email: tokenInfo.email },
+        select: { id: true, email: true, name: true, role: true },
+      });
+
+      if (!idTokenUser) {
+        return NextResponse.json(
+          { error: "User not registered in this platform" },
+          { status: 403, headers: corsHdrs }
+        );
+      }
+
+      const jwtSecretIt = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+      if (!jwtSecretIt) {
+        return NextResponse.json(
+          { error: "Server configuration error: missing JWT secret" },
+          { status: 500, headers: corsHdrs }
+        );
+      }
+
+      const maxAgeIt = 30 * 24 * 60 * 60;
+      const expiresAtIt = new Date(Date.now() + maxAgeIt * 1000);
+      const tokenIt = await encode({
+        token: { sub: idTokenUser.id, role: idTokenUser.role, email: idTokenUser.email, name: idTokenUser.name },
+        secret: jwtSecretIt,
+        salt: "authjs.session-token",
+        maxAge: maxAgeIt,
+      });
+
+      return NextResponse.json(
+        {
+          token: tokenIt,
+          user: { id: idTokenUser.id, email: idTokenUser.email, name: idTokenUser.name, role: idTokenUser.role },
+          expiresAt: expiresAtIt.toISOString(),
+        },
+        { headers: corsHdrs }
+      );
+    }
+
     // codeVerifier 是 PKCE 必要參數，從 App 傳入
     const { code, redirectUri, codeVerifier } = bodyObj as {
       code?: unknown;
