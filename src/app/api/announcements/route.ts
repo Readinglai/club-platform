@@ -13,6 +13,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ROLE_LEVEL } from "@/lib/rbac";
 import type { Role } from "@/generated/prisma/client";
+import { sendPushNotification } from "@/lib/webpush";
 
 /** GET /api/announcements — 取得已發布公告列表 */
 export async function GET(_req: NextRequest) {
@@ -70,6 +71,20 @@ export async function POST(request: NextRequest) {
         authorId: session.user.id,
       },
     });
+
+    if (announcement.published) {
+      const subscriptions = await db.pushSubscription.findMany();
+      await Promise.allSettled(
+        subscriptions.map((sub) =>
+          sendPushNotification(sub, {
+            title: "新公告",
+            body: announcement.title,
+            url: "/portal/announcements",
+            data: { type: "announcement", announcementId: announcement.id },
+          })
+        )
+      );
+    }
 
     return NextResponse.json(announcement, { status: 201 });
   } catch {
