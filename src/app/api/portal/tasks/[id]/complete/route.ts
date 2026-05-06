@@ -11,9 +11,14 @@ export async function PATCH(
 
   const { id } = await params;
 
-  const task = await db.task.findUnique({ where: { id } });
+  const task = await db.task.findUnique({
+    where: { id },
+    include: { taskGroup: { select: { createdById: true } } },
+  });
   if (!task) return NextResponse.json({ error: "任務不存在" }, { status: 404 });
-  if (task.assigneeId !== guard.userId) {
+  const isAssignee = task.assigneeId === guard.userId;
+  const isGroupCreator = task.taskGroup.createdById === guard.userId;
+  if (!isAssignee && !isGroupCreator) {
     return NextResponse.json({ error: "您不是此任務的被指派者" }, { status: 403 });
   }
   if (task.status !== "IN_PROGRESS") {
