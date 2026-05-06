@@ -34,7 +34,30 @@ export async function DELETE(
     return NextResponse.json({ error: "只有創辦人或管理員可以刪除小組" }, { status: 403 });
   }
 
-  await db.taskGroup.delete({ where: { id: taskGroupId } });
+  // 手動 cascade：依外鍵順序刪除子資料
+  const votes = await db.vote.findMany({ where: { taskGroupId }, select: { id: true } });
+  const voteIds = votes.map((v) => v.id);
+
+  const voteOptions = await db.voteOption.findMany({
+    where: { voteId: { in: voteIds } },
+    select: { id: true },
+  });
+  const optionIds = voteOptions.map((o) => o.id);
+
+  const discussions = await db.discussion.findMany({ where: { taskGroupId }, select: { id: true } });
+  const discussionIds = discussions.map((d) => d.id);
+
+  await db.$transaction([
+    db.voteResponse.deleteMany({ where: { voteOptionId: { in: optionIds } } }),
+    db.voteOption.deleteMany({ where: { voteId: { in: voteIds } } }),
+    db.vote.deleteMany({ where: { taskGroupId } }),
+    db.comment.deleteMany({ where: { discussionId: { in: discussionIds } } }),
+    db.discussion.deleteMany({ where: { taskGroupId } }),
+    db.taskView.deleteMany({ where: { task: { taskGroupId } } }),
+    db.task.deleteMany({ where: { taskGroupId } }),
+    db.taskGroupMember.deleteMany({ where: { taskGroupId } }),
+    db.taskGroup.delete({ where: { id: taskGroupId } }),
+  ]);
 
   return new NextResponse(null, { status: 204 });
 }
