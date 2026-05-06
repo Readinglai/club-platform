@@ -13,6 +13,45 @@ import { db } from "@/lib/db";
 import { requireAuthJson } from "@/lib/auth/guard";
 import type { Role } from "@/generated/prisma/client";
 
+/** POST /api/admin/members — 新增單一成員（ADMIN+） */
+export async function POST(request: NextRequest) {
+  try {
+    const guard = await requireAuthJson(4, request);
+    if (guard.error) return guard.error;
+
+    const body = await request.json();
+    const { name, email, role, departmentId } = body as {
+      name?: string;
+      email?: string;
+      role?: string;
+      departmentId?: string | null;
+    };
+
+    if (!name?.trim() || !email?.trim()) {
+      return NextResponse.json({ error: "name 和 email 為必填" }, { status: 400 });
+    }
+
+    const existing = await db.user.findUnique({ where: { email: email.trim() } });
+    if (existing) {
+      return NextResponse.json({ error: "此 email 已存在" }, { status: 409 });
+    }
+
+    const user = await db.user.create({
+      data: {
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        role: (role as Role | undefined) ?? "MEMBER",
+        departmentId: departmentId || null,
+      },
+      select: { id: true, name: true, email: true, role: true, departmentId: true, department: { select: { name: true } } },
+    });
+
+    return NextResponse.json(user, { status: 201 });
+  } catch {
+    return NextResponse.json({ error: "伺服器錯誤" }, { status: 500 });
+  }
+}
+
 /**
  * GET /api/admin/members — 列出所有成員
  *
