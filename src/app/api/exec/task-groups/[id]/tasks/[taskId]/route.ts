@@ -11,6 +11,7 @@
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { sendTaskStatusEmail } from "@/lib/email";
+import { sendPushNotification } from "@/lib/webpush";
 import { requireAuthJson } from "@/lib/auth/guard";
 
 async function getMember(taskGroupId: string, userId: string) {
@@ -114,7 +115,7 @@ export async function PATCH(
     },
   });
 
-  // 狀態變更時通知 assignee
+  // 狀態變更時通知 assignee（email）
   if (
     status !== undefined &&
     status !== existingTask.status &&
@@ -126,6 +127,26 @@ export async function PATCH(
       newStatus: status as string,
       taskGroupName: updated.taskGroup.name,
     }).catch((err) => console.error("[task status email]", err));
+  }
+
+  // 指派成員變更時，推播給新 assignee
+  const newAssigneeId = typeof data.assigneeId === "string" ? data.assigneeId : null;
+  const oldAssigneeId = existingTask.assigneeId;
+  if (newAssigneeId && newAssigneeId !== oldAssigneeId) {
+    db.pushSubscription.findMany({
+      where: { userId: newAssigneeId, expoToken: { not: null } },
+    }).then((subs) =>
+      Promise.allSettled(
+        subs.map((sub) =>
+          sendPushNotification(sub, {
+            title: "新任務指派",
+            body: updated.title,
+            url: "/portal/tasks",
+            data: { type: "task", taskId: updated.id },
+          })
+        )
+      )
+    ).catch((err) => console.error("[task assign push]", err));
   }
 
   return NextResponse.json(updated);
