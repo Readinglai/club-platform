@@ -11,8 +11,14 @@ export async function GET(
 
   const { id } = await params;
 
-  const task = await db.task.findUnique({
-    where: { id, assigneeId: guard.userId },
+  const task = await db.task.findFirst({
+    where: {
+      id,
+      OR: [
+        { assigneeId: guard.userId },
+        { taskGroup: { createdById: guard.userId } },
+      ],
+    },
     include: {
       taskGroup: { select: { id: true, name: true } },
     },
