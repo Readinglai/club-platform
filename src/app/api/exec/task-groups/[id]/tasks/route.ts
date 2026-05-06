@@ -96,7 +96,9 @@ export async function POST(
     }
     const assigneeMember = await getMember(taskGroupId, assigneeId);
     if (!assigneeMember) {
-      return NextResponse.json({ error: "指派對象不是此小組成員" }, { status: 400 });
+      await db.taskGroupMember.create({
+        data: { taskGroupId, userId: assigneeId, role: "MEMBER" },
+      });
     }
   }
 
