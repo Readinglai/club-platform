@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     where: {
       OR: [
         { assigneeId: guard.userId },
+        { assignees: { some: { userId: guard.userId } } },
         { taskGroup: { createdById: guard.userId } },
       ],
     },

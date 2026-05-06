@@ -16,6 +16,7 @@ export async function GET(
       id,
       OR: [
         { assigneeId: guard.userId },
+        { assignees: { some: { userId: guard.userId } } },
         { taskGroup: { createdById: guard.userId } },
       ],
     },
