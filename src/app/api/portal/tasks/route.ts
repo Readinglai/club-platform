@@ -7,7 +7,12 @@ export async function GET(request: NextRequest) {
   if (guard.error) return guard.error;
 
   const tasks = await db.task.findMany({
-    where: { assigneeId: guard.userId },
+    where: {
+      OR: [
+        { assigneeId: guard.userId },
+        { taskGroup: { createdById: guard.userId } },
+      ],
+    },
     orderBy: { createdAt: "desc" },
     include: {
       taskGroup: { select: { id: true, name: true } },
