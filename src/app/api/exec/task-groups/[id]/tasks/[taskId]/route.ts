@@ -140,23 +140,22 @@ export async function DELETE(
 
   const { id: taskGroupId, taskId } = await params;
 
-  const member = await getMember(taskGroupId, guard.userId);
-  if (!member) {
-    return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
-  }
-
-  // 只有 LEADER 才能刪除任務
-  if (member.role !== "LEADER") {
-    return NextResponse.json({ error: "只有組長可以刪除任務" }, { status: 403 });
-  }
-
   const task = await db.task.findUnique({
     where: { id: taskId },
-    include: { taskGroup: { select: { status: true } } },
+    include: { taskGroup: { select: { status: true, createdById: true } } },
   });
 
   if (!task || task.taskGroupId !== taskGroupId) {
     return NextResponse.json({ error: "任務不存在" }, { status: 404 });
+  }
+
+  // 允許：taskGroupMember 中的 LEADER，或小組創辦人（createdById）
+  const member = await getMember(taskGroupId, guard.userId);
+  const isGroupCreator = task.taskGroup.createdById === guard.userId;
+  const isLeaderMember = member?.role === "LEADER";
+
+  if (!isLeaderMember && !isGroupCreator) {
+    return NextResponse.json({ error: "只有組長可以刪除任務" }, { status: 403 });
   }
 
   if (task.taskGroup.status !== "ACTIVE") {
