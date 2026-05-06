@@ -1,11 +1,8 @@
 /**
  * route.ts — 任務 PATCH（更新）+ DELETE（刪除）
  *
- * PATCH  /api/exec/task-groups/[id]/tasks/[taskId] — 更新任務欄位
- * DELETE /api/exec/task-groups/[id]/tasks/[taskId] — 刪除任務
- *
- * PATCH 驗證：session 是該 TaskGroup 的成員
- * DELETE 驗證：session 是 TaskGroup 的 LEADER 或任務建立者（用 createdAt 近似：目前 Task 無 createdById，以 LEADER 判斷）
+ * PATCH  /api/exec/task-groups/[id]/tasks/[taskId] — 更新任務欄位（支援多人指派 assigneeIds[]）
+ * DELETE /api/exec/task-groups/[id]/tasks/[taskId] — 刪除任務（LEADER 或小組建立者）
  */
 
 import { db } from "@/lib/db";
@@ -19,6 +16,12 @@ async function getMember(taskGroupId: string, userId: string) {
     where: { taskGroupId_userId: { taskGroupId, userId } },
   });
 }
+
+const taskInclude = {
+  assignee:  { select: { id: true, name: true, email: true } },
+  assignees: { include: { user: { select: { id: true, name: true } } } },
+  taskGroup: { select: { name: true } },
+} as const;
 
 export async function PATCH(
   request: NextRequest,
@@ -37,7 +40,8 @@ export async function PATCH(
   const existingTask = await db.task.findUnique({
     where: { id: taskId },
     include: {
-      assignee: { select: { id: true, email: true, name: true } },
+      assignee:  { select: { id: true, email: true, name: true } },
+      assignees: { select: { userId: true } },
       taskGroup: { select: { name: true, status: true } },
     },
   });
@@ -57,10 +61,11 @@ export async function PATCH(
     return NextResponse.json({ error: "請求格式錯誤" }, { status: 400 });
   }
 
-  const { title, description, assigneeId, dueAt, status } = body as {
+  const { title, description, assigneeId, assigneeIds, dueAt, status } = body as {
     title?: unknown;
     description?: unknown;
-    assigneeId?: unknown;
+    assigneeId?: unknown;   // legacy single-assignee (web portal)
+    assigneeIds?: unknown;  // new multi-assignee (admin app)
     dueAt?: unknown;
     status?: unknown;
   };
@@ -75,21 +80,7 @@ export async function PATCH(
   }
 
   if (description !== undefined) {
-    data.description =
-      typeof description === "string" ? description.trim() || null : null;
-  }
-
-  if (assigneeId !== undefined) {
-    if (assigneeId !== null) {
-      if (typeof assigneeId !== "string") {
-        return NextResponse.json({ error: "assigneeId 格式錯誤" }, { status: 400 });
-      }
-      const assigneeMember = await getMember(taskGroupId, assigneeId);
-      if (!assigneeMember) {
-        return NextResponse.json({ error: "指派對象不是此小組成員" }, { status: 400 });
-      }
-    }
-    data.assigneeId = assigneeId ?? null;
+    data.description = typeof description === "string" ? description.trim() || null : null;
   }
 
   if (dueAt !== undefined) {
@@ -98,24 +89,61 @@ export async function PATCH(
 
   if (status !== undefined) {
     if (status !== "TODO" && status !== "IN_PROGRESS" && status !== "DONE") {
-      return NextResponse.json(
-        { error: "status 必須為 TODO、IN_PROGRESS 或 DONE" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "status 必須為 TODO、IN_PROGRESS 或 DONE" }, { status: 400 });
     }
     data.status = status;
   }
 
+  // ── Assignee handling ─────────────────────────────────────────────────────
+  // Prefer assigneeIds[] (multi); fall back to legacy assigneeId (single).
+  let newAssigneeIds: string[] | null = null;
+
+  if (Array.isArray(assigneeIds)) {
+    newAssigneeIds = (assigneeIds as unknown[]).filter((id): id is string => typeof id === "string");
+  } else if (assigneeId !== undefined) {
+    newAssigneeIds = assigneeId !== null && typeof assigneeId === "string" ? [assigneeId] : [];
+  }
+
+  if (newAssigneeIds !== null) {
+    // Validate that every new assignee is (or will be) a group member
+    for (const uid of newAssigneeIds) {
+      const m = await getMember(taskGroupId, uid);
+      if (!m) {
+        return NextResponse.json({ error: `使用者 ${uid} 不是此小組成員` }, { status: 400 });
+      }
+    }
+
+    // Update legacy assigneeId (first entry, or null)
+    data.assigneeId = newAssigneeIds[0] ?? null;
+  }
+
+  // ── Persist task scalar fields ────────────────────────────────────────────
   const updated = await db.task.update({
     where: { id: taskId },
     data,
-    include: {
-      assignee: { select: { id: true, name: true, email: true } },
-      taskGroup: { select: { name: true } },
-    },
+    include: taskInclude,
   });
 
-  // 狀態變更時通知 assignee（email）
+  // ── Persist multi-assignee join table ─────────────────────────────────────
+  if (newAssigneeIds !== null) {
+    const oldIds = new Set(existingTask.assignees.map((a) => a.userId));
+    const newIds = new Set(newAssigneeIds);
+
+    const toDelete = [...oldIds].filter((id) => !newIds.has(id));
+    const toAdd    = [...newIds].filter((id) => !oldIds.has(id));
+
+    await Promise.all([
+      ...toDelete.map((uid) =>
+        db.taskAssignee.deleteMany({ where: { taskId, userId: uid } })
+      ),
+      ...toAdd.map((uid) =>
+        db.taskAssignee.create({ data: { taskId, userId: uid } })
+      ),
+    ]);
+  }
+
+  // ── Notifications ─────────────────────────────────────────────────────────
+  // Email: status changed → notify primary assignee
   if (
     status !== undefined &&
     status !== existingTask.status &&
@@ -129,24 +157,27 @@ export async function PATCH(
     }).catch((err) => console.error("[task status email]", err));
   }
 
-  // 指派成員變更時，推播給新 assignee
-  const newAssigneeId = typeof data.assigneeId === "string" ? data.assigneeId : null;
-  const oldAssigneeId = existingTask.assigneeId;
-  if (newAssigneeId && newAssigneeId !== oldAssigneeId) {
-    db.pushSubscription.findMany({
-      where: { userId: newAssigneeId, expoToken: { not: null } },
-    }).then((subs) =>
-      Promise.allSettled(
-        subs.map((sub) =>
-          sendPushNotification(sub, {
-            title: "新任務指派",
-            body: updated.title,
-            url: "/portal/tasks",
-            data: { type: "task", taskId: updated.id },
-          })
+  // Push: newly added assignees
+  if (newAssigneeIds !== null) {
+    const oldIds = new Set(existingTask.assignees.map((a) => a.userId));
+    const brandNewIds = newAssigneeIds.filter((id) => !oldIds.has(id));
+
+    if (brandNewIds.length > 0) {
+      db.pushSubscription.findMany({
+        where: { userId: { in: brandNewIds }, expoToken: { not: null } },
+      }).then((subs) =>
+        Promise.allSettled(
+          subs.map((sub) =>
+            sendPushNotification(sub, {
+              title: "新任務指派",
+              body: updated.title,
+              url: "/portal/tasks",
+              data: { type: "task", taskId: updated.id },
+            })
+          )
         )
-      )
-    ).catch((err) => console.error("[task assign push]", err));
+      ).catch((err) => console.error("[task assign push]", err));
+    }
   }
 
   return NextResponse.json(updated);
@@ -170,7 +201,6 @@ export async function DELETE(
     return NextResponse.json({ error: "任務不存在" }, { status: 404 });
   }
 
-  // 允許：taskGroupMember 中的 LEADER，或小組創辦人（createdById）
   const member = await getMember(taskGroupId, guard.userId);
   const isGroupCreator = task.taskGroup.createdById === guard.userId;
   const isLeaderMember = member?.role === "LEADER";

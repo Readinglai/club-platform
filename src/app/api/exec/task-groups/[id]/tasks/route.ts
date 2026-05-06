@@ -2,7 +2,7 @@
  * route.ts — 任務 GET（列表）+ POST（建立）
  *
  * GET  /api/exec/task-groups/[id]/tasks — 列出該群組所有任務
- * POST /api/exec/task-groups/[id]/tasks — 建立新任務
+ * POST /api/exec/task-groups/[id]/tasks — 建立新任務（支援多人指派 assigneeIds[]）
  * 驗證：session 必須是該 TaskGroup 的成員
  */
 
@@ -16,6 +16,11 @@ async function getMember(taskGroupId: string, userId: string) {
     where: { taskGroupId_userId: { taskGroupId, userId } },
   });
 }
+
+const taskInclude = {
+  assignee:  { select: { id: true, name: true, email: true } },
+  assignees: { include: { user: { select: { id: true, name: true } } } },
+} as const;
 
 export async function GET(
   request: NextRequest,
@@ -37,9 +42,7 @@ export async function GET(
   const tasks = await db.task.findMany({
     where: { taskGroupId },
     orderBy: { createdAt: "asc" },
-    include: {
-      assignee: { select: { id: true, name: true, email: true } },
-    },
+    include: taskInclude,
   });
 
   return NextResponse.json(tasks);
@@ -75,10 +78,11 @@ export async function POST(
     return NextResponse.json({ error: "請求格式錯誤" }, { status: 400 });
   }
 
-  const { title, description, assigneeId, dueAt, status } = body as {
+  const { title, description, assigneeId, assigneeIds, dueAt, status } = body as {
     title?: unknown;
     description?: unknown;
-    assigneeId?: unknown;
+    assigneeId?: unknown;   // legacy single-assignee (web portal)
+    assigneeIds?: unknown;  // new multi-assignee (admin app)
     dueAt?: unknown;
     status?: unknown;
   };
@@ -91,15 +95,18 @@ export async function POST(
     return NextResponse.json({ error: "title 為必填欄位" }, { status: 400 });
   }
 
-  if (assigneeId !== undefined && assigneeId !== null) {
-    if (typeof assigneeId !== "string") {
-      return NextResponse.json({ error: "assigneeId 格式錯誤" }, { status: 400 });
-    }
-    const assigneeMember = await getMember(taskGroupId, assigneeId);
-    if (!assigneeMember) {
-      await db.taskGroupMember.create({
-        data: { taskGroupId, userId: assigneeId, role: "MEMBER" },
-      });
+  // Resolve the canonical list of assignee IDs from either field
+  const resolvedIds: string[] = Array.isArray(assigneeIds)
+    ? (assigneeIds as unknown[]).filter((id): id is string => typeof id === "string")
+    : typeof assigneeId === "string"
+    ? [assigneeId]
+    : [];
+
+  // Ensure every assignee is a group member (auto-add if missing)
+  for (const uid of resolvedIds) {
+    const existing = await getMember(taskGroupId, uid);
+    if (!existing) {
+      await db.taskGroupMember.create({ data: { taskGroupId, userId: uid, role: "MEMBER" } });
     }
   }
 
@@ -108,26 +115,25 @@ export async function POST(
       taskGroupId,
       title: title.trim(),
       description: typeof description === "string" ? description.trim() || null : null,
-      assigneeId: typeof assigneeId === "string" ? assigneeId : null,
+      // keep legacy assigneeId as the primary/first assignee
+      assigneeId: resolvedIds[0] ?? null,
       dueAt: typeof dueAt === "string" ? new Date(dueAt) : null,
       ...(status ? { status: status as "TODO" | "IN_PROGRESS" | "DONE" } : {}),
+      assignees: resolvedIds.length > 0
+        ? { create: resolvedIds.map((uid) => ({ userId: uid })) }
+        : undefined,
     },
-    include: {
-      assignee: { select: { id: true, name: true, email: true } },
-    },
+    include: taskInclude,
   });
 
-  // 推播給所有有 expoToken 的群組成員
+  // Push notification to all group members
   const groupMemberUserIds = await db.taskGroupMember.findMany({
     where: { taskGroupId },
     select: { userId: true },
   });
   const memberIds = groupMemberUserIds.map((m) => m.userId);
   const subs = await db.pushSubscription.findMany({
-    where: {
-      userId: { in: memberIds },
-      expoToken: { not: null },
-    },
+    where: { userId: { in: memberIds }, expoToken: { not: null } },
   });
   await Promise.allSettled(
     subs.map((sub) =>

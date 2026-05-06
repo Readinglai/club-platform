@@ -97,8 +97,10 @@ model User {
   sessions      Session[]
   /// 該使用者的所有活動報名記錄
   registrations Registration[]
-  /// 該使用者被指派的任務
-  assignedTasks Task[]           @relation("TaskAssignee")
+  /// 該使用者被指派的任務（舊版單人）
+  assignedTasks    Task[]           @relation("TaskAssignee")
+  /// 該使用者的多人任務指派記錄（新版）
+  taskAssignments  TaskAssignee[]
   /// 該使用者在討論區發表的留言（匿名留言時 authorId 為 null）
   comments      Comment[]
   /// 該使用者建立的公告
@@ -320,7 +322,7 @@ model TaskGroupMember {
 }
 
 /// 任務表
-/// 隸屬於任務群組，可指派給個人
+/// 隸屬於任務群組，可同時指派給多名成員
 model Task {
   id          String     @id @default(cuid())
   title       String
@@ -328,9 +330,11 @@ model Task {
   /// 任務所屬群組（必填）
   taskGroupId String
   taskGroup   TaskGroup  @relation(fields: [taskGroupId], references: [id])
-  /// 任務負責人（可為 null，尚未指派）
+  /// 主要負責人（保留供舊版相容，新版請使用 assignees）
   assigneeId  String?
   assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  /// 多人指派（新）
+  assignees   TaskAssignee[]
   status       TaskStatus  @default(TODO)
   /// 截止日期（可為 null）
   dueAt        DateTime?
@@ -338,6 +342,17 @@ model Task {
   updatedAt    DateTime    @updatedAt
   /// 該任務的使用者查看記錄
   views        TaskView[]
+}
+
+/// 任務多人指派中間表
+model TaskAssignee {
+  taskId     String
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedAt DateTime @default(now())
+
+  @@id([taskId, userId])
 }
 
 /// 投票表
