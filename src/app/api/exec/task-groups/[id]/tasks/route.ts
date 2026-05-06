@@ -26,8 +26,11 @@ export async function GET(
 
   const { id: taskGroupId } = await params;
 
-  const member = await getMember(taskGroupId, guard.userId);
-  if (!member) {
+  const [member, taskGroup] = await Promise.all([
+    getMember(taskGroupId, guard.userId),
+    db.taskGroup.findUnique({ where: { id: taskGroupId }, select: { createdById: true } }),
+  ]);
+  if (!member && taskGroup?.createdById !== guard.userId) {
     return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
   }
 
@@ -51,17 +54,15 @@ export async function POST(
 
   const { id: taskGroupId } = await params;
 
-  const member = await getMember(taskGroupId, guard.userId);
-  if (!member) {
-    return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
-  }
-
-  const taskGroup = await db.taskGroup.findUnique({
-    where: { id: taskGroupId },
-    select: { id: true, status: true },
-  });
+  const [member, taskGroup] = await Promise.all([
+    getMember(taskGroupId, guard.userId),
+    db.taskGroup.findUnique({ where: { id: taskGroupId }, select: { id: true, status: true, createdById: true } }),
+  ]);
   if (!taskGroup) {
     return NextResponse.json({ error: "任務小組不存在" }, { status: 404 });
+  }
+  if (!member && taskGroup.createdById !== guard.userId) {
+    return NextResponse.json({ error: "您不是此小組的成員" }, { status: 403 });
   }
   if (taskGroup.status !== "ACTIVE") {
     return NextResponse.json({ error: "此小組已完成或封存，無法修改" }, { status: 409 });
