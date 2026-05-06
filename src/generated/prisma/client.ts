@@ -125,9 +125,14 @@ export type TaskGroupMember = Prisma.TaskGroupMemberModel
 /**
  * Model Task
  * 任務表
- * 隸屬於任務群組，可指派給個人
+ * 隸屬於任務群組，可同時指派給多名成員
  */
 export type Task = Prisma.TaskModel
+/**
+ * Model TaskAssignee
+ * 任務多人指派中間表
+ */
+export type TaskAssignee = Prisma.TaskAssigneeModel
 /**
  * Model Vote
  * 投票表

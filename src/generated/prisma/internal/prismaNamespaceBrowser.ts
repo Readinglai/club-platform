@@ -65,6 +65,7 @@ export const ModelName = {
   TaskGroup: 'TaskGroup',
   TaskGroupMember: 'TaskGroupMember',
   Task: 'Task',
+  TaskAssignee: 'TaskAssignee',
   Vote: 'Vote',
   VoteOption: 'VoteOption',
   VoteResponse: 'VoteResponse',
@@ -277,6 +278,15 @@ export const TaskScalarFieldEnum = {
 } as const
 
 export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
+
+
+export const TaskAssigneeScalarFieldEnum = {
+  taskId: 'taskId',
+  userId: 'userId',
+  assignedAt: 'assignedAt'
+} as const
+
+export type TaskAssigneeScalarFieldEnum = (typeof TaskAssigneeScalarFieldEnum)[keyof typeof TaskAssigneeScalarFieldEnum]
 
 
 export const VoteScalarFieldEnum = {
