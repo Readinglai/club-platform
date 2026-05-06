@@ -49,7 +49,8 @@ export async function PATCH(
     // 發布時推播給所有有 expoToken 的訂閱者
     if (announcement.published) {
       const subscriptions = await db.pushSubscription.findMany();
-      await Promise.allSettled(
+      console.log("[PUSH DEBUG] published value:", announcement.published, "subscriptions count:", subscriptions.length);
+      const results = await Promise.allSettled(
         subscriptions.map((sub) =>
           sendPushNotification(sub, {
             title: "新公告",
@@ -59,6 +60,7 @@ export async function PATCH(
           })
         )
       );
+      console.log("[PUSH DEBUG] push sent result:", results);
     }
 
     return NextResponse.json({

@@ -34,7 +34,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     if (published) {
       const subscriptions = await db.pushSubscription.findMany();
       console.log("[PUSH DEBUG] sending to subscriptions count:", subscriptions.length);
-      await Promise.allSettled(
+      const results = await Promise.allSettled(
         subscriptions.map((sub) =>
           sendPushNotification(sub, {
             title: "新公告",
@@ -44,6 +44,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
           })
         )
       );
+      console.log("[PUSH DEBUG] push sent result:", results);
     }
 
     return NextResponse.json(announcement);
