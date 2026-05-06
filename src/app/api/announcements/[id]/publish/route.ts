@@ -30,8 +30,10 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     });
 
     // Send push notifications to all subscribers when publishing
+    console.log("[PUSH DEBUG] published value:", published, typeof published);
     if (published) {
       const subscriptions = await db.pushSubscription.findMany();
+      console.log("[PUSH DEBUG] sending to subscriptions count:", subscriptions.length);
       await Promise.allSettled(
         subscriptions.map((sub) =>
           sendPushNotification(sub, {
