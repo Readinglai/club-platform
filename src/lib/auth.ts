@@ -13,6 +13,7 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
 import { authConfig } from "@/lib/auth.config";
+import type { Role } from "@/generated/prisma/client";
 
 // Always allowed regardless of DB role
 const SUPER_ADMIN_EMAILS = ["flyincloud2001@gmail.com"];
@@ -91,6 +92,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       // All other domains denied
       return "/unauthorized";
+    },
+
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = (user as { role?: Role }).role;
+      }
+      if (!token.role && token.id) {
+        const u = await db.user.findUnique({ where: { id: token.id as string }, select: { role: true } });
+        if (u) token.role = u.role;
+      }
+      return token;
     },
   },
 });
