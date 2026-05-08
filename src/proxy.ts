@@ -34,6 +34,7 @@ const handleI18nRouting = createNextIntlMiddleware(routing);
 
 const { auth } = NextAuth({
   ...authConfig,
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   callbacks: {
     ...authConfig.callbacks,
 
