@@ -46,6 +46,13 @@ const { auth } = NextAuth({
     authorized({ auth: session, request }) {
       const { pathname } = request.nextUrl;
 
+      const publicPatterns = [
+        /^\/(zh|en)?\/login(\/|$)/,
+        /^\/login(\/|$)/,
+        /^\/(zh|en)?\/unauthorized(\/|$)/,
+      ];
+      if (publicPatterns.some((p) => p.test(pathname))) return true;
+
       // 支援有 locale 前綴和無前綴兩種格式的保護路徑
       const protectedPatterns = [
         /^\/(zh|en)\/member(\/|$)/,
