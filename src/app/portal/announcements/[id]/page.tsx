@@ -22,7 +22,7 @@ interface Props {
 export default async function AnnouncementDetailPage({ params }: Props) {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect("/en/login");
   }
 
   const { id } = await params;
