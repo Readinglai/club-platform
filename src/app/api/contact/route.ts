@@ -81,8 +81,7 @@ export async function POST(request: NextRequest) {
 
   // 收件信箱：社團 Email（設定在環境變數，fallback 為 config 預設值）
   const toEmail = process.env.CONTACT_TO_EMAIL ?? "noreply@rocsaut.ca";
-  // TODO: 待 rocsaut.ca domain 在 Resend 驗證後，改回 noreply@rocsaut.ca
-  const fromEmail = process.env.CONTACT_FROM_EMAIL ?? "onboarding@resend.dev";
+  const fromEmail = process.env.CONTACT_FROM_EMAIL ?? "noreply@rocsaut.ca";
 
   // 5. 發送 Email
   try {
