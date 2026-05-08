@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
+import { useSession, signOut } from "next-auth/react";
 
 const NAV_LINKS = [
   { key: "home", href: "/" },
@@ -25,6 +26,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
+  const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLangSwitch = () => {
@@ -90,6 +92,18 @@ export default function Navbar() {
             >
               {t("switchLang")}
             </button>
+            {session?.user ? (
+              <button
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="text-sm px-3 py-1 rounded border border-white/30 text-white hover:bg-white/10 transition"
+              >
+                {t("signOut")}
+              </button>
+            ) : (
+              <Link href="/login" className="text-sm px-3 py-1 rounded border border-white/30 text-white hover:bg-white/10 transition">
+                {t("signIn")}
+              </Link>
+            )}
           </div>
 
           {/* Mobile: lang + hamburger */}
@@ -102,6 +116,18 @@ export default function Navbar() {
             >
               {t("switchLang")}
             </button>
+            {session?.user ? (
+              <button
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="text-sm px-2 py-1 rounded border border-white/30 text-white hover:bg-white/10 transition"
+              >
+                {t("signOut")}
+              </button>
+            ) : (
+              <Link href="/login" className="text-sm px-2 py-1 rounded border border-white/30 text-white hover:bg-white/10 transition">
+                {t("signIn")}
+              </Link>
+            )}
 
             <button
               type="button"

@@ -46,7 +46,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   if (session?.user) {
     const role = (session.user.role as Role | undefined) ?? "MEMBER";
     const level = ROLE_LEVEL[role] ?? ROLE_LEVEL.MEMBER;
-    redirect(level >= 3 ? "/zh/admin" : "/zh");
+    if (level >= 4) redirect("/admin");
+    else if (level === 3) redirect("/exec");
+    else redirect("/portal");
   }
 
   const params = await searchParams;
