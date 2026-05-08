@@ -1,8 +1,7 @@
 import { Resend } from "resend";
 import { db } from "@/lib/db";
 
-// TODO: 待 rocsaut.ca domain 在 Resend 驗證後，改回 noreply@rocsaut.ca
-const FROM = process.env.EMAIL_FROM ?? "ROCSAUT <onboarding@resend.dev>";
+const FROM = process.env.EMAIL_FROM ?? "ROCSAUT <noreply@rocsaut.ca>";
 
 function getResend() {
   const key = process.env.EMAIL_API_KEY;

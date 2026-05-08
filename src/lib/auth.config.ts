@@ -42,7 +42,7 @@ export const authConfig: NextAuthConfig = {
     }),
     Resend({
       apiKey: process.env.EMAIL_API_KEY,
-      from: process.env.CONTACT_FROM_EMAIL ?? "onboarding@resend.dev",
+      from: process.env.CONTACT_FROM_EMAIL ?? "noreply@rocsaut.ca",
     }),
   ],
 

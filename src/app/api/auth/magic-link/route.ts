@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     const url = `${baseUrl}/api/auth/callback/resend?token=${token}&email=${encodeURIComponent(email)}`;
 
     await resend.emails.send({
-      from: process.env.CONTACT_FROM_EMAIL ?? "onboarding@resend.dev",
+      from: process.env.CONTACT_FROM_EMAIL ?? "noreply@rocsaut.ca",
       to: email,
       subject: "ROCSAUT 登入連結",
       html: `<p>請點擊以下連結登入 ROCSAUT 平台（10 分鐘內有效）：</p><p><a href="${url}">${url}</a></p>`,
