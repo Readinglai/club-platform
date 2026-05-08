@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       update: { expires },
     });
 
-    const baseUrl = process.env.NEXTAUTH_URL ?? "https://rocsaut-club-platform.vercel.app";
+    const baseUrl = process.env.NEXTAUTH_URL ?? "https://www.rocsaut.ca";
     const url = `${baseUrl}/api/auth/callback/resend?token=${token}&email=${encodeURIComponent(email)}`;
 
     await resend.emails.send({

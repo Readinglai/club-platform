@@ -31,6 +31,7 @@ const ALLOWED_ORIGINS = [
   "http://localhost:8081",
   "http://localhost:3000",
   "exp://localhost:8083",
+  "https://www.rocsaut.ca",
   "https://rocsaut-club-platform.vercel.app",
 ];
 
