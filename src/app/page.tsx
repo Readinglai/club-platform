@@ -11,5 +11,5 @@ import { redirect } from "next/navigation";
 
 export default function RootPage() {
   // 重導向到預設語言（zh）首頁
-  redirect("/zh");
+  redirect("/");
 }

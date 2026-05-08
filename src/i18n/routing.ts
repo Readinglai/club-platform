@@ -8,9 +8,7 @@
 import { defineRouting } from "next-intl/routing";
 
 export const routing = defineRouting({
-  /** 支援的語言清單 */
-  locales: ["zh", "en"],
-
-  /** 預設語言：繁體中文 */
-  defaultLocale: "zh",
+  locales: ["en", "zh"],
+  defaultLocale: "en",
+  localePrefix: "as-needed",
 });
