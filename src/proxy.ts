@@ -46,10 +46,13 @@ const { auth } = NextAuth({
     authorized({ auth: session, request }) {
       const { pathname } = request.nextUrl;
 
+      // 公開路徑白名單：這些路徑直接放行，不做 auth 攔截
+      // 登入頁本身若被攔截會產生無限 redirect 迴圈
       const publicPatterns = [
         /^\/(zh|en)?\/login(\/|$)/,
         /^\/login(\/|$)/,
         /^\/(zh|en)?\/unauthorized(\/|$)/,
+        /^\/unauthorized(\/|$)/,
       ];
       if (publicPatterns.some((p) => p.test(pathname))) return true;
 
