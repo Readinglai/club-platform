@@ -84,9 +84,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <p className="text-sm text-gray-600 leading-relaxed">
             社團成員管理平台
           </p>
-          <p className="text-xs text-gray-400 mt-1">
-            僅限 <span className="font-medium text-gray-500">utoronto.ca</span> 信箱
-          </p>
         </div>
 
         {/* 錯誤提示（登入失敗時顯示） */}
@@ -104,8 +101,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         {/* 頁腳說明 */}
         <p className="text-xs text-gray-400 text-center leading-relaxed">
           登入即代表您同意遵守社團規範。
-          <br />
-          如有問題請聯繫 exec 團隊。
         </p>
       </div>
     </div>
