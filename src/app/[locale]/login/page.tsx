@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { LoginButtons } from "./LoginButtons";
@@ -24,9 +25,14 @@ function getErrorKey(error: string | undefined): string | null {
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const headersList = await headers();
+  const host = headersList.get("x-forwarded-host") ?? headersList.get("host") ?? "localhost:3000";
+  const proto = headersList.get("x-forwarded-proto") ?? "http";
+  const base = `${proto}://${host}`;
+
   const session = await auth();
   if (session?.user) {
-    redirect("/api/auth/post-login");
+    redirect(`${base}/api/auth/post-login`);
   }
 
   const params = await searchParams;
