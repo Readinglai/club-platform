@@ -40,7 +40,7 @@ type GuardResult = GuardSuccess | GuardFailure;
  */
 export async function requireAuth(minLevel: number = 1): Promise<GuardSuccess> {
   const session = await auth();
-  if (!session?.user) redirect("/login");
+  if (!session?.user) redirect("/zh/login");
   const role = (session.user.role as Role | undefined) ?? "MEMBER";
   const level = ROLE_LEVEL[role] ?? 1;
   if (level < minLevel) redirect("/unauthorized");
