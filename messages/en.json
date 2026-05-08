@@ -188,11 +188,9 @@
   },
   "auth": {
     "platformName": "Club Member Management Platform",
-    "emailRestriction": "{domain} email required",
     "googleSignIn": "Sign in with Google",
     "signOut": "Sign Out",
     "termsNote": "By signing in you agree to abide by club policies.",
-    "contactNote": "If you have questions, contact the exec team.",
     "errorAccessDenied": "Only utoronto.ca or mail.utoronto.ca emails are allowed. Please use your campus account.",
     "errorOAuth": "A Google sign-in error occurred. Please try again later.",
     "errorUnknown": "An unknown error occurred during sign-in. Please try again later.",

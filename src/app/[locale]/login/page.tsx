@@ -86,9 +86,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <p className="text-sm text-gray-600 leading-relaxed">
             {t("platformName")}
           </p>
-          <p className="text-xs text-gray-400 mt-1">
-            {t("emailRestriction", { domain: "utoronto.ca" })}
-          </p>
         </div>
 
         {/* Error message */}
@@ -105,8 +102,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         {/* Footer note */}
         <p className="text-xs text-gray-400 text-center leading-relaxed">
           {t("termsNote")}
-          <br />
-          {t("contactNote")}
         </p>
       </div>
     </div>

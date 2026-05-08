@@ -188,11 +188,9 @@
   },
   "auth": {
     "platformName": "社團成員管理平台",
-    "emailRestriction": "僅限 {domain} 信箱",
     "googleSignIn": "用 Google 帳號登入",
     "signOut": "登出",
     "termsNote": "登入即代表您同意遵守社團規範。",
-    "contactNote": "如有問題請聯繫 exec 團隊。",
     "errorAccessDenied": "僅限 utoronto.ca 或 mail.utoronto.ca 信箱登入，請使用校園帳號。",
     "errorOAuth": "Google 登入發生錯誤，請稍後再試。",
     "errorUnknown": "登入時發生未知錯誤，請稍後再試。",
