@@ -1,20 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { ROLE_LEVEL } from "@/lib/rbac";
 import type { Role } from "@/generated/prisma/client";
 
-/**
- * GET /api/auth/post-login
- *
- * Role-aware post-login redirect endpoint.
- * NextAuth's callbackUrl points here after OAuth; this reads the freshly-issued
- * session and sends the user to the right place:
- *   - EXEC / ADMIN / SUPER_ADMIN (level ≥ 3) → /zh/admin
- *   - MEMBER and below               (level ≤ 2) → /zh  (homepage)
- */
-export async function GET() {
+export async function GET(request: NextRequest) {
   const session = await auth();
-  const base = (process.env.NEXTAUTH_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "localhost:3000";
+  const proto = request.headers.get("x-forwarded-proto") ?? "http";
+  const base = `${proto}://${host}`;
 
   if (!session?.user) {
     return NextResponse.redirect(`${base}/login`);
@@ -23,6 +16,5 @@ export async function GET() {
   const role = (session.user.role as Role | undefined) ?? "MEMBER";
   const level = ROLE_LEVEL[role] ?? ROLE_LEVEL.MEMBER;
   const dest = level >= 3 ? "/zh/admin" : "/zh";
-
   return NextResponse.redirect(`${base}${dest}`);
 }
