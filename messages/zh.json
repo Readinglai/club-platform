@@ -8,7 +8,9 @@
     "alumni": "校友",
     "contact": "聯絡我們",
     "switchLang": "EN",
-    "editProfile": "個人資料"
+    "editProfile": "個人資料",
+    "signOut": "登出",
+    "signIn": "登入"
   },
   "hero": {
     "title": "ROCSAUT",
