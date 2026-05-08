@@ -13,6 +13,7 @@
 
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
+import Resend from "next-auth/providers/resend";
 import type { Role } from "@/generated/prisma/client";
 
 /** 需要登入才能訪問的路徑前綴 */
@@ -38,6 +39,10 @@ export const authConfig: NextAuthConfig = {
       // pre-inserted via SQL (no Account record yet). Safe because Google
       // verifies email ownership and our signIn callback guards access.
       allowDangerousEmailAccountLinking: true,
+    }),
+    Resend({
+      apiKey: process.env.EMAIL_API_KEY,
+      from: process.env.CONTACT_FROM_EMAIL ?? "onboarding@resend.dev",
     }),
   ],
 

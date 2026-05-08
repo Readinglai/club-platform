@@ -195,7 +195,13 @@
     "contactNote": "如有問題請聯繫 exec 團隊。",
     "errorAccessDenied": "僅限 utoronto.ca 或 mail.utoronto.ca 信箱登入，請使用校園帳號。",
     "errorOAuth": "Google 登入發生錯誤，請稍後再試。",
-    "errorUnknown": "登入時發生未知錯誤，請稍後再試。"
+    "errorUnknown": "登入時發生未知錯誤，請稍後再試。",
+    "orEmail": "或使用信箱",
+    "emailPlaceholder": "輸入您的 utoronto.ca 信箱",
+    "sendMagicLink": "發送登入連結",
+    "sending": "發送中...",
+    "magicLinkSent": "登入連結已寄出，請查看信箱。",
+    "errorEmail": "寄送登入連結失敗，請稍後再試。"
   },
   "dashboard": {
     "welcomeBack": "歡迎回來",

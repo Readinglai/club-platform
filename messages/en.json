@@ -195,7 +195,13 @@
     "contactNote": "If you have questions, contact the exec team.",
     "errorAccessDenied": "Only utoronto.ca or mail.utoronto.ca emails are allowed. Please use your campus account.",
     "errorOAuth": "A Google sign-in error occurred. Please try again later.",
-    "errorUnknown": "An unknown error occurred during sign-in. Please try again later."
+    "errorUnknown": "An unknown error occurred during sign-in. Please try again later.",
+    "orEmail": "or use email",
+    "emailPlaceholder": "Enter your utoronto.ca email",
+    "sendMagicLink": "Send login link",
+    "sending": "Sending...",
+    "magicLinkSent": "Login link sent. Please check your inbox.",
+    "errorEmail": "Failed to send login link. Please try again later."
   },
   "dashboard": {
     "welcomeBack": "Welcome back",
