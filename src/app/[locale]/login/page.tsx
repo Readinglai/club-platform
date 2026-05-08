@@ -1,14 +1,28 @@
+/**
+ * [locale]/login/page.tsx — 多語系登入頁面
+ *
+ * 社團成員登入入口，使用 Google OAuth 或 Resend magic link。
+ * 僅限 utoronto.ca 或 mail.utoronto.ca 信箱。
+ *
+ * 已登入使用者：直接依角色跳轉（不經過 /api/auth/post-login），
+ * 避免額外 redirect hop 造成 ERR_TOO_MANY_REDIRECTS。
+ */
+
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
+import { ROLE_LEVEL } from "@/lib/rbac";
+import type { Role } from "@/generated/prisma/client";
 import { LoginButtons } from "./LoginButtons";
 
 interface LoginPageProps {
   searchParams: Promise<{ error?: string; callbackUrl?: string }>;
 }
 
+/**
+ * 將 NextAuth 錯誤代碼對應到 i18n key
+ */
 function getErrorKey(error: string | undefined): string | null {
   if (!error) return null;
   switch (error) {
@@ -25,14 +39,14 @@ function getErrorKey(error: string | undefined): string | null {
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const headersList = await headers();
-  const host = headersList.get("x-forwarded-host") ?? headersList.get("host") ?? "localhost:3000";
-  const proto = headersList.get("x-forwarded-proto") ?? "http";
-  const base = `${proto}://${host}`;
-
+  // 已登入的使用者直接依角色導向，不顯示登入頁
+  // 注意：不再經過 /api/auth/post-login 中轉，避免多一層 redirect
+  // 造成 /zh/login → /api/auth/post-login → /zh/admin → ... 無限迴圈
   const session = await auth();
   if (session?.user) {
-    redirect(`${base}/api/auth/post-login`);
+    const role = (session.user.role as Role | undefined) ?? "MEMBER";
+    const level = ROLE_LEVEL[role] ?? ROLE_LEVEL.MEMBER;
+    redirect(level >= 3 ? "/zh/admin" : "/zh");
   }
 
   const params = await searchParams;
