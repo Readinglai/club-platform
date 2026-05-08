@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next-intl/navigation";
 
 const NAV_LINKS = [
   { key: "home", href: "/" },
@@ -28,12 +28,9 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLangSwitch = () => {
-    const segments = pathname.split("/");
-    const currentLocale = segments[1] === "en" ? "en" : "zh";
+    const currentLocale = locale;
     const targetLocale = currentLocale === "zh" ? "en" : "zh";
-    segments[1] = targetLocale;
-    const newPath = segments.join("/") || `/${targetLocale}`;
-    router.replace(newPath);
+    router.replace(pathname, { locale: targetLocale });
   };
 
   const localizedHref = (href: string) =>
