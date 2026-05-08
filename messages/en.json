@@ -189,7 +189,7 @@
     "descriptionTitle": "About"
   },
   "auth": {
-    "platformName": "Club Member Management Platform",
+    "platformName": "Club Management Platform",
     "googleSignIn": "Sign in with Google",
     "signOut": "Sign Out",
     "termsNote": "By signing in you agree to abide by club policies.",

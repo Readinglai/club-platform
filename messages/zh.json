@@ -189,7 +189,7 @@
     "descriptionTitle": "關於"
   },
   "auth": {
-    "platformName": "社團成員管理平台",
+    "platformName": "社團管理平台",
     "googleSignIn": "用 Google 帳號登入",
     "signOut": "登出",
     "termsNote": "登入即代表您同意遵守社團規範。",
