@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useParams } from "next/navigation";
-import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
@@ -80,7 +79,7 @@ export default function AdminSidebar({ userName, userRole, userLevel }: Props) {
         })}
       </nav>
 
-      {/* 目前使用者資訊 + 登出 */}
+      {/* 目前使用者資訊 */}
       <div className="px-4 py-4 border-t text-xs" style={{ borderColor: `${SECONDARY}22` }}>
         <p className="font-semibold truncate" style={{ color: SECONDARY }}>
           {userName}
@@ -88,13 +87,6 @@ export default function AdminSidebar({ userName, userRole, userLevel }: Props) {
         <p className="mt-0.5" style={{ color: `${SECONDARY}66` }}>
           {userRole}
         </p>
-        <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className="mt-3 w-full text-left px-2 py-1.5 rounded text-xs transition-all hover:opacity-80"
-          style={{ color: `${SECONDARY}88`, backgroundColor: `${SECONDARY}11` }}
-        >
-          {t("logout")}
-        </button>
       </div>
     </aside>
   );
