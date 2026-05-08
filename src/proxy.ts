@@ -83,7 +83,11 @@ const { auth } = NextAuth({
  * 2. 執行 NextAuth auth 保護（只對受保護路徑生效）
  */
 // 不需要 i18n locale 前綴的內部路徑（exec/portal 都是純中文內部工具，無多語需求）
-const NO_I18N_PREFIXES = [/^\/exec(\/|$)/, /^\/portal(\/|$)/];
+const NO_I18N_PREFIXES = [
+  /^\/exec(\/|$)/,
+  /^\/portal(\/|$)/,
+  /^\/login(\/|$)/,
+];
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
