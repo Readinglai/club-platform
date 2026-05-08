@@ -15,6 +15,9 @@ export async function GET(request: NextRequest) {
 
   const role = (session.user.role as Role | undefined) ?? "MEMBER";
   const level = ROLE_LEVEL[role] ?? ROLE_LEVEL.MEMBER;
-  const dest = level >= 3 ? "/zh/admin" : "/zh";
+  let dest: string;
+  if (level >= 4) dest = "/admin";
+  else if (level === 3) dest = "/exec";
+  else dest = "/portal";
   return NextResponse.redirect(`${base}${dest}`);
 }
