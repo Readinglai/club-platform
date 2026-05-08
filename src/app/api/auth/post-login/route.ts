@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   const session = await auth();
   const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "localhost:3000";
   const proto = request.headers.get("x-forwarded-proto") ?? "http";
-  const base = `${proto}://${host}`;
+  const base = process.env.NEXTAUTH_URL ?? `${proto}://${host}`;
 
   if (!session?.user) {
     return NextResponse.redirect(`${base}/login`);
