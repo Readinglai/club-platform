@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { usePathname, useRouter } from "next-intl/navigation";
+import { useRouter, usePathname } from "@/i18n/navigation";
 
 const NAV_LINKS = [
   { key: "home", href: "/" },
