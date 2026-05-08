@@ -17,7 +17,7 @@ const SECONDARY = "#c9b99a";
 export default async function AnnouncementsPage() {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect("/en/login");
   }
 
   const announcements = await db.announcement.findMany({
