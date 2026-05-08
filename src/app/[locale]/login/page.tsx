@@ -2,7 +2,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
-import { SignInButton } from "./SignInButton";
+import { LoginButtons } from "./LoginButtons";
 
 interface LoginPageProps {
   searchParams: Promise<{ error?: string; callbackUrl?: string }>;
@@ -16,6 +16,8 @@ function getErrorKey(error: string | undefined): string | null {
     case "OAuthSignin":
     case "OAuthCallback":
       return "errorOAuth";
+    case "EmailSignin":
+      return "errorEmail";
     default:
       return "errorUnknown";
   }
@@ -73,12 +75,12 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         {errorKey && (
           <div className="w-full rounded-lg px-4 py-3 bg-red-50 border border-red-200">
             <p className="text-xs text-red-600 text-center leading-relaxed">
-              {t(errorKey as "errorAccessDenied" | "errorOAuth" | "errorUnknown")}
+              {t(errorKey as "errorAccessDenied" | "errorOAuth" | "errorEmail" | "errorUnknown")}
             </p>
           </div>
         )}
 
-        <SignInButton callbackUrl={callbackUrl} />
+        <LoginButtons callbackUrl={callbackUrl} />
 
         {/* Footer note */}
         <p className="text-xs text-gray-400 text-center leading-relaxed">

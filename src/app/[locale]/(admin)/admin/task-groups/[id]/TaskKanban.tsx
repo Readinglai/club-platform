@@ -27,7 +27,10 @@ interface Task {
 interface Props {
   taskGroupId: string;
   initialTasks: Task[];
+  /** 當前小組成員（用於顯示目前成員狀態） */
   members: TaskMember[];
+  /** 全平台使用者（用於 assignee dropdown，後端會自動將非小組成員加入小組） */
+  allPlatformUsers: TaskMember[];
   isMember: boolean;
   isLeader: boolean;
 }
@@ -52,7 +55,10 @@ interface TaskModalProps {
   mode: "create" | "edit";
   initialData?: Partial<TaskFormData>;
   defaultStatus?: TaskStatus;
-  members: TaskMember[];
+  /** 當前小組成員 ID 集合（用於標示哪些人已在小組） */
+  memberIds: Set<string>;
+  /** 全平台使用者，供 assignee dropdown 選擇 */
+  allPlatformUsers: TaskMember[];
   loading: boolean;
   error: string | null;
   onSubmit: (data: TaskFormData) => void;
@@ -63,7 +69,8 @@ function TaskModal({
   mode,
   initialData,
   defaultStatus,
-  members,
+  memberIds,
+  allPlatformUsers,
   loading,
   error,
   onSubmit,
@@ -138,12 +145,15 @@ function TaskModal({
               style={{ borderColor: `${SECONDARY}55`, color: PRIMARY }}
             >
               <option value="">{t("unassigned")}</option>
-              {members.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.name}
+              {allPlatformUsers.map((u) => (
+                // 標示是否已在小組；非小組成員指派後後端自動加入
+                <option key={u.id} value={u.id}>
+                  {u.name}{memberIds.has(u.id) ? "" : " ✦"}
                 </option>
               ))}
             </select>
+            {/* ✦ = 尚未加入此小組，指派後將自動成為成員 */}
+            <p className="text-[10px] text-gray-400 mt-0.5">✦ 尚未加入此小組，指派後自動成為成員</p>
           </div>
 
           <div>
@@ -206,9 +216,12 @@ export default function TaskKanban({
   taskGroupId,
   initialTasks,
   members,
+  allPlatformUsers,
   isMember,
   isLeader,
 }: Props) {
+  // 預先建立 Set 加速 O(1) 查詢是否已在小組
+  const memberIds = new Set(members.map((m) => m.id));
   const t = useTranslations("admin.taskGroups");
   const tc = useTranslations("admin.common");
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
@@ -400,7 +413,8 @@ export default function TaskKanban({
         <TaskModal
           mode="create"
           defaultStatus={createModal.status}
-          members={members}
+          memberIds={memberIds}
+          allPlatformUsers={allPlatformUsers}
           loading={modalLoading}
           error={modalError}
           onSubmit={handleCreate}
@@ -420,7 +434,8 @@ export default function TaskKanban({
               : "",
             status: editModal.status,
           }}
-          members={members}
+          memberIds={memberIds}
+          allPlatformUsers={allPlatformUsers}
           loading={modalLoading}
           error={modalError}
           onSubmit={handleEdit}

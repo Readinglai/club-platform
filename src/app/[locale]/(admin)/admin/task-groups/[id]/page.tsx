@@ -63,6 +63,14 @@ export default async function TaskGroupDetailPage({
 
   const memberUsers = taskGroup.members.map((m) => m.user);
 
+  // 取得全平台使用者供任務指派用
+  // 需求：admin 應能將任務指派給任何平台成員（不限於已在小組的人）
+  // 後端 POST /api/exec/task-groups/[id]/tasks 會自動將非成員的 assignee 加入小組
+  const allPlatformUsers = await db.user.findMany({
+    select: { id: true, name: true, email: true },
+    orderBy: { name: "asc" },
+  });
+
   const tasks = taskGroup.tasks.map((t) => ({
     id: t.id,
     title: t.title,
@@ -110,6 +118,7 @@ export default async function TaskGroupDetailPage({
           taskGroupId={taskGroup.id}
           initialTasks={tasks}
           memberUsers={memberUsers}
+          allPlatformUsers={allPlatformUsers}
           isMember={isMember}
           isLeader={isLeader}
           userId={userId}

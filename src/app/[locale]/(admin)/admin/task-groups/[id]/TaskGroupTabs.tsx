@@ -31,6 +31,8 @@ interface Props {
   taskGroupId: string;
   initialTasks: Task[];
   memberUsers: TaskMember[];
+  /** 全平台使用者，供任務指派 dropdown 使用（可指派給非小組成員，後端自動加入） */
+  allPlatformUsers: TaskMember[];
   isMember: boolean;
   isLeader: boolean;
   userId: string;
@@ -41,6 +43,7 @@ export default function TaskGroupTabs({
   taskGroupId,
   initialTasks,
   memberUsers,
+  allPlatformUsers,
   isMember,
   isLeader,
   userId,
@@ -85,6 +88,7 @@ export default function TaskGroupTabs({
           taskGroupId={taskGroupId}
           initialTasks={initialTasks}
           members={memberUsers}
+          allPlatformUsers={allPlatformUsers}
           isMember={isMember}
           isLeader={isLeader}
         />
