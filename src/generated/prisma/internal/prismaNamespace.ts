@@ -412,7 +412,8 @@ export const ModelName = {
   FeatureFlag: 'FeatureFlag',
   EmailTemplate: 'EmailTemplate',
   PushSubscription: 'PushSubscription',
-  TaskView: 'TaskView'
+  TaskView: 'TaskView',
+  ROCSAUT_Membership_Info: 'ROCSAUT_Membership_Info'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -428,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "department" | "event" | "registration" | "discussion" | "comment" | "announcement" | "announcementRead" | "taskGroup" | "taskGroupMember" | "task" | "taskAssignee" | "vote" | "voteOption" | "voteResponse" | "sponsor" | "siteConfig" | "achievement" | "alumni" | "sponsorHistory" | "financeRecord" | "budget" | "featureFlag" | "emailTemplate" | "pushSubscription" | "taskView"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "department" | "event" | "registration" | "discussion" | "comment" | "announcement" | "announcementRead" | "taskGroup" | "taskGroupMember" | "task" | "taskAssignee" | "vote" | "voteOption" | "voteResponse" | "sponsor" | "siteConfig" | "achievement" | "alumni" | "sponsorHistory" | "financeRecord" | "budget" | "featureFlag" | "emailTemplate" | "pushSubscription" | "taskView" | "rOCSAUT_Membership_Info"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2578,6 +2579,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ROCSAUT_Membership_Info: {
+      payload: Prisma.$ROCSAUT_Membership_InfoPayload<ExtArgs>
+      fields: Prisma.ROCSAUT_Membership_InfoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ROCSAUT_Membership_InfoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ROCSAUT_Membership_InfoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ROCSAUT_Membership_InfoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ROCSAUT_Membership_InfoPayload>
+        }
+        findFirst: {
+          args: Prisma.ROCSAUT_Membership_InfoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ROCSAUT_Membership_InfoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ROCSAUT_Membership_InfoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ROCSAUT_Membership_InfoPayload>
+        }
+        findMany: {
+          args: Prisma.ROCSAUT_Membership_InfoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ROCSAUT_Membership_InfoPayload>[]
+        }
+        create: {
+          args: Prisma.ROCSAUT_Membership_InfoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ROCSAUT_Membership_InfoPayload>
+        }
+        createMany: {
+          args: Prisma.ROCSAUT_Membership_InfoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ROCSAUT_Membership_InfoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ROCSAUT_Membership_InfoPayload>[]
+        }
+        delete: {
+          args: Prisma.ROCSAUT_Membership_InfoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ROCSAUT_Membership_InfoPayload>
+        }
+        update: {
+          args: Prisma.ROCSAUT_Membership_InfoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ROCSAUT_Membership_InfoPayload>
+        }
+        deleteMany: {
+          args: Prisma.ROCSAUT_Membership_InfoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ROCSAUT_Membership_InfoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ROCSAUT_Membership_InfoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ROCSAUT_Membership_InfoPayload>[]
+        }
+        upsert: {
+          args: Prisma.ROCSAUT_Membership_InfoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ROCSAUT_Membership_InfoPayload>
+        }
+        aggregate: {
+          args: Prisma.ROCSAUT_Membership_InfoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateROCSAUT_Membership_Info>
+        }
+        groupBy: {
+          args: Prisma.ROCSAUT_Membership_InfoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ROCSAUT_Membership_InfoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ROCSAUT_Membership_InfoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ROCSAUT_Membership_InfoCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2977,6 +3052,20 @@ export const TaskViewScalarFieldEnum = {
 export type TaskViewScalarFieldEnum = (typeof TaskViewScalarFieldEnum)[keyof typeof TaskViewScalarFieldEnum]
 
 
+export const ROCSAUT_Membership_InfoScalarFieldEnum = {
+  id: 'id',
+  member_code: 'member_code',
+  name: 'name',
+  email: 'email',
+  student_number: 'student_number',
+  created_at: 'created_at',
+  year_of_study: 'year_of_study',
+  role: 'role'
+} as const
+
+export type ROCSAUT_Membership_InfoScalarFieldEnum = (typeof ROCSAUT_Membership_InfoScalarFieldEnum)[keyof typeof ROCSAUT_Membership_InfoScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3291,6 +3380,7 @@ export type GlobalOmitConfig = {
   emailTemplate?: Prisma.EmailTemplateOmit
   pushSubscription?: Prisma.PushSubscriptionOmit
   taskView?: Prisma.TaskViewOmit
+  rOCSAUT_Membership_Info?: Prisma.ROCSAUT_Membership_InfoOmit
 }
 
 /* Types for Logging */

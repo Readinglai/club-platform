@@ -79,7 +79,8 @@ export const ModelName = {
   FeatureFlag: 'FeatureFlag',
   EmailTemplate: 'EmailTemplate',
   PushSubscription: 'PushSubscription',
-  TaskView: 'TaskView'
+  TaskView: 'TaskView',
+  ROCSAUT_Membership_Info: 'ROCSAUT_Membership_Info'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -456,6 +457,20 @@ export const TaskViewScalarFieldEnum = {
 } as const
 
 export type TaskViewScalarFieldEnum = (typeof TaskViewScalarFieldEnum)[keyof typeof TaskViewScalarFieldEnum]
+
+
+export const ROCSAUT_Membership_InfoScalarFieldEnum = {
+  id: 'id',
+  member_code: 'member_code',
+  name: 'name',
+  email: 'email',
+  student_number: 'student_number',
+  created_at: 'created_at',
+  year_of_study: 'year_of_study',
+  role: 'role'
+} as const
+
+export type ROCSAUT_Membership_InfoScalarFieldEnum = (typeof ROCSAUT_Membership_InfoScalarFieldEnum)[keyof typeof ROCSAUT_Membership_InfoScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -214,3 +214,8 @@ export type PushSubscription = Prisma.PushSubscriptionModel
  * 用於前端計算「進入任務後 badge 歸零」的邏輯。
  */
 export type TaskView = Prisma.TaskViewModel
+/**
+ * Model ROCSAUT_Membership_Info
+ * 
+ */
+export type ROCSAUT_Membership_Info = Prisma.ROCSAUT_Membership_InfoModel
