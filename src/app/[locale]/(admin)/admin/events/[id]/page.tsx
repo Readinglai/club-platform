@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import EventEditForm from "./EventEditForm";
 import RegistrationsTable from "./RegistrationsTable";
+import CheckInPanel from "./CheckInPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -66,6 +67,17 @@ export default async function AdminEventDetailPage({
         }}
         locale={locale}
       />
+      
+      <div className="mt-10">
+        <h2
+          className="text-lg font-semibold mb-4"
+          style={{ color: PRIMARY }}
+        >
+          Check-in
+        </h2>
+
+        <CheckInPanel eventId={event.id} />
+      </div>
 
       <div className="mt-10">
         <h2 className="text-lg font-semibold mb-4" style={{ color: PRIMARY }}>

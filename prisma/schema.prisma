@@ -544,3 +544,16 @@ model TaskView {
   /// 同一使用者對同一任務只有一筆記錄（upsert 更新）
   @@unique([taskId, userId])
 }
+
+model ROCSAUT_Membership_Info {
+  id             String    @id @db.Uuid
+  member_code    String
+  name           String?
+  email          String?
+  student_number String?
+  created_at     DateTime? @db.Timestamptz(6)
+  year_of_study  String?
+  role           String?
+
+  @@map("ROCSAUT Membership Info")
+}

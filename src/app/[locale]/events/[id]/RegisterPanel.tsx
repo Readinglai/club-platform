@@ -54,17 +54,6 @@ export function RegisterPanel({
     );
   }
 
-  if (initialStatus === null && status === null) {
-    return (
-      <div
-        className="mt-6 rounded-lg px-4 py-3 text-xs text-center"
-        style={{ backgroundColor: "#f3f4f6", color: "#9ca3af" }}
-      >
-        {t("registrationComingSoonShort")}
-      </div>
-    );
-  }
-
   const handleRegister = async () => {
     setLoading(true);
     setError(null);

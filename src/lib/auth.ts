@@ -18,6 +18,8 @@ import type { Role } from "@/generated/prisma/client";
 // Always allowed regardless of DB role
 const SUPER_ADMIN_EMAILS = ["flyincloud2001@gmail.com"];
 
+const TEST_EMAILS = ["reading20070403@gmail.com"];
+
 // UofT email domains: allowed if email exists in User table
 const UOFT_DOMAINS = ["utoronto.ca", "mail.utoronto.ca"];
 
@@ -66,6 +68,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       // Super admin exception — always allowed
       if (SUPER_ADMIN_EMAILS.includes(email)) return true;
+
+      // Development test account — allowed regardless of role
+      if (TEST_EMAILS.includes(email)) return true;
 
       const domain = email.split("@")[1];
 

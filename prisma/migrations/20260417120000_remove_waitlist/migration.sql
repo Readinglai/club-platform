@@ -10,7 +10,15 @@ UPDATE "Registration" SET status = 'CANCELLED' WHERE status = 'WAITLISTED';
 --         so we rename the old type, create a new one, migrate the column, then drop the old type.
 ALTER TYPE "RegistrationStatus" RENAME TO "RegistrationStatus_old";
 CREATE TYPE "RegistrationStatus" AS ENUM ('REGISTERED', 'CANCELLED');
+
+ALTER TABLE "Registration"
+  ALTER COLUMN status DROP DEFAULT;
+
 ALTER TABLE "Registration"
   ALTER COLUMN status TYPE "RegistrationStatus"
   USING status::text::"RegistrationStatus";
+
 DROP TYPE "RegistrationStatus_old";
+
+ALTER TABLE "Registration"
+  ALTER COLUMN status SET DEFAULT 'REGISTERED';
