@@ -1,3 +1,4 @@
+
 /**
  * auth.ts — NextAuth v5 (beta) 完整設定（Server-side only）
  *
@@ -11,6 +12,7 @@
 
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import nodemailer from "nodemailer";
 import { db } from "@/lib/db";
 import { authConfig } from "@/lib/auth.config";
 import type { Role } from "@/generated/prisma/client";
@@ -28,6 +30,47 @@ const EXEC_AND_ABOVE = ["SUPER_ADMIN", "ADMIN", "EXEC"] as const;
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
+
+  providers: [
+    ...authConfig.providers,
+
+    {
+      id: "resend",
+      type: "email",
+      name: "Email",
+
+      async sendVerificationRequest({
+        identifier,
+        url,
+      }: {
+        identifier: string;
+        url: string;
+      }) {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD,
+          },
+        });
+
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: identifier,
+          subject: "ROCSAUT Magic Link",
+          text: `請點擊以下連結登入 ROCSAUT：
+
+${url}`,
+          html: `
+            <p>請點擊以下連結登入 ROCSAUT：</p>
+            <p>
+              <a href="${url}">登入 ROCSAUT</a>
+            </p>
+          `,
+        });
+      },
+    },
+  ],
 
   logger: {
     error(error) {
@@ -57,13 +100,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (url === `${baseUrl}/dashboard`) {
         return `${baseUrl}/api/auth/post-login`;
       }
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      if (url.startsWith(baseUrl)) return url;
+
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+
       return baseUrl;
     },
 
     async signIn({ user }) {
       const email = user.email ?? "";
+
       if (!email) return false;
 
       // Super admin exception — always allowed
@@ -80,6 +131,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           where: { email },
           select: { id: true },
         });
+
         return existing ? true : "/unauthorized";
       }
 
@@ -89,7 +141,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           where: { email },
           select: { role: true },
         });
+
         if (!existing) return "/unauthorized";
+
         return (EXEC_AND_ABOVE as readonly string[]).includes(existing.role)
           ? true
           : "/unauthorized";
@@ -104,10 +158,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id;
         token.role = (user as { role?: Role }).role;
       }
+
       if (!token.role && token.id) {
-        const u = await db.user.findUnique({ where: { id: token.id as string }, select: { role: true } });
-        if (u) token.role = u.role;
+        const u = await db.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true },
+        });
+
+        if (u) {
+          token.role = u.role;
+        }
       }
+
       return token;
     },
   },

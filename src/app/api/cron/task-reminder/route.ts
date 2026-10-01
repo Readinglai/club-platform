@@ -4,7 +4,7 @@
  * GET /api/cron/task-reminder
  * 由 Vercel Cron 每天 UTC 09:00 呼叫（台北時間 17:00）。
  * 驗證 Authorization: Bearer ${CRON_SECRET}，
- * 查詢三天內到期且未完成的任務，對 assignee 發送 Resend 提醒信。
+ * 查詢三天內到期且未完成的任務，對 assignee 發送 Email 提醒信。
  */
 
 import { db } from "@/lib/db";

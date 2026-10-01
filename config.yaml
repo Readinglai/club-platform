@@ -88,9 +88,8 @@ infrastructure:
   deployment:
     provider: "vercel"
   email:
-    provider: "resend"
-    from: "noreply@rocsaut.ca"
-    api_key: "${EMAIL_API_KEY}"
+    provider: "gmail"
+    user: "${EMAIL_USER}"
 
 executors:
   local_ai:

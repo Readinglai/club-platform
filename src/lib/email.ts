@@ -1,12 +1,23 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import { db } from "@/lib/db";
 
-const FROM = process.env.EMAIL_FROM ?? "ROCSAUT <noreply@rocsaut.ca>";
+const FROM = process.env.EMAIL_USER ?? "rocsaut.email@gmail.com";
 
-function getResend() {
-  const key = process.env.EMAIL_API_KEY;
-  if (!key) throw new Error("EMAIL_API_KEY is not set");
-  return new Resend(key);
+function getTransporter() {
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASSWORD;
+
+  if (!user || !pass) {
+    throw new Error("EMAIL_USER or EMAIL_PASSWORD is not set");
+  }
+
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user,
+      pass,
+    },
+  });
 }
 
 export async function sendEmail(opts: {
@@ -14,12 +25,14 @@ export async function sendEmail(opts: {
   subject: string;
   html: string;
 }) {
-  const resend = getResend();
-  const { error } = await resend.emails.send({ from: FROM, ...opts });
-  if (error) {
-    console.error("[email] Resend error:", error);
-    throw new Error(error.message);
-  }
+  const transporter = getTransporter();
+
+  await transporter.sendMail({
+    from: FROM,
+    to: opts.to,
+    subject: opts.subject,
+    html: opts.html,
+  });
 }
 
 /** Fetch DB template; fall back to provided defaults if not found */
@@ -46,7 +59,9 @@ export async function sendWelcomeEmail(opts: { to: string; name: string }) {
     subject: "歡迎加入 ROCSAUT!",
     body: "親愛的 {name}，\n\n歡迎加入 ROCSAUT！期待與您一起成長。\n\nROCSAUT 團隊",
   });
+
   const vars = { name: opts.name };
+
   await sendEmail({
     to: opts.to,
     subject: interpolate(tpl.subject, vars),
@@ -65,6 +80,7 @@ export async function sendTaskStatusEmail(opts: {
     IN_PROGRESS: "進行中",
     DONE: "已完成",
   };
+
   await sendEmail({
     to: opts.to,
     subject: `任務狀態更新：${opts.taskTitle}`,
@@ -87,16 +103,19 @@ export async function sendTaskReminderEmail(opts: {
   taskGroupName: string;
 }) {
   const due = opts.dueAt.toLocaleDateString("zh-TW");
+
   const tpl = await getTemplate("event_reminder", {
     subject: "任務截止提醒：{event_title}",
     body: "您好，\n\n您在任務小組「{task_group}」中有一個即將到期的任務：\n- 任務：{event_title}\n- 截止日期：{event_date}\n\n請盡快完成，謝謝！\n\nROCSAUT 團隊",
   });
+
   const vars = {
     event_title: opts.taskTitle,
     event_date: due,
     task_group: opts.taskGroupName,
     name: "",
   };
+
   await sendEmail({
     to: opts.to,
     subject: interpolate(tpl.subject, vars),
