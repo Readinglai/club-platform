@@ -13,7 +13,6 @@
 
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
-import Resend from "next-auth/providers/resend";
 import type { Role } from "@/generated/prisma/client";
 
 /** 需要登入才能訪問的路徑前綴 */
@@ -29,32 +28,25 @@ export const authConfig: NextAuthConfig = {
 
   /**
    * OAuth Providers
-   * clientId / clientSecret 由環境變數提供；不在此硬編碼。
+   *
+   * Email/Magic Link provider 會放在 auth.ts，
+   * 因為 Gmail SMTP / Nodemailer 需要 Node.js runtime。
    */
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+
       // Allow linking a Google account to an existing User row that was
       // pre-inserted via SQL (no Account record yet). Safe because Google
       // verifies email ownership and our signIn callback guards access.
       allowDangerousEmailAccountLinking: true,
-    }),
-    Resend({
-      apiKey: process.env.EMAIL_API_KEY,
-      from: process.env.CONTACT_FROM_EMAIL ?? "noreply@rocsaut.ca",
     }),
   ],
 
   callbacks: {
     /**
      * authorized callback — 專供 proxy（Edge middleware）使用
-     *
-     * Next.js 在每次請求時呼叫此函數，決定是否允許訪問。
-     * 回傳 true 放行，false 導向 signIn 頁面。
-     *
-     * @param auth    當前 session（可能為 null）
-     * @param request 當前請求
      */
     authorized({ auth, request }) {
       const { pathname } = request.nextUrl;
@@ -65,7 +57,6 @@ export const authConfig: NextAuthConfig = {
       );
 
       if (isProtected && !isLoggedIn) {
-        // 未登入嘗試訪問保護路徑 → 拒絕（NextAuth 會導向 signIn 頁）
         return false;
       }
 
@@ -74,14 +65,10 @@ export const authConfig: NextAuthConfig = {
 
     /**
      * jwt callback — 把 role 和 id 存入 JWT token
-     *
-     * 首次登入時 user 物件存在，後續刷新時只有 token。
-     * 將 role/id 存入 token，讓 session callback 可以讀取。
      */
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        // user.role 來自 Prisma adapter 回傳的資料庫欄位
         token.role = (user as { role?: Role }).role;
       }
       return token;
@@ -89,9 +76,6 @@ export const authConfig: NextAuthConfig = {
 
     /**
      * session callback — 把 role 和 id 從 token 注入 session
-     *
-     * 使用 JWT 策略時，session 由 token 建構（不查資料庫）。
-     * 讓 client 端 useSession() 和 server 端 auth() 都能讀到 role。
      */
     session({ session, token }) {
       if (token && session.user) {
