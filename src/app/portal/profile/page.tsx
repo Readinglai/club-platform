@@ -1,3 +1,5 @@
+
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import type { Role } from "@/generated/prisma/client";
@@ -14,6 +16,7 @@ const ROLE_LABEL: Record<Role, string> = {
 
 export default async function ProfilePage() {
   const session = await auth();
+
   if (!session?.user?.id) {
     redirect("/login");
   }
@@ -26,13 +29,25 @@ export default async function ProfilePage() {
       {/* 頂部 Banner */}
       <section className="px-4 py-12" style={{ backgroundColor: PRIMARY }}>
         <div className="max-w-3xl mx-auto">
+          <Link
+            href="/"
+            className="text-sm mb-4 inline-block hover:underline"
+            style={{ color: SECONDARY }}
+          >
+            ← 回到 Portal
+          </Link>
+
           <p
             className="text-xs font-medium uppercase tracking-widest mb-1"
             style={{ color: `${SECONDARY}99` }}
           >
             Portal
           </p>
-          <h1 className="text-2xl font-bold" style={{ color: SECONDARY }}>
+
+          <h1
+            className="text-2xl font-bold"
+            style={{ color: SECONDARY }}
+          >
             個人資料
           </h1>
         </div>
@@ -45,34 +60,58 @@ export default async function ProfilePage() {
           style={{ border: "1px solid #e5e7eb" }}
         >
           <div className="flex flex-col gap-1">
-            <span className="text-xs font-medium uppercase tracking-widest" style={{ color: "#9ca3af" }}>
+            <span
+              className="text-xs font-medium uppercase tracking-widest"
+              style={{ color: "#9ca3af" }}
+            >
               姓名
             </span>
-            <span className="text-base font-semibold" style={{ color: PRIMARY }}>
+
+            <span
+              className="text-base font-semibold"
+              style={{ color: PRIMARY }}
+            >
               {name ?? "—"}
             </span>
           </div>
 
-          <div className="w-full h-px" style={{ backgroundColor: "#f3f4f6" }} />
+          <div
+            className="w-full h-px"
+            style={{ backgroundColor: "#f3f4f6" }}
+          />
 
           <div className="flex flex-col gap-1">
-            <span className="text-xs font-medium uppercase tracking-widest" style={{ color: "#9ca3af" }}>
+            <span
+              className="text-xs font-medium uppercase tracking-widest"
+              style={{ color: "#9ca3af" }}
+            >
               Email
             </span>
+
             <span className="text-base" style={{ color: PRIMARY }}>
               {email ?? "—"}
             </span>
           </div>
 
-          <div className="w-full h-px" style={{ backgroundColor: "#f3f4f6" }} />
+          <div
+            className="w-full h-px"
+            style={{ backgroundColor: "#f3f4f6" }}
+          />
 
           <div className="flex flex-col gap-1">
-            <span className="text-xs font-medium uppercase tracking-widest" style={{ color: "#9ca3af" }}>
+            <span
+              className="text-xs font-medium uppercase tracking-widest"
+              style={{ color: "#9ca3af" }}
+            >
               角色
             </span>
+
             <span
               className="inline-flex w-fit text-xs font-semibold px-3 py-1 rounded-full"
-              style={{ backgroundColor: `${PRIMARY}15`, color: PRIMARY }}
+              style={{
+                backgroundColor: `${PRIMARY}15`,
+                color: PRIMARY,
+              }}
             >
               {roleLabel}
             </span>
