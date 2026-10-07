@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Session
- * NextAuth：資料庫 Session 表
- * 使用資料庫 session 策略時，每次登入在此建立一筆 session 記錄
+ * 
  */
 export type SessionModel = runtime.Types.Result.DefaultSelection<Prisma.$SessionPayload>
 

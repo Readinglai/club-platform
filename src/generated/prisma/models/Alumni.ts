@@ -14,9 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Alumni
- * 校友表
- * 由管理員手動維護，記錄離開社團的前成員資料，供公開校友目錄展示使用
- * isPublic = false 時，該校友不會出現在公開頁面
+ * 
  */
 export type AlumniModel = runtime.Types.Result.DefaultSelection<Prisma.$AlumniPayload>
 
@@ -574,41 +572,14 @@ export type $AlumniPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    /**
-     * 校友姓名
-     */
     name: string
-    /**
-     * 離開社團的年份（可為 null）
-     */
     graduationYear: number | null
-    /**
-     * 在社團擔任過的職位，例如 "President 2023–2024"
-     */
     position: string | null
-    /**
-     * 所屬部門，例如 "Event"、"Marketing"、"Operation"
-     */
     department: string | null
-    /**
-     * 個人簡介（可為 null）
-     */
     bio: string | null
-    /**
-     * LinkedIn 個人頁 URL（可為 null）
-     */
     linkedinUrl: string | null
-    /**
-     * Instagram 帳號 URL（可為 null）
-     */
     instagramUrl: string | null
-    /**
-     * 大頭貼 URL（可為 null）
-     */
     photoUrl: string | null
-    /**
-     * 是否在公開頁面顯示；false 時僅後台可見
-     */
     isPublic: boolean
     createdAt: Date
     updatedAt: Date

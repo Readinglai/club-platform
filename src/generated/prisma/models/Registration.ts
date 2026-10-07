@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Registration
- * 報名表
- * 記錄使用者對活動的報名或取消狀態，以及出席打卡時間
+ * 
  */
 export type RegistrationModel = runtime.Types.Result.DefaultSelection<Prisma.$RegistrationPayload>
 
@@ -665,9 +664,6 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     userId: string
     eventId: string
     status: $Enums.RegistrationStatus
-    /**
-     * 出席打卡時間（QR Code 或人工確認時填入，null 代表未出席或尚未打卡）
-     */
     attendedAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["registration"]>

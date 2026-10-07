@@ -19,177 +19,168 @@ export * as $Enums from './enums'
 export * from './enums';
 /**
  * Model User
- * 使用者表
- * 透過 NextAuth Google OAuth 登入，email 必須屬於允許的網域（mail.utoronto.ca / utoronto.ca）
+ * 
  */
 export type User = Prisma.UserModel
 /**
  * Model Account
- * NextAuth：OAuth 帳號表
- * 儲存每個 OAuth provider 的 access_token / refresh_token 等憑證
- * 一個 User 可擁有多個 Account（例如同時連結 Google 和 GitHub）
+ * 
  */
 export type Account = Prisma.AccountModel
 /**
  * Model Session
- * NextAuth：資料庫 Session 表
- * 使用資料庫 session 策略時，每次登入在此建立一筆 session 記錄
+ * 
  */
 export type Session = Prisma.SessionModel
 /**
  * Model VerificationToken
- * NextAuth：Email 驗證 Token 表
- * 用於 Magic Link / Email 登入（本專案目前未啟用，但 adapter 需要此表）
+ * 
  */
 export type VerificationToken = Prisma.VerificationTokenModel
 /**
  * Model Department
- * 部門表（取代原 Team，專職管理社團組織架構）
- * slug 對應 config.yaml teams[].id，例如 "event"、"marketing"、"operation"
+ * 
  */
 export type Department = Prisma.DepartmentModel
 /**
  * Model Event
- * 活動表
- * 所有公開或內部活動的主要資料，建立時自動生成對應的 Discussion
+ * 
  */
 export type Event = Prisma.EventModel
 /**
  * Model Registration
- * 報名表
- * 記錄使用者對活動的報名或取消狀態，以及出席打卡時間
+ * 
  */
 export type Registration = Prisma.RegistrationModel
 /**
+ * Model TicketTier
+ * Ticket tier configuration.
+ * Price and Stripe Price ID are controlled by the backend/database,
+ * not by the public frontend.
+ */
+export type TicketTier = Prisma.TicketTierModel
+/**
+ * Model EventTicket
+ * Final ticket record.
+ * Created only after Stripe webhook confirms successful payment.
+ */
+export type EventTicket = Prisma.EventTicketModel
+/**
+ * Model MemberRedemption
+ * Prevents the same member from using member pricing
+ * more than once for the same event.
+ */
+export type MemberRedemption = Prisma.MemberRedemptionModel
+/**
  * Model Discussion
- * 討論區表
- * 每個活動自動生成一個討論區，作為活動前後的溝通空間
- * 可選擇性關聯任務群組（供社團層級討論使用）
+ * 
  */
 export type Discussion = Prisma.DiscussionModel
 /**
  * Model Comment
- * 留言表
- * 支援具名留言與匿名留言（isAnonymous = true 時 authorId 應為 null）
+ * 
  */
 export type Comment = Prisma.CommentModel
 /**
  * Model Announcement
- * 公告表
- * 由管理員發布的社團公告，成員可瀏覽並標記已讀
+ * 
  */
 export type Announcement = Prisma.AnnouncementModel
 /**
  * Model AnnouncementRead
- * 公告已讀記錄表
- * 記錄每位成員對每則公告的已讀狀態，避免重複標記
+ * 
  */
 export type AnnouncementRead = Prisma.AnnouncementReadModel
 /**
  * Model TaskGroup
- * 任務群組表
- * 跨部門的專案群組，由 VP 或 President 建立，成員可跨部門加入
- * 每個群組包含任務、討論區和投票
+ * 
  */
 export type TaskGroup = Prisma.TaskGroupModel
 /**
  * Model TaskGroupMember
- * 任務群組成員表（多對多中間表）
- * 記錄使用者與任務群組的關係及其群組內角色
+ * 
  */
 export type TaskGroupMember = Prisma.TaskGroupMemberModel
 /**
  * Model Task
- * 任務表
- * 隸屬於任務群組，可同時指派給多名成員
+ * 
  */
 export type Task = Prisma.TaskModel
 /**
  * Model TaskAssignee
- * 任務多人指派中間表
+ * 
  */
 export type TaskAssignee = Prisma.TaskAssigneeModel
 /**
+ * Model TaskView
+ * 
+ */
+export type TaskView = Prisma.TaskViewModel
+/**
  * Model Vote
- * 投票表
- * 任務群組內的決策投票，由群組成員發起
+ * 
  */
 export type Vote = Prisma.VoteModel
 /**
  * Model VoteOption
- * 投票選項表
- * 每個投票可有多個選項，成員對每個選項最多投一票
+ * 
  */
 export type VoteOption = Prisma.VoteOptionModel
 /**
  * Model VoteResponse
- * 投票回應表
- * 記錄使用者對投票選項的回應，每人每選項只能投一次
+ * 
  */
 export type VoteResponse = Prisma.VoteResponseModel
 /**
  * Model Sponsor
- * 贊助商表
- * 儲存贊助商的基本資料，歷年贊助記錄另存於 SponsorHistory
+ * 
  */
 export type Sponsor = Prisma.SponsorModel
 /**
+ * Model SponsorHistory
+ * 
+ */
+export type SponsorHistory = Prisma.SponsorHistoryModel
+/**
  * Model SiteConfig
- * 網站全域設定 key-value 表
- * 用於儲存如 Hero 背景圖 URL 等全域設定
+ * 
  */
 export type SiteConfig = Prisma.SiteConfigModel
 /**
  * Model Achievement
- * 過往成果表
- * 記錄社團每年的重要成就，供公開展示頁與後台管理使用
+ * 
  */
 export type Achievement = Prisma.AchievementModel
 /**
  * Model Alumni
- * 校友表
- * 由管理員手動維護，記錄離開社團的前成員資料，供公開校友目錄展示使用
- * isPublic = false 時，該校友不會出現在公開頁面
+ * 
  */
 export type Alumni = Prisma.AlumniModel
 /**
- * Model SponsorHistory
- * 贊助歷史記錄表
- * 記錄贊助商每年的贊助等級（tier），同一贊助商同一年份唯一
- */
-export type SponsorHistory = Prisma.SponsorHistoryModel
-/**
  * Model FinanceRecord
- * 財務收支記錄表
+ * 
  */
 export type FinanceRecord = Prisma.FinanceRecordModel
 /**
  * Model Budget
- * 月度預算表
+ * 
  */
 export type Budget = Prisma.BudgetModel
 /**
  * Model FeatureFlag
- * 功能開關表
+ * 
  */
 export type FeatureFlag = Prisma.FeatureFlagModel
 /**
  * Model EmailTemplate
- * Email 模板表
+ * 
  */
 export type EmailTemplate = Prisma.EmailTemplateModel
 /**
  * Model PushSubscription
- * Web Push 訂閱表
+ * 
  */
 export type PushSubscription = Prisma.PushSubscriptionModel
-/**
- * Model TaskView
- * 任務查看記錄表
- * 記錄每位使用者最後查看任務詳情頁的時間，
- * 用於前端計算「進入任務後 badge 歸零」的邏輯。
- */
-export type TaskView = Prisma.TaskViewModel
 /**
  * Model ROCSAUT_Membership_Info
  * 

@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model FinanceRecord
- * 財務收支記錄表
+ * 
  */
 export type FinanceRecordModel = runtime.Types.Result.DefaultSelection<Prisma.$FinanceRecordPayload>
 
@@ -515,14 +515,6 @@ export type FinanceRecordUncheckedUpdateManyWithoutCreatedByNestedInput = {
 
 export type EnumFinanceTypeFieldUpdateOperationsInput = {
   set?: $Enums.FinanceType
-}
-
-export type DecimalFieldUpdateOperationsInput = {
-  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type FinanceRecordCreateWithoutCreatedByInput = {

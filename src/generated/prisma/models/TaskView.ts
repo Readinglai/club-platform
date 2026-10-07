@@ -14,9 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model TaskView
- * 任務查看記錄表
- * 記錄每位使用者最後查看任務詳情頁的時間，
- * 用於前端計算「進入任務後 badge 歸零」的邏輯。
+ * 
  */
 export type TaskViewModel = runtime.Types.Result.DefaultSelection<Prisma.$TaskViewPayload>
 
@@ -583,9 +581,6 @@ export type $TaskViewPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     id: string
     taskId: string
     userId: string
-    /**
-     * 最後查看時間；每次進入任務詳情頁時更新
-     */
     viewedAt: Date
   }, ExtArgs["result"]["taskView"]>
   composites: {}

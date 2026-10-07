@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model User
- * 使用者表
- * 透過 NextAuth Google OAuth 登入，email 必須屬於允許的網域（mail.utoronto.ca / utoronto.ca）
+ * 
  */
 export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayload>
 
@@ -889,6 +888,20 @@ export type UserUpdateOneRequiredWithoutTaskAssignmentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTaskAssignmentsInput, Prisma.UserUpdateWithoutTaskAssignmentsInput>, Prisma.UserUncheckedUpdateWithoutTaskAssignmentsInput>
 }
 
+export type UserCreateNestedOneWithoutTaskViewsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTaskViewsInput, Prisma.UserUncheckedCreateWithoutTaskViewsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTaskViewsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutTaskViewsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTaskViewsInput, Prisma.UserUncheckedCreateWithoutTaskViewsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTaskViewsInput
+  upsert?: Prisma.UserUpsertWithoutTaskViewsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTaskViewsInput, Prisma.UserUpdateWithoutTaskViewsInput>, Prisma.UserUncheckedUpdateWithoutTaskViewsInput>
+}
+
 export type UserCreateNestedOneWithoutCreatedVotesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedVotesInput, Prisma.UserUncheckedCreateWithoutCreatedVotesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedVotesInput
@@ -943,20 +956,6 @@ export type UserUpdateOneRequiredWithoutPushSubscriptionsNestedInput = {
   upsert?: Prisma.UserUpsertWithoutPushSubscriptionsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPushSubscriptionsInput, Prisma.UserUpdateWithoutPushSubscriptionsInput>, Prisma.UserUncheckedUpdateWithoutPushSubscriptionsInput>
-}
-
-export type UserCreateNestedOneWithoutTaskViewsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutTaskViewsInput, Prisma.UserUncheckedCreateWithoutTaskViewsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTaskViewsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutTaskViewsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutTaskViewsInput, Prisma.UserUncheckedCreateWithoutTaskViewsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTaskViewsInput
-  upsert?: Prisma.UserUpsertWithoutTaskViewsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTaskViewsInput, Prisma.UserUpdateWithoutTaskViewsInput>, Prisma.UserUncheckedUpdateWithoutTaskViewsInput>
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -2467,6 +2466,146 @@ export type UserUncheckedUpdateWithoutTaskAssignmentsInput = {
   taskViews?: Prisma.TaskViewUncheckedUpdateManyWithoutUserNestedInput
 }
 
+export type UserCreateWithoutTaskViewsInput = {
+  id?: string
+  email: string
+  name: string
+  image?: string | null
+  emailVerified?: Date | string | null
+  role?: $Enums.Role
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
+  announcementReads?: Prisma.AnnouncementReadCreateNestedManyWithoutUserInput
+  taskGroups?: Prisma.TaskGroupMemberCreateNestedManyWithoutUserInput
+  createdTaskGroups?: Prisma.TaskGroupCreateNestedManyWithoutCreatedByInput
+  createdVotes?: Prisma.VoteCreateNestedManyWithoutCreatedByInput
+  voteResponses?: Prisma.VoteResponseCreateNestedManyWithoutUserInput
+  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutCreatedByInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutTaskViewsInput = {
+  id?: string
+  email: string
+  name: string
+  image?: string | null
+  emailVerified?: Date | string | null
+  role?: $Enums.Role
+  departmentId?: string | null
+  bio?: string | null
+  major?: string | null
+  rocsautYear?: number | null
+  instagram?: string | null
+  linkedin?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
+  announcementReads?: Prisma.AnnouncementReadUncheckedCreateNestedManyWithoutUserInput
+  taskGroups?: Prisma.TaskGroupMemberUncheckedCreateNestedManyWithoutUserInput
+  createdTaskGroups?: Prisma.TaskGroupUncheckedCreateNestedManyWithoutCreatedByInput
+  createdVotes?: Prisma.VoteUncheckedCreateNestedManyWithoutCreatedByInput
+  voteResponses?: Prisma.VoteResponseUncheckedCreateNestedManyWithoutUserInput
+  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutCreatedByInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutTaskViewsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTaskViewsInput, Prisma.UserUncheckedCreateWithoutTaskViewsInput>
+}
+
+export type UserUpsertWithoutTaskViewsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTaskViewsInput, Prisma.UserUncheckedUpdateWithoutTaskViewsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTaskViewsInput, Prisma.UserUncheckedCreateWithoutTaskViewsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutTaskViewsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTaskViewsInput, Prisma.UserUncheckedUpdateWithoutTaskViewsInput>
+}
+
+export type UserUpdateWithoutTaskViewsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  registrations?: Prisma.RegistrationUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
+  announcementReads?: Prisma.AnnouncementReadUpdateManyWithoutUserNestedInput
+  taskGroups?: Prisma.TaskGroupMemberUpdateManyWithoutUserNestedInput
+  createdTaskGroups?: Prisma.TaskGroupUpdateManyWithoutCreatedByNestedInput
+  createdVotes?: Prisma.VoteUpdateManyWithoutCreatedByNestedInput
+  voteResponses?: Prisma.VoteResponseUpdateManyWithoutUserNestedInput
+  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutCreatedByNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTaskViewsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
+  announcementReads?: Prisma.AnnouncementReadUncheckedUpdateManyWithoutUserNestedInput
+  taskGroups?: Prisma.TaskGroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  createdTaskGroups?: Prisma.TaskGroupUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdVotes?: Prisma.VoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  voteResponses?: Prisma.VoteResponseUncheckedUpdateManyWithoutUserNestedInput
+  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutCreatedByNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+}
+
 export type UserCreateWithoutCreatedVotesInput = {
   id?: string
   email: string
@@ -3027,146 +3166,6 @@ export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
   taskViews?: Prisma.TaskViewUncheckedUpdateManyWithoutUserNestedInput
 }
 
-export type UserCreateWithoutTaskViewsInput = {
-  id?: string
-  email: string
-  name: string
-  image?: string | null
-  emailVerified?: Date | string | null
-  role?: $Enums.Role
-  bio?: string | null
-  major?: string | null
-  rocsautYear?: number | null
-  instagram?: string | null
-  linkedin?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  registrations?: Prisma.RegistrationCreateNestedManyWithoutUserInput
-  assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
-  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutUserInput
-  comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
-  announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
-  announcementReads?: Prisma.AnnouncementReadCreateNestedManyWithoutUserInput
-  taskGroups?: Prisma.TaskGroupMemberCreateNestedManyWithoutUserInput
-  createdTaskGroups?: Prisma.TaskGroupCreateNestedManyWithoutCreatedByInput
-  createdVotes?: Prisma.VoteCreateNestedManyWithoutCreatedByInput
-  voteResponses?: Prisma.VoteResponseCreateNestedManyWithoutUserInput
-  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutCreatedByInput
-  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutTaskViewsInput = {
-  id?: string
-  email: string
-  name: string
-  image?: string | null
-  emailVerified?: Date | string | null
-  role?: $Enums.Role
-  departmentId?: string | null
-  bio?: string | null
-  major?: string | null
-  rocsautYear?: number | null
-  instagram?: string | null
-  linkedin?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutUserInput
-  assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
-  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutUserInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
-  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
-  announcementReads?: Prisma.AnnouncementReadUncheckedCreateNestedManyWithoutUserInput
-  taskGroups?: Prisma.TaskGroupMemberUncheckedCreateNestedManyWithoutUserInput
-  createdTaskGroups?: Prisma.TaskGroupUncheckedCreateNestedManyWithoutCreatedByInput
-  createdVotes?: Prisma.VoteUncheckedCreateNestedManyWithoutCreatedByInput
-  voteResponses?: Prisma.VoteResponseUncheckedCreateNestedManyWithoutUserInput
-  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutCreatedByInput
-  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutTaskViewsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutTaskViewsInput, Prisma.UserUncheckedCreateWithoutTaskViewsInput>
-}
-
-export type UserUpsertWithoutTaskViewsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutTaskViewsInput, Prisma.UserUncheckedUpdateWithoutTaskViewsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutTaskViewsInput, Prisma.UserUncheckedCreateWithoutTaskViewsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutTaskViewsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutTaskViewsInput, Prisma.UserUncheckedUpdateWithoutTaskViewsInput>
-}
-
-export type UserUpdateWithoutTaskViewsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  registrations?: Prisma.RegistrationUpdateManyWithoutUserNestedInput
-  assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
-  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutUserNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
-  announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
-  announcementReads?: Prisma.AnnouncementReadUpdateManyWithoutUserNestedInput
-  taskGroups?: Prisma.TaskGroupMemberUpdateManyWithoutUserNestedInput
-  createdTaskGroups?: Prisma.TaskGroupUpdateManyWithoutCreatedByNestedInput
-  createdVotes?: Prisma.VoteUpdateManyWithoutCreatedByNestedInput
-  voteResponses?: Prisma.VoteResponseUpdateManyWithoutUserNestedInput
-  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutCreatedByNestedInput
-  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutTaskViewsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
-  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutUserNestedInput
-  assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
-  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutUserNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
-  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
-  announcementReads?: Prisma.AnnouncementReadUncheckedUpdateManyWithoutUserNestedInput
-  taskGroups?: Prisma.TaskGroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  createdTaskGroups?: Prisma.TaskGroupUncheckedUpdateManyWithoutCreatedByNestedInput
-  createdVotes?: Prisma.VoteUncheckedUpdateManyWithoutCreatedByNestedInput
-  voteResponses?: Prisma.VoteResponseUncheckedUpdateManyWithoutUserNestedInput
-  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutCreatedByNestedInput
-  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-}
-
 export type UserCreateManyDepartmentInput = {
   id?: string
   email: string
@@ -3536,106 +3535,34 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     department: Prisma.$DepartmentPayload<ExtArgs> | null
-    /**
-     * NextAuth：OAuth 帳號關聯（一個使用者可連結多個 OAuth provider）
-     */
     accounts: Prisma.$AccountPayload<ExtArgs>[]
-    /**
-     * NextAuth：資料庫 session（使用資料庫 session 策略時使用）
-     */
     sessions: Prisma.$SessionPayload<ExtArgs>[]
-    /**
-     * 該使用者的所有活動報名記錄
-     */
     registrations: Prisma.$RegistrationPayload<ExtArgs>[]
-    /**
-     * 該使用者被指派的任務（舊版單人）
-     */
     assignedTasks: Prisma.$TaskPayload<ExtArgs>[]
-    /**
-     * 該使用者的多人任務指派記錄（新版）
-     */
     taskAssignments: Prisma.$TaskAssigneePayload<ExtArgs>[]
-    /**
-     * 該使用者在討論區發表的留言（匿名留言時 authorId 為 null）
-     */
     comments: Prisma.$CommentPayload<ExtArgs>[]
-    /**
-     * 該使用者建立的公告
-     */
     announcements: Prisma.$AnnouncementPayload<ExtArgs>[]
-    /**
-     * 該使用者已讀的公告記錄
-     */
     announcementReads: Prisma.$AnnouncementReadPayload<ExtArgs>[]
-    /**
-     * 該使用者所屬的任務群組（中間表）
-     */
     taskGroups: Prisma.$TaskGroupMemberPayload<ExtArgs>[]
-    /**
-     * 該使用者建立的任務群組
-     */
     createdTaskGroups: Prisma.$TaskGroupPayload<ExtArgs>[]
-    /**
-     * 該使用者建立的投票
-     */
     createdVotes: Prisma.$VotePayload<ExtArgs>[]
-    /**
-     * 該使用者的投票回應
-     */
     voteResponses: Prisma.$VoteResponsePayload<ExtArgs>[]
-    /**
-     * 該使用者建立的財務記錄
-     */
     financeRecords: Prisma.$FinanceRecordPayload<ExtArgs>[]
-    /**
-     * 該使用者的推播訂閱
-     */
     pushSubscriptions: Prisma.$PushSubscriptionPayload<ExtArgs>[]
-    /**
-     * 該使用者的任務查看記錄（用於計算未讀討論數）
-     */
     taskViews: Prisma.$TaskViewPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     email: string
     name: string
-    /**
-     * 大頭貼 URL，來自 Google 帳號，可為 null
-     */
     image: string | null
-    /**
-     * NextAuth：email 驗證時間（Magic Link 用；Google OAuth 登入時為 null）
-     */
     emailVerified: Date | null
-    /**
-     * 使用者在社團中的角色
-     */
     role: $Enums.Role
-    /**
-     * 所屬部門（可為 null，尚未分配或為 exec 層級）
-     */
     departmentId: string | null
-    /**
-     * 個人簡介
-     */
     bio: string | null
-    /**
-     * 主修科系
-     */
     major: string | null
-    /**
-     * 加入 ROCSAUT 的第幾年
-     */
     rocsautYear: number | null
-    /**
-     * Instagram 帳號 URL
-     */
     instagram: string | null
-    /**
-     * LinkedIn 個人頁 URL
-     */
     linkedin: string | null
     createdAt: Date
     updatedAt: Date

@@ -14,9 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Account
- * NextAuth：OAuth 帳號表
- * 儲存每個 OAuth provider 的 access_token / refresh_token 等憑證
- * 一個 User 可擁有多個 Account（例如同時連結 Google 和 GitHub）
+ * 
  */
 export type AccountModel = runtime.Types.Result.DefaultSelection<Prisma.$AccountPayload>
 

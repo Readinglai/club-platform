@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model EmailTemplate
- * Email 模板表
+ * 
  */
 export type EmailTemplateModel = runtime.Types.Result.DefaultSelection<Prisma.$EmailTemplatePayload>
 

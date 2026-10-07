@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model TaskGroupMember
- * 任務群組成員表（多對多中間表）
- * 記錄使用者與任務群組的關係及其群組內角色
+ * 
  */
 export type TaskGroupMemberModel = runtime.Types.Result.DefaultSelection<Prisma.$TaskGroupMemberPayload>
 

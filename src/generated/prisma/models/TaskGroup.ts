@@ -14,9 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model TaskGroup
- * 任務群組表
- * 跨部門的專案群組，由 VP 或 President 建立，成員可跨部門加入
- * 每個群組包含任務、討論區和投票
+ * 
  */
 export type TaskGroupModel = runtime.Types.Result.DefaultSelection<Prisma.$TaskGroupPayload>
 
@@ -1012,21 +1010,9 @@ export type $TaskGroupPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   name: "TaskGroup"
   objects: {
     createdBy: Prisma.$UserPayload<ExtArgs>
-    /**
-     * 群組成員（多對多中間表）
-     */
     members: Prisma.$TaskGroupMemberPayload<ExtArgs>[]
-    /**
-     * 該群組的所有任務
-     */
     tasks: Prisma.$TaskPayload<ExtArgs>[]
-    /**
-     * 該群組的所有討論區
-     */
     discussions: Prisma.$DiscussionPayload<ExtArgs>[]
-    /**
-     * 該群組的所有投票
-     */
     votes: Prisma.$VotePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1036,9 +1022,6 @@ export type $TaskGroupPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     status: $Enums.TaskGroupStatus
     createdAt: Date
     updatedAt: Date
-    /**
-     * 建立者（應為 VP 或 President，權限驗證在 API 層）
-     */
     createdById: string
   }, ExtArgs["result"]["taskGroup"]>
   composites: {}

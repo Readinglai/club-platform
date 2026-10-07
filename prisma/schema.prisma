@@ -2,8 +2,6 @@
 // Prisma Schema — ROCSAUT Club Platform
 //
 // 資料庫：PostgreSQL（Supabase）
-// 所有 id 使用 cuid()，時間戳記使用 @default(now()) 與 @updatedAt。
-// 執行 `npx prisma generate` 更新型別，`npx prisma migrate dev` 套用遷移。
 // ─────────────────────────────────────────────────────────────────────────────
 
 generator client {
@@ -19,113 +17,81 @@ datasource db {
 // Enums
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// 使用者角色，對應 config.yaml roles，數字越大權限越高
 enum Role {
-  SUPER_ADMIN /// 超級管理員（等級 5）：跨社團最高權限
-  ADMIN       /// 管理員（等級 4）：社團管理層
-  EXEC        /// 執行委員（等級 3）：社團主要執行人員
-  MEMBER      /// 一般成員（等級 2）：已加入社團的成員
+  SUPER_ADMIN
+  ADMIN
+  EXEC
+  MEMBER
 }
 
-/// 報名狀態
 enum RegistrationStatus {
-  REGISTERED  /// 已成功報名
-  CANCELLED   /// 已取消報名
+  REGISTERED
+  CANCELLED
 }
 
-/// 任務狀態
 enum TaskStatus {
-  TODO        /// 待辦，尚未開始
-  IN_PROGRESS /// 進行中
-  DONE        /// 已完成
+  TODO
+  IN_PROGRESS
+  DONE
 }
 
-/// 任務群組狀態
 enum TaskGroupStatus {
-  ACTIVE    /// 進行中
-  COMPLETED /// 已完成
-  ARCHIVED  /// 已封存
+  ACTIVE
+  COMPLETED
+  ARCHIVED
 }
 
-/// 任務群組成員角色
 enum TaskGroupRole {
-  LEADER /// 群組負責人
-  MEMBER /// 一般成員
+  LEADER
+  MEMBER
 }
 
-/// 財務記錄類型
 enum FinanceType {
-  INCOME  /// 收入
-  EXPENSE /// 支出
+  INCOME
+  EXPENSE
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Models
+// User / NextAuth
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// 使用者表
-/// 透過 NextAuth Google OAuth 登入，email 必須屬於允許的網域（mail.utoronto.ca / utoronto.ca）
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
   name          String
-  /// 大頭貼 URL，來自 Google 帳號，可為 null
   image         String?
-  /// NextAuth：email 驗證時間（Magic Link 用；Google OAuth 登入時為 null）
   emailVerified DateTime?
-  /// 使用者在社團中的角色
   role          Role      @default(MEMBER)
-  /// 所屬部門（可為 null，尚未分配或為 exec 層級）
-  departmentId  String?
-  department    Department? @relation(fields: [departmentId], references: [id])
-  /// 個人簡介
-  bio           String?
-  /// 主修科系
-  major         String?
-  /// 加入 ROCSAUT 的第幾年
-  rocsautYear   Int?
-  /// Instagram 帳號 URL
-  instagram     String?
-  /// LinkedIn 個人頁 URL
-  linkedin      String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
 
-  /// NextAuth：OAuth 帳號關聯（一個使用者可連結多個 OAuth provider）
-  accounts      Account[]
-  /// NextAuth：資料庫 session（使用資料庫 session 策略時使用）
-  sessions      Session[]
-  /// 該使用者的所有活動報名記錄
-  registrations Registration[]
-  /// 該使用者被指派的任務（舊版單人）
-  assignedTasks    Task[]           @relation("TaskAssignee")
-  /// 該使用者的多人任務指派記錄（新版）
-  taskAssignments  TaskAssignee[]
-  /// 該使用者在討論區發表的留言（匿名留言時 authorId 為 null）
-  comments      Comment[]
-  /// 該使用者建立的公告
-  announcements     Announcement[]
-  /// 該使用者已讀的公告記錄
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
+
+  bio         String?
+  major       String?
+  rocsautYear Int?
+  instagram   String?
+  linkedin    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts          Account[]
+  sessions          Session[]
+  registrations     Registration[]
+  assignedTasks     Task[]           @relation("TaskAssignee")
+  taskAssignments   TaskAssignee[]
+  comments          Comment[]
+  announcements    Announcement[]
   announcementReads AnnouncementRead[]
-  /// 該使用者所屬的任務群組（中間表）
   taskGroups        TaskGroupMember[]
-  /// 該使用者建立的任務群組
   createdTaskGroups TaskGroup[]      @relation("TaskGroupCreator")
-  /// 該使用者建立的投票
   createdVotes      Vote[]           @relation("VoteCreator")
-  /// 該使用者的投票回應
   voteResponses     VoteResponse[]
-  /// 該使用者建立的財務記錄
   financeRecords    FinanceRecord[]  @relation("FinanceRecordCreator")
-  /// 該使用者的推播訂閱
   pushSubscriptions PushSubscription[]
-  /// 該使用者的任務查看記錄（用於計算未讀討論數）
   taskViews         TaskView[]
 }
 
-/// NextAuth：OAuth 帳號表
-/// 儲存每個 OAuth provider 的 access_token / refresh_token 等憑證
-/// 一個 User 可擁有多個 Account（例如同時連結 Google 和 GitHub）
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -139,24 +105,21 @@ model Account {
   scope             String?
   id_token          String? @db.Text
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  /// 同一 provider 下每個帳號 ID 唯一
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([provider, providerAccountId])
 }
 
-/// NextAuth：資料庫 Session 表
-/// 使用資料庫 session 策略時，每次登入在此建立一筆 session 記錄
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-/// NextAuth：Email 驗證 Token 表
-/// 用於 Magic Link / Email 登入（本專案目前未啟用，但 adapter 需要此表）
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -165,49 +128,45 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-/// 部門表（取代原 Team，專職管理社團組織架構）
-/// slug 對應 config.yaml teams[].id，例如 "event"、"marketing"、"operation"
+// ─────────────────────────────────────────────────────────────────────────────
+// Organization
+// ─────────────────────────────────────────────────────────────────────────────
+
 model Department {
   id          String   @id @default(cuid())
-  /// 唯一識別符，對應 config.yaml 的 team id
   slug        String   @unique
   name        String
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  /// 該部門的所有成員
   members User[]
 }
 
-/// 活動表
-/// 所有公開或內部活動的主要資料，建立時自動生成對應的 Discussion
+// ─────────────────────────────────────────────────────────────────────────────
+// Events
+// ─────────────────────────────────────────────────────────────────────────────
+
 model Event {
   id          String    @id @default(cuid())
   title       String
   description String?
-  /// 活動開始時間
   startAt     DateTime
-  /// 活動結束時間（可為 null，例如不限時的線上活動）
   endAt       DateTime?
   location    String?
-  /// 活動容量上限（null 表示不限人數）
   capacity    Int?
-  /// 活動封面圖 URL（選填，用於首頁卡片展示）
   imageUrl    String?
-  /// 是否已對外發布；false 代表草稿狀態
   published   Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  /// 該活動的所有報名記錄
-  registrations Registration[]
-  /// 每個活動對應一個討論區（一對一關係）
-  discussion    Discussion?
+  registrations     Registration[]
+  discussion        Discussion?
+  tickets           EventTicket[]
+  ticketTiers       TicketTier[]
+  memberRedemptions MemberRedemption[]
 }
 
-/// 報名表
-/// 記錄使用者對活動的報名或取消狀態，以及出席打卡時間
 model Registration {
   id      String             @id @default(cuid())
   userId  String
@@ -215,48 +174,126 @@ model Registration {
   eventId String
   event   Event              @relation(fields: [eventId], references: [id])
   status  RegistrationStatus @default(REGISTERED)
-  /// 出席打卡時間（QR Code 或人工確認時填入，null 代表未出席或尚未打卡）
   attendedAt DateTime?
-  createdAt  DateTime        @default(now())
+  createdAt DateTime         @default(now())
 
-  /// 同一使用者不能重複報名同一活動
   @@unique([userId, eventId])
 }
 
-/// 討論區表
-/// 每個活動自動生成一個討論區，作為活動前後的溝通空間
-/// 可選擇性關聯任務群組（供社團層級討論使用）
+// ─────────────────────────────────────────────────────────────────────────────
+// Halloween Ticketing
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Ticket tier configuration.
+/// Price and Stripe Price ID are controlled by the backend/database,
+/// not by the public frontend.
+model TicketTier {
+  id             String   @id @default(cuid()) @map("id")
+  eventId        String   @map("event_id")
+  tier           String
+  price          Decimal  @db.Decimal(10, 2)
+  stripePriceId  String   @map("stripe_price_id")
+  capacity       Int
+  salesCloseAt   DateTime @map("sales_close_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, tier])
+  @@index([eventId])
+  @@map("TicketTier")
+}
+
+/// Final ticket record.
+/// Created only after Stripe webhook confirms successful payment.
+model EventTicket {
+  id       String @id @default(cuid())
+  eventId  String @map("event_id")
+
+  token String @unique
+
+  name  String
+  email String
+  phone String
+
+  tier      String
+  price     Decimal @db.Decimal(10, 2)
+  isMember  Boolean @default(false) @map("is_member")
+  memberId  String? @map("member_id")
+
+  stripeSessionId String @unique @map("stripe_session_id")
+
+  status String @default("valid")
+
+  waiverAcceptedAt DateTime? @map("waiver_accepted_at")
+  waiverVersion    String?   @map("waiver_version")
+
+  ageConfirmedAt DateTime? @map("age_confirmed_at")
+
+  checkedIn   Boolean   @default(false) @map("checked_in")
+  checkedInAt DateTime? @map("checked_in_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([memberId])
+  @@index([email])
+  @@map("EventTicket")
+}
+
+/// Prevents the same member from using member pricing
+/// more than once for the same event.
+model MemberRedemption {
+  id       String @id @default(cuid())
+  memberId String @map("member_id")
+  eventId  String @map("event_id")
+
+  status String @default("pending")
+
+  stripeSessionId String? @unique @map("stripe_session_id")
+  lockedAt        DateTime? @map("locked_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([memberId, eventId])
+  @@index([eventId])
+  @@index([memberId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Discussions
+// ─────────────────────────────────────────────────────────────────────────────
+
 model Discussion {
-  id          String     @id @default(cuid())
-  /// 關聯的活動（唯一，一對一；TaskGroup 專屬討論區時為 null）
-  eventId     String?    @unique
-  event       Event?     @relation(fields: [eventId], references: [id])
-  /// 關聯的任務群組（TaskGroup 專屬討論區時必填，活動討論區時可選）
+  id          String   @id @default(cuid())
+  eventId     String?  @unique
+  event       Event?   @relation(fields: [eventId], references: [id])
   taskGroupId String?
   taskGroup   TaskGroup? @relation(fields: [taskGroupId], references: [id])
-  createdAt   DateTime   @default(now())
+  createdAt   DateTime @default(now())
 
-  /// 該討論區的所有留言
   comments Comment[]
 }
 
-/// 留言表
-/// 支援具名留言與匿名留言（isAnonymous = true 時 authorId 應為 null）
 model Comment {
-  id           String     @id @default(cuid())
+  id           String      @id @default(cuid())
   discussionId String
-  discussion   Discussion @relation(fields: [discussionId], references: [id])
-  /// 留言作者（匿名時為 null）
+  discussion   Discussion  @relation(fields: [discussionId], references: [id])
   authorId     String?
-  author       User?      @relation(fields: [authorId], references: [id])
+  author       User?       @relation(fields: [authorId], references: [id])
   content      String
-  /// 是否為匿名留言
-  isAnonymous  Boolean    @default(false)
-  createdAt    DateTime   @default(now())
+  isAnonymous  Boolean     @default(false)
+  createdAt    DateTime    @default(now())
 }
 
-/// 公告表
-/// 由管理員發布的社團公告，成員可瀏覽並標記已讀
+// ─────────────────────────────────────────────────────────────────────────────
+// Announcements
+// ─────────────────────────────────────────────────────────────────────────────
+
 model Announcement {
   id        String             @id @default(cuid())
   title     String
@@ -269,8 +306,6 @@ model Announcement {
   reads     AnnouncementRead[]
 }
 
-/// 公告已讀記錄表
-/// 記錄每位成員對每則公告的已讀狀態，避免重複標記
 model AnnouncementRead {
   id             String       @id @default(cuid())
   announcementId String
@@ -282,9 +317,10 @@ model AnnouncementRead {
   @@unique([announcementId, userId])
 }
 
-/// 任務群組表
-/// 跨部門的專案群組，由 VP 或 President 建立，成員可跨部門加入
-/// 每個群組包含任務、討論區和投票
+// ─────────────────────────────────────────────────────────────────────────────
+// Task Groups
+// ─────────────────────────────────────────────────────────────────────────────
+
 model TaskGroup {
   id          String          @id @default(cuid())
   name        String
@@ -292,22 +328,16 @@ model TaskGroup {
   status      TaskGroupStatus @default(ACTIVE)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
-  /// 建立者（應為 VP 或 President，權限驗證在 API 層）
-  createdById String
-  createdBy   User            @relation("TaskGroupCreator", fields: [createdById], references: [id])
 
-  /// 群組成員（多對多中間表）
+  createdById String
+  createdBy   User @relation("TaskGroupCreator", fields: [createdById], references: [id])
+
   members     TaskGroupMember[]
-  /// 該群組的所有任務
   tasks       Task[]
-  /// 該群組的所有討論區
   discussions Discussion[]
-  /// 該群組的所有投票
   votes       Vote[]
 }
 
-/// 任務群組成員表（多對多中間表）
-/// 記錄使用者與任務群組的關係及其群組內角色
 model TaskGroupMember {
   id          String        @id @default(cuid())
   taskGroupId String
@@ -317,34 +347,31 @@ model TaskGroupMember {
   role        TaskGroupRole @default(MEMBER)
   joinedAt    DateTime      @default(now())
 
-  /// 同一使用者在同一群組只能有一筆記錄
   @@unique([taskGroupId, userId])
 }
 
-/// 任務表
-/// 隸屬於任務群組，可同時指派給多名成員
 model Task {
-  id          String     @id @default(cuid())
+  id          String   @id @default(cuid())
   title       String
   description String?
-  /// 任務所屬群組（必填）
+
   taskGroupId String
-  taskGroup   TaskGroup  @relation(fields: [taskGroupId], references: [id])
-  /// 主要負責人（保留供舊版相容，新版請使用 assignees）
-  assigneeId  String?
-  assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
-  /// 多人指派（新）
-  assignees   TaskAssignee[]
-  status       TaskStatus  @default(TODO)
-  /// 截止日期（可為 null）
-  dueAt        DateTime?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  /// 該任務的使用者查看記錄
-  views        TaskView[]
+  taskGroup   TaskGroup @relation(fields: [taskGroupId], references: [id])
+
+  assigneeId String?
+  assignee   User? @relation("TaskAssignee", fields: [assigneeId], references: [id])
+
+  assignees TaskAssignee[]
+
+  status TaskStatus @default(TODO)
+  dueAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  views TaskView[]
 }
 
-/// 任務多人指派中間表
 model TaskAssignee {
   taskId     String
   task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
@@ -355,53 +382,62 @@ model TaskAssignee {
   @@id([taskId, userId])
 }
 
-/// 投票表
-/// 任務群組內的決策投票，由群組成員發起
+model TaskView {
+  id       String   @id @default(cuid())
+  taskId   String
+  task     Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  viewedAt DateTime @default(now())
+
+  @@unique([taskId, userId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Voting
+// ─────────────────────────────────────────────────────────────────────────────
+
 model Vote {
   id          String    @id @default(cuid())
   title       String
   description String?
   taskGroupId String
   taskGroup   TaskGroup @relation(fields: [taskGroupId], references: [id])
-  createdById String
-  createdBy   User      @relation("VoteCreator", fields: [createdById], references: [id])
-  /// 投票關閉時間（null 代表尚未關閉，仍可投票）
-  closedAt    DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
 
-  /// 該投票的所有選項
+  createdById String
+  createdBy   User @relation("VoteCreator", fields: [createdById], references: [id])
+
+  closedAt  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
   options VoteOption[]
 }
 
-/// 投票選項表
-/// 每個投票可有多個選項，成員對每個選項最多投一票
 model VoteOption {
   id     String @id @default(cuid())
   voteId String
   vote   Vote   @relation(fields: [voteId], references: [id])
   label  String
 
-  /// 該選項的所有回應
   responses VoteResponse[]
 }
 
-/// 投票回應表
-/// 記錄使用者對投票選項的回應，每人每選項只能投一次
 model VoteResponse {
-  id           String     @id @default(cuid())
+  id           String @id @default(cuid())
   voteOptionId String
   voteOption   VoteOption @relation(fields: [voteOptionId], references: [id])
   userId       String
-  user         User       @relation(fields: [userId], references: [id])
-  createdAt    DateTime   @default(now())
+  user         User @relation(fields: [userId], references: [id])
+  createdAt    DateTime @default(now())
 
-  /// 同一使用者對同一選項只能投一票
   @@unique([voteOptionId, userId])
 }
 
-/// 贊助商表
-/// 儲存贊助商的基本資料，歷年贊助記錄另存於 SponsorHistory
+// ─────────────────────────────────────────────────────────────────────────────
+// Sponsors
+// ─────────────────────────────────────────────────────────────────────────────
+
 model Sponsor {
   id          String           @id @default(cuid())
   name        String
@@ -410,58 +446,10 @@ model Sponsor {
   description String?
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
-  histories   SponsorHistory[]
+
+  histories SponsorHistory[]
 }
 
-/// 網站全域設定 key-value 表
-/// 用於儲存如 Hero 背景圖 URL 等全域設定
-model SiteConfig {
-  key       String   @id
-  value     String
-  updatedAt DateTime @updatedAt
-}
-
-/// 過往成果表
-/// 記錄社團每年的重要成就，供公開展示頁與後台管理使用
-model Achievement {
-  id          String   @id @default(cuid())
-  title       String
-  year        Int
-  description String
-  imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-/// 校友表
-/// 由管理員手動維護，記錄離開社團的前成員資料，供公開校友目錄展示使用
-/// isPublic = false 時，該校友不會出現在公開頁面
-model Alumni {
-  id             String   @id @default(cuid())
-  /// 校友姓名
-  name           String
-  /// 離開社團的年份（可為 null）
-  graduationYear Int?
-  /// 在社團擔任過的職位，例如 "President 2023–2024"
-  position       String?
-  /// 所屬部門，例如 "Event"、"Marketing"、"Operation"
-  department     String?
-  /// 個人簡介（可為 null）
-  bio            String?
-  /// LinkedIn 個人頁 URL（可為 null）
-  linkedinUrl    String?
-  /// Instagram 帳號 URL（可為 null）
-  instagramUrl   String?
-  /// 大頭貼 URL（可為 null）
-  photoUrl       String?
-  /// 是否在公開頁面顯示；false 時僅後台可見
-  isPublic       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
-/// 贊助歷史記錄表
-/// 記錄贊助商每年的贊助等級（tier），同一贊助商同一年份唯一
 model SponsorHistory {
   id        String   @id @default(cuid())
   sponsorId String
@@ -473,7 +461,45 @@ model SponsorHistory {
   @@unique([sponsorId, year])
 }
 
-/// 財務收支記錄表
+// ─────────────────────────────────────────────────────────────────────────────
+// Site / Content
+// ─────────────────────────────────────────────────────────────────────────────
+
+model SiteConfig {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  title       String
+  year        Int
+  description String
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Alumni {
+  id             String   @id @default(cuid())
+  name           String
+  graduationYear Int?
+  position       String?
+  department     String?
+  bio            String?
+  linkedinUrl    String?
+  instagramUrl   String?
+  photoUrl       String?
+  isPublic       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Finance
+// ─────────────────────────────────────────────────────────────────────────────
+
 model FinanceRecord {
   id          String      @id @default(cuid())
   type        FinanceType
@@ -482,13 +508,14 @@ model FinanceRecord {
   category    String
   description String?
   date        DateTime
+
   createdById String
-  createdBy   User        @relation("FinanceRecordCreator", fields: [createdById], references: [id])
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  createdBy   User @relation("FinanceRecordCreator", fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-/// 月度預算表
 model Budget {
   id        String   @id @default(cuid())
   year      Int
@@ -502,14 +529,16 @@ model Budget {
   @@unique([year, month, category])
 }
 
-/// 功能開關表
+// ─────────────────────────────────────────────────────────────────────────────
+// Configuration / Email / Push
+// ─────────────────────────────────────────────────────────────────────────────
+
 model FeatureFlag {
   key       String   @id
   enabled   Boolean  @default(true)
   updatedAt DateTime @updatedAt
 }
 
-/// Email 模板表
 model EmailTemplate {
   key       String   @id
   subject   String
@@ -517,39 +546,27 @@ model EmailTemplate {
   updatedAt DateTime @updatedAt
 }
 
-/// Web Push 訂閱表
 model PushSubscription {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  endpoint   String?  @unique
-  p256dh     String?
-  auth       String?
-  expoToken  String?
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String?  @unique
+  p256dh    String?
+  auth      String?
+  expoToken String?
+  createdAt DateTime @default(now())
 }
 
-/// 任務查看記錄表
-/// 記錄每位使用者最後查看任務詳情頁的時間，
-/// 用於前端計算「進入任務後 badge 歸零」的邏輯。
-model TaskView {
-  id       String   @id @default(cuid())
-  taskId   String
-  task     Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  userId   String
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  /// 最後查看時間；每次進入任務詳情頁時更新
-  viewedAt DateTime @default(now())
-
-  /// 同一使用者對同一任務只有一筆記錄（upsert 更新）
-  @@unique([taskId, userId])
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// ROCSAUT Membership
+// ─────────────────────────────────────────────────────────────────────────────
 
 model ROCSAUT_Membership_Info {
   id             String    @id @db.Uuid
   member_code    String
   name           String?
   email          String?
+  personal_email  String?
   student_number String?
   created_at     DateTime? @db.Timestamptz(6)
   year_of_study  String?

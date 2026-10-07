@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model VoteResponse
- * 投票回應表
- * 記錄使用者對投票選項的回應，每人每選項只能投一次
+ * 
  */
 export type VoteResponseModel = runtime.Types.Result.DefaultSelection<Prisma.$VoteResponsePayload>
 

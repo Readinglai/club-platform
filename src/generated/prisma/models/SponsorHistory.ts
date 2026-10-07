@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model SponsorHistory
- * 贊助歷史記錄表
- * 記錄贊助商每年的贊助等級（tier），同一贊助商同一年份唯一
+ * 
  */
 export type SponsorHistoryModel = runtime.Types.Result.DefaultSelection<Prisma.$SponsorHistoryPayload>
 

@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Department
- * 部門表（取代原 Team，專職管理社團組織架構）
- * slug 對應 config.yaml teams[].id，例如 "event"、"marketing"、"operation"
+ * 
  */
 export type DepartmentModel = runtime.Types.Result.DefaultSelection<Prisma.$DepartmentPayload>
 
@@ -488,16 +487,10 @@ export type DepartmentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.E
 export type $DepartmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Department"
   objects: {
-    /**
-     * 該部門的所有成員
-     */
     members: Prisma.$UserPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    /**
-     * 唯一識別符，對應 config.yaml 的 team id
-     */
     slug: string
     name: string
     description: string | null

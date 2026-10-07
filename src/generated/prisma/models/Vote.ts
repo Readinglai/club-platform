@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Vote
- * 投票表
- * 任務群組內的決策投票，由群組成員發起
+ * 
  */
 export type VoteModel = runtime.Types.Result.DefaultSelection<Prisma.$VotePayload>
 
@@ -854,9 +853,6 @@ export type $VotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     taskGroup: Prisma.$TaskGroupPayload<ExtArgs>
     createdBy: Prisma.$UserPayload<ExtArgs>
-    /**
-     * 該投票的所有選項
-     */
     options: Prisma.$VoteOptionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -865,9 +861,6 @@ export type $VotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     description: string | null
     taskGroupId: string
     createdById: string
-    /**
-     * 投票關閉時間（null 代表尚未關閉，仍可投票）
-     */
     closedAt: Date | null
     createdAt: Date
     updatedAt: Date
