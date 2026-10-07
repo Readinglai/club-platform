@@ -58,6 +58,9 @@ export const ModelName = {
   Department: 'Department',
   Event: 'Event',
   Registration: 'Registration',
+  TicketTier: 'TicketTier',
+  EventTicket: 'EventTicket',
+  MemberRedemption: 'MemberRedemption',
   Discussion: 'Discussion',
   Comment: 'Comment',
   Announcement: 'Announcement',
@@ -66,20 +69,20 @@ export const ModelName = {
   TaskGroupMember: 'TaskGroupMember',
   Task: 'Task',
   TaskAssignee: 'TaskAssignee',
+  TaskView: 'TaskView',
   Vote: 'Vote',
   VoteOption: 'VoteOption',
   VoteResponse: 'VoteResponse',
   Sponsor: 'Sponsor',
+  SponsorHistory: 'SponsorHistory',
   SiteConfig: 'SiteConfig',
   Achievement: 'Achievement',
   Alumni: 'Alumni',
-  SponsorHistory: 'SponsorHistory',
   FinanceRecord: 'FinanceRecord',
   Budget: 'Budget',
   FeatureFlag: 'FeatureFlag',
   EmailTemplate: 'EmailTemplate',
   PushSubscription: 'PushSubscription',
-  TaskView: 'TaskView',
   ROCSAUT_Membership_Info: 'ROCSAUT_Membership_Info'
 } as const
 
@@ -197,6 +200,57 @@ export const RegistrationScalarFieldEnum = {
 export type RegistrationScalarFieldEnum = (typeof RegistrationScalarFieldEnum)[keyof typeof RegistrationScalarFieldEnum]
 
 
+export const TicketTierScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  tier: 'tier',
+  price: 'price',
+  stripePriceId: 'stripePriceId',
+  capacity: 'capacity',
+  salesCloseAt: 'salesCloseAt',
+  createdAt: 'createdAt'
+} as const
+
+export type TicketTierScalarFieldEnum = (typeof TicketTierScalarFieldEnum)[keyof typeof TicketTierScalarFieldEnum]
+
+
+export const EventTicketScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  token: 'token',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  tier: 'tier',
+  price: 'price',
+  isMember: 'isMember',
+  memberId: 'memberId',
+  stripeSessionId: 'stripeSessionId',
+  status: 'status',
+  waiverAcceptedAt: 'waiverAcceptedAt',
+  waiverVersion: 'waiverVersion',
+  ageConfirmedAt: 'ageConfirmedAt',
+  checkedIn: 'checkedIn',
+  checkedInAt: 'checkedInAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EventTicketScalarFieldEnum = (typeof EventTicketScalarFieldEnum)[keyof typeof EventTicketScalarFieldEnum]
+
+
+export const MemberRedemptionScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  eventId: 'eventId',
+  status: 'status',
+  stripeSessionId: 'stripeSessionId',
+  lockedAt: 'lockedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type MemberRedemptionScalarFieldEnum = (typeof MemberRedemptionScalarFieldEnum)[keyof typeof MemberRedemptionScalarFieldEnum]
+
+
 export const DiscussionScalarFieldEnum = {
   id: 'id',
   eventId: 'eventId',
@@ -290,6 +344,16 @@ export const TaskAssigneeScalarFieldEnum = {
 export type TaskAssigneeScalarFieldEnum = (typeof TaskAssigneeScalarFieldEnum)[keyof typeof TaskAssigneeScalarFieldEnum]
 
 
+export const TaskViewScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  userId: 'userId',
+  viewedAt: 'viewedAt'
+} as const
+
+export type TaskViewScalarFieldEnum = (typeof TaskViewScalarFieldEnum)[keyof typeof TaskViewScalarFieldEnum]
+
+
 export const VoteScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -336,6 +400,17 @@ export const SponsorScalarFieldEnum = {
 export type SponsorScalarFieldEnum = (typeof SponsorScalarFieldEnum)[keyof typeof SponsorScalarFieldEnum]
 
 
+export const SponsorHistoryScalarFieldEnum = {
+  id: 'id',
+  sponsorId: 'sponsorId',
+  year: 'year',
+  tier: 'tier',
+  createdAt: 'createdAt'
+} as const
+
+export type SponsorHistoryScalarFieldEnum = (typeof SponsorHistoryScalarFieldEnum)[keyof typeof SponsorHistoryScalarFieldEnum]
+
+
 export const SiteConfigScalarFieldEnum = {
   key: 'key',
   value: 'value',
@@ -374,17 +449,6 @@ export const AlumniScalarFieldEnum = {
 } as const
 
 export type AlumniScalarFieldEnum = (typeof AlumniScalarFieldEnum)[keyof typeof AlumniScalarFieldEnum]
-
-
-export const SponsorHistoryScalarFieldEnum = {
-  id: 'id',
-  sponsorId: 'sponsorId',
-  year: 'year',
-  tier: 'tier',
-  createdAt: 'createdAt'
-} as const
-
-export type SponsorHistoryScalarFieldEnum = (typeof SponsorHistoryScalarFieldEnum)[keyof typeof SponsorHistoryScalarFieldEnum]
 
 
 export const FinanceRecordScalarFieldEnum = {
@@ -449,21 +513,12 @@ export const PushSubscriptionScalarFieldEnum = {
 export type PushSubscriptionScalarFieldEnum = (typeof PushSubscriptionScalarFieldEnum)[keyof typeof PushSubscriptionScalarFieldEnum]
 
 
-export const TaskViewScalarFieldEnum = {
-  id: 'id',
-  taskId: 'taskId',
-  userId: 'userId',
-  viewedAt: 'viewedAt'
-} as const
-
-export type TaskViewScalarFieldEnum = (typeof TaskViewScalarFieldEnum)[keyof typeof TaskViewScalarFieldEnum]
-
-
 export const ROCSAUT_Membership_InfoScalarFieldEnum = {
   id: 'id',
   member_code: 'member_code',
   name: 'name',
   email: 'email',
+  personal_email: 'personal_email',
   student_number: 'student_number',
   created_at: 'created_at',
   year_of_study: 'year_of_study',

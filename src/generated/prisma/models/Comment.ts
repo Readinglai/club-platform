@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Comment
- * 留言表
- * 支援具名留言與匿名留言（isAnonymous = true 時 authorId 應為 null）
+ * 
  */
 export type CommentModel = runtime.Types.Result.DefaultSelection<Prisma.$CommentPayload>
 
@@ -653,14 +652,8 @@ export type $CommentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     discussionId: string
-    /**
-     * 留言作者（匿名時為 null）
-     */
     authorId: string | null
     content: string
-    /**
-     * 是否為匿名留言
-     */
     isAnonymous: boolean
     createdAt: Date
   }, ExtArgs["result"]["comment"]>

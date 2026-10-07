@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Budget
- * 月度預算表
+ * 
  */
 export type BudgetModel = runtime.Types.Result.DefaultSelection<Prisma.$BudgetPayload>
 

@@ -14,9 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Discussion
- * 討論區表
- * 每個活動自動生成一個討論區，作為活動前後的溝通空間
- * 可選擇性關聯任務群組（供社團層級討論使用）
+ * 
  */
 export type DiscussionModel = runtime.Types.Result.DefaultSelection<Prisma.$DiscussionPayload>
 
@@ -656,20 +654,11 @@ export type $DiscussionPayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     event: Prisma.$EventPayload<ExtArgs> | null
     taskGroup: Prisma.$TaskGroupPayload<ExtArgs> | null
-    /**
-     * 該討論區的所有留言
-     */
     comments: Prisma.$CommentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    /**
-     * 關聯的活動（唯一，一對一；TaskGroup 專屬討論區時為 null）
-     */
     eventId: string | null
-    /**
-     * 關聯的任務群組（TaskGroup 專屬討論區時必填，活動討論區時可選）
-     */
     taskGroupId: string | null
     createdAt: Date
   }, ExtArgs["result"]["discussion"]>

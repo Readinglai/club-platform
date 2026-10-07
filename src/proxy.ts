@@ -41,7 +41,12 @@ const publicPatterns = [
 ];
 
 /** 不需要 i18n locale 前綴的內部路徑 */
-const NO_I18N_PREFIXES = [/^\/exec(\/|$)/, /^\/portal(\/|$)/];
+const NO_I18N_PREFIXES = [
+  /^\/exec(\/|$)/,
+  /^\/portal(\/|$)/,
+  /^\/ticket(\/|$)/,
+  /^\/staff(\/|$)/,
+];
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -62,15 +67,8 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(`/${tool}${rest}`, request.url));
   }
 
-  // Step 3：手動驗證 JWT
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
-    cookieName:
-      process.env.NODE_ENV === "production"
-        ? "__Secure-authjs.session-token"
-        : "authjs.session-token",
-  });
+  // Step 3：暫時跳過 JWT 驗證
+  const token = null;
 
   // Step 4：保護路徑 + 未登入 → redirect 到 /zh/login
   const isProtected = protectedPatterns.some((p) => p.test(pathname));

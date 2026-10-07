@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Achievement
- * 過往成果表
- * 記錄社團每年的重要成就，供公開展示頁與後台管理使用
+ * 
  */
 export type AchievementModel = runtime.Types.Result.DefaultSelection<Prisma.$AchievementPayload>
 
@@ -392,14 +391,6 @@ export type AchievementMinOrderByAggregateInput = {
 
 export type AchievementSumOrderByAggregateInput = {
   year?: Prisma.SortOrder
-}
-
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
 }
 
 

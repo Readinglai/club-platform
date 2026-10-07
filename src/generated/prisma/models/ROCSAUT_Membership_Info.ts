@@ -29,6 +29,7 @@ export type ROCSAUT_Membership_InfoMinAggregateOutputType = {
   member_code: string | null
   name: string | null
   email: string | null
+  personal_email: string | null
   student_number: string | null
   created_at: Date | null
   year_of_study: string | null
@@ -40,6 +41,7 @@ export type ROCSAUT_Membership_InfoMaxAggregateOutputType = {
   member_code: string | null
   name: string | null
   email: string | null
+  personal_email: string | null
   student_number: string | null
   created_at: Date | null
   year_of_study: string | null
@@ -51,6 +53,7 @@ export type ROCSAUT_Membership_InfoCountAggregateOutputType = {
   member_code: number
   name: number
   email: number
+  personal_email: number
   student_number: number
   created_at: number
   year_of_study: number
@@ -64,6 +67,7 @@ export type ROCSAUT_Membership_InfoMinAggregateInputType = {
   member_code?: true
   name?: true
   email?: true
+  personal_email?: true
   student_number?: true
   created_at?: true
   year_of_study?: true
@@ -75,6 +79,7 @@ export type ROCSAUT_Membership_InfoMaxAggregateInputType = {
   member_code?: true
   name?: true
   email?: true
+  personal_email?: true
   student_number?: true
   created_at?: true
   year_of_study?: true
@@ -86,6 +91,7 @@ export type ROCSAUT_Membership_InfoCountAggregateInputType = {
   member_code?: true
   name?: true
   email?: true
+  personal_email?: true
   student_number?: true
   created_at?: true
   year_of_study?: true
@@ -170,6 +176,7 @@ export type ROCSAUT_Membership_InfoGroupByOutputType = {
   member_code: string
   name: string | null
   email: string | null
+  personal_email: string | null
   student_number: string | null
   created_at: Date | null
   year_of_study: string | null
@@ -202,6 +209,7 @@ export type ROCSAUT_Membership_InfoWhereInput = {
   member_code?: Prisma.StringFilter<"ROCSAUT_Membership_Info"> | string
   name?: Prisma.StringNullableFilter<"ROCSAUT_Membership_Info"> | string | null
   email?: Prisma.StringNullableFilter<"ROCSAUT_Membership_Info"> | string | null
+  personal_email?: Prisma.StringNullableFilter<"ROCSAUT_Membership_Info"> | string | null
   student_number?: Prisma.StringNullableFilter<"ROCSAUT_Membership_Info"> | string | null
   created_at?: Prisma.DateTimeNullableFilter<"ROCSAUT_Membership_Info"> | Date | string | null
   year_of_study?: Prisma.StringNullableFilter<"ROCSAUT_Membership_Info"> | string | null
@@ -213,6 +221,7 @@ export type ROCSAUT_Membership_InfoOrderByWithRelationInput = {
   member_code?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
+  personal_email?: Prisma.SortOrderInput | Prisma.SortOrder
   student_number?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrderInput | Prisma.SortOrder
   year_of_study?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -227,6 +236,7 @@ export type ROCSAUT_Membership_InfoWhereUniqueInput = Prisma.AtLeast<{
   member_code?: Prisma.StringFilter<"ROCSAUT_Membership_Info"> | string
   name?: Prisma.StringNullableFilter<"ROCSAUT_Membership_Info"> | string | null
   email?: Prisma.StringNullableFilter<"ROCSAUT_Membership_Info"> | string | null
+  personal_email?: Prisma.StringNullableFilter<"ROCSAUT_Membership_Info"> | string | null
   student_number?: Prisma.StringNullableFilter<"ROCSAUT_Membership_Info"> | string | null
   created_at?: Prisma.DateTimeNullableFilter<"ROCSAUT_Membership_Info"> | Date | string | null
   year_of_study?: Prisma.StringNullableFilter<"ROCSAUT_Membership_Info"> | string | null
@@ -238,6 +248,7 @@ export type ROCSAUT_Membership_InfoOrderByWithAggregationInput = {
   member_code?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
+  personal_email?: Prisma.SortOrderInput | Prisma.SortOrder
   student_number?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrderInput | Prisma.SortOrder
   year_of_study?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -255,6 +266,7 @@ export type ROCSAUT_Membership_InfoScalarWhereWithAggregatesInput = {
   member_code?: Prisma.StringWithAggregatesFilter<"ROCSAUT_Membership_Info"> | string
   name?: Prisma.StringNullableWithAggregatesFilter<"ROCSAUT_Membership_Info"> | string | null
   email?: Prisma.StringNullableWithAggregatesFilter<"ROCSAUT_Membership_Info"> | string | null
+  personal_email?: Prisma.StringNullableWithAggregatesFilter<"ROCSAUT_Membership_Info"> | string | null
   student_number?: Prisma.StringNullableWithAggregatesFilter<"ROCSAUT_Membership_Info"> | string | null
   created_at?: Prisma.DateTimeNullableWithAggregatesFilter<"ROCSAUT_Membership_Info"> | Date | string | null
   year_of_study?: Prisma.StringNullableWithAggregatesFilter<"ROCSAUT_Membership_Info"> | string | null
@@ -266,6 +278,7 @@ export type ROCSAUT_Membership_InfoCreateInput = {
   member_code: string
   name?: string | null
   email?: string | null
+  personal_email?: string | null
   student_number?: string | null
   created_at?: Date | string | null
   year_of_study?: string | null
@@ -277,6 +290,7 @@ export type ROCSAUT_Membership_InfoUncheckedCreateInput = {
   member_code: string
   name?: string | null
   email?: string | null
+  personal_email?: string | null
   student_number?: string | null
   created_at?: Date | string | null
   year_of_study?: string | null
@@ -288,6 +302,7 @@ export type ROCSAUT_Membership_InfoUpdateInput = {
   member_code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personal_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   student_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   year_of_study?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -299,6 +314,7 @@ export type ROCSAUT_Membership_InfoUncheckedUpdateInput = {
   member_code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personal_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   student_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   year_of_study?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -310,6 +326,7 @@ export type ROCSAUT_Membership_InfoCreateManyInput = {
   member_code: string
   name?: string | null
   email?: string | null
+  personal_email?: string | null
   student_number?: string | null
   created_at?: Date | string | null
   year_of_study?: string | null
@@ -321,6 +338,7 @@ export type ROCSAUT_Membership_InfoUpdateManyMutationInput = {
   member_code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personal_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   student_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   year_of_study?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -332,6 +350,7 @@ export type ROCSAUT_Membership_InfoUncheckedUpdateManyInput = {
   member_code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personal_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   student_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   year_of_study?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -343,6 +362,7 @@ export type ROCSAUT_Membership_InfoCountOrderByAggregateInput = {
   member_code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  personal_email?: Prisma.SortOrder
   student_number?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   year_of_study?: Prisma.SortOrder
@@ -354,6 +374,7 @@ export type ROCSAUT_Membership_InfoMaxOrderByAggregateInput = {
   member_code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  personal_email?: Prisma.SortOrder
   student_number?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   year_of_study?: Prisma.SortOrder
@@ -365,6 +386,7 @@ export type ROCSAUT_Membership_InfoMinOrderByAggregateInput = {
   member_code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  personal_email?: Prisma.SortOrder
   student_number?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   year_of_study?: Prisma.SortOrder
@@ -378,6 +400,7 @@ export type ROCSAUT_Membership_InfoSelect<ExtArgs extends runtime.Types.Extensio
   member_code?: boolean
   name?: boolean
   email?: boolean
+  personal_email?: boolean
   student_number?: boolean
   created_at?: boolean
   year_of_study?: boolean
@@ -389,6 +412,7 @@ export type ROCSAUT_Membership_InfoSelectCreateManyAndReturn<ExtArgs extends run
   member_code?: boolean
   name?: boolean
   email?: boolean
+  personal_email?: boolean
   student_number?: boolean
   created_at?: boolean
   year_of_study?: boolean
@@ -400,6 +424,7 @@ export type ROCSAUT_Membership_InfoSelectUpdateManyAndReturn<ExtArgs extends run
   member_code?: boolean
   name?: boolean
   email?: boolean
+  personal_email?: boolean
   student_number?: boolean
   created_at?: boolean
   year_of_study?: boolean
@@ -411,13 +436,14 @@ export type ROCSAUT_Membership_InfoSelectScalar = {
   member_code?: boolean
   name?: boolean
   email?: boolean
+  personal_email?: boolean
   student_number?: boolean
   created_at?: boolean
   year_of_study?: boolean
   role?: boolean
 }
 
-export type ROCSAUT_Membership_InfoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "member_code" | "name" | "email" | "student_number" | "created_at" | "year_of_study" | "role", ExtArgs["result"]["rOCSAUT_Membership_Info"]>
+export type ROCSAUT_Membership_InfoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "member_code" | "name" | "email" | "personal_email" | "student_number" | "created_at" | "year_of_study" | "role", ExtArgs["result"]["rOCSAUT_Membership_Info"]>
 
 export type $ROCSAUT_Membership_InfoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ROCSAUT_Membership_Info"
@@ -427,6 +453,7 @@ export type $ROCSAUT_Membership_InfoPayload<ExtArgs extends runtime.Types.Extens
     member_code: string
     name: string | null
     email: string | null
+    personal_email: string | null
     student_number: string | null
     created_at: Date | null
     year_of_study: string | null
@@ -858,6 +885,7 @@ export interface ROCSAUT_Membership_InfoFieldRefs {
   readonly member_code: Prisma.FieldRef<"ROCSAUT_Membership_Info", 'String'>
   readonly name: Prisma.FieldRef<"ROCSAUT_Membership_Info", 'String'>
   readonly email: Prisma.FieldRef<"ROCSAUT_Membership_Info", 'String'>
+  readonly personal_email: Prisma.FieldRef<"ROCSAUT_Membership_Info", 'String'>
   readonly student_number: Prisma.FieldRef<"ROCSAUT_Membership_Info", 'String'>
   readonly created_at: Prisma.FieldRef<"ROCSAUT_Membership_Info", 'DateTime'>
   readonly year_of_study: Prisma.FieldRef<"ROCSAUT_Membership_Info", 'String'>

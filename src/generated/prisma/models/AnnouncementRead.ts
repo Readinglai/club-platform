@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model AnnouncementRead
- * 公告已讀記錄表
- * 記錄每位成員對每則公告的已讀狀態，避免重複標記
+ * 
  */
 export type AnnouncementReadModel = runtime.Types.Result.DefaultSelection<Prisma.$AnnouncementReadPayload>
 

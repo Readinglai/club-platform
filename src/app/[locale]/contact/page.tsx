@@ -11,10 +11,10 @@ interface TeamContact {
 }
 
 const FALLBACK_CONTACTS: TeamContact[] = [
-  { title: "President",         name: "David Chen",  email: "david.chen@mail.utoronto.ca" },
-  { title: "VP of Events",      name: "Sarah Lin",   email: "sarah.lin@mail.utoronto.ca" },
-  { title: "VP of Marketing",   name: "Kevin Wu",    email: "kevin.wu@mail.utoronto.ca" },
-  { title: "VP of Operations",  name: "Amy Huang",   email: "amy.huang@mail.utoronto.ca" },
+  { title: "President",         name: "Jonathan Tung",  email: "" },
+  { title: "VP of Events",      name: "Ivy Yang",   email: "" },
+  { title: "VP of Marketing",   name: "Timathy Lin",    email: "" },
+  { title: "VP of Operations",  name: "Esther Chen",   email: "yingchih.chen@mail.utoronto.ca " },
 ];
 
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {

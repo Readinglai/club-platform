@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model PushSubscription
- * Web Push 訂閱表
+ * 
  */
 export type PushSubscriptionModel = runtime.Types.Result.DefaultSelection<Prisma.$PushSubscriptionPayload>
 

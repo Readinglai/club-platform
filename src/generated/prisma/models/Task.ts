@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Task
- * 任務表
- * 隸屬於任務群組，可同時指派給多名成員
+ * 
  */
 export type TaskModel = runtime.Types.Result.DefaultSelection<Prisma.$TaskPayload>
 
@@ -1013,31 +1012,16 @@ export type $TaskPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     taskGroup: Prisma.$TaskGroupPayload<ExtArgs>
     assignee: Prisma.$UserPayload<ExtArgs> | null
-    /**
-     * 多人指派（新）
-     */
     assignees: Prisma.$TaskAssigneePayload<ExtArgs>[]
-    /**
-     * 該任務的使用者查看記錄
-     */
     views: Prisma.$TaskViewPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
     description: string | null
-    /**
-     * 任務所屬群組（必填）
-     */
     taskGroupId: string
-    /**
-     * 主要負責人（保留供舊版相容，新版請使用 assignees）
-     */
     assigneeId: string | null
     status: $Enums.TaskStatus
-    /**
-     * 截止日期（可為 null）
-     */
     dueAt: Date | null
     createdAt: Date
     updatedAt: Date

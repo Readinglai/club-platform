@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model VerificationToken
- * NextAuth：Email 驗證 Token 表
- * 用於 Magic Link / Email 登入（本專案目前未啟用，但 adapter 需要此表）
+ * 
  */
 export type VerificationTokenModel = runtime.Types.Result.DefaultSelection<Prisma.$VerificationTokenPayload>
 

@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model FeatureFlag
- * 功能開關表
+ * 
  */
 export type FeatureFlagModel = runtime.Types.Result.DefaultSelection<Prisma.$FeatureFlagPayload>
 

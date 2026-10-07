@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model TaskAssignee
- * 任務多人指派中間表
+ * 
  */
 export type TaskAssigneeModel = runtime.Types.Result.DefaultSelection<Prisma.$TaskAssigneePayload>
 

@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model VoteOption
- * 投票選項表
- * 每個投票可有多個選項，成員對每個選項最多投一票
+ * 
  */
 export type VoteOptionModel = runtime.Types.Result.DefaultSelection<Prisma.$VoteOptionPayload>
 
@@ -528,9 +527,6 @@ export type $VoteOptionPayload<ExtArgs extends runtime.Types.Extensions.Internal
   name: "VoteOption"
   objects: {
     vote: Prisma.$VotePayload<ExtArgs>
-    /**
-     * 該選項的所有回應
-     */
     responses: Prisma.$VoteResponsePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{

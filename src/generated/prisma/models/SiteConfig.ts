@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model SiteConfig
- * 網站全域設定 key-value 表
- * 用於儲存如 Hero 背景圖 URL 等全域設定
+ * 
  */
 export type SiteConfigModel = runtime.Types.Result.DefaultSelection<Prisma.$SiteConfigPayload>
 

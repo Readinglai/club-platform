@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Sponsor
- * 贊助商表
- * 儲存贊助商的基本資料，歷年贊助記錄另存於 SponsorHistory
+ * 
  */
 export type SponsorModel = runtime.Types.Result.DefaultSelection<Prisma.$SponsorPayload>
 

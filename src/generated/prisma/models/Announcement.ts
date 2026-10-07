@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Announcement
- * 公告表
- * 由管理員發布的社團公告，成員可瀏覽並標記已讀
+ * 
  */
 export type AnnouncementModel = runtime.Types.Result.DefaultSelection<Prisma.$AnnouncementPayload>
 
