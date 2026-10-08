@@ -121,14 +121,16 @@ export default function TicketPage({
     {
       hour: "numeric",
       minute: "2-digit",
+      timeZone: "America/Toronto",
     }
   );
-
+  
   const eventEnd = new Date(ticket.end_at).toLocaleTimeString(
     "en-CA",
     {
       hour: "numeric",
       minute: "2-digit",
+      timeZone: "America/Toronto",
     }
   );
 
