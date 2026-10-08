@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { stripe } from "@/lib/stripe";
 import { reserveCapacity } from "@/lib/event/reserve-capacity";
 import { reserveMemberRedemption } from "@/lib/event/reserve-member-redemption";
 
@@ -172,12 +173,63 @@ export async function POST(req: Request) {
     }
 
     /*
-     * Temporary reservation ID.
+     * Backend-controlled final price.
      *
-     * Once Stripe is connected, this will be replaced with
-     * the real Stripe Checkout Session ID.
+     * Current pricing:
+     * Regular   = $30
+     * Unlimited = $40
+     * Members   = $5 off
      */
-    const reservationId = `reservation_${crypto.randomUUID()}`;
+    const basePrice = Number(ticketTier.price);
+    const finalPrice = isMember
+      ? Math.max(0, basePrice - 5)
+      : basePrice;
+
+    /*
+     * Create the Stripe Checkout Session first.
+     *
+     * The Stripe Session ID is then used as the reservation ID
+     * for both TicketHold and MemberRedemption.
+     */
+    const origin =
+      req.headers.get("origin") ||
+      process.env.NEXTAUTH_URL ||
+      "http://localhost:3000";
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      customer_email: email.trim(),
+
+      line_items: [
+        {
+          price_data: {
+            currency: "cad",
+            product_data: {
+              name:
+                tier === "REGULAR"
+                  ? "ROCSAUT 2026 Halloween Party — Regular"
+                  : "ROCSAUT 2026 Halloween Party — Unlimited",
+            },
+            unit_amount: Math.round(finalPrice * 100),
+          },
+          quantity: 1,
+        },
+      ],
+
+      metadata: {
+        eventId: EVENT_ID,
+        tier,
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        isMember: isMember ? "true" : "false",
+        memberId: isMember ? memberId.trim() : "",
+        cardName: isMember ? cardName.trim() : "",
+      },
+
+      success_url: `${origin}/event/fall-2026?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/event/fall-2026?payment=cancelled`,
+    });
 
     /*
      * Reserve capacity for 30 minutes.
@@ -185,10 +237,23 @@ export async function POST(req: Request) {
     const capacity = await reserveCapacity(
       EVENT_ID,
       tier,
-      reservationId
+      session.id
     );
 
     if (!capacity.success) {
+      /*
+       * The Stripe session is still open, so expire it because
+       * we could not reserve a ticket.
+       */
+      try {
+        await stripe.checkout.sessions.expire(session.id);
+      } catch (expireError) {
+        console.error(
+          "Failed to expire Stripe Checkout Session:",
+          expireError
+        );
+      }
+
       if (capacity.reason === "sold_out") {
         return NextResponse.json(
           {
@@ -215,16 +280,30 @@ export async function POST(req: Request) {
       const memberRedemption = await reserveMemberRedemption(
         memberId.trim(),
         EVENT_ID,
-        reservationId
+        session.id
       );
 
       if (!memberRedemption.success) {
-        // Release the capacity hold because the member
-        // reservation could not be created.
+        /*
+         * Release the capacity hold.
+         */
         await db.$executeRaw`
           DELETE FROM "TicketHold"
           WHERE id = ${capacity.holdId}
         `;
+
+        /*
+         * Expire the Stripe Checkout Session because the member
+         * reservation could not be created.
+         */
+        try {
+          await stripe.checkout.sessions.expire(session.id);
+        } catch (expireError) {
+          console.error(
+            "Failed to expire Stripe Checkout Session:",
+            expireError
+          );
+        }
 
         const message =
           memberRedemption.reason === "already_used"
@@ -242,17 +321,16 @@ export async function POST(req: Request) {
     }
 
     /*
-     * Reservation successful.
-     *
-     * No Stripe session or ticket is created yet.
+     * Checkout Session and reservations are now ready.
      */
     return NextResponse.json({
       success: true,
-      message: "Ticket reserved for 30 minutes.",
-      reservationId,
+      message: "Checkout session created successfully.",
+      checkoutUrl: session.url,
+      sessionId: session.id,
       eventId: EVENT_ID,
       tier,
-      price: Number(ticketTier.price),
+      price: finalPrice,
       isMember: Boolean(isMember),
       expiresAt: capacity.expiresAt,
     });
