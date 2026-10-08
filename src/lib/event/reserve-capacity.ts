@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 
-type TicketTier = "REGULAR" | "UNLIMITED";
+type TicketTier = "LITE" | "STANDARD" | "UNLIMITED";
 
 type ReserveCapacityResult =
   | {

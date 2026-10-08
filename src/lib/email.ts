@@ -131,8 +131,10 @@ export async function sendEventTicketEmail(opts: {
   ticketUrl: string;
 }) {
   const tierLabel =
-    opts.tier === "REGULAR"
-      ? "Regular Ticket"
+  opts.tier === "LITE"
+    ? "Lite Ticket"
+    : opts.tier === "STANDARD"
+      ? "Standard Ticket"
       : "Unlimited Ticket";
 
   await sendEmail({

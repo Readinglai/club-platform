@@ -135,7 +135,11 @@ export default function TicketPage({
   );
 
   const tierName =
-    ticket.tier === "UNLIMITED" ? "Unlimited" : "Regular";
+  ticket.tier === "LITE"
+    ? "Lite"
+    : ticket.tier === "STANDARD"
+      ? "Standard"
+      : "Unlimited";
 
   return (
     <main
@@ -238,9 +242,11 @@ export default function TicketPage({
               </p>
 
               <p className="text-sm text-gray-500 mt-1">
-                {ticket.tier === "UNLIMITED"
-                  ? "Unlimited alcohol + cocktails + 1 photobooth photo"
-                  : "2 drink tickets"}
+              {ticket.tier === "LITE"
+                ? "2 drink tickets"
+                : ticket.tier === "STANDARD"
+                  ? "4 drink tickets"
+                  : "Get stamped for unlimited drinks"}
               </p>
             </div>
 

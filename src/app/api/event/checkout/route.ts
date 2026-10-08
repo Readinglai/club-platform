@@ -6,7 +6,7 @@ import { reserveMemberRedemption } from "@/lib/event/reserve-member-redemption";
 
 const EVENT_ID = "00b84455-309c-4dba-9722-b031f9042081";
 
-const VALID_TIERS = ["REGULAR", "UNLIMITED"] as const;
+const VALID_TIERS = ["LITE", "STANDARD", "UNLIMITED"] as const;
 
 function normalizeName(value: string) {
   return value.trim().replace(/\s+/g, " ").toLowerCase();
@@ -172,13 +172,12 @@ export async function POST(req: Request) {
       );
     }
 
-    /*
-     * Backend-controlled final price.
+    /**
+     * Lite      = $25
+     * Standard  = $42
+     * Unlimited = $45
      *
-     * Current pricing:
-     * Regular   = $30
-     * Unlimited = $40
-     * Members   = $5 off
+     * Members receive $5 off each tier.
      */
     const basePrice = Number(ticketTier.price);
     const finalPrice = isMember
@@ -205,11 +204,13 @@ export async function POST(req: Request) {
           price_data: {
             currency: "cad",
             product_data: {
-              name:
-                tier === "REGULAR"
-                  ? "ROCSAUT 2026 Halloween Party — Regular"
-                  : "ROCSAUT 2026 Halloween Party — Unlimited",
-            },
+                name:
+                  tier === "LITE"
+                    ? "ROCSAUT 2026 Halloween Party — Lite"
+                    : tier === "STANDARD"
+                      ? "ROCSAUT 2026 Halloween Party — Standard"
+                      : "ROCSAUT 2026 Halloween Party — Unlimited",
+              },
             unit_amount: Math.round(finalPrice * 100),
           },
           quantity: 1,

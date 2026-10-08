@@ -9,7 +9,7 @@ async function main() {
 
   const result = await reserveCapacity(
     EVENT_ID,
-    "REGULAR",
+    "LITE",
     `test_session_${Date.now()}`
   );
 

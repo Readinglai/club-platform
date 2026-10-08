@@ -8,16 +8,22 @@ const SECONDARY = "#c9b99a";
 
 const ticketTypes = [
   {
-    id: "REGULAR",
-    title: "Regular",
+    id: "LITE",
+    title: "Lite",
     subtitle: "2 drink tickets",
-    price: 30,
+    price: 25,
+  },
+  {
+    id: "STANDARD",
+    title: "Standard",
+    subtitle: "4 drink tickets",
+    price: 42,
   },
   {
     id: "UNLIMITED",
     title: "Unlimited",
-    subtitle: "Unlimited alcohol + cocktails + 1 photobooth photo",
-    price: 40,
+    subtitle: "Get stamped for unlimited drinks",
+    price: 45,
   },
 ];
 
