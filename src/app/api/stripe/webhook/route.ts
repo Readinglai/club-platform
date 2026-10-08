@@ -180,9 +180,11 @@ export async function POST(req: Request) {
           `Event ticket created successfully: ${token}`
         );
 
-        const origin =
-          process.env.NEXTAUTH_URL ||
-          "http://localhost:3000";
+        const origin = process.env.NEXTAUTH_URL;
+
+        if (!origin) {
+          throw new Error("NEXTAUTH_URL is not configured.");
+        }
 
         try {
           await sendEventTicketEmail({
