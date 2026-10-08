@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       waiverAccepted,
     } = body;
 
-    /*
+    /**
      * Basic validation
      */
     if (
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
       );
     }
 
-    /*
+    /**
      * Member validation
      */
     if (isMember) {
@@ -133,7 +133,7 @@ export async function POST(req: Request) {
       }
     }
 
-    /*
+    /**
      * Get the backend-controlled ticket price/config.
      * The frontend never determines the price.
      */
@@ -184,11 +184,14 @@ export async function POST(req: Request) {
       ? Math.max(0, basePrice - 5)
       : basePrice;
 
-    /*
+    /**
      * Create the Stripe Checkout Session first.
      *
      * The Stripe Session ID is then used as the reservation ID
      * for both TicketHold and MemberRedemption.
+     *
+     * Stripe Checkout expires after 30 minutes, matching the
+     * ticket reservation hold.
      */
     const origin =
       req.headers.get("origin") ||
@@ -197,6 +200,10 @@ export async function POST(req: Request) {
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+
+      // Keep Stripe Checkout expiration aligned with the 30-minute hold.
+      expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
+
       customer_email: email.trim(),
 
       line_items: [
@@ -204,13 +211,13 @@ export async function POST(req: Request) {
           price_data: {
             currency: "cad",
             product_data: {
-                name:
-                  tier === "LITE"
-                    ? "ROCSAUT 2026 Halloween Party — Lite"
-                    : tier === "STANDARD"
-                      ? "ROCSAUT 2026 Halloween Party — Standard"
-                      : "ROCSAUT 2026 Halloween Party — Unlimited",
-              },
+              name:
+                tier === "LITE"
+                  ? "ROCSAUT 2026 Halloween Party — Lite"
+                  : tier === "STANDARD"
+                    ? "ROCSAUT 2026 Halloween Party — Standard"
+                    : "ROCSAUT 2026 Halloween Party — Unlimited",
+            },
             unit_amount: Math.round(finalPrice * 100),
           },
           quantity: 1,
@@ -232,7 +239,7 @@ export async function POST(req: Request) {
       cancel_url: `${origin}/event/fall-2026?payment=cancelled`,
     });
 
-    /*
+    /**
      * Reserve capacity for 30 minutes.
      */
     const capacity = await reserveCapacity(
@@ -242,7 +249,7 @@ export async function POST(req: Request) {
     );
 
     if (!capacity.success) {
-      /*
+      /**
        * The Stripe session is still open, so expire it because
        * we could not reserve a ticket.
        */
@@ -274,7 +281,7 @@ export async function POST(req: Request) {
       );
     }
 
-    /*
+    /**
      * If this is a member purchase, reserve the member pricing.
      */
     if (isMember) {
@@ -285,7 +292,7 @@ export async function POST(req: Request) {
       );
 
       if (!memberRedemption.success) {
-        /*
+        /**
          * Release the capacity hold.
          */
         await db.$executeRaw`
@@ -293,7 +300,7 @@ export async function POST(req: Request) {
           WHERE id = ${capacity.holdId}
         `;
 
-        /*
+        /**
          * Expire the Stripe Checkout Session because the member
          * reservation could not be created.
          */
@@ -321,7 +328,7 @@ export async function POST(req: Request) {
       }
     }
 
-    /*
+    /**
      * Checkout Session and reservations are now ready.
      */
     return NextResponse.json({
