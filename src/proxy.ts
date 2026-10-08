@@ -1,20 +1,22 @@
 /**
  * proxy.ts — Next.js 16 Edge Proxy
  *
- * 執行順序：
- * 1. 公開路徑直接放行
- * 2. exec/portal locale prefix redirect
- * 3. 用 getToken 手動驗證 JWT（避免 NextAuth 內部 redirect 繞過白名單）
- * 4. 未登入且訪問保護路徑 → redirect 到 /zh/login
- * 5. next-intl i18n routing
+ * Public visitors:
+ * - Fall 2026 event page
+ * - Login / unauthorized pages
+ * - Ticket pages
  *
- * 不使用 auth() handler，因為 NextAuth 內部 redirect 會繞過公開路徑白名單，
- * 造成 /login → /zh/login → auth redirect → /login 無限循環。
+ * Everything else redirects to the Fall 2026 event page.
+ *
+ * Protected routes still require authentication:
+ * - member
+ * - admin
+ * - exec
+ * - portal
  */
 
 import { type NextRequest, NextResponse } from "next/server";
 import createNextIntlMiddleware from "next-intl/middleware";
-import { getToken } from "next-auth/jwt";
 import { routing } from "@/i18n/routing";
 
 /** next-intl 語言路由 handler */
@@ -32,12 +34,18 @@ const protectedPatterns = [
   /^\/portal(\/|$)/,
 ];
 
-/** 公開路徑，直接放行不做任何攔截 */
+/** 一般訪客可以直接訪問的公開頁面 */
 const publicPatterns = [
+  /^\/(zh|en)\/event\/fall-2026(\/|$)/,
+  /^\/event\/fall-2026(\/|$)/,
+
   /^\/(zh|en)?\/login(\/|$)/,
   /^\/login(\/|$)/,
+
   /^\/(zh|en)?\/unauthorized(\/|$)/,
   /^\/unauthorized(\/|$)/,
+
+  /^\/ticket(\/|$)/,
 ];
 
 /** 不需要 i18n locale 前綴的內部路徑 */
@@ -48,43 +56,56 @@ const NO_I18N_PREFIXES = [
   /^\/staff(\/|$)/,
 ];
 
+/** Event landing page */
+const EVENT_PATH = "/zh/event/fall-2026";
+
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Step 1：公開路徑直接放行，交給 i18n 處理即可
+  // Step 1：公開白名單路徑直接放行
   if (publicPatterns.some((p) => p.test(pathname))) {
     if (NO_I18N_PREFIXES.some((p) => p.test(pathname))) {
       return NextResponse.next();
     }
+
     return handleI18nRouting(request);
   }
 
   // Step 2：exec/portal locale prefix → 移除 locale
-  const localeInternalMatch = pathname.match(/^\/(zh|en)\/(exec|portal)(\/.*)?$/);
+  const localeInternalMatch = pathname.match(
+    /^\/(zh|en)\/(exec|portal)(\/.*)?$/
+  );
+
   if (localeInternalMatch) {
     const tool = localeInternalMatch[2];
     const rest = localeInternalMatch[3] ?? "";
-    return NextResponse.redirect(new URL(`/${tool}${rest}`, request.url));
+
+    return NextResponse.redirect(
+      new URL(`/${tool}${rest}`, request.url)
+    );
   }
 
-  // Step 3：暫時跳過 JWT 驗證
-  const token = null;
-
-  // Step 4：保護路徑 + 未登入 → redirect 到 /zh/login
+  // Step 3：Protected routes
+  //
+  // Authentication is handled by the protected route itself.
+  // We intentionally do not use auth() / getToken() here because
+  // the current auth flow previously caused login redirect loops.
   const isProtected = protectedPatterns.some((p) => p.test(pathname));
-  if (isProtected && !token) {
-    const loginUrl = new URL("/zh/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", request.url);
-    return NextResponse.redirect(loginUrl);
+
+  if (isProtected) {
+    // exec / portal / ticket / staff are internal routes
+    // and should not be processed by next-intl.
+    if (NO_I18N_PREFIXES.some((p) => p.test(pathname))) {
+      return NextResponse.next();
+    }
+
+    return handleI18nRouting(request);
   }
 
-  // Step 5：i18n routing
-  const skipI18n = NO_I18N_PREFIXES.some((p) => p.test(pathname));
-  if (skipI18n) {
-    return NextResponse.next();
-  }
+  // Step 4：所有其他一般網站頁面 → Fall 2026 Event
+  const eventUrl = new URL(EVENT_PATH, request.url);
 
-  return handleI18nRouting(request);
+  return NextResponse.redirect(eventUrl);
 }
 
 export const config = {
