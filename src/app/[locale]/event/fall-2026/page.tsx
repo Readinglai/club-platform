@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 const PRIMARY = "#1a2744";
@@ -21,6 +22,9 @@ const ticketTypes = [
 ];
 
 export default function Fall2026EventPage() {
+  const searchParams = useSearchParams();
+  const paymentSuccess = searchParams.get("payment") === "success";
+
   const [selectedTicket, setSelectedTicket] = useState<string | null>(null);
 
   const [isMember, setIsMember] = useState(false);
@@ -126,7 +130,7 @@ export default function Fall2026EventPage() {
         alert("Unable to start checkout. Please try again.");
         return;
       }
-      
+
       window.location.href = data.checkoutUrl;
     } catch (error) {
       console.error("Checkout error:", error);
@@ -148,6 +152,79 @@ export default function Fall2026EventPage() {
     ageConfirmed &&
     waiverAccepted &&
     (!isMember || isVerified);
+
+  if (paymentSuccess) {
+    return (
+      <main
+        className="min-h-screen flex items-center justify-center px-4"
+        style={{ backgroundColor: "#f9f7f4" }}
+      >
+        <div className="w-full max-w-lg">
+          <div
+            className="rounded-2xl bg-white p-8 sm:p-10 shadow-sm text-center"
+            style={{ border: "1px solid #e5e7eb" }}
+          >
+            <div
+              className="mx-auto mb-6 w-16 h-16 rounded-full flex items-center justify-center text-2xl"
+              style={{
+                backgroundColor: "#dcfce7",
+                color: "#16a34a",
+              }}
+            >
+              ✓
+            </div>
+
+            <h1
+              className="text-2xl sm:text-3xl font-bold"
+              style={{ color: PRIMARY }}
+            >
+              Thank you for registering! 🎉
+            </h1>
+
+            <p className="mt-4 text-sm sm:text-base text-gray-600 leading-relaxed">
+              Your payment was successful.
+            </p>
+
+            <p className="mt-2 text-sm sm:text-base text-gray-600 leading-relaxed">
+              Your ticket will be sent to your email shortly. Please check
+              your inbox, including your spam or junk folder.
+            </p>
+
+            <div
+              className="mt-6 rounded-xl p-4 text-sm text-left"
+              style={{
+                backgroundColor: "#faf8f3",
+                color: PRIMARY,
+              }}
+            >
+              <p className="font-semibold mb-1">
+                Ticket delivery
+              </p>
+
+              <p className="text-gray-600 leading-relaxed">
+                Please keep your ticket email and have your ticket ready
+                when you arrive at the event.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                window.location.href = "/event/fall-2026";
+              }}
+              className="mt-7 w-full py-3 rounded-xl text-sm font-semibold"
+              style={{
+                backgroundColor: PRIMARY,
+                color: SECONDARY,
+              }}
+            >
+              Back to Event Page
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main
