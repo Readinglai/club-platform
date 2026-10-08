@@ -1,8 +1,42 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import crypto from "crypto";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    const staffCode = process.env.STAFF_CHECKIN_CODE;
+
+    if (!staffCode) {
+      console.error("STAFF_CHECKIN_CODE is not configured.");
+
+      return NextResponse.json(
+        {
+          success: false,
+          status: "unauthorized",
+          message: "Staff check-in is not configured.",
+        },
+        { status: 500 }
+      );
+    }
+
+    const staffCookie = req.cookies.get("rocsaut_staff_checkin")?.value;
+
+    const expectedToken = crypto
+      .createHash("sha256")
+      .update(`rocsaut-staff-checkin:${staffCode}`)
+      .digest("hex");
+
+    if (!staffCookie || staffCookie !== expectedToken) {
+      return NextResponse.json(
+        {
+          success: false,
+          status: "unauthorized",
+          message: "Staff verification required.",
+        },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
     const token = String(body.token ?? "").trim();
 

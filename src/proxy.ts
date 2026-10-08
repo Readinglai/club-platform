@@ -46,6 +46,8 @@ const publicPatterns = [
   /^\/unauthorized(\/|$)/,
 
   /^\/ticket(\/|$)/,
+
+  /^\/staff(\/|$)/,
 ];
 
 /** 不需要 i18n locale 前綴的內部路徑 */

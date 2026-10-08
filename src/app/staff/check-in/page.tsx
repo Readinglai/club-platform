@@ -16,14 +16,126 @@ type ScanResult = {
 
 const SCAN_DELAY = 2000;
 
+const getTierStyles = (tier: string) => {
+  switch (tier) {
+    case "LITE":
+      return {
+        badge: "bg-green-600 text-white",
+        card: "border-green-300 bg-green-50",
+        text: "text-green-800",
+      };
+
+    case "STANDARD":
+      return {
+        badge: "bg-blue-600 text-white",
+        card: "border-blue-300 bg-blue-50",
+        text: "text-blue-800",
+      };
+
+    case "UNLIMITED":
+      return {
+        badge: "bg-purple-600 text-white",
+        card: "border-purple-300 bg-purple-50",
+        text: "text-purple-800",
+      };
+
+    default:
+      return {
+        badge: "bg-gray-700 text-white",
+        card: "border-gray-300 bg-gray-50",
+        text: "text-gray-800",
+      };
+  }
+};
+
+const getTierName = (tier: string) => {
+  switch (tier) {
+    case "LITE":
+      return "LITE";
+
+    case "STANDARD":
+      return "STANDARD";
+
+    case "UNLIMITED":
+      return "UNLIMITED";
+
+    default:
+      return tier;
+  }
+};
+
 export default function CheckInPage() {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scanningRef = useRef(false);
   const scanLockRef = useRef(false);
 
+  const [verified, setVerified] = useState(false);
+  const [staffCode, setStaffCode] = useState("");
+  const [verifying, setVerifying] = useState(false);
+  const [verificationError, setVerificationError] = useState("");
+
   const [scanning, setScanning] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const checkExistingVerification = async () => {
+      try {
+        const response = await fetch("/api/staff/check-in/verify", {
+          method: "GET",
+        });
+
+        if (response.ok) {
+          setVerified(true);
+        }
+      } catch {
+        // No existing verification.
+      }
+    };
+
+    checkExistingVerification();
+  }, []);
+
+  const verifyStaff = async () => {
+    if (!staffCode.trim()) {
+      setVerificationError("Please enter the staff access code.");
+      return;
+    }
+
+    try {
+      setVerifying(true);
+      setVerificationError("");
+
+      const response = await fetch("/api/staff/check-in/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          code: staffCode.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setVerificationError(
+          data.message || "Incorrect staff access code."
+        );
+        return;
+      }
+
+      setVerified(true);
+      setStaffCode("");
+    } catch (error) {
+      console.error("Staff verification error:", error);
+      setVerificationError(
+        "Unable to verify. Please try again."
+      );
+    } finally {
+      setVerifying(false);
+    }
+  };
 
   const checkIn = async (decodedText: string) => {
     try {
@@ -53,6 +165,14 @@ export default function CheckInPage() {
       });
 
       const data = await response.json();
+
+      if (response.status === 401) {
+        setVerified(false);
+        setResult(null);
+        setError("Staff verification expired. Please verify again.");
+        return;
+      }
+
       setResult(data);
     } catch (error) {
       console.error("Check-in error:", error);
@@ -95,7 +215,6 @@ export default function CheckInPage() {
 
           setTimeout(() => {
             scanLockRef.current = false;
-            setResult(null);
           }, SCAN_DELAY);
         },
         () => {
@@ -148,8 +267,8 @@ export default function CheckInPage() {
   const getResultStyle = () => {
     if (!result) return "";
 
-    if (result.success) {
-      return "border-[#c8d8ec] bg-[#eef4fb]";
+    if (result.ticket) {
+      return getTierStyles(result.ticket.tier).card;
     }
 
     if (result.status === "already_checked_in") {
@@ -180,6 +299,84 @@ export default function CheckInPage() {
 
     return "text-gray-700";
   };
+
+  if (!verified) {
+    return (
+      <main className="min-h-screen bg-[#f3f6fa] px-4 py-8">
+        <div className="flex min-h-[80vh] items-center justify-center">
+          <div className="w-full max-w-md">
+            <div className="mb-7 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#1a2744]">
+                <span className="text-xl font-bold text-white">
+                  R
+                </span>
+              </div>
+
+              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#6b7a90]">
+                ROCSAUT Staff
+              </p>
+
+              <h1 className="mt-2 text-2xl font-bold text-[#1a2744]">
+                Staff Verification
+              </h1>
+
+              <p className="mt-2 text-sm text-[#718096]">
+                Enter the staff access code to open event check-in.
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-[#dce3ec] bg-white p-6 shadow-sm">
+              <label
+                htmlFor="staff-code"
+                className="block text-sm font-semibold text-[#1a2744]"
+              >
+                Staff Access Code
+              </label>
+
+              <input
+                id="staff-code"
+                type="password"
+                value={staffCode}
+                onChange={(event) => {
+                  setStaffCode(event.target.value);
+                  setVerificationError("");
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    verifyStaff();
+                  }
+                }}
+                placeholder="Enter access code"
+                autoComplete="off"
+                className="mt-2 w-full rounded-xl border border-[#ccd5e2] bg-white px-4 py-3.5 text-base text-[#1a2744] outline-none transition placeholder:text-[#9aa5b5] focus:border-[#1a2744] focus:ring-2 focus:ring-[#1a2744]/10"
+              />
+
+              {verificationError && (
+                <div className="mt-4 rounded-xl border border-[#e3c4c4] bg-[#fbf2f2] px-4 py-3">
+                  <p className="text-center text-sm font-medium text-[#8f3030]">
+                    {verificationError}
+                  </p>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={verifyStaff}
+                disabled={verifying}
+                className="mt-5 w-full rounded-xl bg-[#1a2744] px-4 py-3.5 font-semibold text-white transition hover:bg-[#253657] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {verifying ? "Verifying..." : "Continue"}
+              </button>
+            </div>
+
+            <p className="mt-5 text-center text-xs text-[#8a96a8]">
+              ROCSAUT Halloween Party · Staff Check-in
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#f3f6fa] px-4 py-8">
@@ -268,9 +465,25 @@ export default function CheckInPage() {
                         {result.ticket.name}
                       </p>
 
-                      <span className="mt-2 inline-block rounded-full bg-[#1a2744] px-3 py-1 text-xs font-bold tracking-wide text-white">
-                        {result.ticket.tier}
-                      </span>
+                      <div
+                        className={`mx-auto mt-4 flex min-h-[64px] max-w-[280px] items-center justify-center rounded-2xl px-5 py-3 ${getTierStyles(result.ticket.tier).badge}`}
+                      >
+                        <span className="text-2xl font-black tracking-[0.12em]">
+                          {getTierName(result.ticket.tier)}
+                        </span>
+                      </div>
+
+                      <p
+                        className={`mt-3 text-sm font-bold ${getTierStyles(result.ticket.tier).text}`}
+                      >
+                        {result.ticket.tier === "LITE"
+                          ? "2 DRINK TICKETS"
+                          : result.ticket.tier === "STANDARD"
+                            ? "4 DRINK TICKETS"
+                            : result.ticket.tier === "UNLIMITED"
+                              ? "UNLIMITED DRINKS"
+                              : ""}
+                      </p>
                     </>
                   )}
 
