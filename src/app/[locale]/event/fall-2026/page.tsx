@@ -122,9 +122,12 @@ export default function Fall2026EventPage() {
         return;
       }
 
-      console.log("Checkout data:", data);
-
-      alert("Checkout information received successfully.");
+      if (!data.checkoutUrl) {
+        alert("Unable to start checkout. Please try again.");
+        return;
+      }
+      
+      window.location.href = data.checkoutUrl;
     } catch (error) {
       console.error("Checkout error:", error);
       alert("Something went wrong. Please try again later.");

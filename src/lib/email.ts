@@ -122,3 +122,74 @@ export async function sendTaskReminderEmail(opts: {
     html: interpolate(tpl.body, vars).replace(/\n/g, "<br>"),
   });
 }
+
+export async function sendEventTicketEmail(opts: {
+  to: string;
+  name: string;
+  tier: string;
+  price: string;
+  ticketUrl: string;
+}) {
+  const tierLabel =
+    opts.tier === "REGULAR"
+      ? "Regular Ticket"
+      : "Unlimited Ticket";
+
+  await sendEmail({
+    to: opts.to,
+    subject: "ROCSAUT 2026 Halloween Party — Your Ticket",
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #222;">
+        <h2>ROCSAUT 2026 Halloween Party</h2>
+
+        <p>Hi ${opts.name},</p>
+
+        <p>
+          Your ticket purchase has been confirmed.
+        </p>
+
+        <div style="
+          margin: 20px 0;
+          padding: 16px;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          background: #f8f8f8;
+        ">
+          <p><strong>Ticket Type:</strong> ${tierLabel}</p>
+          <p><strong>Price:</strong> CA$${opts.price}</p>
+          <p><strong>Date:</strong> October 23, 2026</p>
+          <p><strong>Time:</strong> 7:30 PM – 11:30 PM</p>
+          <p><strong>Location:</strong> 38 Grenville St. 2F, Toronto</p>
+        </div>
+
+        <p>
+          Your ticket is available here:
+        </p>
+
+        <p>
+          <a
+            href="${opts.ticketUrl}"
+            style="
+              display: inline-block;
+              padding: 12px 20px;
+              background: #111;
+              color: #fff;
+              text-decoration: none;
+              border-radius: 6px;
+            "
+          >
+            View My Ticket
+          </a>
+        </p>
+
+        <p>
+          Please keep this email and have your ticket ready when you arrive.
+        </p>
+
+        <p>
+          ROCSAUT Team
+        </p>
+      </div>
+    `,
+  });
+}
