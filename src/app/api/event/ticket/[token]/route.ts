@@ -24,8 +24,8 @@ export async function GET(
         price: string;
         status: string;
         event_title: string;
-        start_at: Date;
-        end_at: Date;
+        start_at: string;
+        end_at: string;
         location: string;
       }>
     >`
@@ -37,8 +37,8 @@ export async function GET(
         et.price::text AS price,
         et.status,
         e.title AS event_title,
-        e."startAt" AS start_at,
-        e."endAt" AS end_at,
+        to_char(e."startAt", 'YYYY-MM-DD"T"HH24:MI:SS') AS start_at,
+        to_char(e."endAt", 'YYYY-MM-DD"T"HH24:MI:SS') AS end_at,
         e.location
       FROM "EventTicket" et
       JOIN "Event" e
