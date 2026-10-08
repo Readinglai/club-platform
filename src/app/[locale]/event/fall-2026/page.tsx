@@ -45,6 +45,7 @@ export default function Fall2026EventPage() {
 
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [waiverAccepted, setWaiverAccepted] = useState(false);
+  const [showWaiver, setShowWaiver] = useState(false);
 
   const [verifying, setVerifying] = useState(false);
 
@@ -466,6 +467,29 @@ export default function Fall2026EventPage() {
                 3. Membership
               </h2>
 
+              <div className="mt-4 space-y-1">
+                <p
+                  className="text-sm font-medium"
+                  style={{ color: PRIMARY }}
+                >
+                  ROCSAUT members receive $5 off on this event.
+                </p>
+
+                <p className="text-sm text-gray-500">
+                  Not a member?{" "}
+                  <a
+                    href="https://forms.gle/z9eU3aVh2rMCeX858"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium underline underline-offset-2"
+                    style={{ color: PRIMARY }}
+                  >
+                    Sign up here
+                  </a>{" "}
+                  and get member pricing for future events.
+                </p>
+              </div>
+
               <label className="flex items-center gap-3 mt-5 cursor-pointer">
                 <input
                   type="checkbox"
@@ -625,7 +649,7 @@ export default function Fall2026EventPage() {
                 </label>
 
                 {/* Waiver */}
-                <label className="flex items-start gap-3 cursor-pointer">
+                <div className="flex items-start gap-3">
                   <input
                     type="checkbox"
                     checked={waiverAccepted}
@@ -636,10 +660,18 @@ export default function Fall2026EventPage() {
                   />
 
                   <span className="text-sm text-gray-600">
-                    I have read and agree to the waiver and event
-                    policies.
+                    I have read and agree to the{" "}
+                    <button
+                      type="button"
+                      onClick={() => setShowWaiver(true)}
+                      className="font-medium underline underline-offset-2"
+                      style={{ color: PRIMARY }}
+                    >
+                      waiver and event policies
+                    </button>
+                    .
                   </span>
-                </label>
+                </div>
 
               </div>
 
@@ -658,7 +690,6 @@ export default function Fall2026EventPage() {
                   <li>
                     • Sign Up closes on 10/22 11:59 PM.
                   </li>
-                  <li>• No Refunds.</li>
                   <li>• Spots are limited.</li>
                   <li>
                     • $150 cleaning fee will be charged for vomiting
@@ -773,6 +804,137 @@ export default function Fall2026EventPage() {
 
         </div>
       </div>
+
+      {/* Waiver & Disclaimer Modal */}
+      {showWaiver && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="waiver-title"
+        >
+          <div className="w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-2xl bg-white shadow-xl">
+
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+              <h2
+                id="waiver-title"
+                className="text-lg font-semibold"
+                style={{ color: PRIMARY }}
+              >
+                Event Waiver & Disclaimer
+              </h2>
+
+              <button
+                type="button"
+                onClick={() => setShowWaiver(false)}
+                className="text-2xl leading-none text-gray-400 hover:text-gray-700"
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="max-h-[70vh] overflow-y-auto px-6 py-6">
+              <div className="space-y-8 text-sm leading-6 text-gray-600">
+
+                {/* 1 */}
+                <section>
+                  <p className="font-semibold text-gray-900 mb-2">
+                    1.
+                  </p>
+
+                  <p className="mb-3">
+                    若在表單交出後因故無法參加本次活動而未事先告知，多倫多大學台灣同學會有權利禁止本人之後活動的參與權。
+                  </p>
+
+                  <p>
+                    If I am unable to attend the event without notifying
+                    ROCSAUT prior to the event-hosted day, ROCSAUT has the
+                    authority to prevent my right to participate in future
+                    events hosted by our club.
+                  </p>
+                </section>
+
+                {/* 2 */}
+                <section>
+                  <p className="font-semibold text-gray-900 mb-2">
+                    2.
+                  </p>
+
+                  <p className="mb-3">
+                    本人在此聲明本人健康及體能均良好，可以應付活動。並適宜自行參加，本人將完全負責本人之安全。若本人之身體狀況有懷疑，應於參加活動前，告知工作人員並由工作人員評估是否適合參加此活動。
+                  </p>
+
+                  <p>
+                    I hereby declare that I am in good health and physical
+                    fitness and can cope with activities. I will be fully
+                    responsible for my safety. If I am in doubt about my
+                    physical condition, I should inform the staff before
+                    participating in the activity. Staff members will assess
+                    whether it is suitable for me to participate in this
+                    activity.
+                  </p>
+                </section>
+
+                {/* 3 */}
+                <section>
+                  <p className="font-semibold text-gray-900 mb-2">
+                    3.
+                  </p>
+
+                  <p className="mb-3">
+                    如本人由於任何原因所致之損傷、疾病、死亡、個人損失及經濟損失，謹此豁免多倫多大學台灣同學會(ROCSAUT [UTSG]) 對於人員因參加相關活動之任何法律責任，以及放棄任何有關之權利、索償及追究行動。
+                  </p>
+
+                  <p>
+                    If I suffer from injury, illness, death, personal loss
+                    and financial loss due to any reason, I hereby exempt the
+                    University of Toronto Republic of China Students
+                    Association at UTSG (ROCSAUT [UTSG]) from any legal
+                    liability for participating in related activities, and I
+                    waive any related rights, claims and investigation
+                    actions.
+                  </p>
+                </section>
+
+                {/* 4 */}
+                <section>
+                  <p className="font-semibold text-gray-900 mb-2">
+                    4.
+                  </p>
+
+                  <p className="mb-3">
+                    多倫多大學台灣同學會保留以上條款之最終解釋權。
+                  </p>
+
+                  <p>
+                    The University of Toronto Taiwan Student Association
+                    reserves the right of final interpretation of the above
+                    terms.
+                  </p>
+                </section>
+
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="border-t border-gray-100 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setShowWaiver(false)}
+                className="w-full rounded-lg px-4 py-2.5 text-sm font-medium text-white"
+                style={{ backgroundColor: PRIMARY }}
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </main>
   );
 }
