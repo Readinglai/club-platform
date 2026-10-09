@@ -26,7 +26,6 @@ const getTierStyles = (tier: string) => {
         light: "bg-green-50",
         border: "border-green-300",
       };
-
     case "STANDARD":
       return {
         page: "bg-blue-600",
@@ -35,7 +34,6 @@ const getTierStyles = (tier: string) => {
         light: "bg-blue-50",
         border: "border-blue-300",
       };
-
     case "UNLIMITED":
       return {
         page: "bg-purple-600",
@@ -44,7 +42,6 @@ const getTierStyles = (tier: string) => {
         light: "bg-purple-50",
         border: "border-purple-300",
       };
-
     default:
       return {
         page: "bg-gray-600",
@@ -72,9 +69,7 @@ const getTicketLabel = (tier: string) => {
 export default function CheckInPage() {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scanLockRef = useRef(false);
-  const scanTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
+  const scanTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [verified, setVerified] = useState(false);
   const [staffCode, setStaffCode] = useState("");
@@ -89,16 +84,13 @@ export default function CheckInPage() {
     const checkExistingVerification = async () => {
       try {
         const response = await fetch("/api/staff/check-in/verify");
-
-        if (response.ok) {
-          setVerified(true);
-        }
+        if (response.ok) setVerified(true);
       } catch {
         // No existing verification.
       }
     };
 
-    checkExistingVerification();
+    void checkExistingVerification();
   }, []);
 
   const verifyStaff = async () => {
@@ -113,12 +105,8 @@ export default function CheckInPage() {
 
       const response = await fetch("/api/staff/check-in/verify", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          code: staffCode.trim(),
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: staffCode.trim() }),
       });
 
       const data = await response.json();
@@ -132,8 +120,8 @@ export default function CheckInPage() {
 
       setVerified(true);
       setStaffCode("");
-    } catch (error) {
-      console.error("Staff verification error:", error);
+    } catch (err) {
+      console.error("Staff verification error:", err);
       setVerificationError("Unable to verify. Please try again.");
     } finally {
       setVerifying(false);
@@ -159,9 +147,7 @@ export default function CheckInPage() {
 
       const response = await fetch("/api/event/check-in", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
       });
 
@@ -175,8 +161,8 @@ export default function CheckInPage() {
       }
 
       setResult(data);
-    } catch (error) {
-      console.error("Check-in error:", error);
+    } catch (err) {
+      console.error("Check-in error:", err);
       setError("Something went wrong. Please try again.");
     }
   };
@@ -211,24 +197,18 @@ export default function CheckInPage() {
           fps: 10,
           qrbox: (viewWidth, viewHeight) => {
             const size = Math.max(
-              160,
-              Math.min(220, viewWidth - 32, viewHeight - 32)
+              140,
+              Math.min(210, viewWidth - 24, viewHeight - 24)
             );
 
-            return {
-              width: size,
-              height: size,
-            };
+            return { width: size, height: size };
           },
           aspectRatio: 1,
         },
         async (decodedText) => {
-          if (scanLockRef.current) {
-            return;
-          }
+          if (scanLockRef.current) return;
 
           scanLockRef.current = true;
-
           await checkIn(decodedText);
 
           scanTimeoutRef.current = setTimeout(() => {
@@ -241,8 +221,8 @@ export default function CheckInPage() {
       );
 
       setScanning(true);
-    } catch (error) {
-      console.error("Scanner error:", error);
+    } catch (err) {
+      console.error("Scanner error:", err);
       setError(
         "Unable to access the camera. Please allow camera permission and try again."
       );
@@ -268,8 +248,8 @@ export default function CheckInPage() {
 
     try {
       await scanner.stop();
-    } catch (error) {
-      console.error("Scanner stop error:", error);
+    } catch (err) {
+      console.error("Scanner stop error:", err);
     }
 
     scannerRef.current = null;
@@ -283,44 +263,36 @@ export default function CheckInPage() {
       }
 
       const scanner = scannerRef.current;
-
       if (scanner) {
         scanner.stop().catch(() => {});
       }
     };
   }, []);
 
+  // Preserve the ticket color whenever the API returns ticket details.
   const getPageBackground = () => {
-    if (!result) {
-      return "bg-[#1a2744]";
-    }
-
-    if (
-      result.status === "already_checked_in" ||
-      !result.success
-    ) {
-      return "bg-red-600";
-    }
+    if (!result) return "bg-[#1a2744]";
 
     if (result.ticket) {
       return getTierStyles(result.ticket.tier).page;
     }
 
-    return "bg-gray-600";
+    if (!result.success || result.status === "already_checked_in") {
+      return "bg-red-600";
+    }
+
+    return "bg-[#1a2744]";
   };
 
   const getResultCardStyle = () => {
-    if (!result) {
-      return "";
+    if (!result) return "";
+
+    if (result.ticket) {
+      const styles = getTierStyles(result.ticket.tier);
+      return `${styles.border} ${styles.light}`;
     }
 
-    if (result.success && result.ticket) {
-      return `${getTierStyles(result.ticket.tier).border} ${
-        getTierStyles(result.ticket.tier).light
-      }`;
-    }
-
-    if (result.status === "already_checked_in") {
+    if (!result.success || result.status === "already_checked_in") {
       return "border-red-300 bg-red-50";
     }
 
@@ -328,31 +300,33 @@ export default function CheckInPage() {
   };
 
   const getResultTextStyle = () => {
-    if (!result) {
-      return "";
+    if (!result) return "";
+
+    if (result.status === "already_checked_in") {
+      return "text-red-800";
     }
 
     if (result.success) {
       return "text-green-800";
     }
 
-    if (result.status === "already_checked_in") {
-      return "text-red-800";
-    }
-
     return "text-gray-800";
   };
+
+  const showFailure =
+    !!result &&
+    (!result.success || result.status === "already_checked_in");
 
   // Staff verification screen
   if (!verified) {
     return (
-      <main className="flex min-h-[100dvh] items-center justify-center bg-[#1a2744] px-5 py-6">
+      <main className="fixed inset-0 flex items-center justify-center overflow-hidden bg-[#1a2744] px-4 py-3">
         <div className="w-full max-w-sm">
-          <div className="mb-6 text-center text-white">
+          <div className="mb-4 text-center text-white">
             <h1 className="text-3xl font-black tracking-widest">
               ROCSAUT
             </h1>
-            <p className="mt-2 text-sm font-medium tracking-[0.2em] text-white/70">
+            <p className="mt-1 text-xs font-medium tracking-[0.2em] text-white/70">
               EVENT CHECK-IN
             </p>
           </div>
@@ -362,7 +336,7 @@ export default function CheckInPage() {
               event.preventDefault();
               void verifyStaff();
             }}
-            className="rounded-3xl bg-white p-6 shadow-2xl"
+            className="rounded-3xl bg-white p-5 shadow-2xl"
           >
             <h2 className="text-xl font-bold text-[#1a2744]">
               Staff Verification
@@ -374,7 +348,7 @@ export default function CheckInPage() {
 
             <label
               htmlFor="staff-code"
-              className="mt-5 block text-sm font-semibold text-[#1a2744]"
+              className="mt-4 block text-sm font-semibold text-[#1a2744]"
             >
               Staff Access Code
             </label>
@@ -401,7 +375,7 @@ export default function CheckInPage() {
             <button
               type="submit"
               disabled={verifying}
-              className="mt-5 w-full rounded-xl bg-[#1a2744] px-4 py-3 font-bold text-white transition active:scale-[0.99] disabled:opacity-60"
+              className="mt-4 w-full rounded-xl bg-[#1a2744] px-4 py-3 font-bold text-white disabled:opacity-60"
             >
               {verifying ? "Verifying..." : "Continue"}
             </button>
@@ -412,90 +386,89 @@ export default function CheckInPage() {
   }
 
   const ticketTier = result?.ticket?.tier;
-  const ticketStyles = ticketTier
-    ? getTierStyles(ticketTier)
-    : null;
-
-  const showFailure =
-    !!result &&
-    (!result.success || result.status === "already_checked_in");
+  const ticketStyles = ticketTier ? getTierStyles(ticketTier) : null;
 
   return (
     <main
-      className={`flex min-h-[100dvh] items-center justify-center overflow-x-hidden px-4 py-5 transition-colors duration-300 ${getPageBackground()}`}
+      className={`fixed inset-0 flex items-center justify-center overflow-hidden px-3 py-2 transition-colors duration-300 ${getPageBackground()}`}
     >
-      <div className="flex w-full max-w-sm flex-col items-center">
-        {/* Branding */}
-        <div className="mb-5 text-center text-white">
-          <p className="text-xs font-bold tracking-[0.3em] text-white/70">
+      <div className="flex max-h-full w-full max-w-sm flex-col items-center justify-center gap-2">
+        {/* Header */}
+        <div className="shrink-0 text-center text-white">
+          <p className="text-[10px] font-bold tracking-[0.3em] text-white/75">
             ROCSAUT
           </p>
-          <h1 className="mt-1 text-2xl font-black tracking-wide">
+          <h1 className="text-xl font-black tracking-wide">
             EVENT CHECK-IN
           </h1>
         </div>
 
-        {/* Main scanner panel */}
-        <section className="w-full overflow-hidden rounded-3xl bg-white shadow-2xl">
-          {/* Ticket type label */}
-          <div className="px-5 pb-4 pt-5 text-center">
-            <p className="text-xs font-bold tracking-[0.2em] text-gray-400">
+        {/* Scanner panel */}
+        <section className="flex max-h-full w-full flex-col overflow-hidden rounded-3xl bg-white shadow-2xl">
+          {/* Ticket type */}
+          <div className="shrink-0 px-4 pb-2 pt-3 text-center">
+            <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400">
               {result?.ticket
                 ? "TICKET TYPE"
-                : result && showFailure
+                : showFailure
                   ? "CHECK-IN FAILED"
                   : "READY TO SCAN"}
             </p>
 
-            {result?.ticket ? (
-              <div
-                className={`mx-auto mt-2 flex min-h-14 items-center justify-center rounded-2xl px-4 py-2 text-2xl font-black tracking-wide ${
-                  ticketStyles?.badge ?? "bg-gray-700 text-white"
-                }`}
-              >
-                {getTicketLabel(result.ticket.tier)}
-              </div>
-            ) : (
-              <div className="mt-2 flex min-h-14 items-center justify-center rounded-2xl bg-[#1a2744] px-4 py-2 text-2xl font-black tracking-wide text-white">
-                {showFailure ? "INVALID" : "SCAN TICKET"}
-              </div>
-            )}
+            <div
+              className={`mt-1.5 flex min-h-10 items-center justify-center rounded-xl px-3 py-2 text-xl font-black tracking-wide ${
+                result?.ticket
+                  ? ticketStyles?.badge
+                  : showFailure
+                    ? "bg-red-600 text-white"
+                    : "bg-[#1a2744] text-white"
+              }`}
+            >
+              {result?.ticket
+                ? getTicketLabel(result.ticket.tier)
+                : showFailure
+                  ? "INVALID"
+                  : "SCAN TICKET"}
+            </div>
           </div>
 
-          {/* Scanner viewport */}
-          <div className="mx-4 overflow-hidden rounded-2xl bg-[#101827]">
+          {/* QR scanner */}
+          <div className="mx-3 shrink-0 overflow-hidden rounded-2xl bg-[#101827]">
             <div
               id="qr-reader"
-              className="min-h-[240px] overflow-hidden sm:min-h-[280px] [&_video]:!w-full [&_video]:!object-cover [&_img]:mx-auto"
+              className="w-full overflow-hidden [&_video]:!w-full [&_video]:!object-cover [&_img]:mx-auto"
+              style={{
+                height: scanning ? "min(32dvh, 230px)" : "72px",
+              }}
             />
 
             {!scanning && (
-              <div className="px-3 py-3 text-center text-xs font-medium text-white/60">
+              <p className="px-2 py-2 text-center text-[10px] font-medium text-white/60">
                 Camera is paused
-              </div>
+              </p>
             )}
           </div>
 
-          {/* Scan result */}
+          {/* Result */}
           {result && (
             <div
               aria-live="polite"
-              className={`mx-4 mt-4 rounded-2xl border p-4 ${getResultCardStyle()}`}
+              className={`mx-3 mt-2 shrink-0 rounded-xl border p-3 ${getResultCardStyle()}`}
             >
               <p
-                className={`text-center text-lg font-black leading-snug ${getResultTextStyle()}`}
+                className={`text-center text-sm font-black leading-snug ${getResultTextStyle()}`}
               >
                 {result.message}
               </p>
 
               {result.ticket && (
                 <>
-                  <p className="mt-2 break-words text-center text-xl font-bold text-[#1a2744]">
+                  <p className="mt-1 break-words text-center text-lg font-bold text-[#1a2744]">
                     {result.ticket.name}
                   </p>
 
                   <p
-                    className={`mt-2 text-center text-sm font-extrabold ${
+                    className={`mt-1 text-center text-xs font-extrabold ${
                       ticketStyles?.text ?? "text-gray-800"
                     }`}
                   >
@@ -511,7 +484,7 @@ export default function CheckInPage() {
               )}
 
               {result.checkedInAt && (
-                <p className="mt-2 text-center text-xs text-gray-500">
+                <p className="mt-1 text-center text-[10px] text-gray-500">
                   Checked in at{" "}
                   {new Date(result.checkedInAt).toLocaleTimeString()}
                 </p>
@@ -519,20 +492,20 @@ export default function CheckInPage() {
             </div>
           )}
 
-          {/* Scanner errors */}
+          {/* Error */}
           {error && (
-            <div className="mx-4 mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-center text-sm font-semibold text-red-800">
+            <p className="mx-3 mt-2 shrink-0 rounded-xl border border-red-200 bg-red-50 p-2 text-center text-xs font-semibold text-red-800">
               {error}
-            </div>
+            </p>
           )}
 
           {/* Controls */}
-          <div className="p-4">
+          <div className="shrink-0 p-3">
             {!scanning ? (
               <button
                 type="button"
                 onClick={() => void startScanner()}
-                className="w-full rounded-2xl bg-[#1a2744] px-4 py-4 text-base font-extrabold text-white shadow-sm transition active:scale-[0.98]"
+                className="w-full rounded-xl bg-[#1a2744] px-4 py-3 text-sm font-extrabold text-white transition active:scale-[0.98]"
               >
                 START SCANNER
               </button>
@@ -540,7 +513,7 @@ export default function CheckInPage() {
               <button
                 type="button"
                 onClick={() => void stopScanner()}
-                className="w-full rounded-2xl border-2 border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-600 transition active:scale-[0.98]"
+                className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-600 transition active:scale-[0.98]"
               >
                 STOP SCANNER
               </button>
@@ -548,8 +521,7 @@ export default function CheckInPage() {
           </div>
         </section>
 
-        {/* Footer hint */}
-        <p className="mt-4 text-center text-xs font-medium text-white/75">
+        <p className="shrink-0 text-center text-[10px] font-medium text-white/80">
           {scanning
             ? "Point the camera at the ticket QR code"
             : "Start the scanner when ready"}
