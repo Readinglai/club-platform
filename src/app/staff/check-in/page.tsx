@@ -20,54 +20,61 @@ const getTierStyles = (tier: string) => {
   switch (tier) {
     case "LITE":
       return {
+        page: "bg-green-600",
         badge: "bg-green-600 text-white",
-        card: "border-green-300 bg-green-50",
         text: "text-green-800",
+        light: "bg-green-50",
+        border: "border-green-300",
       };
 
     case "STANDARD":
       return {
+        page: "bg-blue-600",
         badge: "bg-blue-600 text-white",
-        card: "border-blue-300 bg-blue-50",
         text: "text-blue-800",
+        light: "bg-blue-50",
+        border: "border-blue-300",
       };
 
     case "UNLIMITED":
       return {
+        page: "bg-purple-600",
         badge: "bg-purple-600 text-white",
-        card: "border-purple-300 bg-purple-50",
         text: "text-purple-800",
+        light: "bg-purple-50",
+        border: "border-purple-300",
       };
 
     default:
       return {
+        page: "bg-gray-600",
         badge: "bg-gray-700 text-white",
-        card: "border-gray-300 bg-gray-50",
         text: "text-gray-800",
+        light: "bg-gray-50",
+        border: "border-gray-300",
       };
   }
 };
 
-const getTierName = (tier: string) => {
+const getTicketLabel = (tier: string) => {
   switch (tier) {
     case "LITE":
-      return "LITE";
-
+      return "LITE (2)";
     case "STANDARD":
-      return "STANDARD";
-
+      return "STANDARD (4)";
     case "UNLIMITED":
       return "UNLIMITED";
-
     default:
-      return tier;
+      return "UNKNOWN TICKET";
   }
 };
 
 export default function CheckInPage() {
   const scannerRef = useRef<Html5Qrcode | null>(null);
-  const scanningRef = useRef(false);
   const scanLockRef = useRef(false);
+  const scanTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
 
   const [verified, setVerified] = useState(false);
   const [staffCode, setStaffCode] = useState("");
@@ -81,9 +88,7 @@ export default function CheckInPage() {
   useEffect(() => {
     const checkExistingVerification = async () => {
       try {
-        const response = await fetch("/api/staff/check-in/verify", {
-          method: "GET",
-        });
+        const response = await fetch("/api/staff/check-in/verify");
 
         if (response.ok) {
           setVerified(true);
@@ -129,9 +134,7 @@ export default function CheckInPage() {
       setStaffCode("");
     } catch (error) {
       console.error("Staff verification error:", error);
-      setVerificationError(
-        "Unable to verify. Please try again."
-      );
+      setVerificationError("Unable to verify. Please try again.");
     } finally {
       setVerifying(false);
     }
@@ -159,12 +162,10 @@ export default function CheckInPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          token,
-        }),
+        body: JSON.stringify({ token }),
       });
 
-      const data = await response.json();
+      const data: ScanResult = await response.json();
 
       if (response.status === 401) {
         setVerified(false);
@@ -186,10 +187,19 @@ export default function CheckInPage() {
       setResult(null);
       scanLockRef.current = false;
 
+      if (scanTimeoutRef.current) {
+        clearTimeout(scanTimeoutRef.current);
+        scanTimeoutRef.current = null;
+      }
+
       if (scannerRef.current) {
         try {
           await scannerRef.current.stop();
-        } catch {}
+        } catch {
+          // Scanner may already be stopped.
+        }
+
+        scannerRef.current = null;
       }
 
       const scanner = new Html5Qrcode("qr-reader");
@@ -199,10 +209,18 @@ export default function CheckInPage() {
         { facingMode: "environment" },
         {
           fps: 10,
-          qrbox: {
-            width: 250,
-            height: 250,
+          qrbox: (viewWidth, viewHeight) => {
+            const size = Math.max(
+              160,
+              Math.min(220, viewWidth - 32, viewHeight - 32)
+            );
+
+            return {
+              width: size,
+              height: size,
+            };
           },
+          aspectRatio: 1,
         },
         async (decodedText) => {
           if (scanLockRef.current) {
@@ -213,16 +231,15 @@ export default function CheckInPage() {
 
           await checkIn(decodedText);
 
-          setTimeout(() => {
+          scanTimeoutRef.current = setTimeout(() => {
             scanLockRef.current = false;
           }, SCAN_DELAY);
         },
         () => {
-          // Ignore QR scan failures while searching.
+          // Ignore scan failures while searching for a QR code.
         }
       );
 
-      scanningRef.current = true;
       setScanning(true);
     } catch (error) {
       console.error("Scanner error:", error);
@@ -230,7 +247,6 @@ export default function CheckInPage() {
         "Unable to access the camera. Please allow camera permission and try again."
       );
       scannerRef.current = null;
-      scanningRef.current = false;
       setScanning(false);
     }
   };
@@ -238,7 +254,15 @@ export default function CheckInPage() {
   const stopScanner = async () => {
     const scanner = scannerRef.current;
 
+    if (scanTimeoutRef.current) {
+      clearTimeout(scanTimeoutRef.current);
+      scanTimeoutRef.current = null;
+    }
+
+    scanLockRef.current = false;
+
     if (!scanner) {
+      setScanning(false);
       return;
     }
 
@@ -249,13 +273,15 @@ export default function CheckInPage() {
     }
 
     scannerRef.current = null;
-    scanningRef.current = false;
-    scanLockRef.current = false;
     setScanning(false);
   };
 
   useEffect(() => {
     return () => {
+      if (scanTimeoutRef.current) {
+        clearTimeout(scanTimeoutRef.current);
+      }
+
       const scanner = scannerRef.current;
 
       if (scanner) {
@@ -264,251 +290,269 @@ export default function CheckInPage() {
     };
   }, []);
 
-  const getResultStyle = () => {
-    if (!result) return "";
+  const getPageBackground = () => {
+    if (!result) {
+      return "bg-[#1a2744]";
+    }
+
+    if (
+      result.status === "already_checked_in" ||
+      !result.success
+    ) {
+      return "bg-red-600";
+    }
 
     if (result.ticket) {
-      return getTierStyles(result.ticket.tier).card;
+      return getTierStyles(result.ticket.tier).page;
+    }
+
+    return "bg-gray-600";
+  };
+
+  const getResultCardStyle = () => {
+    if (!result) {
+      return "";
+    }
+
+    if (result.success && result.ticket) {
+      return `${getTierStyles(result.ticket.tier).border} ${
+        getTierStyles(result.ticket.tier).light
+      }`;
     }
 
     if (result.status === "already_checked_in") {
-      return "border-[#e3c4c4] bg-[#fbf2f2]";
+      return "border-red-300 bg-red-50";
     }
 
-    if (result.status === "void") {
-      return "border-gray-300 bg-gray-100";
-    }
-
-    return "border-gray-200 bg-gray-50";
+    return "border-gray-300 bg-gray-50";
   };
 
   const getResultTextStyle = () => {
-    if (!result) return "";
+    if (!result) {
+      return "";
+    }
 
     if (result.success) {
-      return "text-[#1a2744]";
+      return "text-green-800";
     }
 
     if (result.status === "already_checked_in") {
-      return "text-[#8f3030]";
+      return "text-red-800";
     }
 
-    if (result.status === "void") {
-      return "text-gray-700";
-    }
-
-    return "text-gray-700";
+    return "text-gray-800";
   };
 
+  // Staff verification screen
   if (!verified) {
     return (
-      <main className="min-h-screen bg-[#f3f6fa] px-4 py-8">
-        <div className="flex min-h-[80vh] items-center justify-center">
-          <div className="w-full max-w-md">
-            <div className="mb-7 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#1a2744]">
-                <span className="text-xl font-bold text-white">
-                  R
-                </span>
-              </div>
-
-              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#6b7a90]">
-                ROCSAUT Staff
-              </p>
-
-              <h1 className="mt-2 text-2xl font-bold text-[#1a2744]">
-                Staff Verification
-              </h1>
-
-              <p className="mt-2 text-sm text-[#718096]">
-                Enter the staff access code to open event check-in.
-              </p>
-            </div>
-
-            <div className="rounded-3xl border border-[#dce3ec] bg-white p-6 shadow-sm">
-              <label
-                htmlFor="staff-code"
-                className="block text-sm font-semibold text-[#1a2744]"
-              >
-                Staff Access Code
-              </label>
-
-              <input
-                id="staff-code"
-                type="password"
-                value={staffCode}
-                onChange={(event) => {
-                  setStaffCode(event.target.value);
-                  setVerificationError("");
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    verifyStaff();
-                  }
-                }}
-                placeholder="Enter access code"
-                autoComplete="off"
-                className="mt-2 w-full rounded-xl border border-[#ccd5e2] bg-white px-4 py-3.5 text-base text-[#1a2744] outline-none transition placeholder:text-[#9aa5b5] focus:border-[#1a2744] focus:ring-2 focus:ring-[#1a2744]/10"
-              />
-
-              {verificationError && (
-                <div className="mt-4 rounded-xl border border-[#e3c4c4] bg-[#fbf2f2] px-4 py-3">
-                  <p className="text-center text-sm font-medium text-[#8f3030]">
-                    {verificationError}
-                  </p>
-                </div>
-              )}
-
-              <button
-                type="button"
-                onClick={verifyStaff}
-                disabled={verifying}
-                className="mt-5 w-full rounded-xl bg-[#1a2744] px-4 py-3.5 font-semibold text-white transition hover:bg-[#253657] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {verifying ? "Verifying..." : "Continue"}
-              </button>
-            </div>
-
-            <p className="mt-5 text-center text-xs text-[#8a96a8]">
-              ROCSAUT Halloween Party · Staff Check-in
+      <main className="flex min-h-[100dvh] items-center justify-center bg-[#1a2744] px-5 py-6">
+        <div className="w-full max-w-sm">
+          <div className="mb-6 text-center text-white">
+            <h1 className="text-3xl font-black tracking-widest">
+              ROCSAUT
+            </h1>
+            <p className="mt-2 text-sm font-medium tracking-[0.2em] text-white/70">
+              EVENT CHECK-IN
             </p>
           </div>
+
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              void verifyStaff();
+            }}
+            className="rounded-3xl bg-white p-6 shadow-2xl"
+          >
+            <h2 className="text-xl font-bold text-[#1a2744]">
+              Staff Verification
+            </h2>
+
+            <p className="mt-2 text-sm text-gray-500">
+              Enter your staff access code to continue.
+            </p>
+
+            <label
+              htmlFor="staff-code"
+              className="mt-5 block text-sm font-semibold text-[#1a2744]"
+            >
+              Staff Access Code
+            </label>
+
+            <input
+              id="staff-code"
+              type="password"
+              value={staffCode}
+              onChange={(event) => {
+                setStaffCode(event.target.value);
+                setVerificationError("");
+              }}
+              placeholder="Enter access code"
+              autoComplete="off"
+              className="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 text-base text-gray-900 outline-none focus:border-[#1a2744] focus:ring-2 focus:ring-[#1a2744]/20"
+            />
+
+            {verificationError && (
+              <p className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                {verificationError}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={verifying}
+              className="mt-5 w-full rounded-xl bg-[#1a2744] px-4 py-3 font-bold text-white transition active:scale-[0.99] disabled:opacity-60"
+            >
+              {verifying ? "Verifying..." : "Continue"}
+            </button>
+          </form>
         </div>
       </main>
     );
   }
 
+  const ticketTier = result?.ticket?.tier;
+  const ticketStyles = ticketTier
+    ? getTierStyles(ticketTier)
+    : null;
+
+  const showFailure =
+    !!result &&
+    (!result.success || result.status === "already_checked_in");
+
   return (
-    <main className="min-h-screen bg-[#f3f6fa] px-4 py-8">
-      <div className="mx-auto w-full max-w-md">
-        <div className="mb-7 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#1a2744]">
-            <span className="text-lg font-bold text-white">R</span>
-          </div>
-
-          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#6b7a90]">
-            ROCSAUT Staff
+    <main
+      className={`flex min-h-[100dvh] items-center justify-center overflow-x-hidden px-4 py-5 transition-colors duration-300 ${getPageBackground()}`}
+    >
+      <div className="flex w-full max-w-sm flex-col items-center">
+        {/* Branding */}
+        <div className="mb-5 text-center text-white">
+          <p className="text-xs font-bold tracking-[0.3em] text-white/70">
+            ROCSAUT
           </p>
-
-          <h1 className="mt-2 text-2xl font-bold text-[#1a2744]">
-            Event Check-in
+          <h1 className="mt-1 text-2xl font-black tracking-wide">
+            EVENT CHECK-IN
           </h1>
-
-          <p className="mt-1 text-sm text-[#718096]">
-            Scan a ticket QR code to check in
-          </p>
         </div>
 
-        <div className="overflow-hidden rounded-3xl border border-[#dce3ec] bg-white shadow-sm">
-          <div className="relative overflow-hidden bg-[#101827]">
-            <div
-              id="qr-reader"
-              className="min-h-[320px] overflow-hidden"
-            />
+        {/* Main scanner panel */}
+        <section className="w-full overflow-hidden rounded-3xl bg-white shadow-2xl">
+          {/* Ticket type label */}
+          <div className="px-5 pb-4 pt-5 text-center">
+            <p className="text-xs font-bold tracking-[0.2em] text-gray-400">
+              {result?.ticket
+                ? "TICKET TYPE"
+                : result && showFailure
+                  ? "CHECK-IN FAILED"
+                  : "READY TO SCAN"}
+            </p>
 
-            {!scanning && !result && (
-              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                <div className="rounded-2xl border border-white/20 bg-black/30 px-5 py-3 text-center backdrop-blur-sm">
-                  <p className="text-sm font-medium text-white">
-                    Ready to scan
-                  </p>
-
-                  <p className="mt-1 text-xs text-white/70">
-                    Press Start Scanner below
-                  </p>
-                </div>
+            {result?.ticket ? (
+              <div
+                className={`mx-auto mt-2 flex min-h-14 items-center justify-center rounded-2xl px-4 py-2 text-2xl font-black tracking-wide ${
+                  ticketStyles?.badge ?? "bg-gray-700 text-white"
+                }`}
+              >
+                {getTicketLabel(result.ticket.tier)}
+              </div>
+            ) : (
+              <div className="mt-2 flex min-h-14 items-center justify-center rounded-2xl bg-[#1a2744] px-4 py-2 text-2xl font-black tracking-wide text-white">
+                {showFailure ? "INVALID" : "SCAN TICKET"}
               </div>
             )}
           </div>
 
-          <div className="p-6">
+          {/* Scanner viewport */}
+          <div className="mx-4 overflow-hidden rounded-2xl bg-[#101827]">
+            <div
+              id="qr-reader"
+              className="min-h-[240px] overflow-hidden sm:min-h-[280px] [&_video]:!w-full [&_video]:!object-cover [&_img]:mx-auto"
+            />
+
+            {!scanning && (
+              <div className="px-3 py-3 text-center text-xs font-medium text-white/60">
+                Camera is paused
+              </div>
+            )}
+          </div>
+
+          {/* Scan result */}
+          {result && (
+            <div
+              aria-live="polite"
+              className={`mx-4 mt-4 rounded-2xl border p-4 ${getResultCardStyle()}`}
+            >
+              <p
+                className={`text-center text-lg font-black leading-snug ${getResultTextStyle()}`}
+              >
+                {result.message}
+              </p>
+
+              {result.ticket && (
+                <>
+                  <p className="mt-2 break-words text-center text-xl font-bold text-[#1a2744]">
+                    {result.ticket.name}
+                  </p>
+
+                  <p
+                    className={`mt-2 text-center text-sm font-extrabold ${
+                      ticketStyles?.text ?? "text-gray-800"
+                    }`}
+                  >
+                    {result.ticket.tier === "LITE"
+                      ? "2 DRINK TICKETS"
+                      : result.ticket.tier === "STANDARD"
+                        ? "4 DRINK TICKETS"
+                        : result.ticket.tier === "UNLIMITED"
+                          ? "UNLIMITED DRINKS"
+                          : ""}
+                  </p>
+                </>
+              )}
+
+              {result.checkedInAt && (
+                <p className="mt-2 text-center text-xs text-gray-500">
+                  Checked in at{" "}
+                  {new Date(result.checkedInAt).toLocaleTimeString()}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Scanner errors */}
+          {error && (
+            <div className="mx-4 mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-center text-sm font-semibold text-red-800">
+              {error}
+            </div>
+          )}
+
+          {/* Controls */}
+          <div className="p-4">
             {!scanning ? (
               <button
                 type="button"
-                onClick={startScanner}
-                className="w-full rounded-xl bg-[#1a2744] px-4 py-3.5 font-semibold text-white transition hover:bg-[#253657] active:scale-[0.99]"
+                onClick={() => void startScanner()}
+                className="w-full rounded-2xl bg-[#1a2744] px-4 py-4 text-base font-extrabold text-white shadow-sm transition active:scale-[0.98]"
               >
-                Start Scanner
+                START SCANNER
               </button>
             ) : (
               <button
                 type="button"
-                onClick={stopScanner}
-                className="w-full rounded-xl border border-[#ccd5e2] bg-white px-4 py-3.5 font-semibold text-[#1a2744] transition hover:bg-[#f3f6fa]"
+                onClick={() => void stopScanner()}
+                className="w-full rounded-2xl border-2 border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-600 transition active:scale-[0.98]"
               >
-                Stop Scanner
+                STOP SCANNER
               </button>
             )}
-
-            {error && (
-              <div className="mt-5 rounded-2xl border border-[#e3c4c4] bg-[#fbf2f2] p-4">
-                <p className="text-center text-sm font-medium text-[#8f3030]">
-                  {error}
-                </p>
-              </div>
-            )}
-
-            {result && (
-              <div
-                className={`mt-5 rounded-2xl border p-5 ${getResultStyle()}`}
-              >
-                <div className="text-center">
-                  <p
-                    className={`text-lg font-bold tracking-wide ${getResultTextStyle()}`}
-                  >
-                    {result.message}
-                  </p>
-
-                  {result.ticket && (
-                    <>
-                      <p className="mt-4 text-xl font-bold text-[#1a2744]">
-                        {result.ticket.name}
-                      </p>
-
-                      <div
-                        className={`mx-auto mt-4 flex min-h-[64px] max-w-[280px] items-center justify-center rounded-2xl px-5 py-3 ${getTierStyles(result.ticket.tier).badge}`}
-                      >
-                        <span className="text-2xl font-black tracking-[0.12em]">
-                          {getTierName(result.ticket.tier)}
-                        </span>
-                      </div>
-
-                      <p
-                        className={`mt-3 text-sm font-bold ${getTierStyles(result.ticket.tier).text}`}
-                      >
-                        {result.ticket.tier === "LITE"
-                          ? "2 DRINK TICKETS"
-                          : result.ticket.tier === "STANDARD"
-                            ? "4 DRINK TICKETS"
-                            : result.ticket.tier === "UNLIMITED"
-                              ? "UNLIMITED DRINKS"
-                              : ""}
-                      </p>
-                    </>
-                  )}
-
-                  {result.checkedInAt && (
-                    <p className="mt-4 text-xs text-[#718096]">
-                      Checked in at{" "}
-                      {new Date(
-                        result.checkedInAt
-                      ).toLocaleTimeString()}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {scanning && (
-              <p className="mt-4 text-center text-xs text-[#8a96a8]">
-                Scanner is ready for the next ticket
-              </p>
-            )}
           </div>
-        </div>
+        </section>
 
-        <p className="mt-5 text-center text-xs text-[#8a96a8]">
-          ROCSAUT Halloween Party · Staff Check-in
+        {/* Footer hint */}
+        <p className="mt-4 text-center text-xs font-medium text-white/75">
+          {scanning
+            ? "Point the camera at the ticket QR code"
+            : "Start the scanner when ready"}
         </p>
       </div>
     </main>
