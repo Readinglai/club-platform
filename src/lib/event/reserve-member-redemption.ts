@@ -1,4 +1,6 @@
+
 import { db } from "@/lib/db";
+import { stripe } from "@/lib/stripe";
 
 type ReserveMemberRedemptionResult =
   | {
@@ -16,8 +18,8 @@ export async function reserveMemberRedemption(
   stripeSessionId: string
 ): Promise<ReserveMemberRedemptionResult> {
   return await db.$transaction(async (tx) => {
-    // Lock this member + event combination so two checkouts
-    // cannot reserve the same member pricing at the same time.
+    // Prevent concurrent checkout attempts from reserving
+    // the same member discount for the same event.
     await tx.$executeRaw`
       SELECT pg_advisory_xact_lock(
         hashtext(${`${memberCode}:${eventId}`})
@@ -28,10 +30,10 @@ export async function reserveMemberRedemption(
       Array<{
         id: string;
         status: string;
-        locked_at: Date | null;
+        stripe_session_id: string | null;
       }>
     >`
-      SELECT id, status, locked_at
+      SELECT id, status, stripe_session_id
       FROM "MemberRedemption"
       WHERE member_id = ${memberCode}
         AND event_id = ${eventId}
@@ -67,6 +69,7 @@ export async function reserveMemberRedemption(
 
     const redemption = existing[0];
 
+    // A member who has already redeemed the discount cannot use it again.
     if (redemption.status === "used") {
       return {
         success: false,
@@ -74,18 +77,63 @@ export async function reserveMemberRedemption(
       };
     }
 
-    // Still reserved by an active checkout.
-    if (
-      redemption.locked_at &&
-      redemption.locked_at.getTime() > Date.now() - 30 * 60 * 1000
-    ) {
+    // The current checkout already owns this redemption.
+    if (redemption.stripe_session_id === stripeSessionId) {
       return {
-        success: false,
-        reason: "already_reserved",
+        success: true,
+        redemptionId: redemption.id,
       };
     }
 
-    // Previous checkout expired, so reuse the redemption.
+    // Verify the previous Stripe Checkout Session before transferring
+    // the redemption to a new checkout.
+    if (redemption.stripe_session_id) {
+      try {
+        let oldSession = await stripe.checkout.sessions.retrieve(
+          redemption.stripe_session_id
+        );
+
+        if (oldSession.status === "open") {
+          try {
+            oldSession = await stripe.checkout.sessions.expire(
+              redemption.stripe_session_id
+            );
+          } catch {
+            // The old session may have completed or expired concurrently.
+            // Retrieve its latest status before making a decision.
+            oldSession = await stripe.checkout.sessions.retrieve(
+              redemption.stripe_session_id
+            );
+          }
+        }
+
+        // Only an expired session can safely release the old reservation.
+        if (oldSession.status !== "expired") {
+          return {
+            success: false,
+            reason: "already_reserved",
+          };
+        }
+      } catch (error) {
+        console.error(
+          "Could not verify or expire the previous member checkout:",
+          error
+        );
+
+        // If Stripe's status cannot be verified, fail safely.
+        return {
+          success: false,
+          reason: "already_reserved",
+        };
+      }
+
+      // Remove only the previous checkout's hold, never the new session's.
+      await tx.$executeRaw`
+        DELETE FROM "TicketHold"
+        WHERE stripe_session_id = ${redemption.stripe_session_id}
+      `;
+    }
+
     const updated = await tx.$queryRaw<
       Array<{ id: string }>
     >`
@@ -95,8 +143,16 @@ export async function reserveMemberRedemption(
         stripe_session_id = ${stripeSessionId},
         locked_at = NOW()
       WHERE id = ${redemption.id}
+        AND status <> 'used'
       RETURNING id
     `;
+
+    if (updated.length === 0) {
+      return {
+        success: false,
+        reason: "already_used",
+      };
+    }
 
     return {
       success: true,

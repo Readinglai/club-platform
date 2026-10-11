@@ -1,3 +1,4 @@
+
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
@@ -57,10 +58,6 @@ export async function POST(req: Request) {
           break;
         }
 
-        if (!session.id) {
-          break;
-        }
-
         const metadata = session.metadata;
 
         if (
@@ -75,7 +72,6 @@ export async function POST(req: Request) {
             "Stripe session is missing required metadata:",
             session.id
           );
-
           break;
         }
 
@@ -85,46 +81,52 @@ export async function POST(req: Request) {
           ? metadata.memberId || null
           : null;
 
-        const existingTickets = await db.$queryRaw<
-          Array<{ id: string; token: string }>
-        >`
-          SELECT id, token
-          FROM "EventTicket"
-          WHERE stripe_session_id = ${session.id}
-          LIMIT 1
-        `;
-
-        if (existingTickets.length > 0) {
-          console.log(
-            `Event ticket already exists for Stripe session ${session.id}.`
-          );
-
-          break;
-        }
-
-        const hold = await db.$queryRaw<
-          Array<{ id: string }>
-        >`
-          SELECT id
-          FROM "TicketHold"
-          WHERE stripe_session_id = ${session.id}
-          LIMIT 1
-        `;
-
-        if (hold.length === 0) {
-          console.error(
-            `No ticket hold found for Stripe session ${session.id}.`
-          );
-
-          break;
-        }
-
         const token = crypto.randomUUID();
+        const price = (session.amount_total ?? 0) / 100;
 
-        const priceInCents = session.amount_total ?? 0;
-        const price = priceInCents / 100;
+        // Serialize processing for this Stripe Session and perform
+        // ticket creation, redemption update, and hold removal atomically.
+        const result = await db.$transaction(async (tx) => {
+          await tx.$executeRaw`
+            SELECT pg_advisory_xact_lock(
+              hashtext(${session.id})
+            )
+          `;
 
-        await db.$transaction(async (tx) => {
+          const existingTickets = await tx.$queryRaw<
+            Array<{ id: string; token: string }>
+          >`
+            SELECT id, token
+            FROM "EventTicket"
+            WHERE stripe_session_id = ${session.id}
+            LIMIT 1
+          `;
+
+          if (existingTickets.length > 0) {
+            return {
+              created: false,
+              token: existingTickets[0].token,
+              reason: "already_exists" as const,
+            };
+          }
+
+          const holds = await tx.$queryRaw<
+            Array<{ id: string }>
+          >`
+            SELECT id
+            FROM "TicketHold"
+            WHERE stripe_session_id = ${session.id}
+            LIMIT 1
+          `;
+
+          if (holds.length === 0) {
+            return {
+              created: false,
+              token: null,
+              reason: "hold_missing" as const,
+            };
+          }
+
           await tx.$executeRaw`
             INSERT INTO "EventTicket" (
               event_id,
@@ -167,6 +169,7 @@ export async function POST(req: Request) {
               WHERE member_id = ${memberId}
                 AND event_id = ${EVENT_ID}
                 AND stripe_session_id = ${session.id}
+                AND status = 'pending'
             `;
           }
 
@@ -174,16 +177,37 @@ export async function POST(req: Request) {
             DELETE FROM "TicketHold"
             WHERE stripe_session_id = ${session.id}
           `;
+
+          return {
+            created: true,
+            token,
+            reason: "created" as const,
+          };
         });
 
+        if (result.reason === "hold_missing") {
+          console.error(
+            `Paid checkout has no ticket hold: ${session.id}. Manual review may be required.`
+          );
+          break;
+        }
+
+        if (!result.created || !result.token) {
+          console.log(
+            `Ticket already processed for Stripe session ${session.id}.`
+          );
+          break;
+        }
+
         console.log(
-          `Event ticket created successfully: ${token}`
+          `Event ticket created successfully: ${result.token}`
         );
 
         const origin = process.env.NEXTAUTH_URL;
 
         if (!origin) {
-          throw new Error("NEXTAUTH_URL is not configured.");
+          console.error("NEXTAUTH_URL is not configured.");
+          break;
         }
 
         try {
@@ -192,7 +216,7 @@ export async function POST(req: Request) {
             name: metadata.name,
             tier,
             price: price.toFixed(2),
-            ticketUrl: `${origin}/ticket/${token}`,
+            ticketUrl: `${origin}/ticket/${result.token}`,
           });
 
           console.log(

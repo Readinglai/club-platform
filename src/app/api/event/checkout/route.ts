@@ -1,3 +1,4 @@
+
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
@@ -10,6 +11,90 @@ const VALID_TIERS = ["LITE", "STANDARD", "UNLIMITED"] as const;
 
 function normalizeName(value: string) {
   return value.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function normalizeEmail(value: string) {
+  return value.trim().toLowerCase();
+}
+
+/**
+ * Release previous checkout holds belonging to this same email.
+ *
+ * A hold is released only after Stripe confirms that its Checkout
+ * Session has expired. Open sessions are explicitly expired first.
+ * Completed or unverifiable sessions are left untouched.
+ */
+async function releasePreviousCheckoutHoldsForEmail(
+  email: string,
+  eventId: string
+) {
+  const holds = await db.$queryRaw<
+    Array<{ stripe_session_id: string }>
+  >`
+    SELECT stripe_session_id
+    FROM "TicketHold"
+    WHERE event_id = ${eventId}
+      AND expires_at > NOW()
+  `;
+
+  for (const hold of holds) {
+    const oldSessionId = hold.stripe_session_id;
+
+    try {
+      let oldSession =
+        await stripe.checkout.sessions.retrieve(oldSessionId);
+
+      // Only consider sessions belonging to this event and email.
+      const sessionEmail = normalizeEmail(
+        oldSession.metadata?.email ??
+          oldSession.customer_email ??
+          ""
+      );
+
+      if (
+        oldSession.metadata?.eventId !== eventId ||
+        sessionEmail !== normalizeEmail(email)
+      ) {
+        continue;
+      }
+
+      if (oldSession.status === "open") {
+        try {
+          oldSession =
+            await stripe.checkout.sessions.expire(oldSessionId);
+        } catch {
+          // The session may have completed or expired concurrently.
+          oldSession =
+            await stripe.checkout.sessions.retrieve(oldSessionId);
+        }
+      }
+
+      // Never release a hold unless Stripe confirms expiration.
+      if (oldSession.status !== "expired") {
+        continue;
+      }
+
+      await db.$transaction(async (tx) => {
+        await tx.$executeRaw`
+          DELETE FROM "TicketHold"
+          WHERE stripe_session_id = ${oldSessionId}
+        `;
+
+        await tx.$executeRaw`
+          DELETE FROM "MemberRedemption"
+          WHERE stripe_session_id = ${oldSessionId}
+            AND status = 'pending'
+        `;
+      });
+    } catch (error) {
+      // Fail safely: if Stripe's status cannot be verified,
+      // leave the hold in place rather than risk overselling.
+      console.error(
+        `Could not release previous checkout ${oldSessionId}:`,
+        error
+      );
+    }
+  }
 }
 
 export async function POST(req: Request) {
@@ -28,9 +113,7 @@ export async function POST(req: Request) {
       waiverAccepted,
     } = body;
 
-    /**
-     * Basic validation
-     */
+    // Basic validation
     if (
       !name?.trim() ||
       !email?.trim() ||
@@ -77,9 +160,7 @@ export async function POST(req: Request) {
       );
     }
 
-    /**
-     * Member validation
-     */
+    // Member validation
     if (isMember) {
       if (!memberId?.trim() || !cardName?.trim()) {
         return NextResponse.json(
@@ -133,10 +214,7 @@ export async function POST(req: Request) {
       }
     }
 
-    /**
-     * Get the backend-controlled ticket price/config.
-     * The frontend never determines the price.
-     */
+    // Get the backend-controlled ticket price and sales deadline.
     const tiers = await db.$queryRaw<
       Array<{
         price: number;
@@ -172,38 +250,25 @@ export async function POST(req: Request) {
       );
     }
 
-    /**
-     * Lite      = $25
-     * Standard  = $42
-     * Unlimited = $45
-     *
-     * Members receive $5 off each tier.
-     */
+    // Release this email's previous expired checkouts before checking
+    // capacity for the new checkout. Other customers' holds are untouched.
+    await releasePreviousCheckoutHoldsForEmail(email.trim(), EVENT_ID);
+
+    // Members receive $5 off each tier.
     const basePrice = Number(ticketTier.price);
     const finalPrice = isMember
       ? Math.max(0, basePrice - 5)
       : basePrice;
 
-    /**
-     * Create the Stripe Checkout Session first.
-     *
-     * The Stripe Session ID is then used as the reservation ID
-     * for both TicketHold and MemberRedemption.
-     *
-     * Stripe Checkout expires after 30 minutes, matching the
-     * ticket reservation hold.
-     */
     const origin =
       req.headers.get("origin") ||
       process.env.NEXTAUTH_URL ||
       "http://localhost:3000";
 
+    // Create the new Stripe Checkout Session.
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-
-      // Keep Stripe Checkout expiration aligned with the 30-minute hold.
       expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
-
       customer_email: email.trim(),
 
       line_items: [
@@ -239,9 +304,7 @@ export async function POST(req: Request) {
       cancel_url: `${origin}/event/fall-2026?payment=cancelled`,
     });
 
-    /**
-     * Reserve capacity for 30 minutes.
-     */
+    // Reserve capacity using the existing database transaction and lock.
     const capacity = await reserveCapacity(
       EVENT_ID,
       tier,
@@ -249,10 +312,6 @@ export async function POST(req: Request) {
     );
 
     if (!capacity.success) {
-      /**
-       * The Stripe session is still open, so expire it because
-       * we could not reserve a ticket.
-       */
       try {
         await stripe.checkout.sessions.expire(session.id);
       } catch (expireError) {
@@ -281,9 +340,7 @@ export async function POST(req: Request) {
       );
     }
 
-    /**
-     * If this is a member purchase, reserve the member pricing.
-     */
+    // Reserve member pricing if applicable.
     if (isMember) {
       const memberRedemption = await reserveMemberRedemption(
         memberId.trim(),
@@ -292,18 +349,11 @@ export async function POST(req: Request) {
       );
 
       if (!memberRedemption.success) {
-        /**
-         * Release the capacity hold.
-         */
         await db.$executeRaw`
           DELETE FROM "TicketHold"
           WHERE id = ${capacity.holdId}
         `;
 
-        /**
-         * Expire the Stripe Checkout Session because the member
-         * reservation could not be created.
-         */
         try {
           await stripe.checkout.sessions.expire(session.id);
         } catch (expireError) {
@@ -328,9 +378,6 @@ export async function POST(req: Request) {
       }
     }
 
-    /**
-     * Checkout Session and reservations are now ready.
-     */
     return NextResponse.json({
       success: true,
       message: "Checkout session created successfully.",
