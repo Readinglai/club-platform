@@ -170,7 +170,7 @@ export default function CheckInPage() {
   const startScanner = async () => {
     try {
       setError("");
-      setResult(null);
+      // Keep the last scanned guest on screen until the next scan replaces it.
       scanLockRef.current = false;
 
       if (scanTimeoutRef.current) {
@@ -398,9 +398,10 @@ export default function CheckInPage() {
 
   return (
     <main
-      className={`fixed inset-0 flex items-center justify-center overflow-hidden px-3 py-3 transition-colors duration-300 sm:px-6 ${getPageBackground()}`}
+      className={`fixed inset-0 flex overflow-y-auto px-3 py-3 transition-colors duration-300 sm:px-6 ${getPageBackground()}`}
     >
-      <div className="flex max-h-full w-full max-w-md flex-col items-center justify-center gap-3">
+      {/* m-auto centers when there is room and scrolls instead of clipping on short screens */}
+      <div className="m-auto flex w-full max-w-md flex-col items-center justify-center gap-3">
         {/* Header */}
         <header className="shrink-0 text-center text-white">
           <p className="text-[10px] font-bold tracking-[0.3em] text-white/70">
@@ -442,7 +443,7 @@ export default function CheckInPage() {
 
           {/* Square scanner viewport */}
           <div className="mx-auto w-full px-4 sm:px-6">
-            <div className="mx-auto w-full overflow-hidden rounded-2xl bg-slate-950 p-1.5 shadow-inner">
+            <div className="relative mx-auto w-full overflow-hidden rounded-2xl bg-slate-950 p-1.5 shadow-inner">
               <div
                 id="qr-reader"
                 className="mx-auto w-full overflow-hidden rounded-xl [&_video]:!h-full [&_video]:!w-full [&_video]:!object-cover [&_img]:mx-auto"
@@ -453,8 +454,9 @@ export default function CheckInPage() {
                 }}
               />
 
+              {/* Overlay (not an extra row) so stopping the camera doesn't change the layout height */}
               {!scanning && (
-                <div className="py-2 text-center text-[11px] font-medium text-slate-400">
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-center text-[11px] font-medium text-slate-400">
                   Camera preview appears here
                 </div>
               )}
@@ -531,7 +533,7 @@ export default function CheckInPage() {
               <button
                 type="button"
                 onClick={() => void startScanner()}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 py-4 text-sm font-extrabold tracking-wide text-white shadow-lg shadow-slate-900/15 transition hover:bg-slate-700 active:scale-[0.99]"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-transparent bg-slate-900 px-4 py-4 text-sm font-extrabold tracking-wide text-white shadow-lg shadow-slate-900/15 transition hover:bg-slate-700 active:scale-[0.99]"
               >
                 <svg
                   aria-hidden="true"
@@ -550,7 +552,7 @@ export default function CheckInPage() {
               <button
                 type="button"
                 onClick={() => void stopScanner()}
-                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 active:scale-[0.99]"
+                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-bold text-slate-600 transition hover:bg-slate-50 active:scale-[0.99]"
               >
                 STOP SCANNER
               </button>
