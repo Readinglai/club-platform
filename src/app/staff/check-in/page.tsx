@@ -15,6 +15,7 @@ type ScanResult = {
   };
   // Client-side only: which part failed when the check itself couldn't finish.
   failure?: "network" | "server";
+  httpStatus?: number;
 };
 
 type Verdict = "admit" | "duplicate" | "void" | "not_found" | "error";
@@ -24,22 +25,59 @@ type Verdict = "admit" | "duplicate" | "void" | "not_found" | "error";
 const INK = "#100e0b";
 const BONE = "#efe8da";
 const EMBER = "#ff5f1f";
+const RED = "#b3122a";
 
 type MarkKind = "check" | "alert" | "cross" | "retry";
 
-// Colour follows the sound: green = success, amber = already, red = fail.
+// Valid entries flood in the TIER colour (see TIERS); amber = already in, red = fail.
 const FLOODS: Record<Verdict, { bg: string; fg: string; word: string; mark: MarkKind }> = {
   admit: { bg: "#0a6e3c", fg: BONE, word: "ADMIT", mark: "check" },
   duplicate: { bg: "#f0a81a", fg: INK, word: "ALREADY IN", mark: "alert" },
-  void: { bg: "#b3122a", fg: BONE, word: "VOID", mark: "cross" },
-  not_found: { bg: "#b3122a", fg: BONE, word: "NOT FOUND", mark: "cross" },
-  error: { bg: "#b3122a", fg: BONE, word: "TRY AGAIN", mark: "retry" },
+  void: { bg: RED, fg: BONE, word: "VOID", mark: "cross" },
+  not_found: { bg: RED, fg: BONE, word: "NOT FOUND", mark: "cross" },
+  error: { bg: RED, fg: BONE, word: "TRY AGAIN", mark: "retry" },
 };
 
-const TIERS: Record<string, { label: string; perk: string; chip: string }> = {
-  LITE: { label: "LITE", perk: "2 drink tickets", chip: "#059669" },
-  STANDARD: { label: "STANDARD", perk: "4 drink tickets", chip: "#2563eb" },
-  UNLIMITED: { label: "UNLIMITED", perk: "Unlimited drinks", chip: "#7c3aed" },
+type TierStyle = {
+  label: string;
+  drinks: string; // big, for the info box
+  perk: string; // short, for "previous guest"
+  bg: string; // full-screen colour on a valid entry
+  pattern?: string; // extra cue so UNLIMITED is spotted instantly
+};
+
+// Three clearly different hues, none of them red or amber (those mean problems).
+const TIERS: Record<string, TierStyle> = {
+  LITE: { label: "LITE", drinks: "2 drinks", perk: "2 drink tickets", bg: "#0b6e4f" },
+  STANDARD: { label: "STANDARD", drinks: "4 drinks", perk: "4 drink tickets", bg: "#1d4ed8" },
+  UNLIMITED: {
+    label: "UNLIMITED",
+    drinks: "∞ drinks",
+    perk: "Unlimited drinks",
+    bg: "#6b21a8",
+    pattern: "repeating-linear-gradient(135deg, rgba(255,255,255,0.09) 0 16px, transparent 16px 32px)",
+  },
+};
+
+const getTier = (tier?: string): TierStyle =>
+  (tier && TIERS[tier]) || { label: tier || "UNKNOWN", drinks: "Check tier", perk: "", bg: "#334155" };
+
+
+// What goes in the info box when a check fails.
+const failReason = (result: ScanResult): { title: string; detail: string } => {
+  switch (result.status) {
+    case "void":
+      return { title: "Ticket cancelled", detail: "Voided — not valid for entry." };
+    case "not_found":
+      return { title: "No matching ticket", detail: "Not a ticket for this event." };
+    default:
+      return result.failure === "network"
+        ? { title: "No connection", detail: "Check Wi-Fi or data, then scan again." }
+        : {
+            title: "Server error",
+            detail: `Error ${result.httpStatus ?? ""}. Scan again; if it repeats, tell the organizer.`,
+          };
+  }
 };
 
 // Fine film grain so the dark booth isn't a flat fill.
@@ -100,34 +138,49 @@ function Mark({ kind, color }: { kind: MarkKind; color: string }) {
   );
 }
 
-// On ADMIT the tier is what staff act on (drinks / wristband), so it gets
-// a band as heavy as the verdict. Bone background keeps it distinct from the green flood.
-function TierBand({ tier }: { tier: string }) {
-  const t = TIERS[tier] ?? { label: tier || "UNKNOWN", perk: "", chip: "#475569" };
+// The light info box under the headline: what staff need for this result.
+// A coloured bar on the left ties it to the tier (or red for a failure).
+function InfoBox({
+  accent,
+  label,
+  main,
+  mainColor,
+  side,
+  sideColor,
+  detail,
+}: {
+  accent: string;
+  label: string;
+  main: string;
+  mainColor: string;
+  side?: string;
+  sideColor?: string;
+  detail?: string;
+}) {
   return (
-    <div className="mt-3 flex items-stretch" style={{ backgroundColor: BONE, color: t.chip }}>
-      <span aria-hidden="true" className="w-3 shrink-0" style={{ backgroundColor: t.chip }} />
-      <div className="flex flex-1 items-baseline justify-between gap-3 px-3 py-2">
-        <p className="font-[family-name:var(--font-door-display)] text-[2.75rem] font-black uppercase leading-none tracking-tight">
-          {t.label}
-        </p>
-        <p className="text-right text-xs font-semibold uppercase tracking-[0.15em]" style={{ color: INK }}>
-          {t.perk}
-        </p>
+    <div className="mt-3 flex items-stretch" style={{ backgroundColor: BONE, color: INK }}>
+      <span aria-hidden="true" className="w-3 shrink-0" style={{ backgroundColor: accent }} />
+      <div className="min-w-0 flex-1 px-3 py-2">
+        <p className="text-[10px] font-semibold tracking-[0.3em] opacity-60">{label}</p>
+        <div className="flex items-end justify-between gap-3">
+          <p
+            className="font-[family-name:var(--font-door-display)] text-[2.5rem] font-black uppercase leading-[0.95] tracking-tight"
+            style={{ color: mainColor }}
+          >
+            {main}
+          </p>
+          {side && (
+            <p
+              className="shrink-0 pb-1 text-right font-[family-name:var(--font-door-display)] text-2xl font-black uppercase leading-none"
+              style={{ color: sideColor ?? INK }}
+            >
+              {side}
+            </p>
+          )}
+        </div>
+        {detail && <p className="mt-1 text-xs leading-relaxed">{detail}</p>}
       </div>
     </div>
-  );
-}
-
-function TierChip({ tier }: { tier: string }) {
-  const t = TIERS[tier] ?? { label: tier || "UNKNOWN", perk: "", chip: "#475569" };
-  return (
-    <span
-      className="inline-flex items-center gap-2 border-2 px-2.5 py-1 font-[family-name:var(--font-door-mono)] text-xs font-semibold tracking-[0.18em]"
-      style={{ backgroundColor: t.chip, borderColor: BONE, color: "#fff" }}
-    >
-      {t.label}
-    </span>
   );
 }
 
@@ -251,6 +304,7 @@ export default function CheckInPage() {
           success: false,
           status: "error",
           failure: "server",
+          httpStatus: response.status,
           message: `Server error (${response.status})${data?.message ? `: ${data.message}` : ""}. Scan again; if it repeats, tell the organizer.`,
         });
         return;
@@ -443,14 +497,20 @@ export default function CheckInPage() {
   }
 
   const verdict = result ? getVerdict(result) : null;
-  const flood = showing && verdict ? FLOODS[verdict] : null;
+  const tier = getTier(result?.ticket?.tier);
+  // Valid entry: the whole screen takes the tier colour. Otherwise amber/red.
+  const flood = showing && verdict
+    ? verdict === "admit"
+      ? { ...FLOODS.admit, bg: tier.bg, pattern: tier.pattern }
+      : { ...FLOODS[verdict], pattern: undefined }
+    : null;
   const fg = flood?.fg ?? BONE;
   const checkedIn = formatCheckedIn(result?.checkedInAt);
 
   return (
     <main
       className="fixed inset-0 flex overflow-y-auto px-4 py-4 font-[family-name:var(--font-door-mono)] transition-colors duration-500"
-      style={{ backgroundColor: flood?.bg ?? INK, color: fg }}
+      style={{ backgroundColor: flood?.bg ?? INK, backgroundImage: flood?.pattern, color: fg }}
     >
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 opacity-[0.07] mix-blend-screen" style={{ backgroundImage: GRAIN }} />
 
@@ -528,31 +588,36 @@ export default function CheckInPage() {
                 </p>
               </div>
 
-              {result.ticket && verdict === "admit" ? (
-                <>
-                  <TierBand tier={result.ticket.tier} />
-                  <p className="mt-3 break-words text-xl font-semibold">{result.ticket.name}</p>
-                </>
-              ) : result.ticket ? (
-                <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
-                  <p className="break-words text-xl font-semibold">{result.ticket.name}</p>
-                  <TierChip tier={result.ticket.tier} />
-                </div>
+              {verdict === "admit" ? (
+                <InfoBox
+                  accent={tier.bg}
+                  label="TIER"
+                  main={tier.label}
+                  mainColor={tier.bg}
+                  side={tier.drinks}
+                />
+              ) : verdict === "duplicate" ? (
+                <InfoBox
+                  accent={tier.bg}
+                  label="ALREADY SCANNED AT"
+                  main={checkedIn?.split(" · ")[0] ?? "Earlier"}
+                  mainColor={INK}
+                  side={tier.label}
+                  sideColor={tier.bg}
+                  detail={[checkedIn?.split(" · ")[1], tier.perk].filter(Boolean).join(" · ")}
+                />
               ) : (
-                <>
-                  {result.failure && (
-                    <p className="mt-4 inline-block px-2 py-1 text-xs font-semibold tracking-[0.3em]" style={{ backgroundColor: fg, color: flood.bg }}>
-                      {result.failure === "network" ? "NETWORK PROBLEM" : "SERVER PROBLEM"}
-                    </p>
-                  )}
-                  <p className="mt-3 text-sm leading-relaxed">{result.message}</p>
-                </>
+                <InfoBox
+                  accent={RED}
+                  label="REASON"
+                  main={failReason(result).title}
+                  mainColor={RED}
+                  detail={failReason(result).detail}
+                />
               )}
 
-              {verdict === "duplicate" && (
-                <p className="mt-3 text-lg font-semibold">
-                  Checked in {checkedIn ?? "earlier"}
-                </p>
+              {result.ticket && (
+                <p className="mt-3 break-words text-xl font-semibold">{result.ticket.name}</p>
               )}
             </div>
           ) : result ? (
@@ -565,7 +630,7 @@ export default function CheckInPage() {
               </p>
               {result.ticket && (
                 <p className="mt-1 text-xs tracking-[0.2em]">
-                  {TIERS[result.ticket.tier]?.label ?? result.ticket.tier}
+                  {getTier(result.ticket.tier).label}
                   {checkedIn ? ` · ${checkedIn}` : ""}
                 </p>
               )}
