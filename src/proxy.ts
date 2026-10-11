@@ -60,6 +60,7 @@ const NO_I18N_PREFIXES = [
 
 /** Event landing page */
 const EVENT_PATH = "/zh/event/fall-2026";
+const EVENT_PATH_EN = "/event/fall-2026";
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -105,7 +106,10 @@ export default async function proxy(request: NextRequest) {
   }
 
   // Step 4：所有其他一般網站頁面 → Fall 2026 Event
-  const eventUrl = new URL(EVENT_PATH, request.url);
+  // Keep the visitor's language: an /en/... page goes to the English event page
+  // (prefix-less, since English is the default locale), everything else to Chinese.
+  const isEnglish = /^\/en(\/|$)/.test(pathname);
+  const eventUrl = new URL(isEnglish ? EVENT_PATH_EN : EVENT_PATH, request.url);
 
   return NextResponse.redirect(eventUrl);
 }
