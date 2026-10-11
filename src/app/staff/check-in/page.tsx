@@ -65,7 +65,7 @@ const getSound = (verdict: Verdict): ScanSound =>
   verdict === "admit" ? "success" : verdict === "duplicate" ? "already" : "fail";
 
 // Ignore the same code for this long after it was last read, so a QR still
-// in frame when staff tap "Next guest" doesn't re-trigger as "already in".
+// held in frame doesn't re-trigger as "already in" while scanning continues.
 const SAME_CODE_IGNORE_MS = 2000;
 // Only show "Checking…" if the API is slow, to avoid a flash on every scan.
 const CHECKING_DELAY_MS = 500;
@@ -135,9 +135,6 @@ export default function CheckInPage() {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scanLockRef = useRef(false);
   const lastReadRef = useRef<{ code: string; at: number } | null>(null);
-  // After a result, ignore the camera until staff tap "Next guest",
-  // so a guest still holding up their QR isn't re-scanned as a duplicate.
-  const pausedRef = useRef(false);
 
   const [verified, setVerified] = useState(false);
   const [staffCode, setStaffCode] = useState("");
@@ -145,8 +142,12 @@ export default function CheckInPage() {
   const [verificationError, setVerificationError] = useState("");
 
   const [scanning, setScanning] = useState(false);
-  const [paused, setPaused] = useState(false);
+  // True while a result floods the screen. It stays until the next code is read
+  // or the camera is stopped; scanning keeps running underneath.
+  const [showing, setShowing] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
+  // Bumped per result so its entrance + countdown animations restart.
+  const [resultSeq, setResultSeq] = useState(0);
   const [checking, setChecking] = useState(false);
   const [error, setError] = useState("");
 
@@ -198,11 +199,14 @@ export default function CheckInPage() {
     }
   };
 
+  // Back to the black scanning screen; the last result stays as "Previous guest".
+  const endResult = () => setShowing(false);
+
   // Every scan outcome comes through here: sound on the RESULT, never on the camera read.
   const showResult = (next: ScanResult) => {
-    pausedRef.current = true;
-    setPaused(true);
     setResult(next);
+    setResultSeq((n) => n + 1);
+    setShowing(true);
     playScanSound(getSound(getVerdict(next)));
   };
 
@@ -268,23 +272,14 @@ export default function CheckInPage() {
     }
   };
 
-  const nextGuest = () => {
-    // The previous result stays on screen as "Previous guest".
-    unlockAudio();
-    // After a failed check, let staff rescan the same code right away.
-    if (result?.status === "error") lastReadRef.current = null;
-    pausedRef.current = false;
-    setPaused(false);
-  };
-
   const startScanner = async () => {
     // Must run synchronously inside the tap, before any await (mobile audio rule).
     unlockAudio();
 
     try {
       setError("");
-      // Keep the last scanned guest on screen; starting means ready for the next one.
-      nextGuest();
+      // Keep the last scanned guest on screen as "Previous guest".
+      endResult();
       scanLockRef.current = false;
 
       if (scannerRef.current) {
@@ -322,14 +317,16 @@ export default function CheckInPage() {
           },
         },
         async (decodedText) => {
-          // Track every read (even while paused) so a code held in frame stays ignored.
+          // Track every read so a code held in frame stays ignored.
           const now = Date.now();
           const last = lastReadRef.current;
           lastReadRef.current = { code: decodedText, at: now };
           if (last && last.code === decodedText && now - last.at < SAME_CODE_IGNORE_MS) return;
 
-          if (scanLockRef.current || pausedRef.current) return;
+          if (scanLockRef.current) return;
 
+          // A new guest: drop the old result so the previous guest shows until this one's result is in.
+          endResult();
           scanLockRef.current = true;
           await checkIn(decodedText);
           scanLockRef.current = false;
@@ -355,8 +352,7 @@ export default function CheckInPage() {
 
     scanLockRef.current = false;
     // Stopping ends the result screen: back to black, last guest kept as "Previous guest".
-    pausedRef.current = false;
-    setPaused(false);
+    endResult();
 
     if (!scanner) {
       setScanning(false);
@@ -447,13 +443,13 @@ export default function CheckInPage() {
   }
 
   const verdict = result ? getVerdict(result) : null;
-  const flood = paused && verdict ? FLOODS[verdict] : null;
+  const flood = showing && verdict ? FLOODS[verdict] : null;
   const fg = flood?.fg ?? BONE;
   const checkedIn = formatCheckedIn(result?.checkedInAt);
 
   return (
     <main
-      className="fixed inset-0 flex overflow-y-auto px-4 py-4 font-[family-name:var(--font-door-mono)] transition-colors duration-200"
+      className="fixed inset-0 flex overflow-y-auto px-4 py-4 font-[family-name:var(--font-door-mono)] transition-colors duration-500"
       style={{ backgroundColor: flood?.bg ?? INK, color: fg }}
     >
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 opacity-[0.07] mix-blend-screen" style={{ backgroundImage: GRAIN }} />
@@ -471,10 +467,8 @@ export default function CheckInPage() {
         </header>
 
         {/* Viewfinder — #qr-reader must always stay mounted for html5-qrcode */}
-        <div
-          className="relative mx-auto w-full transition-[max-width] duration-200"
-          style={{ maxWidth: paused ? "min(100%, 24dvh, 220px)" : "min(100%, 36dvh, 340px)" }}
-        >
+        {/* Fixed size: html5-qrcode measures its scan area at start, so resizing the box stops it reading codes */}
+        <div className="relative mx-auto w-full" style={{ maxWidth: "min(100%, 28dvh, 300px)" }}>
           <div
             id="qr-reader"
             className="w-full overflow-hidden bg-black [&_video]:!h-full [&_video]:!w-full [&_video]:!object-cover [&_img]:mx-auto"
@@ -489,7 +483,7 @@ export default function CheckInPage() {
           </div>
 
           {/* Slow check: ember beam sweeps the frame like candlelight over a guest list */}
-          {checking && scanning && !paused && (
+          {checking && scanning && (
             <div
               role="status"
               className="pointer-events-none absolute inset-0 overflow-hidden"
@@ -512,12 +506,9 @@ export default function CheckInPage() {
           )}
 
           {/* Overlay (not an extra row) so the layout height never changes */}
-          {(!scanning || paused) && (
-            <div
-              className="pointer-events-none absolute inset-0 flex items-center justify-center text-center text-[11px] tracking-[0.25em]"
-              style={{ backgroundColor: scanning ? "rgba(0,0,0,0.55)" : "transparent", color: BONE }}
-            >
-              {scanning ? "PAUSED" : "CAMERA OFF"}
+          {!scanning && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-center text-[11px] tracking-[0.25em]" style={{ color: BONE }}>
+              CAMERA OFF
             </div>
           )}
         </div>
@@ -528,8 +519,8 @@ export default function CheckInPage() {
           className="min-h-[11.5rem] border-t-2 border-dashed pt-4"
           style={{ borderColor: `${fg}66` }}
         >
-          {flood && result ? (
-            <div>
+          {flood && result && verdict ? (
+            <div key={`result-${resultSeq}`} className="motion-safe:animate-[door-rise_250ms_ease-out]">
               <div className="flex items-center gap-3">
                 <Mark kind={flood.mark} color={fg} />
                 <p className="font-[family-name:var(--font-door-display)] text-[3.75rem] font-black uppercase leading-[0.85] tracking-tight">
@@ -565,7 +556,8 @@ export default function CheckInPage() {
               )}
             </div>
           ) : result ? (
-            <div className="opacity-70">
+            <div key={`previous-${resultSeq}`} className="motion-safe:animate-[door-rise_400ms_ease-out]">
+              <div className="opacity-70">
               <p className="text-[10px] tracking-[0.3em]">PREVIOUS GUEST</p>
               <p className="mt-2 text-base">
                 {result.ticket ? `${result.ticket.name} — ` : ""}
@@ -577,6 +569,7 @@ export default function CheckInPage() {
                   {checkedIn ? ` · ${checkedIn}` : ""}
                 </p>
               )}
+              </div>
               <p className="mt-6 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase" style={{ color: BONE }}>
                 {checking && scanning ? "Checking…" : scanning ? "Ready — scan next" : "Camera off"}
               </p>
@@ -608,16 +601,7 @@ export default function CheckInPage() {
 
         {/* Controls: primary action + camera toggle, same footprint in every state */}
         <div className="flex flex-col gap-2">
-          {scanning && paused ? (
-            <button
-              type="button"
-              onClick={nextGuest}
-              className="w-full py-4 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase tracking-wide transition active:translate-y-px"
-              style={{ backgroundColor: fg, color: flood?.bg ?? INK }}
-            >
-              Next guest →
-            </button>
-          ) : !scanning ? (
+          {!scanning ? (
             <button
               type="button"
               onClick={() => void startScanner()}
@@ -629,7 +613,7 @@ export default function CheckInPage() {
           ) : (
             <div
               className="w-full py-4 text-center font-[family-name:var(--font-door-display)] text-3xl font-black uppercase tracking-wide"
-              style={{ boxShadow: `inset 0 0 0 2px ${BONE}33` }}
+              style={{ boxShadow: `inset 0 0 0 2px ${fg}55` }}
             >
               Scanning…
             </div>
