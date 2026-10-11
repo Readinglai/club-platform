@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { isValidEmail } from "@/lib/event/contact-validation";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -84,6 +85,7 @@ export default function Fall2026EventPage() {
   const [cardName, setCardName] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
   const [phone, setPhone] = useState("");
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [waiverAccepted, setWaiverAccepted] = useState(false);
@@ -187,10 +189,12 @@ export default function Fall2026EventPage() {
     ? Math.max(0, selected.price - discount)
     : 0;
 
+  const emailValid = isValidEmail(email);
+
   const canContinue = Boolean(
     selectedTicket &&
       name.trim() &&
-      email.trim() &&
+      emailValid &&
       phone.trim() &&
       ageConfirmed &&
       waiverAccepted &&
@@ -508,9 +512,17 @@ export default function Fall2026EventPage() {
                     autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    onBlur={() => setEmailTouched(true)}
                     placeholder="you@example.com"
-                    className={inputClass}
+                    aria-invalid={emailTouched && !emailValid}
+                    aria-describedby="email-error"
+                    className={`${inputClass} ${emailTouched && !emailValid ? "!border-red-500" : ""}`}
                   />
+                  {emailTouched && !emailValid && (
+                    <p id="email-error" className="mt-1.5 text-xs text-red-600">
+                      Enter a valid email, e.g. name@example.com｜請輸入有效的電子郵件
+                    </p>
+                  )}
                 </div>
 
                 <div>
