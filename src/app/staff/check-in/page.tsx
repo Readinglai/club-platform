@@ -489,7 +489,7 @@ export default function CheckInPage() {
           </div>
 
           {/* Slow check: ember beam sweeps the frame like candlelight over a guest list */}
-          {checking && !paused && (
+          {checking && scanning && !paused && (
             <div
               role="status"
               className="pointer-events-none absolute inset-0 overflow-hidden"
@@ -578,7 +578,7 @@ export default function CheckInPage() {
                 </p>
               )}
               <p className="mt-6 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase" style={{ color: BONE }}>
-                {checking ? "Checking…" : scanning ? "Ready — scan next" : "Camera off"}
+                {checking && scanning ? "Checking…" : scanning ? "Ready — scan next" : "Camera off"}
               </p>
             </div>
           ) : (
