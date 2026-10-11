@@ -354,6 +354,9 @@ export default function CheckInPage() {
     const scanner = scannerRef.current;
 
     scanLockRef.current = false;
+    // Stopping ends the result screen: back to black, last guest kept as "Previous guest".
+    pausedRef.current = false;
+    setPaused(false);
 
     if (!scanner) {
       setScanning(false);
