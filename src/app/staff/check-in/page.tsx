@@ -302,12 +302,12 @@ export default function CheckInPage() {
           aspectRatio: 1,
           qrbox: (viewWidth, viewHeight) => {
             const size = Math.floor(
-              Math.min(viewWidth, viewHeight) * 0.72
+              Math.min(viewWidth, viewHeight) * 0.8
             );
 
             const boundedSize = Math.max(
               120,
-              Math.min(220, size)
+              Math.min(280, size)
             );
 
             return {
@@ -468,7 +468,7 @@ export default function CheckInPage() {
 
         {/* Viewfinder — #qr-reader must always stay mounted for html5-qrcode */}
         {/* Fixed size: html5-qrcode measures its scan area at start, so resizing the box stops it reading codes */}
-        <div className="relative mx-auto w-full" style={{ maxWidth: "min(100%, 28dvh, 300px)" }}>
+        <div className="relative mx-auto w-full" style={{ maxWidth: "min(100%, 34dvh, 340px)" }}>
           <div
             id="qr-reader"
             className="w-full overflow-hidden bg-black [&_video]:!h-full [&_video]:!w-full [&_video]:!object-cover [&_img]:mx-auto"
