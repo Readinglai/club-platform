@@ -14,62 +14,89 @@ type ScanResult = {
   };
 };
 
-const SCAN_DELAY = 2000;
+type Verdict = "admit" | "duplicate" | "void" | "not_found" | "error";
 
-const getTierStyles = (tier: string) => {
-  switch (tier) {
-    case "LITE":
-      return {
-        page: "bg-emerald-600",
-        badge: "bg-emerald-600",
-        text: "text-emerald-800",
-        light: "bg-emerald-50",
-        border: "border-emerald-200",
-      };
-    case "STANDARD":
-      return {
-        page: "bg-blue-600",
-        badge: "bg-blue-600",
-        text: "text-blue-800",
-        light: "bg-blue-50",
-        border: "border-blue-200",
-      };
-    case "UNLIMITED":
-      return {
-        page: "bg-violet-600",
-        badge: "bg-violet-600",
-        text: "text-violet-800",
-        light: "bg-violet-50",
-        border: "border-violet-200",
-      };
+// Palette: warm ink + bone, one ember accent. Result floods are functional
+// state colours, always paired with a word and a shape.
+const INK = "#100e0b";
+const BONE = "#efe8da";
+const EMBER = "#ff5f1f";
+
+const FLOODS: Record<Verdict, { bg: string; fg: string; word: string; mark: "check" | "cross" | "query" }> = {
+  admit: { bg: "#0a6e3c", fg: BONE, word: "ADMIT", mark: "check" },
+  duplicate: { bg: "#b3122a", fg: BONE, word: "ALREADY IN", mark: "cross" },
+  void: { bg: "#b3122a", fg: BONE, word: "VOID", mark: "cross" },
+  not_found: { bg: "#f0a81a", fg: INK, word: "NOT FOUND", mark: "query" },
+  error: { bg: "#f0a81a", fg: INK, word: "TRY AGAIN", mark: "query" },
+};
+
+const TIERS: Record<string, { label: string; perk: string; chip: string }> = {
+  LITE: { label: "LITE", perk: "2 drink tickets", chip: "#059669" },
+  STANDARD: { label: "STANDARD", perk: "4 drink tickets", chip: "#2563eb" },
+  UNLIMITED: { label: "UNLIMITED", perk: "Unlimited drinks", chip: "#7c3aed" },
+};
+
+// Fine film grain so the dark booth isn't a flat fill.
+const GRAIN =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E\")";
+
+const getVerdict = (result: ScanResult): Verdict => {
+  switch (result.status) {
+    case "checked_in":
+      return "admit";
+    case "already_checked_in":
+      return "duplicate";
+    case "void":
+      return "void";
+    case "not_found":
+      return "not_found";
     default:
-      return {
-        page: "bg-slate-600",
-        badge: "bg-slate-600",
-        text: "text-slate-800",
-        light: "bg-slate-50",
-        border: "border-slate-200",
-      };
+      return "error";
   }
 };
 
-const getTicketLabel = (tier: string) => {
-  switch (tier) {
-    case "LITE":
-      return "LITE (2)";
-    case "STANDARD":
-      return "STANDARD (4)";
-    case "UNLIMITED":
-      return "UNLIMITED";
-    default:
-      return "UNKNOWN TICKET";
-  }
+const formatCheckedIn = (iso?: string) => {
+  if (!iso) return null;
+  const at = new Date(iso);
+  const minutes = Math.max(0, Math.round((Date.now() - at.getTime()) / 60000));
+  const time = at.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const ago = minutes === 0 ? "just now" : `${minutes} min ago`;
+  return `${time} · ${ago}`;
 };
+
+function Mark({ kind, color }: { kind: "check" | "cross" | "query"; color: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 48 48" className="h-14 w-14 shrink-0" fill="none" stroke={color} strokeWidth="5" strokeLinecap="square">
+      {kind === "check" && <path d="M8 25l11 11L40 13" />}
+      {kind === "cross" && <path d="M11 11l26 26M37 11L11 37" />}
+      {kind === "query" && (
+        <>
+          <path d="M16 17a8 8 0 1 1 11 7.4c-2 .9-3 2.4-3 4.6v2" />
+          <path d="M24 38v2" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+function TierChip({ tier }: { tier: string }) {
+  const t = TIERS[tier] ?? { label: tier || "UNKNOWN", perk: "", chip: "#475569" };
+  return (
+    <span
+      className="inline-flex items-center gap-2 border-2 px-2.5 py-1 font-[family-name:var(--font-door-mono)] text-xs font-semibold tracking-[0.18em]"
+      style={{ backgroundColor: t.chip, borderColor: BONE, color: "#fff" }}
+    >
+      {t.label}
+    </span>
+  );
+}
 
 export default function CheckInPage() {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scanLockRef = useRef(false);
-  const scanTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // After a result, ignore the camera until staff tap "Next guest",
+  // so a guest still holding up their QR isn't re-scanned as a duplicate.
+  const pausedRef = useRef(false);
 
   const [verified, setVerified] = useState(false);
   const [staffCode, setStaffCode] = useState("");
@@ -77,6 +104,7 @@ export default function CheckInPage() {
   const [verificationError, setVerificationError] = useState("");
 
   const [scanning, setScanning] = useState(false);
+  const [paused, setPaused] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState("");
 
@@ -128,6 +156,12 @@ export default function CheckInPage() {
     }
   };
 
+  const showResult = (next: ScanResult) => {
+    pausedRef.current = true;
+    setPaused(true);
+    setResult(next);
+  };
+
   const checkIn = async (decodedText: string) => {
     try {
       setError("");
@@ -160,23 +194,29 @@ export default function CheckInPage() {
         return;
       }
 
-      setResult(data);
+      showResult(data);
     } catch (err) {
       console.error("Check-in error:", err);
-      setError("Something went wrong. Please try again.");
+      showResult({
+        success: false,
+        status: "error",
+        message: "Network problem — scan again.",
+      });
     }
+  };
+
+  const nextGuest = () => {
+    // The previous result stays on screen as "Previous guest".
+    pausedRef.current = false;
+    setPaused(false);
   };
 
   const startScanner = async () => {
     try {
       setError("");
-      // Keep the last scanned guest on screen until the next scan replaces it.
+      // Keep the last scanned guest on screen; starting means ready for the next one.
+      nextGuest();
       scanLockRef.current = false;
-
-      if (scanTimeoutRef.current) {
-        clearTimeout(scanTimeoutRef.current);
-        scanTimeoutRef.current = null;
-      }
 
       if (scannerRef.current) {
         try {
@@ -213,14 +253,11 @@ export default function CheckInPage() {
           },
         },
         async (decodedText) => {
-          if (scanLockRef.current) return;
+          if (scanLockRef.current || pausedRef.current) return;
 
           scanLockRef.current = true;
           await checkIn(decodedText);
-
-          scanTimeoutRef.current = setTimeout(() => {
-            scanLockRef.current = false;
-          }, SCAN_DELAY);
+          scanLockRef.current = false;
         },
         () => {
           // Ignore scan failures while searching.
@@ -231,7 +268,7 @@ export default function CheckInPage() {
     } catch (err) {
       console.error("Scanner error:", err);
       setError(
-        "Unable to access the camera. Please allow camera permission and try again."
+        "Camera blocked. Allow camera access and try again."
       );
       scannerRef.current = null;
       setScanning(false);
@@ -240,11 +277,6 @@ export default function CheckInPage() {
 
   const stopScanner = async () => {
     const scanner = scannerRef.current;
-
-    if (scanTimeoutRef.current) {
-      clearTimeout(scanTimeoutRef.current);
-      scanTimeoutRef.current = null;
-    }
 
     scanLockRef.current = false;
 
@@ -265,10 +297,6 @@ export default function CheckInPage() {
 
   useEffect(() => {
     return () => {
-      if (scanTimeoutRef.current) {
-        clearTimeout(scanTimeoutRef.current);
-      }
-
       const scanner = scannerRef.current;
       if (scanner) {
         scanner.stop().catch(() => {});
@@ -276,89 +304,34 @@ export default function CheckInPage() {
     };
   }, []);
 
-  // If ticket information exists, always preserve its tier color.
-  const getPageBackground = () => {
-    if (!result) return "bg-slate-900";
-
-    if (result.ticket) {
-      return getTierStyles(result.ticket.tier).page;
-    }
-
-    if (!result.success || result.status === "already_checked_in") {
-      return "bg-red-600";
-    }
-
-    return "bg-slate-900";
-  };
-
-  const getResultCardStyle = () => {
-    if (!result) return "";
-
-    if (result.ticket) {
-      const styles = getTierStyles(result.ticket.tier);
-      return `${styles.border} ${styles.light}`;
-    }
-
-    if (!result.success || result.status === "already_checked_in") {
-      return "border-red-200 bg-red-50";
-    }
-
-    return "border-slate-200 bg-slate-50";
-  };
-
-  const getResultTextStyle = () => {
-    if (!result) return "";
-
-    if (result.status === "already_checked_in") {
-      return "text-red-800";
-    }
-
-    if (result.success) {
-      return "text-emerald-800";
-    }
-
-    return "text-slate-800";
-  };
-
-  const showFailure =
-    !!result &&
-    (!result.success || result.status === "already_checked_in");
-
   if (!verified) {
     return (
-      <main className="fixed inset-0 flex items-center justify-center overflow-hidden bg-slate-900 px-5 py-4">
-        <div className="w-full max-w-sm">
-          <div className="mb-6 text-center text-white">
-            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-2xl font-black">
-              R
-            </div>
-            <h1 className="text-3xl font-black tracking-tight">
-              ROCSAUT
-            </h1>
-            <p className="mt-2 text-xs font-semibold tracking-[0.25em] text-slate-400">
-              EVENT CHECK-IN
-            </p>
-          </div>
+      <main
+        className="fixed inset-0 flex overflow-y-auto px-5 py-6 font-[family-name:var(--font-door-mono)]"
+        style={{ backgroundColor: INK, color: BONE }}
+      >
+        <div aria-hidden="true" className="pointer-events-none fixed inset-0 opacity-[0.07] mix-blend-screen" style={{ backgroundImage: GRAIN }} />
+
+        <div className="relative m-auto w-full max-w-sm">
+          <p className="text-[11px] tracking-[0.35em]" style={{ color: EMBER }}>
+            ROCSAUT · HALLOWEEN 2026
+          </p>
+          <h1 className="mt-2 font-[family-name:var(--font-door-display)] text-[4.5rem] font-black uppercase leading-[0.82] tracking-tight">
+            Door
+            <br />
+            Check-in
+          </h1>
 
           <form
             onSubmit={(event) => {
               event.preventDefault();
               void verifyStaff();
             }}
-            className="rounded-3xl border border-white/10 bg-white p-6 shadow-2xl"
+            className="mt-10 border-t-2 border-dashed pt-6"
+            style={{ borderColor: `${BONE}55` }}
           >
-            <h2 className="text-xl font-bold text-slate-900">
-              Staff verification
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-slate-500">
-              Enter your staff access code to open the scanner.
-            </p>
-
-            <label
-              htmlFor="staff-code"
-              className="mt-5 block text-sm font-semibold text-slate-700"
-            >
-              Staff access code
+            <label htmlFor="staff-code" className="block text-xs tracking-[0.2em] opacity-70">
+              STAFF ACCESS CODE
             </label>
 
             <input
@@ -369,13 +342,14 @@ export default function CheckInPage() {
                 setStaffCode(event.target.value);
                 setVerificationError("");
               }}
-              placeholder="Enter access code"
+              placeholder="••••••"
               autoComplete="off"
-              className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10"
+              className="mt-3 w-full border-b-2 bg-transparent pb-2 text-2xl tracking-[0.3em] outline-none placeholder:opacity-30"
+              style={{ borderColor: BONE, color: BONE }}
             />
 
             {verificationError && (
-              <p className="mt-3 rounded-xl border border-red-100 bg-red-50 p-3 text-sm text-red-700">
+              <p className="mt-4 border-l-4 pl-3 text-sm" style={{ borderColor: EMBER, color: BONE }}>
                 {verificationError}
               </p>
             )}
@@ -383,9 +357,10 @@ export default function CheckInPage() {
             <button
               type="submit"
               disabled={verifying}
-              className="mt-5 w-full rounded-xl bg-slate-900 px-4 py-3.5 font-bold text-white transition hover:bg-slate-700 active:scale-[0.99] disabled:opacity-50"
+              className="mt-8 w-full py-4 font-[family-name:var(--font-door-display)] text-2xl font-extrabold uppercase tracking-wider transition active:translate-y-px disabled:opacity-50"
+              style={{ backgroundColor: EMBER, color: INK }}
             >
-              {verifying ? "Verifying..." : "Continue"}
+              {verifying ? "Checking…" : "Open scanner"}
             </button>
           </form>
         </div>
@@ -393,178 +368,173 @@ export default function CheckInPage() {
     );
   }
 
-  const ticketTier = result?.ticket?.tier;
-  const ticketStyles = ticketTier ? getTierStyles(ticketTier) : null;
+  const verdict = result ? getVerdict(result) : null;
+  const flood = paused && verdict ? FLOODS[verdict] : null;
+  const fg = flood?.fg ?? BONE;
+  const checkedIn = formatCheckedIn(result?.checkedInAt);
 
   return (
     <main
-      className={`fixed inset-0 flex overflow-y-auto px-3 py-3 transition-colors duration-300 sm:px-6 ${getPageBackground()}`}
+      className="fixed inset-0 flex overflow-y-auto px-4 py-4 font-[family-name:var(--font-door-mono)] transition-colors duration-200"
+      style={{ backgroundColor: flood?.bg ?? INK, color: fg }}
     >
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 opacity-[0.07] mix-blend-screen" style={{ backgroundImage: GRAIN }} />
+
       {/* m-auto centers when there is room and scrolls instead of clipping on short screens */}
-      <div className="m-auto flex w-full max-w-md flex-col items-center justify-center gap-3">
-        {/* Header */}
-        <header className="shrink-0 text-center text-white">
-          <p className="text-[10px] font-bold tracking-[0.3em] text-white/70">
-            ROCSAUT · STAFF PORTAL
-          </p>
-          <h1 className="mt-1 text-2xl font-black tracking-tight sm:text-3xl">
-            Ticket Check-in
+      <div className="relative m-auto flex w-full max-w-md flex-col gap-4">
+        {/* Masthead */}
+        <header className="flex items-end justify-between">
+          <h1 className="font-[family-name:var(--font-door-display)] text-3xl font-black uppercase leading-none tracking-tight">
+            Door
           </h1>
+          <p className="text-[10px] tracking-[0.3em]" style={{ color: flood ? fg : EMBER }}>
+            ROCSAUT · HALLOWEEN 2026
+          </p>
         </header>
 
-        {/* Main panel */}
-        <section className="w-full overflow-hidden rounded-[28px] border border-white/50 bg-white shadow-2xl shadow-black/20">
-          {/* Ticket type */}
-          <div className="px-5 pb-4 pt-5 text-center sm:px-6">
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">
-              {result?.ticket
-                ? "Ticket category"
-                : showFailure
-                  ? "Check-in status"
-                  : "Ready for scanning"}
-            </p>
+        {/* Viewfinder — #qr-reader must always stay mounted for html5-qrcode */}
+        <div className="relative mx-auto w-full" style={{ maxWidth: "min(100%, 36dvh, 340px)" }}>
+          <div
+            id="qr-reader"
+            className="w-full overflow-hidden bg-black [&_video]:!h-full [&_video]:!w-full [&_video]:!object-cover [&_img]:mx-auto"
+            style={{ aspectRatio: "1 / 1", minHeight: 0 }}
+          />
 
-            <div
-              className={`mt-2 flex min-h-14 items-center justify-center rounded-2xl px-4 py-3 text-xl font-black tracking-wide text-white shadow-sm sm:text-2xl ${
-                result?.ticket
-                  ? ticketStyles?.badge
-                  : showFailure
-                    ? "bg-red-600"
-                    : "bg-slate-900"
-              }`}
-            >
-              {result?.ticket
-                ? getTicketLabel(result.ticket.tier)
-                : showFailure
-                  ? "CHECK-IN FAILED"
-                  : "SCAN TICKET"}
-            </div>
+          {/* Corner brackets */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+            {["left-0 top-0 border-l-4 border-t-4", "right-0 top-0 border-r-4 border-t-4", "bottom-0 left-0 border-b-4 border-l-4", "bottom-0 right-0 border-b-4 border-r-4"].map((pos) => (
+              <span key={pos} className={`absolute h-7 w-7 ${pos}`} style={{ borderColor: flood ? fg : EMBER }} />
+            ))}
           </div>
 
-          {/* Square scanner viewport */}
-          <div className="mx-auto w-full px-4 sm:px-6">
-            <div className="relative mx-auto w-full overflow-hidden rounded-2xl bg-slate-950 p-1.5 shadow-inner">
-              <div
-                id="qr-reader"
-                className="mx-auto w-full overflow-hidden rounded-xl [&_video]:!h-full [&_video]:!w-full [&_video]:!object-cover [&_img]:mx-auto"
-                style={{
-                  width: "min(100%, 36dvh, 340px)",
-                  aspectRatio: "1 / 1",
-                  minHeight: 0,
-                }}
-              />
+          {/* Overlay (not an extra row) so the layout height never changes */}
+          {(!scanning || paused) && (
+            <div
+              className="pointer-events-none absolute inset-0 flex items-center justify-center text-center text-[11px] tracking-[0.25em]"
+              style={{ backgroundColor: scanning ? "rgba(0,0,0,0.55)" : "transparent", color: BONE }}
+            >
+              {scanning ? "PAUSED — TAP NEXT GUEST" : "CAMERA OFF"}
+            </div>
+          )}
+        </div>
 
-              {/* Overlay (not an extra row) so stopping the camera doesn't change the layout height */}
-              {!scanning && (
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-center text-[11px] font-medium text-slate-400">
-                  Camera preview appears here
+        {/* Ticket stub: verdict, or the previous guest while scanning */}
+        <section
+          aria-live="assertive"
+          className="min-h-[11.5rem] border-t-2 border-dashed pt-4"
+          style={{ borderColor: `${fg}66` }}
+        >
+          {flood && result ? (
+            <div>
+              <div className="flex items-center gap-3">
+                <Mark kind={flood.mark} color={fg} />
+                <p className="font-[family-name:var(--font-door-display)] text-[3.75rem] font-black uppercase leading-[0.85] tracking-tight">
+                  {flood.word}
+                </p>
+              </div>
+
+              {result.ticket ? (
+                <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+                  <p className="break-words text-xl font-semibold">{result.ticket.name}</p>
+                  <TierChip tier={result.ticket.tier} />
                 </div>
+              ) : (
+                <p className="mt-4 text-sm">{result.message}</p>
+              )}
+
+              {verdict === "admit" && result.ticket && (
+                <p className="mt-2 text-sm tracking-wide opacity-90">
+                  {TIERS[result.ticket.tier]?.perk}
+                </p>
+              )}
+
+              {verdict === "duplicate" && (
+                <p className="mt-3 text-lg font-semibold">
+                  Checked in {checkedIn ?? "earlier"}
+                </p>
               )}
             </div>
-          </div>
-
-          {/* Scan result */}
-          {result && (
-            <div
-              aria-live="polite"
-              className={`mx-4 mt-4 rounded-2xl border p-4 sm:mx-6 ${getResultCardStyle()}`}
-            >
-              <div className="flex items-start gap-3">
-                <div
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-black ${
-                    result.success
-                      ? "bg-emerald-100 text-emerald-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {result.success ? "✓" : "!"}
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={`break-words text-sm font-bold leading-relaxed ${getResultTextStyle()}`}
-                  >
-                    {result.message}
-                  </p>
-
-                  {result.ticket && (
-                    <>
-                      <p className="mt-1 break-words text-lg font-extrabold text-slate-900">
-                        {result.ticket.name}
-                      </p>
-
-                      <p
-                        className={`mt-1 text-xs font-bold uppercase tracking-wide ${
-                          ticketStyles?.text ?? "text-slate-600"
-                        }`}
-                      >
-                        {result.ticket.tier === "LITE"
-                          ? "2 drink tickets"
-                          : result.ticket.tier === "STANDARD"
-                            ? "4 drink tickets"
-                            : result.ticket.tier === "UNLIMITED"
-                              ? "Unlimited drinks"
-                              : ""}
-                      </p>
-                    </>
-                  )}
-
-                  {result.checkedInAt && (
-                    <p className="mt-2 text-[11px] font-medium text-slate-500">
-                      Checked in at{" "}
-                      {new Date(result.checkedInAt).toLocaleTimeString()}
-                    </p>
-                  )}
-                </div>
-              </div>
+          ) : result ? (
+            <div className="opacity-70">
+              <p className="text-[10px] tracking-[0.3em]">PREVIOUS GUEST</p>
+              <p className="mt-2 text-base">
+                {result.ticket ? `${result.ticket.name} — ` : ""}
+                {verdict ? FLOODS[verdict].word : result.message}
+              </p>
+              {result.ticket && (
+                <p className="mt-1 text-xs tracking-[0.2em]">
+                  {TIERS[result.ticket.tier]?.label ?? result.ticket.tier}
+                  {checkedIn ? ` · ${checkedIn}` : ""}
+                </p>
+              )}
+              <p className="mt-6 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase" style={{ color: BONE }}>
+                {scanning ? "Ready — scan next" : "Camera off"}
+              </p>
             </div>
+          ) : (
+            <p className="font-[family-name:var(--font-door-display)] text-[3.25rem] font-black uppercase leading-[0.85] tracking-tight">
+              {scanning ? (
+                <>
+                  Point at
+                  <br />
+                  ticket QR
+                </>
+              ) : (
+                <>
+                  Ready at
+                  <br />
+                  the door
+                </>
+              )}
+            </p>
           )}
-
-          {/* Errors */}
-          {error && (
-            <div className="mx-4 mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-semibold leading-relaxed text-red-800 sm:mx-6">
-              {error}
-            </div>
-          )}
-
-          {/* Controls */}
-          <div className="p-4 sm:px-6 sm:pb-5">
-            {!scanning ? (
-              <button
-                type="button"
-                onClick={() => void startScanner()}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-transparent bg-slate-900 px-4 py-4 text-sm font-extrabold tracking-wide text-white shadow-lg shadow-slate-900/15 transition hover:bg-slate-700 active:scale-[0.99]"
-              >
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="h-5 w-5"
-                >
-                  <path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2" />
-                  <rect x="8" y="8" width="8" height="8" rx="1" />
-                </svg>
-                START SCANNER
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => void stopScanner()}
-                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-bold text-slate-600 transition hover:bg-slate-50 active:scale-[0.99]"
-              >
-                STOP SCANNER
-              </button>
-            )}
-          </div>
         </section>
 
-        <p className="shrink-0 text-center text-[10px] font-medium tracking-wide text-white/80">
-          {scanning
-            ? "POSITION THE QR CODE INSIDE THE FRAME"
-            : "READY WHEN YOU ARE"}
-        </p>
+        {error && (
+          <p className="border-l-4 pl-3 text-sm" style={{ borderColor: EMBER }}>
+            {error}
+          </p>
+        )}
+
+        {/* Controls: primary action + camera toggle, same footprint in every state */}
+        <div className="flex flex-col gap-2">
+          {scanning && paused ? (
+            <button
+              type="button"
+              onClick={nextGuest}
+              className="w-full py-4 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase tracking-wide transition active:translate-y-px"
+              style={{ backgroundColor: fg, color: flood?.bg ?? INK }}
+            >
+              Next guest →
+            </button>
+          ) : !scanning ? (
+            <button
+              type="button"
+              onClick={() => void startScanner()}
+              className="w-full py-4 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase tracking-wide transition active:translate-y-px"
+              style={{ backgroundColor: EMBER, color: INK }}
+            >
+              Start scanner
+            </button>
+          ) : (
+            <div
+              className="w-full py-4 text-center font-[family-name:var(--font-door-display)] text-3xl font-black uppercase tracking-wide"
+              style={{ boxShadow: `inset 0 0 0 2px ${BONE}33` }}
+            >
+              Scanning…
+            </div>
+          )}
+
+          {/* Only "Stop camera" is needed here; Start lives in the big button. Kept invisible (not removed) so the layout doesn't shift. */}
+          <button
+            type="button"
+            onClick={() => void stopScanner()}
+            disabled={!scanning}
+            className={`self-center px-3 py-2 text-xs tracking-[0.25em] underline underline-offset-4 opacity-80 ${scanning ? "" : "invisible"}`}
+          >
+            STOP CAMERA
+          </button>
+        </div>
       </div>
     </main>
   );
