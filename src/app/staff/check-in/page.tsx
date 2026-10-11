@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
+import { playScanSound, unlockAudio, type ScanSound } from "@/lib/scan-sounds";
 
 type ScanResult = {
   success: boolean;
@@ -12,6 +13,8 @@ type ScanResult = {
     name: string;
     tier: string;
   };
+  // Client-side only: which part failed when the check itself couldn't finish.
+  failure?: "network" | "server";
 };
 
 type Verdict = "admit" | "duplicate" | "void" | "not_found" | "error";
@@ -55,6 +58,15 @@ const getVerdict = (result: ScanResult): Verdict => {
   }
 };
 
+const getSound = (verdict: Verdict): ScanSound =>
+  verdict === "admit" ? "success" : verdict === "duplicate" ? "already" : "fail";
+
+// Ignore the same code for this long after it was last read, so a QR still
+// in frame when staff tap "Next guest" doesn't re-trigger as "already in".
+const SAME_CODE_IGNORE_MS = 2000;
+// Only show "Checking…" if the API is slow, to avoid a flash on every scan.
+const CHECKING_DELAY_MS = 500;
+
 const formatCheckedIn = (iso?: string) => {
   if (!iso) return null;
   const at = new Date(iso);
@@ -94,6 +106,7 @@ function TierChip({ tier }: { tier: string }) {
 export default function CheckInPage() {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scanLockRef = useRef(false);
+  const lastReadRef = useRef<{ code: string; at: number } | null>(null);
   // After a result, ignore the camera until staff tap "Next guest",
   // so a guest still holding up their QR isn't re-scanned as a duplicate.
   const pausedRef = useRef(false);
@@ -106,6 +119,7 @@ export default function CheckInPage() {
   const [scanning, setScanning] = useState(false);
   const [paused, setPaused] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
+  const [checking, setChecking] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -156,13 +170,17 @@ export default function CheckInPage() {
     }
   };
 
+  // Every scan outcome comes through here: sound on the RESULT, never on the camera read.
   const showResult = (next: ScanResult) => {
     pausedRef.current = true;
     setPaused(true);
     setResult(next);
+    playScanSound(getSound(getVerdict(next)));
   };
 
   const checkIn = async (decodedText: string) => {
+    const checkingTimer = setTimeout(() => setChecking(true), CHECKING_DELAY_MS);
+
     try {
       setError("");
 
@@ -185,8 +203,6 @@ export default function CheckInPage() {
         body: JSON.stringify({ token }),
       });
 
-      const data: ScanResult = await response.json();
-
       if (response.status === 401) {
         setVerified(false);
         setResult(null);
@@ -194,24 +210,49 @@ export default function CheckInPage() {
         return;
       }
 
+      // A server error may not even return JSON (e.g. a crashed function).
+      const data: ScanResult | null = await response.json().catch(() => null);
+      const known = ["checked_in", "already_checked_in", "void", "not_found"];
+
+      if (!data || (!response.ok && !known.includes(data.status))) {
+        showResult({
+          success: false,
+          status: "error",
+          failure: "server",
+          message: `Server error (${response.status})${data?.message ? `: ${data.message}` : ""}. Scan again; if it repeats, tell the organizer.`,
+        });
+        return;
+      }
+
       showResult(data);
     } catch (err) {
+      // fetch itself threw: the request never got an answer.
       console.error("Check-in error:", err);
       showResult({
         success: false,
         status: "error",
-        message: "Network problem — scan again.",
+        failure: "network",
+        message: "No connection. Check Wi-Fi or mobile data, then scan again.",
       });
+    } finally {
+      clearTimeout(checkingTimer);
+      setChecking(false);
     }
   };
 
   const nextGuest = () => {
     // The previous result stays on screen as "Previous guest".
+    unlockAudio();
+    // After a failed check, let staff rescan the same code right away.
+    if (result?.status === "error") lastReadRef.current = null;
     pausedRef.current = false;
     setPaused(false);
   };
 
   const startScanner = async () => {
+    // Must run synchronously inside the tap, before any await (mobile audio rule).
+    unlockAudio();
+
     try {
       setError("");
       // Keep the last scanned guest on screen; starting means ready for the next one.
@@ -253,6 +294,12 @@ export default function CheckInPage() {
           },
         },
         async (decodedText) => {
+          // Track every read (even while paused) so a code held in frame stays ignored.
+          const now = Date.now();
+          const last = lastReadRef.current;
+          lastReadRef.current = { code: decodedText, at: now };
+          if (last && last.code === decodedText && now - last.at < SAME_CODE_IGNORE_MS) return;
+
           if (scanLockRef.current || pausedRef.current) return;
 
           scanLockRef.current = true;
@@ -407,6 +454,29 @@ export default function CheckInPage() {
             ))}
           </div>
 
+          {/* Slow check: ember beam sweeps the frame like candlelight over a guest list */}
+          {checking && !paused && (
+            <div
+              role="status"
+              className="pointer-events-none absolute inset-0 overflow-hidden"
+              style={{ backgroundColor: "rgba(16,14,11,0.72)", color: BONE }}
+            >
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 h-1 motion-safe:animate-[door-beam_1.1s_ease-in-out_infinite_alternate]"
+                style={{ top: "50%", backgroundColor: EMBER, boxShadow: `0 0 24px 6px ${EMBER}99` }}
+              />
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <p className="font-[family-name:var(--font-door-display)] text-4xl font-black uppercase tracking-wide motion-safe:animate-[door-flicker_2.4s_steps(1)_infinite]">
+                  Checking
+                </p>
+                <p className="mt-1 text-[10px] tracking-[0.3em]" style={{ color: EMBER }}>
+                  READING THE GUEST LIST…
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Overlay (not an extra row) so the layout height never changes */}
           {(!scanning || paused) && (
             <div
@@ -439,7 +509,14 @@ export default function CheckInPage() {
                   <TierChip tier={result.ticket.tier} />
                 </div>
               ) : (
-                <p className="mt-4 text-sm">{result.message}</p>
+                <>
+                  {result.failure && (
+                    <p className="mt-4 inline-block px-2 py-1 text-xs font-semibold tracking-[0.3em]" style={{ backgroundColor: INK, color: flood.bg }}>
+                      {result.failure === "network" ? "NETWORK PROBLEM" : "SERVER PROBLEM"}
+                    </p>
+                  )}
+                  <p className="mt-3 text-sm leading-relaxed">{result.message}</p>
+                </>
               )}
 
               {verdict === "admit" && result.ticket && (
@@ -468,7 +545,7 @@ export default function CheckInPage() {
                 </p>
               )}
               <p className="mt-6 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase" style={{ color: BONE }}>
-                {scanning ? "Ready — scan next" : "Camera off"}
+                {checking ? "Checking…" : scanning ? "Ready — scan next" : "Camera off"}
               </p>
             </div>
           ) : (
