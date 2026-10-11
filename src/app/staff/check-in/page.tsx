@@ -25,12 +25,15 @@ const INK = "#100e0b";
 const BONE = "#efe8da";
 const EMBER = "#ff5f1f";
 
-const FLOODS: Record<Verdict, { bg: string; fg: string; word: string; mark: "check" | "cross" | "query" }> = {
+type MarkKind = "check" | "alert" | "cross" | "retry";
+
+// Colour follows the sound: green = success, amber = already, red = fail.
+const FLOODS: Record<Verdict, { bg: string; fg: string; word: string; mark: MarkKind }> = {
   admit: { bg: "#0a6e3c", fg: BONE, word: "ADMIT", mark: "check" },
-  duplicate: { bg: "#b3122a", fg: BONE, word: "ALREADY IN", mark: "cross" },
+  duplicate: { bg: "#f0a81a", fg: INK, word: "ALREADY IN", mark: "alert" },
   void: { bg: "#b3122a", fg: BONE, word: "VOID", mark: "cross" },
-  not_found: { bg: "#f0a81a", fg: INK, word: "NOT FOUND", mark: "query" },
-  error: { bg: "#f0a81a", fg: INK, word: "TRY AGAIN", mark: "query" },
+  not_found: { bg: "#b3122a", fg: BONE, word: "NOT FOUND", mark: "cross" },
+  error: { bg: "#b3122a", fg: BONE, word: "TRY AGAIN", mark: "retry" },
 };
 
 const TIERS: Record<string, { label: string; perk: string; chip: string }> = {
@@ -76,18 +79,43 @@ const formatCheckedIn = (iso?: string) => {
   return `${time} · ${ago}`;
 };
 
-function Mark({ kind, color }: { kind: "check" | "cross" | "query"; color: string }) {
+function Mark({ kind, color }: { kind: MarkKind; color: string }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 48 48" className="h-14 w-14 shrink-0" fill="none" stroke={color} strokeWidth="5" strokeLinecap="square">
       {kind === "check" && <path d="M8 25l11 11L40 13" />}
       {kind === "cross" && <path d="M11 11l26 26M37 11L11 37" />}
-      {kind === "query" && (
+      {kind === "alert" && (
         <>
-          <path d="M16 17a8 8 0 1 1 11 7.4c-2 .9-3 2.4-3 4.6v2" />
+          <path d="M24 8v22" />
           <path d="M24 38v2" />
         </>
       )}
+      {kind === "retry" && (
+        <>
+          <path d="M38 24a14 14 0 1 1-4.1-9.9" />
+          <path d="M36 6v9h-9" />
+        </>
+      )}
     </svg>
+  );
+}
+
+// On ADMIT the tier is what staff act on (drinks / wristband), so it gets
+// a band as heavy as the verdict. Bone background keeps it distinct from the green flood.
+function TierBand({ tier }: { tier: string }) {
+  const t = TIERS[tier] ?? { label: tier || "UNKNOWN", perk: "", chip: "#475569" };
+  return (
+    <div className="mt-3 flex items-stretch" style={{ backgroundColor: BONE, color: t.chip }}>
+      <span aria-hidden="true" className="w-3 shrink-0" style={{ backgroundColor: t.chip }} />
+      <div className="flex flex-1 items-baseline justify-between gap-3 px-3 py-2">
+        <p className="font-[family-name:var(--font-door-display)] text-[2.75rem] font-black uppercase leading-none tracking-tight">
+          {t.label}
+        </p>
+        <p className="text-right text-xs font-semibold uppercase tracking-[0.15em]" style={{ color: INK }}>
+          {t.perk}
+        </p>
+      </div>
+    </div>
   );
 }
 
@@ -440,7 +468,10 @@ export default function CheckInPage() {
         </header>
 
         {/* Viewfinder — #qr-reader must always stay mounted for html5-qrcode */}
-        <div className="relative mx-auto w-full" style={{ maxWidth: "min(100%, 36dvh, 340px)" }}>
+        <div
+          className="relative mx-auto w-full transition-[max-width] duration-200"
+          style={{ maxWidth: paused ? "min(100%, 24dvh, 220px)" : "min(100%, 36dvh, 340px)" }}
+        >
           <div
             id="qr-reader"
             className="w-full overflow-hidden bg-black [&_video]:!h-full [&_video]:!w-full [&_video]:!object-cover [&_img]:mx-auto"
@@ -483,7 +514,7 @@ export default function CheckInPage() {
               className="pointer-events-none absolute inset-0 flex items-center justify-center text-center text-[11px] tracking-[0.25em]"
               style={{ backgroundColor: scanning ? "rgba(0,0,0,0.55)" : "transparent", color: BONE }}
             >
-              {scanning ? "PAUSED — TAP NEXT GUEST" : "CAMERA OFF"}
+              {scanning ? "PAUSED" : "CAMERA OFF"}
             </div>
           )}
         </div>
@@ -503,7 +534,12 @@ export default function CheckInPage() {
                 </p>
               </div>
 
-              {result.ticket ? (
+              {result.ticket && verdict === "admit" ? (
+                <>
+                  <TierBand tier={result.ticket.tier} />
+                  <p className="mt-3 break-words text-xl font-semibold">{result.ticket.name}</p>
+                </>
+              ) : result.ticket ? (
                 <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
                   <p className="break-words text-xl font-semibold">{result.ticket.name}</p>
                   <TierChip tier={result.ticket.tier} />
@@ -511,18 +547,12 @@ export default function CheckInPage() {
               ) : (
                 <>
                   {result.failure && (
-                    <p className="mt-4 inline-block px-2 py-1 text-xs font-semibold tracking-[0.3em]" style={{ backgroundColor: INK, color: flood.bg }}>
+                    <p className="mt-4 inline-block px-2 py-1 text-xs font-semibold tracking-[0.3em]" style={{ backgroundColor: fg, color: flood.bg }}>
                       {result.failure === "network" ? "NETWORK PROBLEM" : "SERVER PROBLEM"}
                     </p>
                   )}
                   <p className="mt-3 text-sm leading-relaxed">{result.message}</p>
                 </>
-              )}
-
-              {verdict === "admit" && result.ticket && (
-                <p className="mt-2 text-sm tracking-wide opacity-90">
-                  {TIERS[result.ticket.tier]?.perk}
-                </p>
               )}
 
               {verdict === "duplicate" && (
