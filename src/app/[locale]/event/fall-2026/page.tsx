@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { isValidEmail } from "@/lib/event/contact-validation";
+import { isValidEmail, isValidPhone } from "@/lib/event/contact-validation";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -87,6 +87,7 @@ export default function Fall2026EventPage() {
   const [email, setEmail] = useState("");
   const [emailTouched, setEmailTouched] = useState(false);
   const [phone, setPhone] = useState("");
+  const [phoneTouched, setPhoneTouched] = useState(false);
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [waiverAccepted, setWaiverAccepted] = useState(false);
   const [showWaiver, setShowWaiver] = useState(false);
@@ -190,12 +191,13 @@ export default function Fall2026EventPage() {
     : 0;
 
   const emailValid = isValidEmail(email);
+  const phoneValid = isValidPhone(phone);
 
   const canContinue = Boolean(
     selectedTicket &&
       name.trim() &&
       emailValid &&
-      phone.trim() &&
+      phoneValid &&
       ageConfirmed &&
       waiverAccepted &&
       (!isMember || isVerified)
@@ -538,9 +540,17 @@ export default function Fall2026EventPage() {
                     autoComplete="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Your phone number"
-                    className={inputClass}
+                    onBlur={() => setPhoneTouched(true)}
+                    placeholder="416-555-0199 or +886 912 345 678"
+                    aria-invalid={phoneTouched && !phoneValid}
+                    aria-describedby="phone-error"
+                    className={`${inputClass} ${phoneTouched && !phoneValid ? "!border-red-500" : ""}`}
                   />
+                  {phoneTouched && !phoneValid && (
+                    <p id="phone-error" className="mt-1.5 text-xs text-red-600">
+                      Enter a 10-digit number, or + and country code for international numbers｜請輸入 10 位數電話，國際號碼請加 + 與國碼
+                    </p>
+                  )}
                 </div>
               </div>
             </section>
