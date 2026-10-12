@@ -8,6 +8,10 @@ const EVENT_ID = "00b84455-309c-4dba-9722-b031f9042081";
 const INVALID_MEMBER_MESSAGE =
   "Member verification failed. Please check your Member ID and the name on your member card.";
 
+function normalizeName(name: string) {
+  return name.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -35,9 +39,6 @@ export async function POST(req: Request) {
     }
 
     // Verify the name on the membership card.
-    const normalizeName = (name: string) =>
-      name.trim().replace(/\s+/g, " ").toLowerCase();
-
     if (normalizeName(member.name) !== normalizeName(cardName)) {
       return NextResponse.json(
         { verified: false, message: INVALID_MEMBER_MESSAGE },
@@ -45,15 +46,14 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check whether this member has already used or reserved
-    // the discount for this event.
     const redemptions = await db.$queryRaw<
       Array<{
+        id: string;
         status: string;
         stripe_session_id: string | null;
       }>
     >`
-      SELECT status, stripe_session_id
+      SELECT id, status, stripe_session_id
       FROM "MemberRedemption"
       WHERE member_id = ${memberId}
         AND event_id = ${EVENT_ID}
@@ -80,35 +80,88 @@ export async function POST(req: Request) {
             {
               verified: false,
               message:
-                "This Member ID has a pending discount reservation. Please try again later or contact the event organizers.",
+                "We could not confirm the status of your previous checkout. Please contact the event organizers before trying again.",
             },
             { status: 409 }
           );
         }
 
-        try {
-          const session = await stripe.checkout.sessions.retrieve(
-            redemption.stripe_session_id
-          );
+        const oldSessionId = redemption.stripe_session_id;
 
+        try {
+          let session =
+            await stripe.checkout.sessions.retrieve(oldSessionId);
+
+          // Ensure the previous checkout belongs to this member and event.
+          if (
+            session.metadata?.eventId !== EVENT_ID ||
+            session.metadata?.memberId !== memberId
+          ) {
+            console.error(
+              "Previous checkout does not match member/event:",
+              oldSessionId
+            );
+
+            return NextResponse.json(
+              {
+                verified: false,
+                message:
+                  "We could not safely verify your previous checkout. Please contact the event organizers.",
+              },
+              { status: 409 }
+            );
+          }
+
+          // Expire an open checkout when the member explicitly retries.
+          if (session.status === "open") {
+            try {
+              session =
+                await stripe.checkout.sessions.expire(oldSessionId);
+            } catch {
+              // The checkout may have completed or expired concurrently.
+              session =
+                await stripe.checkout.sessions.retrieve(oldSessionId);
+            }
+          }
+
+          // Never release a reservation unless Stripe confirms expiration.
           if (session.status !== "expired") {
             return NextResponse.json(
               {
                 verified: false,
                 message:
                   session.status === "complete"
-                    ? "This Member ID has a checkout that is already complete or awaiting payment confirmation. Please contact the event organizers if you need help."
-                    : "This Member ID is currently reserved by another checkout. Please finish that checkout or try again later.",
+                    ? "Your previous checkout has completed or is awaiting payment confirmation. Please check your ticket email before trying again, or contact the event organizers if you need help."
+                    : "We could not safely close your previous checkout. Please try again shortly.",
               },
               { status: 409 }
             );
           }
 
-          // The checkout endpoint handles releasing or transferring
-          // reservations associated with expired sessions.
+          // Release only records associated with the expired session.
+          await db.$transaction(async (tx) => {
+            await tx.$executeRaw`
+              SELECT pg_advisory_xact_lock(
+                hashtext(${`${memberId}:${EVENT_ID}`})
+              )
+            `;
+
+            await tx.$executeRaw`
+              DELETE FROM "TicketHold"
+              WHERE stripe_session_id = ${oldSessionId}
+            `;
+
+            await tx.$executeRaw`
+              DELETE FROM "MemberRedemption"
+              WHERE member_id = ${memberId}
+                AND event_id = ${EVENT_ID}
+                AND stripe_session_id = ${oldSessionId}
+                AND status = 'pending'
+            `;
+          });
         } catch (error) {
           console.error(
-            "Could not verify the existing member checkout:",
+            "Could not safely release previous member checkout:",
             error
           );
 
@@ -116,7 +169,7 @@ export async function POST(req: Request) {
             {
               verified: false,
               message:
-                "We could not confirm the status of your previous checkout. Please try again later.",
+                "We could not confirm your previous checkout. Please try again shortly.",
             },
             { status: 503 }
           );
