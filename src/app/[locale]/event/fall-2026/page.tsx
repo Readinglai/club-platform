@@ -73,13 +73,6 @@ const activities = [
     zhDescription: "一起雕刻大南瓜，發揮創意！",
   },
   {
-    emoji: "🧻",
-    enTitle: "Mummy Game",
-    zhTitle: "木乃伊遊戲",
-    enDescription: "Team up for a Halloween challenge.",
-    zhDescription: "組隊挑戰木乃伊遊戲！",
-  },
-  {
     emoji: "🍬",
     enTitle: "Guess the Candy Corn in the Jar",
     zhTitle: "猜糖果數量",
