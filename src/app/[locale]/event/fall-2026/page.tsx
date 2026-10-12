@@ -769,16 +769,6 @@ export default function Fall2026EventPage() {
                       <p className="mt-1 text-sm text-green-700">
                         {verificationMessage || t.verifiedHelp}
                       </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsVerified(false);
-                          setVerificationMessage("");
-                        }}
-                        className="mt-3 text-sm font-medium text-[#1a2744] underline"
-                      >
-                        {isZh ? "重新驗證" : "Verify again"}
-                      </button>
                     </div>
                   )}
                 </div>
