@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
@@ -123,6 +123,9 @@ export default function Fall2026EventPage() {
   const [verificationMessage, setVerificationMessage] = useState("");
   const [verificationError, setVerificationError] = useState("");
   const [checkoutError, setCheckoutError] = useState("");
+  // The field the checkout button just sent the user to (briefly outlined).
+  const [missingField, setMissingField] = useState<string | null>(null);
+  const missingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selected = ticketTypes.find((ticket) => ticket.id === selectedTicket);
   const discount = isMember && isVerified ? 5 : 0;
@@ -330,11 +333,45 @@ export default function Fall2026EventPage() {
     }
   };
 
+  // First thing still missing, in page order (element ids).
+  const firstIncompleteField = (): string | null => {
+    if (!selectedTicket) return "ticket-tier-LITE";
+    if (!name.trim() || name.trim().length > MAX_LENGTH.name) return "ticket-name";
+    if (!validEmail || email.trim().length > MAX_LENGTH.email) return "ticket-email";
+    if (!validPhone || phone.trim().length > MAX_LENGTH.phone) return "ticket-phone";
+    if (isMember && !isVerified) {
+      if (!memberId.trim() || memberId.trim().length > MAX_LENGTH.memberId) return "member-id";
+      if (!cardName.trim() || cardName.trim().length > MAX_LENGTH.cardName) return "member-card-name";
+      return "member-verify";
+    }
+    if (!ageConfirmed) return "age-confirm";
+    if (!waiverAccepted) return "waiver-accept";
+    return null;
+  };
+
+  const goToFirstIncomplete = () => {
+    const id = firstIncompleteField();
+    const el = id ? document.getElementById(id) : null;
+    if (!id || !el) return;
+
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.focus({ preventScroll: true });
+
+    setMissingField(id);
+    if (missingTimerRef.current) clearTimeout(missingTimerRef.current);
+    missingTimerRef.current = setTimeout(() => setMissingField(null), 2500);
+  };
+
+  // Red outline on whatever the checkout button pointed the user to.
+  const missingClass = (id: string) =>
+    missingField === id ? " ring-2 ring-red-500 ring-offset-2" : "";
+
   const handleCheckout = async () => {
     setCheckoutError("");
 
     if (!canContinue || !selectedTicket) {
       setCheckoutError(t.completeFields);
+      goToFirstIncomplete();
       return;
     }
 
@@ -508,13 +545,14 @@ export default function Fall2026EventPage() {
                   return (
                     <button
                       key={ticket.id}
+                      id={`ticket-tier-${ticket.id}`}
                       type="button"
                       onClick={() => setSelectedTicket(ticket.id)}
                       className={`w-full rounded-xl border p-4 text-left transition ${
                         isSelected
                           ? "border-[#1a2744] bg-[#f7f5f0] ring-1 ring-[#1a2744]"
                           : "border-gray-200 bg-white hover:border-gray-400"
-                      }`}
+                      }${missingClass("ticket-tier-LITE")}`}
                     >
                       <div className="flex items-start gap-3">
                         <div
@@ -580,7 +618,7 @@ export default function Fall2026EventPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder={isZh ? "請輸入姓名" : "Your full name"}
-                    className={inputClass}
+                    className={inputClass + missingClass("ticket-name")}
                   />
                 </div>
 
@@ -596,7 +634,7 @@ export default function Fall2026EventPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className={inputClass}
+                    className={inputClass + missingClass("ticket-email")}
                   />
                   {email && !validEmail && (
                     <p className="mt-1 text-xs text-red-600">
@@ -619,7 +657,7 @@ export default function Fall2026EventPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder={isZh ? "請輸入電話號碼" : "Your phone number"}
-                    className={inputClass}
+                    className={inputClass + missingClass("ticket-phone")}
                   />
                   {phone && !validPhone && (
                     <p className="mt-1 text-xs text-red-600">
@@ -687,7 +725,7 @@ export default function Fall2026EventPage() {
                             setVerificationMessage("");
                           }}
                           placeholder="OTSA-2026-XXXX"
-                          className={inputClass}
+                          className={inputClass + missingClass("member-id")}
                         />
                       </div>
 
@@ -705,15 +743,16 @@ export default function Fall2026EventPage() {
                             setVerificationMessage("");
                           }}
                           placeholder={isZh ? "會員卡上的姓名" : "Name on your member card"}
-                          className={inputClass}
+                          className={inputClass + missingClass("member-card-name")}
                         />
                       </div>
 
                       <button
+                        id="member-verify"
                         type="button"
                         onClick={handleVerify}
                         disabled={verifying}
-                        className="rounded-xl bg-[#1a2744] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#26395e] disabled:cursor-not-allowed disabled:opacity-50"
+                        className={`rounded-xl bg-[#1a2744] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#26395e] disabled:cursor-not-allowed disabled:opacity-50${missingClass("member-verify")}`}
                       >
                         {verifying ? t.verifying : t.verify}
                       </button>
@@ -752,10 +791,11 @@ export default function Fall2026EventPage() {
               <div className="mt-5 space-y-4">
                 <label className="flex cursor-pointer items-start gap-3">
                   <input
+                    id="age-confirm"
                     type="checkbox"
                     checked={ageConfirmed}
                     onChange={(e) => setAgeConfirmed(e.target.checked)}
-                    className="mt-1 h-4 w-4 accent-[#1a2744]"
+                    className={`mt-1 h-4 w-4 accent-[#1a2744]${missingClass("age-confirm")}`}
                   />
                   <span className="text-sm leading-6">{t.ageConfirm}</span>
                 </label>
@@ -771,10 +811,11 @@ export default function Fall2026EventPage() {
 
                   <label className="mt-3 flex cursor-pointer items-start gap-3">
                     <input
+                      id="waiver-accept"
                       type="checkbox"
                       checked={waiverAccepted}
                       onChange={(e) => setWaiverAccepted(e.target.checked)}
-                      className="mt-1 h-4 w-4 accent-[#1a2744]"
+                      className={`mt-1 h-4 w-4 accent-[#1a2744]${missingClass("waiver-accept")}`}
                     />
                     <span className="text-sm leading-6">{t.waiverConfirm}</span>
                   </label>
@@ -836,8 +877,9 @@ export default function Fall2026EventPage() {
               <button
                 type="button"
                 onClick={handleCheckout}
-                disabled={!canContinue || checkingOut}
-                className="w-full rounded-xl bg-[#1a2744] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#26395e] disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={checkingOut}
+                aria-disabled={!canContinue}
+                className={`w-full rounded-xl bg-[#1a2744] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#26395e] disabled:cursor-not-allowed disabled:opacity-40${canContinue ? "" : " opacity-40"}`}
               >
                 {checkingOut ? t.processing : t.continue}
               </button>
