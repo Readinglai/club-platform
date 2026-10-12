@@ -485,40 +485,6 @@ export default function Fall2026EventPage() {
       </section>
 
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
-        <section className="mb-10 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
-          <h2 className="text-xl font-bold">{t.activities}</h2>
-          <p className="mt-2 text-sm leading-6 text-gray-600">
-            {t.activitiesIntro}
-          </p>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            {activities.map((activity) => (
-              <div
-                key={activity.enTitle}
-                className="flex gap-4 rounded-xl border border-gray-100 bg-[#fcfbf9] p-4"
-              >
-                <span className="text-2xl" aria-hidden="true">
-                  {activity.emoji}
-                </span>
-                <div>
-                  <h3 className="font-semibold">
-                    {isZh ? activity.zhTitle : activity.enTitle}
-                  </h3>
-                  <p className="mt-1 text-sm leading-6 text-gray-600">
-                    {isZh
-                      ? activity.zhDescription
-                      : activity.enDescription}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-5 rounded-xl bg-[#faf8f3] p-4 text-sm leading-6">
-            🌟 {t.costumeNote}
-          </p>
-        </section>
-
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="space-y-6">
             <section className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
@@ -590,6 +556,40 @@ export default function Fall2026EventPage() {
               </div>
 
               <p className="mt-3 text-sm font-medium">{t.upgrade}</p>
+            </section>
+
+            <section className="mb-10 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
+              <h2 className="text-xl font-bold">{t.activities}</h2>
+              <p className="mt-2 text-sm leading-6 text-gray-600">
+                {t.activitiesIntro}
+              </p>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                {activities.map((activity) => (
+                  <div
+                    key={activity.enTitle}
+                    className="flex gap-4 rounded-xl border border-gray-100 bg-[#fcfbf9] p-4"
+                  >
+                    <span className="text-2xl" aria-hidden="true">
+                      {activity.emoji}
+                    </span>
+                    <div>
+                      <h3 className="font-semibold">
+                        {isZh ? activity.zhTitle : activity.enTitle}
+                      </h3>
+                      <p className="mt-1 text-sm leading-6 text-gray-600">
+                        {isZh
+                          ? activity.zhDescription
+                          : activity.enDescription}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <p className="mt-5 rounded-xl bg-[#faf8f3] p-4 text-sm leading-6">
+                🌟 {t.costumeNote}
+              </p>
             </section>
 
             <section className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
