@@ -1,30 +1,33 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { isValidEmail, isValidPhone } from "@/lib/event/contact-validation";
-
-const PRIMARY = "#1a2744";
-const SECONDARY = "#c9b99a";
+import { useSearchParams } from "next/navigation";
+import { useLocale } from "next-intl";
+import { usePathname, useRouter } from "@/i18n/navigation";
 
 const ticketTypes = [
   {
     id: "LITE",
-    title: "Tier 1 — Lite",
-    subtitle: "2 drinks · 2 杯酒",
+    en: "Tier 1 — Lite",
+    zh: "Tier 1 — 基本票",
+    enSubtitle: "2 drinks",
+    zhSubtitle: "2 杯酒",
     price: 25,
   },
   {
     id: "STANDARD",
-    title: "Tier 2 — Standard",
-    subtitle: "4 drinks · 4 杯酒",
+    en: "Tier 2 — Standard",
+    zh: "Tier 2 — 標準票",
+    enSubtitle: "4 drinks",
+    zhSubtitle: "4 杯酒",
     price: 40,
   },
   {
     id: "UNLIMITED",
-    title: "Tier 3 — Unlimited",
-    subtitle:
-      "Unlimited drinks + 1 photo booth picture · 無限暢飲＋拍貼照一張",
+    en: "Tier 3 — Unlimited",
+    zh: "Tier 3 — 無限暢飲",
+    enSubtitle: "Unlimited drinks + 1 photo booth picture",
+    zhSubtitle: "酒無限暢飲＋拍貼照一張",
     price: 45,
   },
 ];
@@ -32,50 +35,63 @@ const ticketTypes = [
 const activities = [
   {
     emoji: "🧩",
-    title: "Halloween Human Bingo",
-    description: "Meet new people through Bingo!",
-    chinese: "玩 Bingo、認識新朋友！",
+    enTitle: "Halloween Human Bingo",
+    zhTitle: "Halloween Human Bingo",
+    enDescription:
+      "Meet new people and find someone who matches each square on your Bingo card!",
+    zhDescription: "找到符合 Bingo 格子條件的人，完成挑戰、認識新朋友！",
   },
   {
     emoji: "🀄",
-    title: "Mahjong 麻將",
-    description: "Gather around for a game of Mahjong.",
-    chinese: "一起打麻將！",
+    enTitle: "Mahjong",
+    zhTitle: "麻將 Mahjong",
+    enDescription: "Gather around for a game of Mahjong.",
+    zhDescription: "一起打麻將！",
   },
   {
     emoji: "🃏",
-    title: "Card Games 撲克牌",
-    description: "Enjoy card games with friends.",
-    chinese: "和朋友一起玩牌！",
+    enTitle: "Card Games",
+    zhTitle: "撲克牌",
+    enDescription: "Enjoy card games with friends.",
+    zhDescription: "和朋友一起玩牌！",
   },
   {
     emoji: "🎃",
-    title: "Big Pumpkin Carving 大南瓜雕刻",
-    description: "Get creative and carve a Halloween pumpkin!",
-    chinese: "一起雕刻大南瓜，發揮創意！",
+    enTitle: "Big Pumpkin Carving",
+    zhTitle: "大南瓜雕刻",
+    enDescription: "Get creative and carve a Halloween pumpkin!",
+    zhDescription: "一起雕刻大南瓜，發揮創意！",
   },
   {
     emoji: "🧻",
-    title: "Mummy Game 木乃伊遊戲",
-    description: "Team up for a Halloween challenge.",
-    chinese: "組隊挑戰木乃伊遊戲！",
+    enTitle: "Mummy Game",
+    zhTitle: "木乃伊遊戲",
+    enDescription: "Team up for a Halloween challenge.",
+    zhDescription: "組隊挑戰木乃伊遊戲！",
   },
   {
     emoji: "🍬",
-    title: "Guess the Candy Corn",
-    description: "Guess how many candies are in the jar.",
-    chinese: "猜猜罐子裡有多少顆糖果！",
+    enTitle: "Guess the Candy Corn in the Jar",
+    zhTitle: "猜糖果數量",
+    enDescription: "Guess how many candies are in the jar.",
+    zhDescription: "猜猜罐子裡有多少顆糖果！",
   },
   {
     emoji: "🏆",
-    title: "Halloween Costume Contest 萬聖節服裝比賽",
-    description: "Vote for the best costume to win a special prize!",
-    chinese: "大家投票選出最佳造型，贏取特別獎品！",
+    enTitle: "Halloween Costume Contest",
+    zhTitle: "萬聖節服裝比賽",
+    enDescription: "Vote for the best costume to win a special prize!",
+    zhDescription: "大家投票選出最佳造型，贏取特別獎品！",
   },
 ];
 
 export default function Fall2026EventPage() {
+  const locale = useLocale();
+  const isZh = locale === "zh";
+  const pathname = usePathname();
+  const router = useRouter();
   const searchParams = useSearchParams();
+
   const paymentSuccess = searchParams.get("payment") === "success";
 
   const [selectedTicket, setSelectedTicket] = useState<string | null>(null);
@@ -83,67 +99,226 @@ export default function Fall2026EventPage() {
   const [isVerified, setIsVerified] = useState(false);
   const [memberId, setMemberId] = useState("");
   const [cardName, setCardName] = useState("");
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [emailTouched, setEmailTouched] = useState(false);
   const [phone, setPhone] = useState("");
-  const [phoneTouched, setPhoneTouched] = useState(false);
+
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [waiverAccepted, setWaiverAccepted] = useState(false);
   const [showWaiver, setShowWaiver] = useState(false);
+
   const [verifying, setVerifying] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState("");
+  const [verificationError, setVerificationError] = useState("");
+  const [checkoutError, setCheckoutError] = useState("");
 
-  const selected = ticketTypes.find(
-    (ticket) => ticket.id === selectedTicket
+  const selected = ticketTypes.find((ticket) => ticket.id === selectedTicket);
+  const discount = isMember && isVerified ? 5 : 0;
+  const total = selected ? Math.max(0, selected.price - discount) : 0;
+
+  const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const validPhone = /^[+()\d\s.-]{7,25}$/.test(phone.trim());
+
+  const canContinue = Boolean(
+    selectedTicket &&
+      name.trim() &&
+      validEmail &&
+      validPhone &&
+      ageConfirmed &&
+      waiverAccepted &&
+      (!isMember || isVerified)
   );
 
-  const handleMemberToggle = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const checked = event.target.checked;
+  const t = {
+    switchLanguage: isZh ? "English" : "繁體中文",
+    intro: isZh
+      ? "一年一度的 Halloween Condo Party 來啦！🎃"
+      : "The annual Halloween Condo Party is here! 🎃",
+    introText: isZh
+      ? "快揪朋友一起來感受萬聖節氛圍，順便慶祝考完 midterm，一起度過一個最酷的 Halloween 吧！👻🕸️✨"
+      : "Grab your friends, celebrate finishing midterms, and join us for a night full of Halloween vibes, games, drinks, and new friends!",
+    activitiesIntro: isZh
+      ? "今年我們準備了超多 Halloween 活動，讓大家邊玩邊認識新朋友！🎉"
+      : "We’ve prepared tons of Halloween activities for you to enjoy throughout the night!",
+    activities: isZh ? "🎃 萬聖節活動" : "🎃 Halloween Activities",
+    costumeNote: isZh
+      ? "當天將由參加者一起進行投票，最佳造型勝出者可以獲得特別獎品！"
+      : "Attendees will vote on the night — the best costume wins a special prize!",
+    time: isZh ? "時間" : "Time",
+    location: isZh ? "地點" : "Location",
+    dressCode: "Dress Code",
+    costume: isZh ? "萬聖節服裝" : "Halloween Costume",
+    tickets: isZh ? "💰 票價" : "💰 Ticket Tiers",
+    member: isZh ? "ROCSAUT 會員" : "ROCSAUT Member",
+    regular: isZh ? "一般票價" : "Regular",
+    memberDiscount: isZh
+      ? "驗證 ROCSAUT 會員身分即可享每張 $5 折扣。"
+      : "Verify your ROCSAUT membership to receive $5 off your ticket.",
+    oneMemberTicket: isZh
+      ? "⚠️ 每位 ROCSAUT 會員限購一張會員優惠票。"
+      : "⚠️ Each ROCSAUT member may purchase only one ticket at the member-discounted price.",
+    upgrade: isZh
+      ? "⬆️ 當天覺得喝不夠？現場可以加價升級 Tier！"
+      : "⬆️ Want more drinks? You can upgrade your ticket tier at the door!",
+    deadline: isZh
+      ? "報名截止：10/22 晚上 11:59"
+      : "Registration closes: Oct 22 at 11:59 PM",
+    noRefund: isZh
+      ? "報名完成後恕不退費。"
+      : "All ticket sales are final. No refunds.",
+    limited: isZh ? "名額有限，額滿為止。" : "Spots are limited and available while supplies last.",
+    cleaningFee: isZh
+      ? "嘔吐落地或造成廁所馬桶堵塞，將收取 $200 清潔費。"
+      : "A $200 cleaning fee will apply for vomiting on the floor or clogging toilets.",
+    chooseTicket: isZh ? "1. 選擇票種" : "1. Choose your ticket",
+    chooseTicketHelp: isZh
+      ? "請選擇你想購買的票種。"
+      : "Choose the ticket option you would like to purchase.",
+    personalInfo: isZh ? "2. 個人資料" : "2. Your information",
+    personalInfoHelp: isZh
+      ? "請填寫與你的活動門票相關的資料。"
+      : "Enter the information that will be associated with your ticket.",
+    fullName: isZh ? "姓名" : "Full Name",
+    email: isZh ? "電子郵件" : "Email",
+    phone: isZh ? "電話號碼" : "Phone Number",
+    memberSection: isZh ? "3. 會員驗證" : "3. Membership",
+    notMember: isZh
+      ? "還不是會員？立即在這裡註冊"
+      : "Not a member? Sign up here",
+    memberCheckbox: isZh
+      ? "我是 ROCSAUT 會員"
+      : "I am a ROCSAUT member",
+    memberHelp: isZh
+      ? "請輸入 Member ID 及會員卡上的姓名，以驗證會員票價。"
+      : "Enter your Member ID and the name on your member card to verify the member price.",
+    memberId: "Member ID",
+    cardName: isZh ? "會員卡上的姓名" : "Name on Member Card",
+    verify: isZh ? "驗證會員資格" : "Verify Membership",
+    verifying: isZh ? "驗證中…" : "Verifying…",
+    verified: isZh ? "會員驗證成功" : "Membership verified",
+    verifiedHelp: isZh
+      ? "已套用會員票價。"
+      : "Your member price has been applied.",
+    agreement: isZh ? "4. 報名須知與確認" : "4. Policies and confirmation",
+    ageConfirm: isZh
+      ? "我確認自己已年滿 19 歲。"
+      : "I confirm that I am 19 years of age or older.",
+    waiverConfirm: isZh
+      ? "我已閱讀並同意活動條款及相關規定。"
+      : "I have read and agree to the event waiver and policies.",
+    viewWaiver: isZh ? "閱讀活動條款" : "Read event waiver",
+    summary: isZh ? "訂單摘要" : "Order Summary",
+    chooseFirst: isZh ? "請先選擇票種" : "Please select a ticket",
+    subtotal: isZh ? "票價" : "Ticket price",
+    discountLabel: isZh ? "會員折扣" : "Member discount",
+    total: isZh ? "總計" : "Total",
+    continue: isZh ? "前往付款" : "Continue to Payment",
+    processing: isZh ? "處理中…" : "Processing…",
+    completeFields: isZh
+      ? "請完成所有欄位、會員驗證及必要確認。"
+      : "Complete all fields, membership verification, and required confirmations.",
+    paymentNote: isZh
+      ? "點擊後將前往 Stripe 安全付款頁面。"
+      : "You will be redirected to Stripe’s secure checkout page.",
+    successTitle: isZh ? "付款完成！🎃" : "Payment successful! 🎃",
+    successText: isZh
+      ? "感謝報名 Halloween Condo Party！請留意電子郵件中的門票資訊。"
+      : "Thanks for signing up for the Halloween Condo Party! Check your email for your ticket details.",
+    spamNote: isZh
+      ? "如果沒有收到確認信，請檢查垃圾郵件或促銷郵件資料夾。"
+      : "If you don’t see the confirmation email, check your Spam or Junk folder.",
+    backToEvent: isZh ? "返回活動頁面" : "Back to Event Page",
+  };
 
+  const switchLanguage = () => {
+    const targetLocale = isZh ? "en" : "zh";
+    const query = searchParams.toString();
+    const destination = query ? `${pathname}?${query}` : pathname;
+    router.replace(destination, { locale: targetLocale });
+  };
+
+  const handleMemberToggle = (checked: boolean) => {
     setIsMember(checked);
     setIsVerified(false);
     setMemberId("");
     setCardName("");
+    setVerificationMessage("");
+    setVerificationError("");
   };
 
   const handleVerify = async () => {
+    setVerificationMessage("");
+    setVerificationError("");
+
     if (!memberId.trim() || !cardName.trim()) {
-      alert(
-        "Please enter your Member ID and the name on your member card."
+      setVerificationError(
+        isZh
+          ? "請輸入 Member ID 和會員卡上的姓名。"
+          : "Please enter your Member ID and the name on your member card."
       );
+      setIsVerified(false);
       return;
     }
 
     setVerifying(true);
+    setIsVerified(false);
 
     try {
       const response = await fetch("/api/event/member-verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ memberId, cardName }),
+        body: JSON.stringify({
+          memberId: memberId.trim(),
+          cardName: cardName.trim(),
+        }),
       });
 
       const data = await response.json();
 
-      if (response.ok && data.verified) {
-        setIsVerified(true);
-      } else {
+
+      if (!response.ok || !data.verified) {
         setIsVerified(false);
-        alert(data.message || "Membership verification failed.");
+
+        const alreadyUsedMessage =
+          "This Member ID has already used member pricing for this event. Each member may purchase only one discounted ticket.";
+
+        setVerificationError(
+          isZh && data.message === alreadyUsedMessage
+            ? "此會員編號已使用過本次活動的會員優惠。每位會員限購一張會員優惠票。"
+            : data.message ||
+                (isZh
+                  ? "會員驗證失敗，請確認資料後再試。"
+                  : "Membership verification failed. Please check your details and try again.")
+        );
+
+        return;
       }
+
+
+      setIsVerified(true);
+      setVerificationMessage(t.verifiedHelp);
     } catch (error) {
       console.error("Member verification error:", error);
-      alert("Something went wrong. Please try again later.");
+      setIsVerified(false);
+      setVerificationError(
+        isZh
+          ? "目前無法驗證，請稍後再試。"
+          : "Unable to verify right now. Please try again later."
+      );
     } finally {
       setVerifying(false);
     }
   };
 
   const handleCheckout = async () => {
-    if (!canContinue || !selectedTicket || checkingOut) return;
+    setCheckoutError("");
+
+    if (!canContinue || !selectedTicket) {
+      setCheckoutError(t.completeFields);
+      return;
+    }
 
     setCheckingOut(true);
 
@@ -152,13 +327,13 @@ export default function Fall2026EventPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
-          email,
-          phone,
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
           tier: selectedTicket,
           isMember,
-          memberId: isMember ? memberId : null,
-          cardName: isMember ? cardName : null,
+          memberId: isMember ? memberId.trim() : null,
+          cardName: isMember ? cardName.trim() : null,
           ageConfirmed,
           waiverAccepted,
         }),
@@ -167,235 +342,144 @@ export default function Fall2026EventPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.message || "Unable to start checkout.");
+        setCheckoutError(
+          data.message ||
+            (isZh
+              ? "無法建立付款，請稍後再試。"
+              : "Unable to start checkout. Please try again.")
+        );
         return;
       }
 
       if (!data.checkoutUrl) {
-        alert("Unable to start checkout. Please try again.");
+        setCheckoutError(
+          isZh
+            ? "未收到付款連結，請聯絡活動主辦方。"
+            : "No checkout URL was returned. Please contact the event organizers."
+        );
         return;
       }
 
       window.location.href = data.checkoutUrl;
     } catch (error) {
       console.error("Checkout error:", error);
-      alert("Something went wrong. Please try again later.");
+      setCheckoutError(
+        isZh
+          ? "目前無法建立付款，請稍後再試。"
+          : "Unable to start checkout. Please try again later."
+      );
     } finally {
       setCheckingOut(false);
     }
   };
 
-  const discount = isVerified && isMember ? 5 : 0;
-  const total = selected
-    ? Math.max(0, selected.price - discount)
-    : 0;
-
-  const emailValid = isValidEmail(email);
-  const phoneValid = isValidPhone(phone);
-
-  const canContinue = Boolean(
-    selectedTicket &&
-      name.trim() &&
-      emailValid &&
-      phoneValid &&
-      ageConfirmed &&
-      waiverAccepted &&
-      (!isMember || isVerified)
-  );
-
   const inputClass =
-    "w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm !text-gray-900 placeholder:!text-gray-400 outline-none focus:border-[#1a2744] focus:ring-1 focus:ring-[#1a2744]";
-
-  const sectionClass =
-    "rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8";
+    "w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-[#1a2744] outline-none focus:border-[#1a2744] focus:ring-2 focus:ring-[#1a2744]/10";
 
   if (paymentSuccess) {
     return (
-      <main
-        className="flex min-h-screen items-center justify-center px-4 py-10"
-        style={{ backgroundColor: "#f9f7f4" }}
-      >
-        <div className="w-full max-w-lg">
-          <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm sm:p-10">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-2xl text-green-600">
-              ✓
-            </div>
+      <main className="min-h-screen bg-[#f9f7f4] px-4 py-16">
 
-            <h1
-              className="text-2xl font-bold sm:text-3xl"
-              style={{ color: PRIMARY }}
-            >
-              Thank you for registering! 🎉
-            </h1>
-
-            <p className="mt-4 text-sm leading-relaxed text-gray-600 sm:text-base">
-              Your payment was successful.
-            </p>
-
-            <div className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4 text-left">
-              <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-lg">
-                  📩
-                </div>
-
-                <div>
-                  <p className="font-bold text-amber-950">
-                    Important: Check Your Spam / Junk Folder!
-                  </p>
-
-                  <p className="mt-2 text-sm leading-relaxed text-amber-900">
-                    Your ticket confirmation email will arrive shortly. If you
-                    cannot find it in your inbox, please check your{" "}
-                    <strong className="font-extrabold">
-                      Spam / Junk folder
-                    </strong>{" "}
-                    as well.
-                  </p>
-
-                  <p className="mt-2 text-sm leading-relaxed text-amber-900">
-                    請留意垃圾郵件匣！如果收件匣沒有收到票券確認信，請記得檢查
-                    <strong className="font-extrabold"> Spam / Junk（垃圾郵件）</strong>。
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 rounded-xl bg-[#faf8f3] p-4 text-left text-sm">
-              <p className="mb-1 font-semibold" style={{ color: PRIMARY }}>
-                Ticket delivery
-              </p>
-              <p className="leading-relaxed text-gray-600">
-                Please keep your ticket email and have your ticket ready
-                when you arrive at the event.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                window.location.href = "/event/fall-2026";
-              }}
-              className="mt-7 w-full rounded-xl py-3 text-sm font-semibold"
-              style={{ backgroundColor: PRIMARY, color: SECONDARY }}
-            >
-              Back to Event Page
-            </button>
+        <section className="mx-auto max-w-xl rounded-3xl bg-white p-8 text-center shadow-sm sm:p-12">
+          <div className="mb-5 text-5xl">🎃</div>
+          <h1 className="text-3xl font-bold text-[#1a2744]">
+            {t.successTitle}
+          </h1>
+          <p className="mt-4 leading-7 text-gray-600">{t.successText}</p>
+          <div className="mt-6 rounded-2xl bg-[#faf8f3] p-4 text-sm leading-6 text-[#1a2744]">
+            {t.spamNote}
           </div>
-        </div>
+          <button
+            type="button"
+            onClick={() => router.replace("/event/fall-2026")}
+            className="mt-8 rounded-xl bg-[#1a2744] px-6 py-3 font-semibold text-white transition hover:bg-[#26395e]"
+          >
+            {t.backToEvent}
+          </button>
+        </section>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen" style={{ backgroundColor: "#f9f7f4" }}>
-      {/* Hero */}
-      <section
-        className="px-4 py-12 sm:py-16"
-        style={{ backgroundColor: PRIMARY }}
-      >
-        <div className="mx-auto max-w-5xl">
-          <p
-            className="mb-3 text-xs uppercase tracking-[0.25em] sm:text-sm"
-            style={{ color: SECONDARY }}
-          >
-            ROCSAUT Events · 2026
-          </p>
+    <main className="min-h-screen bg-[#f9f7f4] text-[#1a2744]">
 
-          <h1
-            className="text-3xl font-bold leading-tight sm:text-5xl"
-            style={{ color: SECONDARY }}
-          >
-            🎃 Halloween Condo Party
+      <section className="bg-[#1a2744] px-5 py-16 text-white sm:py-20">
+        <div className="mx-auto max-w-4xl">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-[#c9b99a]">
+            ROCSAUT Events
+          </p>
+          <h1 className="max-w-3xl text-3xl font-extrabold leading-tight text-[#c9b99a] sm:text-5xl">
+            {isZh
+              ? "2026 ROCSAUT 萬聖節派對"
+              : "2026 ROCSAUT Halloween Party"}
           </h1>
-
-          <h2 className="mt-3 text-xl font-semibold text-white sm:text-2xl">
-            一年一度的 Halloween Condo Party 來啦！
-          </h2>
-
-          <p className="mt-5 max-w-3xl text-sm leading-7 text-white/85 sm:text-base">
-            Grab your friends, celebrate finishing midterms, and join us
-            for a night full of Halloween vibes, games, drinks, and new
-            friends!
+          <p className="mt-6 max-w-3xl text-base leading-7 text-white/85 sm:text-lg">
+            {t.intro}
+          </p>
+          <p className="mt-3 max-w-3xl leading-7 text-white/75">
+            {t.introText}
           </p>
 
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-white/85 sm:text-base">
-            快揪朋友一起來感受萬聖節氛圍，順便慶祝考完 midterm，
-            一起度過一個充滿遊戲、飲料和新朋友的 Halloween！
-          </p>
-
-          <div className="mt-7 grid gap-3 text-sm text-white sm:grid-cols-3">
-            <div className="rounded-xl border border-white/15 bg-white/5 p-4">
-              <p className="text-xs text-white/60">DATE & TIME 時間</p>
-              <p className="mt-1 font-semibold">
-                October 23 · 7:30–11:30 PM
-              </p>
-              <p className="mt-1 text-white/80">10/23 晚上 7:30–11:30</p>
+          <div className="mt-8 grid gap-4 border-t border-white/15 pt-6 text-sm sm:grid-cols-3">
+            <div>
+              <p className="text-[#c9b99a]">{t.time}</p>
+              <p className="mt-1 font-semibold">Oct 23, 2026</p>
+              <p>7:30 PM – 11:30 PM</p>
             </div>
-
-            <div className="rounded-xl border border-white/15 bg-white/5 p-4">
-              <p className="text-xs text-white/60">LOCATION 地點</p>
+            <div>
+              <p className="text-[#c9b99a]">{t.location}</p>
               <p className="mt-1 font-semibold">38 Grenville St., 2F</p>
-              <p className="mt-1 text-white/80">38 Grenville St. 二樓</p>
             </div>
-
-            <div className="rounded-xl border border-white/15 bg-white/5 p-4">
-              <p className="text-xs text-white/60">DRESS CODE 服裝</p>
-              <p className="mt-1 font-semibold">Halloween Costume 👻</p>
-              <p className="mt-1 text-white/80">萬聖節裝扮</p>
+            <div>
+              <p className="text-[#c9b99a]">{t.dressCode}</p>
+              <p className="mt-1 font-semibold">👻 {t.costume} 👻</p>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
-        {/* Activities */}
-        <section className={`${sectionClass} mb-8`}>
-          <div className="mb-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
-              What&apos;s happening
-            </p>
-            <h2 className="mt-1 text-2xl font-bold" style={{ color: PRIMARY }}>
-              🎃 Halloween Activities
-            </h2>
-            <p className="mt-1 text-lg font-semibold" style={{ color: PRIMARY }}>
-              萬聖節活動
-            </p>
-          </div>
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+        <section className="mb-10 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
+          <h2 className="text-xl font-bold">{t.activities}</h2>
+          <p className="mt-2 text-sm leading-6 text-gray-600">
+            {t.activitiesIntro}
+          </p>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
             {activities.map((activity) => (
               <div
-                key={activity.title}
-                className="rounded-xl border border-gray-100 bg-[#faf8f3] p-3 sm:p-4"
+                key={activity.enTitle}
+                className="flex gap-4 rounded-xl border border-gray-100 bg-[#fcfbf9] p-4"
               >
-                <p
-                  className="text-sm font-semibold leading-5 sm:text-base"
-                  style={{ color: PRIMARY }}
-                >
-                  <span className="mr-1.5">{activity.emoji}</span>
-                  {activity.title}
-                </p>
-                <p className="mt-1.5 text-xs leading-5 text-gray-600 sm:text-sm">
-                  {activity.description}
-                </p>
-                <p className="mt-1 text-xs leading-5 text-gray-500 sm:text-sm">
-                  {activity.chinese}
-                </p>
+                <span className="text-2xl" aria-hidden="true">
+                  {activity.emoji}
+                </span>
+                <div>
+                  <h3 className="font-semibold">
+                    {isZh ? activity.zhTitle : activity.enTitle}
+                  </h3>
+                  <p className="mt-1 text-sm leading-6 text-gray-600">
+                    {isZh
+                      ? activity.zhDescription
+                      : activity.enDescription}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
+
+          <p className="mt-5 rounded-xl bg-[#faf8f3] p-4 text-sm leading-6">
+            🌟 {t.costumeNote}
+          </p>
         </section>
 
-        <div className="grid items-start gap-8 lg:grid-cols-3">
-          <div className="space-y-8 lg:col-span-2">
-            {/* Tickets */}
-            <section className={sectionClass}>
-              <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>
-                1. Choose Your Ticket｜選擇票種
-              </h2>
-              <p className="mt-1 text-sm text-gray-500">
-                ROCSAUT members receive $5 off after membership verification.
-                會員完成驗證後可享 $5 折扣。
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="space-y-6">
+            <section className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
+              <h2 className="text-lg font-bold">{t.chooseTicket}</h2>
+              <p className="mt-2 text-sm text-gray-500">
+                {t.chooseTicketHelp}
               </p>
 
               <div className="mt-5 space-y-3">
@@ -408,50 +492,50 @@ export default function Fall2026EventPage() {
                       key={ticket.id}
                       type="button"
                       onClick={() => setSelectedTicket(ticket.id)}
-                      aria-pressed={isSelected}
-                      className="w-full rounded-xl p-4 text-left transition-colors"
-                      style={{
-                        border: `1px solid ${
-                          isSelected ? SECONDARY : "#e5e7eb"
-                        }`,
-                        backgroundColor: isSelected ? "#faf8f3" : "#ffffff",
-                      }}
+                      className={`w-full rounded-xl border p-4 text-left transition ${
+                        isSelected
+                          ? "border-[#1a2744] bg-[#f7f5f0] ring-1 ring-[#1a2744]"
+                          : "border-gray-200 bg-white hover:border-gray-400"
+                      }`}
                     >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex min-w-0 gap-3">
-                          <div
-                            className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
-                            style={{
-                              border: `2px solid ${
-                                isSelected ? SECONDARY : "#d1d5db"
-                              }`,
-                            }}
-                          >
-                            {isSelected && (
-                              <div
-                                className="h-2.5 w-2.5 rounded-full"
-                                style={{ backgroundColor: SECONDARY }}
-                              />
-                            )}
-                          </div>
-
-                          <div>
-                            <p className="font-semibold" style={{ color: PRIMARY }}>
-                              {ticket.title}
-                            </p>
-                            <p className="mt-1 text-sm leading-6 text-gray-500">
-                              {ticket.subtitle}
-                            </p>
-                          </div>
+                      <div className="flex items-start gap-3">
+                        <div
+                          className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                            isSelected
+                              ? "border-[#1a2744]"
+                              : "border-gray-300"
+                          }`}
+                        >
+                          {isSelected && (
+                            <div className="h-2.5 w-2.5 rounded-full bg-[#1a2744]" />
+                          )}
                         </div>
 
-                        <div className="shrink-0 text-right">
-                          <p className="text-lg font-bold" style={{ color: PRIMARY }}>
-                            ${ticket.price}
+                        <div className="min-w-0 flex-1">
+                          <p className="font-bold">
+                            {isZh ? ticket.zh : ticket.en}
                           </p>
-                          <p className="mt-1 text-xs text-gray-500">
-                            Member ${memberPrice}
+                          <p className="mt-1 text-sm text-gray-500">
+                            {isZh ? ticket.zhSubtitle : ticket.enSubtitle}
                           </p>
+                          <div className="mt-3 space-y-1 text-sm">
+                            <p>
+                              <span className="text-gray-500">
+                                {t.member}:
+                              </span>{" "}
+                              <span className="font-semibold">
+                                ${memberPrice}
+                              </span>
+                            </p>
+                            <p>
+                              <span className="text-gray-500">
+                                {t.regular}:
+                              </span>{" "}
+                              <span className="font-semibold">
+                                ${ticket.price}
+                              </span>
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </button>
@@ -459,220 +543,185 @@ export default function Fall2026EventPage() {
                 })}
               </div>
 
-              <div className="mt-5 rounded-xl bg-[#faf8f3] p-4">
-                <p className="font-semibold" style={{ color: PRIMARY }}>
-                  ⬆️ Want more drinks?
-                </p>
-                <p className="mt-1 text-sm text-gray-600">
-                  You can upgrade your ticket tier at the door.
-                </p>
-                <p className="mt-1 text-sm text-gray-600">
-                  當天覺得喝不夠？現場可以加價升級 Tier！
+              <div className="mt-4 space-y-2 text-sm leading-6">
+                <p className="text-gray-500">{t.memberDiscount}</p>
+                <p className="font-semibold text-[#1a2744]">
+                  {t.oneMemberTicket}
                 </p>
               </div>
+
+              <p className="mt-3 text-sm font-medium">{t.upgrade}</p>
             </section>
 
-            {/* Personal information */}
-            <section className={sectionClass}>
-              <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>
-                2. Your Information｜個人資料
-              </h2>
-              <p className="mb-5 mt-1 text-sm text-gray-500">
-                Please enter the information associated with your ticket.
-                請填寫將與票券綁定的個人資料。
-              </p>
+            <section className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
+              <h2 className="text-lg font-bold">{t.personalInfo}</h2>
+              <p className="mt-2 text-sm text-gray-500">{t.personalInfoHelp}</p>
 
-              <div className="space-y-4">
+              <div className="mt-5 space-y-4">
                 <div>
-                  <label
-                    htmlFor="name"
-                    className="mb-2 block text-xs font-medium uppercase tracking-wide text-gray-400"
-                  >
-                    Name 姓名
+                  <label htmlFor="ticket-name" className="mb-2 block text-sm font-medium">
+                    {t.fullName}
                   </label>
                   <input
-                    id="name"
-                    type="text"
+                    id="ticket-name"
                     autoComplete="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Your full name"
+                    placeholder={isZh ? "請輸入姓名" : "Your full name"}
                     className={inputClass}
                   />
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="email"
-                    className="mb-2 block text-xs font-medium uppercase tracking-wide text-gray-400"
-                  >
-                    Email 電子郵件
+                  <label htmlFor="ticket-email" className="mb-2 block text-sm font-medium">
+                    {t.email}
                   </label>
                   <input
-                    id="email"
+                    id="ticket-email"
                     type="email"
                     autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    onBlur={() => setEmailTouched(true)}
                     placeholder="you@example.com"
-                    aria-invalid={emailTouched && !emailValid}
-                    aria-describedby="email-error"
-                    className={`${inputClass} ${emailTouched && !emailValid ? "!border-red-500" : ""}`}
+                    className={inputClass}
                   />
-                  {emailTouched && !emailValid && (
-                    <p id="email-error" className="mt-1.5 text-xs text-red-600">
-                      Enter a valid email, e.g. name@example.com｜請輸入有效的電子郵件
+                  {email && !validEmail && (
+                    <p className="mt-1 text-xs text-red-600">
+                      {isZh
+                        ? "請輸入有效的電子郵件地址。"
+                        : "Please enter a valid email address."}
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="phone"
-                    className="mb-2 block text-xs font-medium uppercase tracking-wide text-gray-400"
-                  >
-                    Phone 電話
+                  <label htmlFor="ticket-phone" className="mb-2 block text-sm font-medium">
+                    {t.phone}
                   </label>
                   <input
-                    id="phone"
+                    id="ticket-phone"
                     type="tel"
                     autoComplete="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    onBlur={() => setPhoneTouched(true)}
-                    placeholder="416-555-0199 or +886 912 345 678"
-                    aria-invalid={phoneTouched && !phoneValid}
-                    aria-describedby="phone-error"
-                    className={`${inputClass} ${phoneTouched && !phoneValid ? "!border-red-500" : ""}`}
+                    placeholder={isZh ? "請輸入電話號碼" : "Your phone number"}
+                    className={inputClass}
                   />
-                  {phoneTouched && !phoneValid && (
-                    <p id="phone-error" className="mt-1.5 text-xs text-red-600">
-                      Enter a 10-digit number, or + and country code for international numbers｜請輸入 10 位數電話，國際號碼請加 + 與國碼
+                  {phone && !validPhone && (
+                    <p className="mt-1 text-xs text-red-600">
+                      {isZh
+                        ? "請輸入有效的電話號碼。"
+                        : "Please enter a valid phone number."}
                     </p>
                   )}
                 </div>
               </div>
             </section>
 
-            {/* Membership */}
-            <section className={sectionClass}>
-              <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>
-                3. Membership｜會員優惠
-              </h2>
+            <section className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
+              <h2 className="text-lg font-bold">{t.memberSection}</h2>
 
-              <p className="mt-3 text-sm font-medium" style={{ color: PRIMARY }}>
-                ROCSAUT members receive $5 off this event.
-              </p>
-              <p className="mt-1 text-sm text-gray-500">
-                ROCSAUT 會員可享本次活動 $5 折扣。
-              </p>
-
-              <p className="mt-3 text-sm text-gray-500">
-                Not a member?{" "}
+              <p className="mt-2 text-sm text-gray-500">
+                {isZh ? "還不是會員？" : "Not a member?"}{" "}
                 <a
                   href="https://forms.gle/z9eU3aVh2rMCeX858"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium underline underline-offset-2"
-                  style={{ color: PRIMARY }}
+                  className="font-semibold text-[#1a2744] underline underline-offset-4 hover:text-[#26395e]"
                 >
-                  Sign up here
-                </a>{" "}
-                for future member pricing.
+                  {isZh ? "點此註冊" : "Sign up here"}
+                </a>
               </p>
 
-              <label className="mt-5 flex cursor-pointer items-center gap-3">
+              <label className="mt-5 flex cursor-pointer items-start gap-3">
                 <input
                   type="checkbox"
                   checked={isMember}
-                  onChange={handleMemberToggle}
-                  className="h-4 w-4"
+                  onChange={(e) => handleMemberToggle(e.target.checked)}
+                  className="mt-1 h-4 w-4 accent-[#1a2744]"
                 />
-                <span className="text-sm font-medium" style={{ color: PRIMARY }}>
-                  I am a ROCSAUT member｜我是 ROCSAUT 會員
-                </span>
+                <span className="text-sm font-medium">{t.memberCheckbox}</span>
               </label>
 
               {isMember && (
-                <div className="mt-5 border-t border-gray-100 pt-5">
+                <div className="mt-5 space-y-4 border-t border-gray-100 pt-5">
+                  <p className="text-sm leading-6 text-gray-500">{t.memberHelp}</p>
+
                   {!isVerified ? (
                     <>
-                      <p className="mb-4 text-sm text-gray-500">
-                        Enter your Member ID and the name on your member card.
-                        請輸入會員編號及會員卡上的姓名。
-                      </p>
-
-                      <div className="space-y-4">
-                        <div>
-                          <label
-                            htmlFor="memberId"
-                            className="mb-2 block text-xs font-medium uppercase tracking-wide text-gray-400"
-                          >
-                            Member ID
-                          </label>
-                          <input
-                            id="memberId"
-                            type="text"
-                            value={memberId}
-                            onChange={(e) => setMemberId(e.target.value)}
-                            placeholder="OTSA-2026-XXXX"
-                            className={inputClass}
-                          />
-                        </div>
-
-                        <div>
-                          <label
-                            htmlFor="cardName"
-                            className="mb-2 block text-xs font-medium uppercase tracking-wide text-gray-400"
-                          >
-                            Name on Member Card
-                          </label>
-                          <input
-                            id="cardName"
-                            type="text"
-                            value={cardName}
-                            onChange={(e) => setCardName(e.target.value)}
-                            placeholder="Your name"
-                            className={inputClass}
-                          />
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={handleVerify}
-                          disabled={verifying}
-                          className="rounded-xl px-6 py-3 text-sm font-semibold disabled:opacity-50"
-                          style={{ backgroundColor: PRIMARY, color: SECONDARY }}
-                        >
-                          {verifying ? "Verifying..." : "Verify Membership"}
-                        </button>
+                      <div>
+                        <label htmlFor="member-id" className="mb-2 block text-sm font-medium">
+                          {t.memberId}
+                        </label>
+                        <input
+                          id="member-id"
+                          value={memberId}
+                          onChange={(e) => {
+                            setMemberId(e.target.value);
+                            setVerificationError("");
+                            setVerificationMessage("");
+                          }}
+                          placeholder="OTSA-2026-XXXX"
+                          className={inputClass}
+                        />
                       </div>
+
+                      <div>
+                        <label htmlFor="member-card-name" className="mb-2 block text-sm font-medium">
+                          {t.cardName}
+                        </label>
+                        <input
+                          id="member-card-name"
+                          value={cardName}
+                          onChange={(e) => {
+                            setCardName(e.target.value);
+                            setVerificationError("");
+                            setVerificationMessage("");
+                          }}
+                          placeholder={isZh ? "會員卡上的姓名" : "Name on your member card"}
+                          className={inputClass}
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleVerify}
+                        disabled={verifying}
+                        className="rounded-xl bg-[#1a2744] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#26395e] disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {verifying ? t.verifying : t.verify}
+                      </button>
+
+                      {verificationError && (
+                        <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
+                          {verificationError}
+                        </p>
+                      )}
                     </>
                   ) : (
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
-                        ✓
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold" style={{ color: PRIMARY }}>
-                          Membership verified｜會員驗證成功
-                        </p>
-                        <p className="mt-1 text-sm text-gray-500">
-                          Your $5 member discount has been applied.
-                        </p>
-                      </div>
+                    <div className="rounded-xl border border-green-200 bg-green-50 p-4">
+                      <p className="font-semibold text-green-800">✓ {t.verified}</p>
+                      <p className="mt-1 text-sm text-green-700">
+                        {verificationMessage || t.verifiedHelp}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsVerified(false);
+                          setVerificationMessage("");
+                        }}
+                        className="mt-3 text-sm font-medium text-[#1a2744] underline"
+                      >
+                        {isZh ? "重新驗證" : "Verify again"}
+                      </button>
                     </div>
                   )}
                 </div>
               )}
             </section>
 
-            {/* Policies */}
-            <section className={sectionClass}>
-              <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>
-                4. Confirm & Policies｜確認與報名須知
-              </h2>
+            <section className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
+              <h2 className="text-lg font-bold">{t.agreement}</h2>
 
               <div className="mt-5 space-y-4">
                 <label className="flex cursor-pointer items-start gap-3">
@@ -680,300 +729,210 @@ export default function Fall2026EventPage() {
                     type="checkbox"
                     checked={ageConfirmed}
                     onChange={(e) => setAgeConfirmed(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0"
+                    className="mt-1 h-4 w-4 accent-[#1a2744]"
                   />
-                  <span className="text-sm leading-6 text-gray-600">
-                    I confirm that I am 19 years of age or older.
-                    我確認自己已年滿 19 歲。
-                  </span>
+                  <span className="text-sm leading-6">{t.ageConfirm}</span>
                 </label>
 
-                <label className="flex cursor-pointer items-start gap-3">
-                  <input
-                    type="checkbox"
-                    checked={waiverAccepted}
-                    onChange={(e) => setWaiverAccepted(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0"
-                  />
-                  <span className="text-sm leading-6 text-gray-600">
-                    I have read and agree to the{" "}
-                    <button
-                      type="button"
-                      onClick={() => setShowWaiver(true)}
-                      className="font-semibold underline underline-offset-2"
-                      style={{ color: PRIMARY }}
-                    >
-                      waiver and event policies
-                    </button>
-                    , including the no-refund policy.
-                    我已閱讀並同意{" "}
-                    <button
-                      type="button"
-                      onClick={() => setShowWaiver(true)}
-                      className="font-semibold underline underline-offset-2"
-                      style={{ color: PRIMARY }}
-                    >
-                      免責聲明及活動規定
-                    </button>
-                    ，包括不退款政策。
-                  </span>
-                </label>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setShowWaiver(true)}
+                    className="text-sm font-semibold text-[#1a2744] underline underline-offset-4"
+                  >
+                    {t.viewWaiver}
+                  </button>
+
+                  <label className="mt-3 flex cursor-pointer items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={waiverAccepted}
+                      onChange={(e) => setWaiverAccepted(e.target.checked)}
+                      className="mt-1 h-4 w-4 accent-[#1a2744]"
+                    />
+                    <span className="text-sm leading-6">{t.waiverConfirm}</span>
+                  </label>
+                </div>
               </div>
 
-              <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
-                <p className="mb-3 font-semibold text-amber-950">
-                  ⚠️ Important Information｜重要須知
+              <div className="mt-6 rounded-xl bg-[#faf8f3] p-4 text-sm leading-6">
+                <p className="font-semibold">
+                  {isZh ? "重要報名須知" : "Important information"}
                 </p>
-                <ul className="space-y-3 text-sm leading-6 text-amber-950">
-                  <li>
-                    <strong>Registration deadline:</strong> October 22 at
-                    11:59 PM.
-                    <br />
-                    <strong>報名截止：</strong>10/22 晚上 11:59。
-                  </li>
-                  <li>
-                    <strong>No refunds:</strong> All ticket sales are final.
-                    No refunds after registration is completed.
-                    <br />
-                    <strong>恕不退款：</strong>報名完成後恕不退費。
-                  </li>
-                  <li>
-                    <strong>Limited spots:</strong> Registration closes when
-                    capacity is reached.
-                    <br />
-                    <strong>名額有限：</strong>額滿為止。
-                  </li>
-                  <li>
-                    <strong>$200 cleaning fee:</strong> A $200 cleaning fee
-                    will be charged for vomiting on the floor or causing a
-                    toilet blockage.
-                    <br />
-                    <strong>$200 清潔費：</strong>嘔吐落地或造成廁所馬桶堵塞，
-                    將收取 $200 清潔費。
-                  </li>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-gray-600">
+                  <li>{t.deadline}</li>
+                  <li>{t.noRefund}</li>
+                  <li>{t.limited}</li>
+                  <li>{t.cleaningFee}</li>
                 </ul>
               </div>
             </section>
           </div>
 
-          {/* Order Summary */}
-          <aside>
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-6">
-              <h3
-                className="mb-4 border-b border-gray-100 pb-4 text-base font-semibold"
-                style={{ color: PRIMARY }}
-              >
-                Order Summary｜訂單摘要
-              </h3>
+          <aside className="lg:sticky lg:top-6">
+            <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <h2 className="border-b border-gray-100 pb-4 text-lg font-bold">
+                {t.summary}
+              </h2>
 
               {!selected ? (
-                <p className="text-sm text-gray-400">
-                  Select a ticket to continue.
-                  <br />
-                  請先選擇票種。
-                </p>
+                <p className="py-6 text-sm text-gray-400">{t.chooseFirst}</p>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-4 py-5 text-sm">
+                  <div>
+                    <p className="font-semibold">
+                      {isZh ? selected.zh : selected.en}
+                    </p>
+                    <p className="mt-1 text-gray-500">
+                      {isZh ? selected.zhSubtitle : selected.enSubtitle}
+                    </p>
+                  </div>
+
                   <div className="flex justify-between gap-4">
-                    <div>
-                      <p className="text-sm font-semibold" style={{ color: PRIMARY }}>
-                        {selected.title}
-                      </p>
-                      <p className="mt-1 text-xs leading-5 text-gray-400">
-                        {selected.subtitle}
-                      </p>
-                    </div>
-                    <span className="text-sm font-semibold" style={{ color: PRIMARY }}>
-                      ${selected.price.toFixed(2)}
-                    </span>
+                    <span className="text-gray-500">{t.subtotal}</span>
+                    <span>${selected.price.toFixed(2)}</span>
                   </div>
 
                   {discount > 0 && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Member discount</span>
-                      <span className="text-green-600">-${discount.toFixed(2)}</span>
+                    <div className="flex justify-between gap-4 text-green-700">
+                      <span>{t.discountLabel}</span>
+                      <span>−${discount.toFixed(2)}</span>
                     </div>
                   )}
 
-                  <div className="flex justify-between border-t border-gray-100 pt-4">
-                    <span className="text-sm font-semibold" style={{ color: PRIMARY }}>
-                      Total｜總額
-                    </span>
-                    <span className="text-xl font-bold" style={{ color: PRIMARY }}>
-                      ${total.toFixed(2)} CAD
-                    </span>
+                  <div className="flex justify-between border-t border-gray-100 pt-4 text-base font-bold">
+                    <span>{t.total}</span>
+                    <span>${total.toFixed(2)} CAD</span>
                   </div>
-
-                  <p className="text-xs leading-5 text-gray-500">
-                    Member pricing applies only after verification.
-                    <br />
-                    會員價僅於驗證成功後適用。
-                  </p>
-
-                  <button
-                    type="button"
-                    onClick={handleCheckout}
-                    disabled={!canContinue || checkingOut}
-                    className="w-full rounded-xl py-3 text-sm font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
-                    style={{ backgroundColor: PRIMARY, color: SECONDARY }}
-                  >
-                    {checkingOut ? "Processing..." : "Continue to Payment"}
-                  </button>
-
-                  {!canContinue && (
-                    <p className="text-center text-xs leading-relaxed text-gray-400">
-                      Complete all required fields, verify membership if
-                      applicable, and accept the policies to continue.
-                      <br />
-                      請完成必填資料、會員驗證（如適用）並同意相關規定。
-                    </p>
-                  )}
-
-                  <p className="text-center text-xs font-medium text-red-600">
-                    All ticket sales are final. No refunds.
-                    <br />
-                    報名完成後恕不退款。
-                  </p>
                 </div>
               )}
-            </div>
+
+              <button
+                type="button"
+                onClick={handleCheckout}
+                disabled={!canContinue || checkingOut}
+                className="w-full rounded-xl bg-[#1a2744] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#26395e] disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {checkingOut ? t.processing : t.continue}
+              </button>
+
+              {checkoutError && (
+                <p role="alert" className="mt-4 rounded-xl bg-red-50 p-3 text-sm leading-6 text-red-700">
+                  {checkoutError}
+                </p>
+              )}
+
+              {!canContinue && !checkoutError && (
+                <p className="mt-4 text-xs leading-5 text-gray-500">
+                  {t.completeFields}
+                </p>
+              )}
+
+              <p className="mt-4 text-center text-xs leading-5 text-gray-400">
+                {t.paymentNote}
+              </p>
+            </section>
           </aside>
         </div>
       </div>
 
-      {/* Waiver Modal */}
       {showWaiver && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="waiver-title"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"
+          onClick={() => setShowWaiver(false)}
         >
-          <div className="flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-              <h2
-                id="waiver-title"
-                className="text-lg font-semibold"
-                style={{ color: PRIMARY }}
-              >
-                Event Waiver & Policies｜免責聲明及活動規定
-              </h2>
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="waiver-title"
+            className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 sm:p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="waiver-title" className="text-xl font-bold">
+              {isZh ? "活動條款與報名須知" : "Event Waiver and Policies"}
+            </h2>
+
+            <div className="mt-5 space-y-4 text-sm leading-7 text-gray-600">
+              <section>
+                <h3 className="font-semibold text-[#1a2744]">
+                  {isZh ? "1. 年齡規定" : "1. Age Requirement"}
+                </h3>
+                <p>
+                  {isZh
+                    ? "參加者必須年滿 19 歲，並在活動需要時出示有效身分證明。"
+                    : "All attendees must be at least 19 years old and present valid identification when requested."}
+                </p>
+              </section>
+
+              <section>
+                <h3 className="font-semibold text-[#1a2744]">
+                  {isZh ? "2. 參與活動與個人責任" : "2. Participation and Personal Responsibility"}
+                </h3>
+                <p>
+                  {isZh
+                    ? "參加者應自行評估是否適合參加各項活動，並遵守主辦方及場地工作人員的合理指示。"
+                    : "Attendees are responsible for deciding whether to participate in activities and must follow reasonable instructions from organizers and venue staff."}
+                </p>
+              </section>
+
+              <section>
+                <h3 className="font-semibold text-[#1a2744]">
+                  {isZh ? "3. 酒精飲品" : "3. Alcohol"}
+                </h3>
+                <p>
+                  {isZh
+                    ? "請理性飲酒，不得向未滿法定飲酒年齡者提供酒精飲品。主辦方可拒絕向疑似未達法定年齡或明顯醉酒者提供酒精飲品。"
+                    : "Please drink responsibly. Alcohol must not be provided to anyone below the legal drinking age. Organizers may refuse alcohol service where legally required or when an attendee appears intoxicated."}
+                </p>
+              </section>
+
+              <section>
+                <h3 className="font-semibold text-[#1a2744]">
+                  {isZh ? "4. 場地與清潔" : "4. Venue and Cleaning"}
+                </h3>
+                <p>
+                  {isZh
+                    ? "請愛惜場地並保持環境整潔。因嘔吐落地或造成廁所馬桶堵塞而產生的清潔費為 $200。"
+                    : "Please respect the venue and keep it clean. A $200 cleaning fee applies for vomiting on the floor or clogging toilets."}
+                </p>
+              </section>
+
+              <section>
+                <h3 className="font-semibold text-[#1a2744]">
+                  {isZh ? "5. 退款規定" : "5. Refund Policy"}
+                </h3>
+                <p>{t.noRefund}</p>
+              </section>
+
+              <section>
+                <h3 className="font-semibold text-[#1a2744]">
+                  {isZh ? "6. 活動規則" : "6. Event Rules"}
+                </h3>
+                <p>
+                  {isZh
+                    ? "如有不安全、違法、騷擾他人或破壞場地的行為，主辦方可要求相關參加者停止行為或離開場地。"
+                    : "Organizers may ask attendees to stop unsafe, unlawful, harassing, or damaging behavior, or to leave the venue where appropriate."}
+                </p>
+              </section>
+            </div>
+
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
                 type="button"
                 onClick={() => setShowWaiver(false)}
-                className="text-2xl leading-none text-gray-400 hover:text-gray-700"
-                aria-label="Close"
+                className="rounded-xl border border-gray-300 px-5 py-3 text-sm font-semibold text-[#1a2744]"
               >
-                ×
+                {isZh ? "關閉" : "Close"}
               </button>
-            </div>
-
-            <div className="overflow-y-auto px-6 py-6">
-              <div className="space-y-7 text-sm leading-6 text-gray-600">
-                <section>
-                  <p className="mb-2 font-semibold text-gray-900">
-                    1. Attendance｜出席規定
-                  </p>
-                  <p className="mb-3">
-                    若在表單交出後因故無法參加本次活動而未事先告知，
-                    多倫多大學台灣同學會有權利禁止本人之後活動的參與權。
-                  </p>
-                  <p>
-                    If I am unable to attend the event without notifying
-                    ROCSAUT prior to the event day, ROCSAUT may restrict my
-                    participation in future events hosted by the club.
-                  </p>
-                </section>
-
-                <section>
-                  <p className="mb-2 font-semibold text-gray-900">
-                    2. Health and Safety｜健康與安全
-                  </p>
-                  <p className="mb-3">
-                    本人在此聲明本人健康及體能均良好，可以應付活動，
-                    並適宜自行參加，本人將完全負責本人之安全。
-                    若本人之身體狀況有疑慮，應於參加活動前告知工作人員。
-                  </p>
-                  <p>
-                    I declare that I am in suitable health to participate
-                    and understand that I am responsible for my own safety.
-                    If I have concerns about my physical condition, I will
-                    inform event staff before participating.
-                  </p>
-                </section>
-
-                <section>
-                  <p className="mb-2 font-semibold text-gray-900">
-                    3. Liability｜責任聲明
-                  </p>
-                  <p className="mb-3">
-                    本人了解參與活動可能涉及風險，並同意在法律允許的範圍內，
-                    就參與活動所涉及的相關責任依適用法律處理。
-                  </p>
-                  <p>
-                    I understand that participation in the event may involve
-                    risks. Any limitation or waiver of liability is subject
-                    to applicable law.
-                  </p>
-                </section>
-
-                <section>
-                  <p className="mb-2 font-semibold text-gray-900">
-                    4. No Refund Policy｜不退款政策
-                  </p>
-                  <p className="mb-3 font-semibold text-red-700">
-                    報名完成並付款後恕不退款。
-                  </p>
-                  <p className="mb-3 font-semibold text-red-700">
-                    All ticket sales are final. No refunds will be provided
-                    after registration and payment are completed.
-                  </p>
-                  <p>
-                    Please review your ticket selection and registration
-                    information carefully before completing payment.
-                    付款前請確認票種及所有報名資料。
-                  </p>
-                </section>
-
-                <section>
-                  <p className="mb-2 font-semibold text-gray-900">
-                    5. Event Rules｜活動規定
-                  </p>
-                  <p className="mb-3">
-                    報名截止時間為 10/22 晚上 11:59，名額有限，額滿為止。
-                    嘔吐落地或造成廁所馬桶堵塞將收取 $200 清潔費。
-                  </p>
-                  <p>
-                    Registration closes on October 22 at 11:59 PM, or
-                    earlier if capacity is reached. A $200 cleaning fee
-                    applies to vomiting on the floor or causing a toilet
-                    blockage.
-                  </p>
-                </section>
-
-                <section>
-                  <p className="mb-2 font-semibold text-gray-900">
-                    6. Interpretation｜條款解釋
-                  </p>
-                  <p className="mb-3">
-                    多倫多大學台灣同學會保留在適用法律範圍內解釋及執行活動規定的權利。
-                  </p>
-                  <p>
-                    ROCSAUT reserves the right to interpret and enforce event
-                    policies to the extent permitted by applicable law.
-                  </p>
-                </section>
-              </div>
-            </div>
-
-            <div className="border-t border-gray-100 px-6 py-4">
               <button
                 type="button"
-                onClick={() => setShowWaiver(false)}
-                className="w-full rounded-lg px-4 py-3 text-sm font-medium"
-                style={{ backgroundColor: PRIMARY, color: SECONDARY }}
+                onClick={() => {
+                  setWaiverAccepted(true);
+                  setShowWaiver(false);
+                }}
+                className="rounded-xl bg-[#1a2744] px-5 py-3 text-sm font-semibold text-white"
               >
-                Close｜關閉
+                {isZh ? "我已閱讀並同意" : "I have read and agree"}
               </button>
             </div>
           </div>
