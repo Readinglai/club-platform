@@ -32,6 +32,16 @@ const ticketTypes = [
   },
 ];
 
+// Stripe rejects checkout if any metadata value is over 500 characters
+// (name, email, phone, member ID and card name are all sent as metadata).
+const MAX_LENGTH = {
+  name: 100,
+  email: 254,
+  phone: 25,
+  memberId: 50,
+  cardName: 100,
+};
+
 const activities = [
   {
     emoji: "🧩",
@@ -121,8 +131,16 @@ export default function Fall2026EventPage() {
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const validPhone = /^[+()\d\s.-]{7,25}$/.test(phone.trim());
 
+  const withinLimits =
+    name.trim().length <= MAX_LENGTH.name &&
+    email.trim().length <= MAX_LENGTH.email &&
+    phone.trim().length <= MAX_LENGTH.phone &&
+    memberId.trim().length <= MAX_LENGTH.memberId &&
+    cardName.trim().length <= MAX_LENGTH.cardName;
+
   const canContinue = Boolean(
     selectedTicket &&
+      withinLimits &&
       name.trim() &&
       validEmail &&
       validPhone &&
@@ -558,6 +576,7 @@ export default function Fall2026EventPage() {
                   <input
                     id="ticket-name"
                     autoComplete="name"
+                    maxLength={MAX_LENGTH.name}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder={isZh ? "請輸入姓名" : "Your full name"}
@@ -573,6 +592,7 @@ export default function Fall2026EventPage() {
                     id="ticket-email"
                     type="email"
                     autoComplete="email"
+                    maxLength={MAX_LENGTH.email}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
@@ -595,6 +615,7 @@ export default function Fall2026EventPage() {
                     id="ticket-phone"
                     type="tel"
                     autoComplete="tel"
+                    maxLength={MAX_LENGTH.phone}
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder={isZh ? "請輸入電話號碼" : "Your phone number"}
@@ -658,6 +679,7 @@ export default function Fall2026EventPage() {
                         </label>
                         <input
                           id="member-id"
+                          maxLength={MAX_LENGTH.memberId}
                           value={memberId}
                           onChange={(e) => {
                             setMemberId(e.target.value);
@@ -675,6 +697,7 @@ export default function Fall2026EventPage() {
                         </label>
                         <input
                           id="member-card-name"
+                          maxLength={MAX_LENGTH.cardName}
                           value={cardName}
                           onChange={(e) => {
                             setCardName(e.target.value);
