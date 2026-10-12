@@ -543,13 +543,6 @@ export default function Fall2026EventPage() {
                 })}
               </div>
 
-              <div className="mt-4 space-y-2 text-sm leading-6">
-                <p className="text-gray-500">{t.memberDiscount}</p>
-                <p className="font-semibold text-[#1a2744]">
-                  {t.oneMemberTicket}
-                </p>
-              </div>
-
               <p className="mt-3 text-sm font-medium">{t.upgrade}</p>
             </section>
 
@@ -621,15 +614,25 @@ export default function Fall2026EventPage() {
             <section className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
               <h2 className="text-lg font-bold">{t.memberSection}</h2>
 
-              <p className="mt-2 text-sm text-gray-500">
-                {isZh ? "還不是會員？" : "Not a member?"}{" "}
+              <p className="mt-2 text-sm leading-6 text-gray-500">
+                {t.memberDiscount}
+              </p>
+
+              <p className="mt-2 text-sm font-semibold leading-6 text-[#1a2744]">
+                {t.oneMemberTicket}
+              </p>
+
+              <p className="mt-2 text-sm leading-6 text-gray-500">
+                {isZh
+                  ? "還不是會員？現在註冊，之後的活動也能享有會員優惠！"
+                  : "Not a member? Sign up to enjoy member discounts at future events!"}{" "}
                 <a
                   href="https://forms.gle/z9eU3aVh2rMCeX858"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-semibold text-[#1a2744] underline underline-offset-4 hover:text-[#26395e]"
                 >
-                  {isZh ? "點此註冊" : "Sign up here"}
+                  {isZh ? "立即註冊" : "Sign up here"}
                 </a>
               </p>
 
