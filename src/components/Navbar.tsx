@@ -92,17 +92,14 @@ export default function Navbar() {
             >
               {t("switchLang")}
             </button>
-            {session?.user ? (
+            {/* Sign-in link hidden from the public nav; /login itself still works. */}
+            {session?.user && (
               <button
                 onClick={() => signOut({ callbackUrl: "/" })}
                 className="text-sm px-3 py-1 rounded border border-white/30 text-white hover:bg-white/10 transition"
               >
                 {t("signOut")}
               </button>
-            ) : (
-              <Link href="/login" className="text-sm px-3 py-1 rounded border border-white/30 text-white hover:bg-white/10 transition">
-                {t("signIn")}
-              </Link>
             )}
           </div>
 
@@ -116,17 +113,13 @@ export default function Navbar() {
             >
               {t("switchLang")}
             </button>
-            {session?.user ? (
+            {session?.user && (
               <button
                 onClick={() => signOut({ callbackUrl: "/" })}
                 className="text-sm px-2 py-1 rounded border border-white/30 text-white hover:bg-white/10 transition"
               >
                 {t("signOut")}
               </button>
-            ) : (
-              <Link href="/login" className="text-sm px-2 py-1 rounded border border-white/30 text-white hover:bg-white/10 transition">
-                {t("signIn")}
-              </Link>
             )}
 
             <button
