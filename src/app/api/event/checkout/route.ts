@@ -214,14 +214,14 @@ export async function POST(req: Request) {
       }
     }
 
-    // Get the backend-controlled ticket price and sales deadline.
+    // Get the backend-controlled ticket price.
+    // (No sales cutoff: tickets stay on sale until turned off manually.)
     const tiers = await db.$queryRaw<
       Array<{
         price: number;
-        sales_close_at: Date;
       }>
     >`
-      SELECT price, sales_close_at
+      SELECT price
       FROM "TicketTier"
       WHERE event_id = ${EVENT_ID}
         AND tier = ${tier}
@@ -239,16 +239,6 @@ export async function POST(req: Request) {
     }
 
     const ticketTier = tiers[0];
-
-    if (ticketTier.sales_close_at <= new Date()) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Sign-up has closed.",
-        },
-        { status: 400 }
-      );
-    }
 
     // Release this email's previous expired checkouts before checking
     // capacity for the new checkout. Other customers' holds are untouched.
@@ -304,7 +294,8 @@ export async function POST(req: Request) {
       cancel_url: `${origin}/event/fall-2026?payment=cancelled`,
     });
 
-    // Reserve capacity using the existing database transaction and lock.
+    // Create the 30-minute hold the webhook needs to issue the ticket
+    // (no capacity limit).
     const capacity = await reserveCapacity(
       EVENT_ID,
       tier,
@@ -318,16 +309,6 @@ export async function POST(req: Request) {
         console.error(
           "Failed to expire Stripe Checkout Session:",
           expireError
-        );
-      }
-
-      if (capacity.reason === "sold_out") {
-        return NextResponse.json(
-          {
-            success: false,
-            message: "Sold out.",
-          },
-          { status: 400 }
         );
       }
 

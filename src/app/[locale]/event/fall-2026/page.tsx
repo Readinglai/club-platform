@@ -176,9 +176,6 @@ export default function Fall2026EventPage() {
     upgrade: isZh
       ? "⬆️ 當天覺得喝不夠？現場可以加價升級 Tier！"
       : "⬆️ Want more drinks? You can upgrade your ticket tier at the door!",
-    deadline: isZh
-      ? "報名截止：10/22 晚上 11:59"
-      : "Registration closes: Oct 22 at 11:59 PM",
     noRefund: isZh
       ? "報名完成後恕不退費。"
       : "All ticket sales are final. No refunds.",
@@ -810,7 +807,6 @@ export default function Fall2026EventPage() {
                   {isZh ? "重要報名須知" : "Important information"}
                 </p>
                 <ul className="mt-2 list-disc space-y-1 pl-5 text-gray-600">
-                  <li>{t.deadline}</li>
                   <li>{t.noRefund}</li>
                   <li>{t.limited}</li>
                   <li>{t.cleaningFee}</li>

@@ -10,31 +10,25 @@ type ReserveCapacityResult =
     }
   | {
       success: false;
-      reason: "sold_out" | "tier_not_found";
+      reason: "tier_not_found";
     };
 
+/**
+ * Creates the 30-minute TicketHold for a checkout.
+ *
+ * Tickets currently have no capacity limit and no sales cutoff, so this no
+ * longer refuses checkouts. The hold is still required: the Stripe webhook
+ * only issues a ticket for a paid session that has a matching hold.
+ * (TicketTier.capacity / sales_close_at stay in the database, unused.)
+ */
 export async function reserveCapacity(
   eventId: string,
   tier: TicketTier,
   stripeSessionId: string
 ): Promise<ReserveCapacityResult> {
   return await db.$transaction(async (tx) => {
-    // Serialize capacity reservations for this event + tier.
-    // This prevents two simultaneous checkouts from overselling.
-    await tx.$executeRaw`
-      SELECT pg_advisory_xact_lock(
-        hashtext(${`${eventId}:${tier}`})
-      )
-    `;
-
-    const tiers = await tx.$queryRaw<
-      Array<{
-        id: string;
-        capacity: number;
-        sales_close_at: Date;
-      }>
-    >`
-      SELECT id, capacity, sales_close_at
+    const tiers = await tx.$queryRaw<Array<{ id: string }>>`
+      SELECT id
       FROM "TicketTier"
       WHERE event_id = ${eventId}
         AND tier = ${tier}
@@ -48,57 +42,13 @@ export async function reserveCapacity(
       };
     }
 
-    const tierInfo = tiers[0];
-
-    if (tierInfo.sales_close_at <= new Date()) {
-      return {
-        success: false,
-        reason: "sold_out",
-      };
-    }
-
-    // Remove expired holds before calculating availability.
+    // Tidy up expired holds for this tier.
     await tx.$executeRaw`
       DELETE FROM "TicketHold"
       WHERE event_id = ${eventId}
         AND tier = ${tier}
         AND expires_at <= NOW()
     `;
-
-    const counts = await tx.$queryRaw<
-      Array<{
-        sold: number;
-        active_holds: number;
-      }>
-    >`
-      SELECT
-        (
-          SELECT COUNT(*)::int
-          FROM "EventTicket"
-          WHERE event_id = ${eventId}
-            AND tier = ${tier}
-            AND status = 'valid'
-        ) AS sold,
-        (
-          SELECT COUNT(*)::int
-          FROM "TicketHold"
-          WHERE event_id = ${eventId}
-            AND tier = ${tier}
-            AND expires_at > NOW()
-        ) AS active_holds
-    `;
-
-    const sold = counts[0]?.sold ?? 0;
-    const activeHolds = counts[0]?.active_holds ?? 0;
-
-    const available = tierInfo.capacity - sold - activeHolds;
-
-    if (available <= 0) {
-      return {
-        success: false,
-        reason: "sold_out",
-      };
-    }
 
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
 
