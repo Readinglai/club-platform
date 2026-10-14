@@ -139,7 +139,6 @@ export default function Fall2026EventPage() {
       name.trim() &&
       validEmail &&
       validPhone &&
-      ageConfirmed &&
       waiverAccepted &&
       (!isMember || isVerified)
   );
@@ -212,9 +211,6 @@ export default function Fall2026EventPage() {
       ? "已套用會員票價。"
       : "Your member price has been applied.",
     agreement: isZh ? "4. 報名須知與確認" : "4. Policies and confirmation",
-    ageConfirm: isZh
-      ? "我確認自己已年滿 19 歲。"
-      : "I confirm that I am 19 years of age or older.",
     waiverConfirm: isZh
       ? "我已閱讀並同意活動條款及相關規定。"
       : "I have read and agree to the event waiver and policies.",
@@ -333,7 +329,6 @@ export default function Fall2026EventPage() {
       if (!cardName.trim() || cardName.trim().length > MAX_LENGTH.cardName) return "member-card-name";
       return "member-verify";
     }
-    if (!ageConfirmed) return "age-confirm";
     if (!waiverAccepted) return "waiver-accept";
     return null;
   };
@@ -376,8 +371,8 @@ export default function Fall2026EventPage() {
           phone: phone.trim(),
           tier: selectedTicket,
           isMember,
-          memberId: isMember ? memberId : null,
-          cardName: isMember ? cardName : null,
+          memberId: isMember ? memberId.trim() : null,
+          cardName: isMember ? cardName.trim() : null,
           waiverAccepted,
         }),
       });
@@ -416,19 +411,6 @@ export default function Fall2026EventPage() {
     }
   };
 
-  const discount = isVerified && isMember ? 5 : 0;
-
-  const total = selected
-    ? Math.max(0, selected.price - discount)
-    : 0;
-
-  const canContinue =
-    selectedTicket &&
-    name.trim() &&
-    email.trim() &&
-    phone.trim() &&
-    waiverAccepted &&
-    (!isMember || isVerified);
   const inputClass =
     "w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-[#1a2744] outline-none focus:border-[#1a2744] focus:ring-2 focus:ring-[#1a2744]/10";
 
@@ -780,17 +762,6 @@ export default function Fall2026EventPage() {
               <h2 className="text-lg font-bold">{t.agreement}</h2>
 
               <div className="mt-5 space-y-4">
-                <label className="flex cursor-pointer items-start gap-3">
-                  <input
-                    id="age-confirm"
-                    type="checkbox"
-                    checked={ageConfirmed}
-                    onChange={(e) => setAgeConfirmed(e.target.checked)}
-                    className={`mt-1 h-4 w-4 accent-[#1a2744]${missingClass("age-confirm")}`}
-                  />
-                  <span className="text-sm leading-6">{t.ageConfirm}</span>
-                </label>
-
                 <div>
                   <button
                     type="button"
