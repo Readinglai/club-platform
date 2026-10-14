@@ -884,18 +884,7 @@ export default function Fall2026EventPage() {
             <div className="mt-5 space-y-4 text-sm leading-7 text-gray-600">
               <section>
                 <h3 className="font-semibold text-[#1a2744]">
-                  {isZh ? "1. 年齡規定" : "1. Age Requirement"}
-                </h3>
-                <p>
-                  {isZh
-                    ? "參加者必須年滿 19 歲，並在活動需要時出示有效身分證明。"
-                    : "All attendees must be at least 19 years old and present valid identification when requested."}
-                </p>
-              </section>
-
-              <section>
-                <h3 className="font-semibold text-[#1a2744]">
-                  {isZh ? "2. 參與活動與個人責任" : "2. Participation and Personal Responsibility"}
+                  {isZh ? "1. 參與活動與個人責任" : "1. Participation and Personal Responsibility"}
                 </h3>
                 <p>
                   {isZh
@@ -906,7 +895,7 @@ export default function Fall2026EventPage() {
 
               <section>
                 <h3 className="font-semibold text-[#1a2744]">
-                  {isZh ? "3. 酒精飲品" : "3. Alcohol"}
+                  {isZh ? "2. 酒精飲品" : "2. Alcohol"}
                 </h3>
                 <p>
                   {isZh
@@ -917,7 +906,7 @@ export default function Fall2026EventPage() {
 
               <section>
                 <h3 className="font-semibold text-[#1a2744]">
-                  {isZh ? "4. 場地與清潔" : "4. Venue and Cleaning"}
+                  {isZh ? "3. 場地與清潔" : "3. Venue and Cleaning"}
                 </h3>
                 <p>
                   {isZh
@@ -928,14 +917,14 @@ export default function Fall2026EventPage() {
 
               <section>
                 <h3 className="font-semibold text-[#1a2744]">
-                  {isZh ? "5. 退款規定" : "5. Refund Policy"}
+                  {isZh ? "4. 退款規定" : "4. Refund Policy"}
                 </h3>
                 <p>{t.noRefund}</p>
               </section>
 
               <section>
                 <h3 className="font-semibold text-[#1a2744]">
-                  {isZh ? "6. 活動規則" : "6. Event Rules"}
+                  {isZh ? "5. 活動規則" : "5. Event Rules"}
                 </h3>
                 <p>
                   {isZh

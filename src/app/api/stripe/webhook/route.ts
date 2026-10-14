@@ -141,8 +141,7 @@ export async function POST(req: Request) {
               stripe_session_id,
               status,
               waiver_accepted_at,
-              waiver_version,
-              age_confirmed_at
+              waiver_version
             )
             VALUES (
               ${EVENT_ID},
@@ -157,8 +156,7 @@ export async function POST(req: Request) {
               ${session.id},
               'valid',
               NOW(),
-              'v1',
-              NOW()
+              'v1'
             )
           `;
 
