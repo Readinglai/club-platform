@@ -109,7 +109,6 @@ export async function POST(req: Request) {
       isMember,
       memberId,
       cardName,
-      ageConfirmed,
       waiverAccepted,
     } = body;
 
@@ -134,17 +133,6 @@ export async function POST(req: Request) {
         {
           success: false,
           message: "Invalid ticket type.",
-        },
-        { status: 400 }
-      );
-    }
-
-    if (!ageConfirmed) {
-      return NextResponse.json(
-        {
-          success: false,
-          message:
-            "You must confirm that you are 19 years of age or older.",
         },
         { status: 400 }
       );

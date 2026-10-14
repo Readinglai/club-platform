@@ -107,7 +107,6 @@ export default function Fall2026EventPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
-  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [waiverAccepted, setWaiverAccepted] = useState(false);
   const [showWaiver, setShowWaiver] = useState(false);
 
@@ -377,9 +376,8 @@ export default function Fall2026EventPage() {
           phone: phone.trim(),
           tier: selectedTicket,
           isMember,
-          memberId: isMember ? memberId.trim() : null,
-          cardName: isMember ? cardName.trim() : null,
-          ageConfirmed,
+          memberId: isMember ? memberId : null,
+          cardName: isMember ? cardName : null,
           waiverAccepted,
         }),
       });
@@ -418,6 +416,19 @@ export default function Fall2026EventPage() {
     }
   };
 
+  const discount = isVerified && isMember ? 5 : 0;
+
+  const total = selected
+    ? Math.max(0, selected.price - discount)
+    : 0;
+
+  const canContinue =
+    selectedTicket &&
+    name.trim() &&
+    email.trim() &&
+    phone.trim() &&
+    waiverAccepted &&
+    (!isMember || isVerified);
   const inputClass =
     "w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-[#1a2744] outline-none focus:border-[#1a2744] focus:ring-2 focus:ring-[#1a2744]/10";
 
