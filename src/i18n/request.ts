@@ -55,5 +55,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
     // DB unavailable — use file defaults
   }
 
-  return { locale, messages };
+  // Fixed so server and browser format dates the same way (club is in Toronto).
+  return { locale, messages, timeZone: "America/Toronto" };
 });

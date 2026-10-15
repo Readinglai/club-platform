@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuthJson } from "@/lib/auth/guard";
+import { getSupabaseUrl } from "@/lib/supabase-storage";
 
 export const maxDuration = 60;
 
-const SUPABASE_URL = "https://rbwchvwiuazfrsoabwni.supabase.co";
 const BUCKET = "images";
 
 const ALLOWED_TYPES = new Set([
@@ -46,6 +46,8 @@ export async function POST(request: NextRequest) {
   if (!key) {
     return NextResponse.json({ error: "Storage not configured" }, { status: 500 });
   }
+
+  const SUPABASE_URL = getSupabaseUrl();
 
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "bin";
   const filename = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
