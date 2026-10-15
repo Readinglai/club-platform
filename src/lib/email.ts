@@ -195,3 +195,51 @@ export async function sendEventTicketEmail(opts: {
     `,
   });
 }
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/** Ticket confirmation for events using the Order/Ticket tables. */
+export async function sendOrderTicketEmail(opts: {
+  to: string;
+  name: string;
+  eventTitle: string;
+  ticketType: string;
+  /** Already formatted, e.g. "CA$25.00" or "Free". */
+  price: string;
+  /** Already formatted in the event's time zone. */
+  when: string;
+  location: string | null;
+  ticketUrl: string;
+}) {
+  const e = escapeHtml;
+
+  await sendEmail({
+    to: opts.to,
+    subject: `${opts.eventTitle} — Your Ticket`,
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #222;">
+        <h2>${e(opts.eventTitle)}</h2>
+        <p>Hi ${e(opts.name)},</p>
+        <p>Your ticket is confirmed.</p>
+        <div style="margin: 20px 0; padding: 16px; border: 1px solid #ddd; border-radius: 8px; background: #f8f8f8;">
+          <p><strong>Ticket Type:</strong> ${e(opts.ticketType)}</p>
+          <p><strong>Price:</strong> ${e(opts.price)}</p>
+          <p><strong>When:</strong> ${e(opts.when)}</p>
+          ${opts.location ? `<p><strong>Location:</strong> ${e(opts.location)}</p>` : ""}
+        </div>
+        <p>
+          <a href="${e(opts.ticketUrl)}" style="display: inline-block; padding: 12px 20px; background: #111; color: #fff; text-decoration: none; border-radius: 6px;">
+            View My Ticket
+          </a>
+        </p>
+        <p>Please have your ticket ready when you arrive.</p>
+        <p>ROCSAUT Team</p>
+      </div>
+    `,
+  });
+}

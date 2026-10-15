@@ -59,3 +59,24 @@ export const FinanceType = {
 } as const
 
 export type FinanceType = (typeof FinanceType)[keyof typeof FinanceType]
+
+
+export const OrderStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  FREE: 'FREE',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED'
+} as const
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
+
+
+export const TicketStatus = {
+  RESERVED: 'RESERVED',
+  VALID: 'VALID',
+  VOID: 'VOID'
+} as const
+
+export type TicketStatus = (typeof TicketStatus)[keyof typeof TicketStatus]

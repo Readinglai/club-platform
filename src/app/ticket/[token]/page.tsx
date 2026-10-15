@@ -14,8 +14,12 @@ type Ticket = {
   status: string;
   event_title: string;
   start_at: string;
-  end_at: string;
+  end_at: string | null;
   location: string;
+  // Only set for tickets from the Order/Ticket tables (non-Halloween events).
+  tierLabel?: string;
+  perks?: string | null;
+  timezone?: string;
 };
 
 export default function TicketPage({
@@ -113,6 +117,7 @@ export default function TicketPage({
       year: "numeric",
       month: "long",
       day: "numeric",
+      ...(ticket.timezone ? { timeZone: ticket.timezone } : {}),
     }
   );
 
@@ -121,25 +126,25 @@ export default function TicketPage({
     {
       hour: "numeric",
       minute: "2-digit",
-      timeZone: "America/Toronto",
-    }
-  );
-  
-  const eventEnd = new Date(ticket.end_at).toLocaleTimeString(
-    "en-CA",
-    {
-      hour: "numeric",
-      minute: "2-digit",
-      timeZone: "America/Toronto",
+      timeZone: ticket.timezone ?? "America/Toronto",
     }
   );
 
+  const eventEnd = ticket.end_at
+    ? new Date(ticket.end_at).toLocaleTimeString("en-CA", {
+        hour: "numeric",
+        minute: "2-digit",
+        timeZone: ticket.timezone ?? "America/Toronto",
+      })
+    : null;
+
   const tierName =
-  ticket.tier === "LITE"
+  ticket.tierLabel ??
+  (ticket.tier === "LITE"
     ? "Lite"
     : ticket.tier === "STANDARD"
       ? "Standard"
-      : "Unlimited";
+      : "Unlimited");
 
   return (
     <main
@@ -242,11 +247,13 @@ export default function TicketPage({
               </p>
 
               <p className="text-sm text-gray-500 mt-1">
-              {ticket.tier === "LITE"
-                ? "2 drink tickets"
-                : ticket.tier === "STANDARD"
-                  ? "4 drink tickets"
-                  : "Get stamped for unlimited drinks"}
+              {ticket.tierLabel
+                ? ticket.perks
+                : ticket.tier === "LITE"
+                  ? "2 drink tickets"
+                  : ticket.tier === "STANDARD"
+                    ? "4 drink tickets"
+                    : "Get stamped for unlimited drinks"}
               </p>
             </div>
 
@@ -273,7 +280,7 @@ export default function TicketPage({
                   className="text-sm font-medium mt-1"
                   style={{ color: PRIMARY }}
                 >
-                  {eventStart} – {eventEnd}
+                  {eventStart}{eventEnd ? ` – ${eventEnd}` : ""}
                 </p>
               </div>
 

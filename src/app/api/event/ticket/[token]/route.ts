@@ -15,6 +15,45 @@ export async function GET(
       );
     }
 
+    // Tickets from the Order/Ticket tables first, then Halloween's EventTicket.
+    const entry = await db.ticket.findUnique({
+      where: { token },
+      include: {
+        ticketType: true,
+        event: { include: { settings: true } },
+        order: { select: { currency: true } },
+      },
+    });
+
+    if (entry) {
+      // A reserved ticket is still waiting for payment, so it isn't a ticket yet.
+      if (entry.status === "RESERVED") {
+        return NextResponse.json(
+          { ticket: null, message: "Ticket not found" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({
+        ticket: {
+          token: entry.token,
+          name: entry.holderName,
+          email: entry.holderEmail ?? "",
+          tier: entry.ticketType.name,
+          tierLabel: entry.ticketType.name,
+          perks: entry.ticketType.perks,
+          price: entry.pricePaid.toFixed(2),
+          currency: entry.order.currency,
+          status: entry.status === "VALID" ? "valid" : "void",
+          event_title: entry.event.title,
+          start_at: entry.event.startAt.toISOString(),
+          end_at: entry.event.endAt?.toISOString() ?? null,
+          location: entry.event.location,
+          timezone: entry.event.settings?.timezone ?? "America/Toronto",
+        },
+      });
+    }
+
     const tickets = await db.$queryRaw<
       Array<{
         token: string;

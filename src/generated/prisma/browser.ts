@@ -72,6 +72,26 @@ export type EventTicket = Prisma.EventTicketModel
  */
 export type MemberRedemption = Prisma.MemberRedemptionModel
 /**
+ * Model EventSettings
+ * Per-event settings that the Event table does not hold.
+ */
+export type EventSettings = Prisma.EventSettingsModel
+/**
+ * Model TicketType
+ * A ticket tier of an event. price 0 means free.
+ */
+export type TicketType = Prisma.TicketTypeModel
+/**
+ * Model Order
+ * One checkout. Free orders have no Stripe session.
+ */
+export type Order = Prisma.OrderModel
+/**
+ * Model Ticket
+ * One entry pass per attendee; token is the QR code value.
+ */
+export type Ticket = Prisma.TicketModel
+/**
  * Model Discussion
  * 
  */

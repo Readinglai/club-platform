@@ -51,6 +51,66 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Tickets from the Order/Ticket tables first, then Halloween's EventTicket.
+    const entry = await db.ticket.findUnique({
+      where: { token },
+      include: { ticketType: { select: { name: true, color: true, perks: true } } },
+    });
+
+    if (entry) {
+      const ticketInfo = {
+        name: entry.holderName,
+        tier: entry.ticketType.name,
+        color: entry.ticketType.color,
+        perks: entry.ticketType.perks,
+      };
+
+      // RESERVED means the buyer never finished paying.
+      if (entry.status === "RESERVED") {
+        return NextResponse.json(
+          { success: false, status: "not_found", message: "Ticket not found" },
+          { status: 404 }
+        );
+      }
+
+      if (entry.status === "VOID") {
+        return NextResponse.json({
+          success: false,
+          status: "void",
+          message: "TICKET VOID",
+          ticket: ticketInfo,
+        });
+      }
+
+      const checkedInAt = new Date();
+      const { count } = await db.ticket.updateMany({
+        where: { id: entry.id, status: "VALID", checkedInAt: null },
+        data: { checkedInAt },
+      });
+
+      if (count === 0) {
+        const current = await db.ticket.findUnique({
+          where: { id: entry.id },
+          select: { checkedInAt: true },
+        });
+        return NextResponse.json({
+          success: false,
+          status: "already_checked_in",
+          message: "ALREADY CHECKED IN",
+          checkedInAt: current?.checkedInAt ?? null,
+          ticket: ticketInfo,
+        });
+      }
+
+      return NextResponse.json({
+        success: true,
+        status: "checked_in",
+        message: "CHECKED IN",
+        checkedInAt,
+        ticket: ticketInfo,
+      });
+    }
+
     const tickets = await db.$queryRaw<
       Array<{
         id: string;

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 import { sendEventTicketEmail } from "@/lib/email";
+import { handleOrderCheckoutEvent } from "@/lib/ticketing/webhook";
 
 const EVENT_ID = "00b84455-309c-4dba-9722-b031f9042081";
 
@@ -50,6 +51,11 @@ export async function POST(req: Request) {
   }
 
   try {
+    // Checkouts for the Order/Ticket tables; everything else is Halloween's.
+    if (await handleOrderCheckoutEvent(event)) {
+      return NextResponse.json({ received: true });
+    }
+
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;

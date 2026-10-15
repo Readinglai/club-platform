@@ -61,6 +61,10 @@ export const ModelName = {
   TicketTier: 'TicketTier',
   EventTicket: 'EventTicket',
   MemberRedemption: 'MemberRedemption',
+  EventSettings: 'EventSettings',
+  TicketType: 'TicketType',
+  Order: 'Order',
+  Ticket: 'Ticket',
   Discussion: 'Discussion',
   Comment: 'Comment',
   Announcement: 'Announcement',
@@ -249,6 +253,88 @@ export const MemberRedemptionScalarFieldEnum = {
 } as const
 
 export type MemberRedemptionScalarFieldEnum = (typeof MemberRedemptionScalarFieldEnum)[keyof typeof MemberRedemptionScalarFieldEnum]
+
+
+export const EventSettingsScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  timezone: 'timezone',
+  currency: 'currency',
+  registrationEnabled: 'registrationEnabled',
+  ticketsEnabled: 'ticketsEnabled',
+  checkInEnabled: 'checkInEnabled',
+  budgetEnabled: 'budgetEnabled',
+  dashboardEnabled: 'dashboardEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventSettingsScalarFieldEnum = (typeof EventSettingsScalarFieldEnum)[keyof typeof EventSettingsScalarFieldEnum]
+
+
+export const TicketTypeScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  name: 'name',
+  description: 'description',
+  price: 'price',
+  memberPrice: 'memberPrice',
+  capacity: 'capacity',
+  salesStartAt: 'salesStartAt',
+  salesEndAt: 'salesEndAt',
+  membersOnly: 'membersOnly',
+  maxPerOrder: 'maxPerOrder',
+  color: 'color',
+  perks: 'perks',
+  sortOrder: 'sortOrder',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TicketTypeScalarFieldEnum = (typeof TicketTypeScalarFieldEnum)[keyof typeof TicketTypeScalarFieldEnum]
+
+
+export const OrderScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  userId: 'userId',
+  buyerName: 'buyerName',
+  buyerEmail: 'buyerEmail',
+  buyerPhone: 'buyerPhone',
+  status: 'status',
+  totalAmount: 'totalAmount',
+  currency: 'currency',
+  stripeSessionId: 'stripeSessionId',
+  paidAt: 'paidAt',
+  waiverAcceptedAt: 'waiverAcceptedAt',
+  waiverVersion: 'waiverVersion',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+export const TicketScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  eventId: 'eventId',
+  ticketTypeId: 'ticketTypeId',
+  userId: 'userId',
+  holderName: 'holderName',
+  holderEmail: 'holderEmail',
+  token: 'token',
+  status: 'status',
+  pricePaid: 'pricePaid',
+  memberPricing: 'memberPricing',
+  checkedInAt: 'checkedInAt',
+  checkedInById: 'checkedInById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TicketScalarFieldEnum = (typeof TicketScalarFieldEnum)[keyof typeof TicketScalarFieldEnum]
 
 
 export const DiscussionScalarFieldEnum = {

@@ -12,6 +12,9 @@ type ScanResult = {
   ticket?: {
     name: string;
     tier: string;
+    // Set by the Order/Ticket tables; Halloween tiers use TIERS below.
+    color?: string | null;
+    perks?: string | null;
   };
   // Client-side only: which part failed when the check itself couldn't finish.
   failure?: "network" | "server";
@@ -59,8 +62,16 @@ const TIERS: Record<string, TierStyle> = {
   },
 };
 
-const getTier = (tier?: string): TierStyle =>
-  (tier && TIERS[tier]) || { label: tier || "UNKNOWN", drinks: "Check tier", perk: "", bg: "#334155" };
+const getTier = (ticket?: ScanResult["ticket"]): TierStyle => {
+  const tier = ticket?.tier;
+  if (tier && TIERS[tier]) return TIERS[tier];
+  return {
+    label: tier || "UNKNOWN",
+    drinks: ticket?.perks || "Check tier",
+    perk: ticket?.perks || "",
+    bg: ticket?.color || "#334155",
+  };
+};
 
 
 // What goes in the info box when a check fails.
@@ -497,7 +508,7 @@ export default function CheckInPage() {
   }
 
   const verdict = result ? getVerdict(result) : null;
-  const tier = getTier(result?.ticket?.tier);
+  const tier = getTier(result?.ticket);
   // Valid entry: the whole screen takes the tier colour. Otherwise amber/red.
   const flood = showing && verdict
     ? verdict === "admit"
@@ -630,7 +641,7 @@ export default function CheckInPage() {
               </p>
               {result.ticket && (
                 <p className="mt-1 text-xs tracking-[0.2em]">
-                  {getTier(result.ticket.tier).label}
+                  {getTier(result.ticket).label}
                   {checkedIn ? ` · ${checkedIn}` : ""}
                 </p>
               )}
