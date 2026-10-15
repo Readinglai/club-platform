@@ -15,7 +15,6 @@ import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { ROLE_LEVEL } from "@/lib/rbac";
-import { decode } from "@auth/core/jwt";
 import type { Role } from "@/generated/prisma/client";
 
 /** Guard é€šéŽæ™‚çš„å›žå‚³åž‹åˆ¥ */
@@ -80,31 +79,6 @@ export async function requireAuthJson(
       };
     }
     return { error: null, userId: session.user.id!, role, level };
-  }
-
-  // 2. å˜—è©¦ Authorization: Bearer <token>ï¼ˆè¡Œå‹• App JWTï¼‰
-  const authHeader = request.headers.get("authorization");
-  if (authHeader?.startsWith("Bearer ")) {
-    const token = authHeader.slice(7);
-    try {
-      const decoded = await decode({
-        token,
-        secret: (process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET)!,
-        salt: "authjs.session-token",
-      });
-      if (decoded?.sub) {
-        const role = ((decoded as { role?: Role }).role) ?? "MEMBER";
-        const level = ROLE_LEVEL[role] ?? 1;
-        if (level < minLevel) {
-          return {
-            error: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
-          };
-        }
-        return { error: null, userId: decoded.sub, role, level };
-      }
-    } catch {
-      // token ç„¡æ•ˆï¼Œç¹¼çºŒè½åˆ° 401
-    }
   }
 
   return {

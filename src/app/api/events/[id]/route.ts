@@ -13,7 +13,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { decode } from "@auth/core/jwt";
 import { RegistrationStatus } from "@/generated/prisma/client";
 
 /**
@@ -23,26 +22,10 @@ import { RegistrationStatus } from "@/generated/prisma/client";
  * @param request NextRequest
  * @returns userId string 或 null
  */
-async function tryGetUserId(request: NextRequest): Promise<string | null> {
+async function tryGetUserId(): Promise<string | null> {
   // 1. 嘗試 cookie session
   const session = await auth();
   if (session?.user?.id) return session.user.id;
-
-  // 2. 嘗試 Authorization: Bearer <token>
-  const authHeader = request.headers.get("authorization");
-  if (authHeader?.startsWith("Bearer ")) {
-    const token = authHeader.slice(7);
-    try {
-      const decoded = await decode({
-        token,
-        secret: (process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET)!,
-        salt: "authjs.session-token",
-      });
-      if (decoded?.sub) return decoded.sub;
-    } catch {
-      // token 無效，忽略
-    }
-  }
 
   return null;
 }
@@ -95,7 +78,7 @@ export async function GET(
 
     // 嘗試取得當前使用者的報名狀態（選填，無需登入）
     let registrationStatus: RegistrationStatus | null = null;
-    const userId = await tryGetUserId(request);
+    const userId = await tryGetUserId();
 
     if (userId) {
       const registration = await db.registration.findUnique({
