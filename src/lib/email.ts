@@ -243,3 +243,37 @@ export async function sendOrderTicketEmail(opts: {
     `,
   });
 }
+
+/** Sent when an online membership payment is confirmed. */
+export async function sendMembershipConfirmationEmail(opts: {
+  to: string;
+  name: string;
+  memberCode: string;
+  /** Already formatted, e.g. "Aug 31, 2027". */
+  validUntil: string;
+  portalUrl: string;
+}) {
+  const e = escapeHtml;
+
+  await sendEmail({
+    to: opts.to,
+    subject: "Welcome to ROCSAUT — Your Membership",
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #222;">
+        <h2>Welcome to ROCSAUT!</h2>
+        <p>Hi ${e(opts.name)},</p>
+        <p>Your membership is confirmed.</p>
+        <div style="margin: 20px 0; padding: 16px; border: 1px solid #ddd; border-radius: 8px; background: #f8f8f8;">
+          <p><strong>Member code:</strong> ${e(opts.memberCode)}</p>
+          <p><strong>Valid until:</strong> ${e(opts.validUntil)}</p>
+        </div>
+        <p>
+          <a href="${e(opts.portalUrl)}" style="display: inline-block; padding: 12px 20px; background: #111; color: #fff; text-decoration: none; border-radius: 6px;">
+            View my membership
+          </a>
+        </p>
+        <p>ROCSAUT Team</p>
+      </div>
+    `,
+  });
+}

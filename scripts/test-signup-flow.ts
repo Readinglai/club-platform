@@ -20,7 +20,7 @@ async function main() {
   const term = termFor();
 
   // Reset this test's own data so it can run repeatedly.
-  const old = await db.user.findUnique({ where: { email } });
+  const old = await db.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } } });
   if (old) {
     await db.profile.deleteMany({ where: { userId: old.id } });
     await db.membership.deleteMany({ where: { userId: old.id } });

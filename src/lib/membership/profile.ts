@@ -73,12 +73,11 @@ export async function saveProfile(userId: string, raw: Partial<Record<keyof Prof
     personalEmail: value("personalEmail").toLowerCase(),
   };
 
-  const missing = REQUIRED_PROFILE_FIELDS.filter((key) => !input[key]);
-  if (missing.length > 0) return { ok: false as const, missing };
-
+  const missing: Array<keyof ProfileInput> = REQUIRED_PROFILE_FIELDS.filter((key) => !input[key]);
   if (input.personalEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.personalEmail)) {
-    return { ok: false as const, missing: ["personalEmail" as const] };
+    missing.push("personalEmail");
   }
+  if (missing.length > 0) return { ok: false as const, missing };
 
   const data = {
     phone: input.phone,
