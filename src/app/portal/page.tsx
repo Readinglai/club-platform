@@ -1,133 +1,68 @@
-
 import Link from "next/link";
-import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { getCurrentUser } from "@/lib/access/current-user";
+import { getPortalSections } from "@/lib/access/portal-nav";
 import { isProfileComplete } from "@/lib/membership/profile";
-import { can, getAccess } from "@/lib/access/can";
-import { db } from "@/lib/db";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
 export default async function PortalPage() {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    redirect("/login");
-  }
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
 
   // Everyone fills in their details once before using the portal.
-  if (!(await isProfileComplete(session.user.id))) {
-    redirect("/portal/complete-profile");
-  }
+  if (!(await isProfileComplete(user.id))) redirect("/portal/complete-profile");
 
-  // Team and Approvals only appear for people who can use them.
-  const access = await getAccess(session.user.id);
-  const canManageTeam = can(access, "groups.manage");
-  const canSeeEvents =
-    can(access, "events.create") || can(access, "events.manage") || can(access, "events.checkin");
-  const canSeeFinance =
-    can(access, "finance.view") || can(access, "budget.edit") || can(access, "expense.approve");
-  const leadsSomething =
-    (await db.groupMember.count({
-      where: { userId: session.user.id, position: { in: ["PRESIDENT", "VP"] } },
-    })) > 0;
-  const staffLinks = [
-    canSeeEvents && { href: "/portal/events", title: "活動 Events", text: "建立活動、票種與即時數據" },
-    canManageTeam && { href: "/portal/team", title: "團隊 Team", text: "管理群組成員與子群組" },
-    leadsSomething && { href: "/portal/approvals", title: "審核 Approvals", text: "待審項目與你的申請" },
-    canSeeFinance && { href: "/portal/finance", title: "財務 Finance", text: "預算、實際支出與活動財務報告" },
-  ].filter((link): link is { href: string; title: string; text: string } => Boolean(link));
+  const [t, nav, sections] = await Promise.all([
+    getTranslations("portal.homePage"),
+    getTranslations("portal"),
+    getPortalSections(user.id),
+  ]);
+
+  const cards = [
+    { href: "/portal/membership", title: nav("membership"), text: t("membershipText") },
+    sections.events && { href: "/portal/events", title: nav("events"), text: t("eventsText") },
+    sections.team && { href: "/portal/team", title: nav("team"), text: t("teamText") },
+    sections.approvals && { href: "/portal/approvals", title: nav("approvals"), text: t("approvalsText") },
+    sections.finance && { href: "/portal/finance", title: nav("finance"), text: t("financeText") },
+    { href: "/portal/profile", title: nav("profile"), text: t("profileText") },
+  ].filter((card): card is { href: string; title: string; text: string } => Boolean(card));
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f9f7f4" }}>
-      {/* 頂部 Banner */}
-      <section
-        className="px-4 py-12"
-        style={{ backgroundColor: PRIMARY }}
-      >
-        <div className="max-w-3xl mx-auto">
-          <p
-            className="text-xs font-medium uppercase tracking-widest mb-1"
-            style={{ color: `${SECONDARY}99` }}
-          >
+      <section className="px-4 py-12" style={{ backgroundColor: PRIMARY }}>
+        <div className="mx-auto max-w-3xl">
+          <p className="mb-1 text-xs font-medium uppercase tracking-widest" style={{ color: `${SECONDARY}99` }}>
             ROCSAUT
           </p>
-
-          <h1
-            className="text-2xl font-bold"
-            style={{ color: SECONDARY }}
-          >
-            Portal
+          <h1 className="text-2xl font-bold" style={{ color: SECONDARY }}>
+            {nav("portalName")}
           </h1>
-
-          <p
-            className="mt-2 text-sm"
-            style={{ color: "#ffffffaa" }}
-          >
-            歡迎回來，{session.user.name ?? "會員"}
+          <p className="mt-2 text-sm" style={{ color: "#ffffffaa" }}>
+            {t("welcome", { name: user.name || user.email })}
           </p>
         </div>
       </section>
 
-      {/* Portal 功能 */}
-      <div className="max-w-3xl mx-auto px-4 py-10">
+      <div className="mx-auto max-w-3xl px-4 py-10">
         <div className="grid gap-4">
-          <Link
-            href="/portal/membership"
-            className="rounded-2xl bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
-            style={{ border: "1px solid #e5e7eb" }}
-          >
-            <h2
-              className="text-lg font-semibold"
-              style={{ color: PRIMARY }}
-            >
-              會員資格 Membership
-            </h2>
-
-            <p
-              className="mt-1 text-sm"
-              style={{ color: "#6b7280" }}
-            >
-              查看會員狀態或加入會員
-            </p>
-          </Link>
-
-          {staffLinks.map((link) => (
+          {cards.map((card) => (
             <Link
-              key={link.href}
-              href={link.href}
-              className="rounded-2xl bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+              key={card.href}
+              href={card.href}
+              className="rounded-2xl bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
               style={{ border: "1px solid #e5e7eb" }}
             >
               <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>
-                {link.title}
+                {card.title}
               </h2>
               <p className="mt-1 text-sm" style={{ color: "#6b7280" }}>
-                {link.text}
+                {card.text}
               </p>
             </Link>
           ))}
-
-          <Link
-            href="/portal/profile"
-            className="rounded-2xl bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
-            style={{ border: "1px solid #e5e7eb" }}
-          >
-            <h2
-              className="text-lg font-semibold"
-              style={{ color: PRIMARY }}
-            >
-              個人資料
-            </h2>
-
-            <p
-              className="mt-1 text-sm"
-              style={{ color: "#6b7280" }}
-            >
-              查看及編輯你的會員資料
-            </p>
-          </Link>
         </div>
       </div>
     </div>

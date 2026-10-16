@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 
@@ -18,6 +19,8 @@ const POLL_MS = 2000;
 const POLL_LIMIT = 30;
 
 export default function MembershipPanel() {
+  const t = useTranslations("portal.membershipPage");
+  const dateLocale = useLocale() === "zh" ? "zh-TW" : "en-CA";
   const searchParams = useSearchParams();
   const justPaid = Boolean(searchParams.get("session_id"));
   const cancelled = searchParams.get("cancelled") === "1";
@@ -48,7 +51,7 @@ export default function MembershipPanel() {
         if (stopped || !justPaid || data.status === "ACTIVE") return;
       } catch {
         if (!justPaid) {
-          setError("Could not load your membership. Please refresh.");
+          setError(t("loadError"));
           return;
         }
       }
@@ -64,7 +67,7 @@ export default function MembershipPanel() {
       stopped = true;
       clearTimeout(timer);
     };
-  }, [load, justPaid]);
+  }, [load, justPaid, t]);
 
   async function startCheckout() {
     setStarting(true);
@@ -73,13 +76,13 @@ export default function MembershipPanel() {
       const res = await fetch("/api/me/membership/checkout", { method: "POST" });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.checkoutUrl) {
-        setError(data.error ?? "Payment could not be started. Please try again.");
+        setError(data.error ?? t("startError"));
         setStarting(false);
         return;
       }
       window.location.href = data.checkoutUrl;
     } catch {
-      setError("No connection. Please try again.");
+      setError(t("noConnection"));
       setStarting(false);
     }
   }
@@ -87,11 +90,11 @@ export default function MembershipPanel() {
   const card = "mt-6 rounded-2xl bg-white p-5 shadow-sm";
 
   if (!state) {
-    return <div className={card}><p className="text-sm text-gray-600">{error || "Loading… 載入中"}</p></div>;
+    return <div className={card}><p className="text-sm text-gray-600">{error || t("loading")}</p></div>;
   }
 
   if (state.status === "ACTIVE") {
-    const until = new Date(state.validUntil!).toLocaleDateString("en-CA", {
+    const until = new Date(state.validUntil!).toLocaleDateString(dateLocale, {
       timeZone: "America/Toronto",
       year: "numeric",
       month: "long",
@@ -99,10 +102,10 @@ export default function MembershipPanel() {
     });
     return (
       <div className={card}>
-        <p className="text-sm font-semibold text-green-700">✓ Active member 有效會員</p>
-        <p className="mt-4 text-xs font-medium text-gray-500">Member code 會員編號</p>
+        <p className="text-sm font-semibold text-green-700">✓ {t("active")}</p>
+        <p className="mt-4 text-xs font-medium text-gray-500">{t("memberCode")}</p>
         <p className="mt-1 text-2xl font-bold tracking-wide" style={{ color: PRIMARY }}>{state.memberCode}</p>
-        <p className="mt-4 text-xs font-medium text-gray-500">Valid until 有效期限</p>
+        <p className="mt-4 text-xs font-medium text-gray-500">{t("validUntil")}</p>
         <p className="mt-1 text-sm" style={{ color: PRIMARY }}>{until}</p>
         {state.walletUrl && (
           <a
@@ -112,7 +115,7 @@ export default function MembershipPanel() {
             className="mt-5 block w-full rounded-xl py-3 text-center text-base font-semibold text-white"
             style={{ backgroundColor: PRIMARY }}
           >
-            Add to Wallet 加入電子錢包
+            {t("addToWallet")}
           </a>
         )}
       </div>
@@ -123,12 +126,10 @@ export default function MembershipPanel() {
     return (
       <div className={card}>
         <p className="text-sm font-semibold" style={{ color: PRIMARY }}>
-          {waitedTooLong ? "Still confirming your payment 付款確認中" : "Confirming your payment… 付款確認中…"}
+          {waitedTooLong ? t("stillConfirming") : t("confirming")}
         </p>
         <p className="mt-2 text-sm text-gray-600">
-          {waitedTooLong
-            ? "This is taking longer than usual. You'll get an email once it's confirmed."
-            : "This usually takes a few seconds. Please keep this page open."}
+          {waitedTooLong ? t("stillConfirmingHint") : t("confirmingHint")}
         </p>
       </div>
     );
@@ -138,13 +139,11 @@ export default function MembershipPanel() {
     <div className={card}>
       {cancelled && (
         <p className="mb-4 rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-700">
-          Payment cancelled — nothing was charged. 已取消付款，未扣款。
+          {t("cancelled")}
         </p>
       )}
       <p className="text-sm text-gray-700">
-        Become a ROCSAUT member for this school year (until August 31).
-        <br />
-        加入 ROCSAUT 成為本學年會員（至 8 月 31 日）。
+        {t("join")}
       </p>
       <p className="mt-4 text-3xl font-bold" style={{ color: PRIMARY }}>
         CA${state.priceCad.toFixed(2)}
@@ -157,7 +156,7 @@ export default function MembershipPanel() {
         className="mt-5 w-full rounded-xl py-3 text-base font-semibold text-white disabled:opacity-50"
         style={{ backgroundColor: PRIMARY }}
       >
-        {starting ? "Opening payment… 前往付款…" : "Become a member 加入會員"}
+        {starting ? t("opening") : t("becomeMember")}
       </button>
     </div>
   );

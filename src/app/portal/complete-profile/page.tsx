@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/access/current-user";
 import { getProfileForForm } from "@/lib/membership/profile";
 import CompleteProfileForm from "./CompleteProfileForm";
@@ -10,17 +11,16 @@ export default async function CompleteProfilePage() {
   if (!user) redirect("/login");
 
   const initial = await getProfileForForm(user.id);
+  const t = await getTranslations("portal.completeProfile");
 
   return (
     <main className="min-h-screen px-4 py-10" style={{ backgroundColor: "#f9f7f4" }}>
       <div className="mx-auto w-full max-w-md">
         <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>
-          {initial.completed ? "Your profile 個人資料" : "Complete your profile 完成個人資料"}
+          {initial.completed ? t("titleEdit") : t("titleNew")}
         </h1>
         <p className="mt-2 text-sm text-gray-600">
-          We use this to fill in your event registrations and membership for you.
-          <br />
-          這些資料會自動帶入活動報名與會員申請。
+          {t("intro")}
         </p>
         <CompleteProfileForm email={user.email} initial={initial} />
       </div>

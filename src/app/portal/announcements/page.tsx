@@ -10,12 +10,15 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
 export default async function AnnouncementsPage() {
   const session = await auth();
+  const t = await getTranslations("portal.announcementsPage");
+  const dateLocale = (await getLocale()) === "zh" ? "zh-TW" : "en-CA";
   if (!session?.user?.id) {
     redirect("/en/login");
   }
@@ -47,7 +50,7 @@ export default async function AnnouncementsPage() {
             Portal
           </p>
           <h1 className="text-2xl font-bold" style={{ color: SECONDARY }}>
-            公告
+            {t("title")}
           </h1>
         </div>
       </section>
@@ -59,13 +62,13 @@ export default async function AnnouncementsPage() {
             className="rounded-2xl bg-white p-10 text-center shadow-sm"
             style={{ border: "1px solid #e5e7eb" }}
           >
-            <p style={{ color: "#9ca3af" }}>目前沒有公告</p>
+            <p style={{ color: "#9ca3af" }}>{t("empty")}</p>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
             {announcements.map((ann) => {
               const isRead = ann.reads.length > 0;
-              const date = ann.createdAt.toLocaleDateString("zh-TW", {
+              const date = ann.createdAt.toLocaleDateString(dateLocale, {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
@@ -111,7 +114,7 @@ export default async function AnnouncementsPage() {
                             }
                       }
                     >
-                      {isRead ? "已讀" : "未讀"}
+                      {isRead ? t("read") : t("unread")}
                     </span>
                   </div>
                 </Link>
