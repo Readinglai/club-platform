@@ -39,8 +39,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   /* 已登入的使用者直接依角色導向，不顯示登入頁 */
   const session = await auth();
   if (session?.user) {
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    const level = ROLE_LEVEL[role] ?? ROLE_LEVEL.MEMBER;
+    const role = (session.user.role as Role | undefined) ?? "USER";
+    const level = ROLE_LEVEL[role] ?? ROLE_LEVEL.USER;
     redirect(level >= 3 ? "/zh/admin" : "/zh");
   }
 

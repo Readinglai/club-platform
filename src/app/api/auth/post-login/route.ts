@@ -13,8 +13,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${base}/login`);
   }
 
-  const role = (session.user.role as Role | undefined) ?? "MEMBER";
-  const level = ROLE_LEVEL[role] ?? ROLE_LEVEL.MEMBER;
+  const role = (session.user.role as Role | undefined) ?? "USER";
+  const level = ROLE_LEVEL[role] ?? ROLE_LEVEL.USER;
   let dest: string;
   if (level >= 4) dest = "/admin";
   else if (level === 3) dest = "/exec";

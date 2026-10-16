@@ -15,8 +15,16 @@ const ALLOWED_TYPES = new Set([
 ]);
 const MAX_BYTES = 5 * 1024 * 1024;
 
+// Profile pictures are not offered for now, and with open signup this would
+// let any new account upload to the public bucket. Flip to re-enable.
+const PROFILE_PICTURE_UPLOADS_ENABLED = false;
+
 // Any logged-in member (level 2+) can upload profile images
 export async function POST(request: NextRequest) {
+  if (!PROFILE_PICTURE_UPLOADS_ENABLED) {
+    return NextResponse.json({ error: "Profile picture uploads are turned off" }, { status: 404 });
+  }
+
   const guard = await requireAuthJson(2, request);
   if (guard.error) return guard.error;
 

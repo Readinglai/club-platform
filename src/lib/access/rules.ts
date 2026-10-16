@@ -6,8 +6,8 @@
  * below it (a VP of Events can manage every event team under Events), or
  * every group in the club when `global` is set (the President).
  *
- * `heldIn` is a group slug, or "<slug>/*" for any direct subgroup of it
- * (e.g. "events/*" = every event team).
+ * `heldIn` is a group slug, "<slug>/*" for any direct subgroup of it
+ * (e.g. "events/*" = every event team), or "*" for any group at all.
  *
  * These rules live in code until the admin portal can edit them; callers
  * only use can() / getRules(), so moving them into a database table later
@@ -40,6 +40,10 @@ export const PERMISSIONS = [
   "groups.manage",
   /** Decide approval requests (e.g. deleting an event). */
   "approvals.decide",
+  /** Tasks, task groups, discussions and votes (staff only). */
+  "tasks.use",
+  /** Upload images beyond one's own profile photo. */
+  "uploads.create",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
@@ -54,9 +58,8 @@ export type Rule = {
 
 /** Highest first; a position satisfies every position after it. */
 export const POSITION_RANK: Record<GroupPosition, number> = {
-  PRESIDENT: 4,
-  VP: 3,
-  LEAD: 2,
+  PRESIDENT: 3,
+  VP: 2,
   STAFF: 1,
 };
 
@@ -64,28 +67,35 @@ const RULES: Rule[] = [
   // President: everything, everywhere.
   { permission: "*", heldIn: G.executive, minPosition: "PRESIDENT", global: true },
 
-  // Every VP runs their own department.
+  // Anyone holding a position in any group is staff.
+  { permission: "tasks.use", heldIn: "*", minPosition: "STAFF" },
+  { permission: "uploads.create", heldIn: "*", minPosition: "STAFF" },
+
+  // Every VP assigns people within their own department.
   ...[G.events, G.marketing, G.operations, G.social].flatMap((dept) => [
     { permission: "groups.manage" as const, heldIn: dept, minPosition: "VP" as const },
-    { permission: "members.view" as const, heldIn: dept, minPosition: "VP" as const },
   ]),
 
-  // Events: the VP creates and oversees events and verifies their spending.
+  // Events: the VP creates and runs events and verifies their spending.
   { permission: "events.create", heldIn: G.events, minPosition: "VP" },
   { permission: "events.manage", heldIn: G.events, minPosition: "VP" },
   { permission: "budget.edit", heldIn: G.events, minPosition: "VP" },
   { permission: "expense.approve", heldIn: G.events, minPosition: "VP" },
   { permission: "events.checkin", heldIn: G.events, minPosition: "STAFF" },
 
-  // Event teams: the lead manages their event, everyone on it submits costs.
-  { permission: "events.manage", heldIn: `${G.events}/*`, minPosition: "LEAD" },
+  // Event teams: everyone on the team works the door and submits costs.
   { permission: "expense.submit", heldIn: `${G.events}/*`, minPosition: "STAFF" },
   { permission: "events.checkin", heldIn: `${G.events}/*`, minPosition: "STAFF" },
 
-  // Operations: the VP edits budgets and sees finances; Finance sees finances.
+  // Operations: the VP sees all members and the finances and edits budgets;
+  // the Finance subgroup sees the finances.
+  { permission: "members.view", heldIn: G.operations, minPosition: "VP", global: true },
   { permission: "budget.edit", heldIn: G.operations, minPosition: "VP" },
   { permission: "finance.view", heldIn: G.operations, minPosition: "VP" },
   { permission: "finance.view", heldIn: G.finance, minPosition: "STAFF" },
+
+  // Marketing and Social: department management only for now; content
+  // permissions (website, announcements) come later.
 ];
 
 /** Async so the rules can later come from the database without changing callers. */

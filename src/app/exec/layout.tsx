@@ -28,7 +28,7 @@ export default async function ExecLayout({
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  const role = (session.user.role as Role | undefined) ?? "MEMBER";
+  const role = (session.user.role as Role | undefined) ?? "USER";
   if (ROLE_LEVEL[role] < 3) redirect("/unauthorized");
 
   return (

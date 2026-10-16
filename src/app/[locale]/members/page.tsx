@@ -26,11 +26,12 @@ type DbUser = {
   department: { id: string; name: string; slug: string } | null;
 };
 
-const ROLE_I18N_KEY: Record<Role, "roleExec" | "roleSuperAdmin" | "roleAdmin" | "roleMember"> = {
+const ROLE_I18N_KEY: Record<Role, "roleExec" | "roleSuperAdmin" | "roleAdmin" | "roleMember" | "roleUser"> = {
   EXEC: "roleExec",
   SUPER_ADMIN: "roleSuperAdmin",
   ADMIN: "roleAdmin",
   MEMBER: "roleMember",
+  USER: "roleUser",
 };
 
 function getInitials(name: string): string {

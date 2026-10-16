@@ -8,13 +8,14 @@ import { useTranslations } from "next-intl";
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
-type Role = "SUPER_ADMIN" | "ADMIN" | "EXEC" | "MEMBER";
+type Role = "SUPER_ADMIN" | "ADMIN" | "EXEC" | "MEMBER" | "USER";
 
 const ROLE_BG: Record<Role, { bg: string; color: string }> = {
   SUPER_ADMIN: { bg: "#fee2e2", color: "#991b1b" },
   ADMIN:       { bg: "#dbeafe", color: "#1e40af" },
   EXEC:        { bg: "#ffedd5", color: "#9a3412" },
   MEMBER:      { bg: "#f3f4f6", color: "#6b7280" },
+  USER:        { bg: "#ffffff", color: "#9ca3af" },
 };
 
 interface MemberRow {
@@ -44,6 +45,7 @@ export default function MembersTable({ members: initial, locale, currentUserId }
     ADMIN: t("roleAdmin"),
     EXEC: t("roleExec"),
     MEMBER: t("roleMember"),
+    USER: t("roleUser"),
   };
 
   async function deleteMember(id: string, name: string) {

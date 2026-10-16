@@ -44,8 +44,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   // 造成 /zh/login → /api/auth/post-login → /zh/admin → ... 無限迴圈
   const session = await auth();
   if (session?.user) {
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    const level = ROLE_LEVEL[role] ?? ROLE_LEVEL.MEMBER;
+    const role = (session.user.role as Role | undefined) ?? "USER";
+    const level = ROLE_LEVEL[role] ?? ROLE_LEVEL.USER;
     if (level >= 4) redirect("/admin");
     else if (level === 3) redirect("/exec");
     else redirect("/portal");

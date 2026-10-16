@@ -12,6 +12,7 @@ const ROLE_LABEL: Record<Role, string> = {
   ADMIN: "Admin",
   EXEC: "Exec",
   MEMBER: "Member",
+  USER: "Not a member yet",
 };
 
 export default async function ProfilePage() {

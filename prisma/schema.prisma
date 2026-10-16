@@ -22,6 +22,8 @@ enum Role {
   ADMIN
   EXEC
   MEMBER
+  /// Signed up but no active membership (before paying, or after a term ends).
+  USER
 }
 
 enum RegistrationStatus {
@@ -61,7 +63,7 @@ model User {
   name          String
   image         String?
   emailVerified DateTime?
-  role          Role      @default(MEMBER)
+  role          Role      @default(USER)
 
   departmentId String?
   department   Department? @relation(fields: [departmentId], references: [id])
@@ -444,7 +446,6 @@ enum MembershipSource {
 enum GroupPosition {
   PRESIDENT
   VP
-  LEAD
   STAFF
 }
 

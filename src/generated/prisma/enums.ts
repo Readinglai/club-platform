@@ -13,7 +13,8 @@ export const Role = {
   SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',
   EXEC: 'EXEC',
-  MEMBER: 'MEMBER'
+  MEMBER: 'MEMBER',
+  USER: 'USER'
 } as const
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -105,7 +106,6 @@ export type MembershipSource = (typeof MembershipSource)[keyof typeof Membership
 export const GroupPosition = {
   PRESIDENT: 'PRESIDENT',
   VP: 'VP',
-  LEAD: 'LEAD',
   STAFF: 'STAFF'
 } as const
 

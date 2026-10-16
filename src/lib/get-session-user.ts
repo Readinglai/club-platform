@@ -27,7 +27,7 @@ export async function getSessionUser(request: NextRequest): Promise<SessionUser 
   // 1. å˜—è©¦ Cookie Sessionï¼ˆWeb ç«¯ / NextAuth callbackï¼‰
   const session = await auth();
   if (session?.user?.id) {
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
+    const role = (session.user.role as Role | undefined) ?? "USER";
     return { id: session.user.id, role, roleLevel: ROLE_LEVEL[role] ?? 1 };
   }
 

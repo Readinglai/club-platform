@@ -78,6 +78,7 @@ function positionMeets(held: GroupPosition, required: GroupPosition) {
 }
 
 function heldInMatches(rule: Rule, group: GroupNode, byId: Map<string, GroupNode>) {
+  if (rule.heldIn === "*") return true;
   if (rule.heldIn.endsWith("/*")) {
     const parentSlug = rule.heldIn.slice(0, -2);
     const parent = group.parentId ? byId.get(group.parentId) : undefined;

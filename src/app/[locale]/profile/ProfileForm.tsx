@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import ImageUpload from "@/components/admin/ImageUpload";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -29,7 +28,8 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   const t = useTranslations("profile");
 
   const [name, setName] = useState(user.name);
-  const [image, setImage] = useState(user.image ?? "");
+  // Profile picture upload is turned off; keep whatever photo the account already has.
+  const image = user.image ?? "";
   const [bio, setBio] = useState(user.bio ?? "");
   const [major, setMajor] = useState(user.major ?? "");
   const [rocsautYear, setRocsautYear] = useState<string>(
@@ -83,15 +83,6 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     <div className="flex flex-col gap-6">
       {/* Basic info */}
       <Card title={t("sectionBasic")}>
-        <Field label={t("image")}>
-          <ImageUpload
-            value={image}
-            onChange={setImage}
-            uploadEndpoint="/api/upload"
-            previewClassName="h-24 w-24 object-cover rounded-full"
-            hint={t("imageHint")}
-          />
-        </Field>
         <Field label={t("name")}>
           <input
             type="text"

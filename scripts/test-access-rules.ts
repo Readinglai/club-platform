@@ -41,7 +41,6 @@ async function main() {
   const eventsVp = await user("events-vp"); await place(eventsVp.id, G.events, "VP");
   const opsVp = await user("ops-vp"); await place(opsVp.id, G.operations, "VP");
   const financeStaff = await user("finance-staff"); await place(financeStaff.id, G.finance, "STAFF");
-  const eventLead = await user("event-lead"); await place(eventLead.id, team.slug, "LEAD");
   const eventStaff = await user("event-staff"); await place(eventStaff.id, team.slug, "STAFF");
   const nobody = await user("member-only");
 
@@ -61,12 +60,16 @@ async function main() {
     ["ops VP", opsVp.id, "events.manage", { groupId: team.id, label: "event team" }, false],
     ["finance staff", financeStaff.id, "finance.view", undefined, true],
     ["finance staff", financeStaff.id, "budget.edit", undefined, false],
-    ["event lead", eventLead.id, "events.manage", { groupId: team.id, label: "event team" }, true],
-    ["event lead", eventLead.id, "expense.submit", { groupId: team.id, label: "event team" }, true],
-    ["event lead", eventLead.id, "expense.approve", { groupId: team.id, label: "event team" }, false],
-    ["event lead", eventLead.id, "events.create", undefined, false],
     ["event staff", eventStaff.id, "expense.submit", { groupId: team.id, label: "event team" }, true],
     ["event staff", eventStaff.id, "events.manage", { groupId: team.id, label: "event team" }, false],
+    ["events VP", eventsVp.id, "members.view", undefined, false],
+    ["ops VP", opsVp.id, "members.view", { groupId: marketing.id, label: "Marketing" }, true],
+    ["event staff", eventStaff.id, "events.checkin", { groupId: team.id, label: "event team" }, true],
+    ["event staff", eventStaff.id, "expense.approve", { groupId: team.id, label: "event team" }, false],
+    ["event staff", eventStaff.id, "tasks.use", undefined, true],
+    ["finance staff", financeStaff.id, "tasks.use", undefined, true],
+    ["member only", nobody.id, "tasks.use", undefined, false],
+    ["member only", nobody.id, "uploads.create", undefined, false],
     ["member only", nobody.id, "finance.view", undefined, false],
     ["member only", nobody.id, "expense.submit", { groupId: team.id, label: "event team" }, false],
   ];

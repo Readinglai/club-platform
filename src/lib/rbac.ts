@@ -25,6 +25,7 @@ export const ROLE_LEVEL: Record<Role | "PUBLIC", number> = {
   ADMIN:       4,
   EXEC:        3,
   MEMBER:      2,
+  USER:        1,
   PUBLIC:      1,
 };
 
