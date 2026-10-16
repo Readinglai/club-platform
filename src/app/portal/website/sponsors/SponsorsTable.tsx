@@ -27,10 +27,9 @@ interface SponsorRow {
 
 interface Props {
   sponsors: SponsorRow[];
-  locale: string;
 }
 
-export default function SponsorsTable({ sponsors: initial, locale }: Props) {
+export default function SponsorsTable({ sponsors: initial }: Props) {
   const t = useTranslations("admin.sponsors");
   const tc = useTranslations("admin.common");
   const router = useRouter();
@@ -212,7 +211,7 @@ export default function SponsorsTable({ sponsors: initial, locale }: Props) {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <Link
-                          href={`/${locale}/admin/sponsors/${s.id}`}
+                          href={`/portal/website/sponsors/${s.id}`}
                           className="text-xs px-2.5 py-1 rounded font-medium transition-all hover:opacity-70"
                           style={{ color: PRIMARY, backgroundColor: `${PRIMARY}10` }}
                         >

@@ -644,7 +644,7 @@
       "reminderUnit": "小時",
       "reminderInvalid": "請輸入有效的正整數",
       "emailTemplatesTitle": "Email 模板",
-      "emailTemplatesHint": "支援變數：\\{name\\}、\\{event_title\\}、\\{event_date\\}",
+      "emailTemplatesHint": "支援變數：'{name}'、'{event_title}'、'{event_date}'",
       "emailTemplatesEmpty": "目前無 Email 模板",
       "templateWelcome": "歡迎信（新成員加入）",
       "templateEventReminder": "活動/任務提醒",
@@ -692,6 +692,7 @@
     "finance": "財務",
     "members": "會員",
     "manageAnnouncements": "管理公告",
+    "website": "網站",
     "back": "返回",
     "menu": "選單",
     "close": "關閉",
@@ -1169,6 +1170,20 @@
       "create": "建立",
       "save": "儲存變更",
       "cancel": "取消"
+    },
+    "websitePage": {
+      "title": "網站",
+      "intro": "編輯公開網站上訪客看到的內容。變更會立即生效。",
+      "sponsorsTitle": "贊助商",
+      "sponsorsText": "贊助商標誌、連結及贊助年份",
+      "achievementsTitle": "成就",
+      "achievementsText": "網站上展示的獎項與里程碑",
+      "alumniTitle": "校友",
+      "alumniText": "歷屆幹部及是否公開顯示",
+      "settingsTitle": "網站設定",
+      "settingsText": "首頁圖片與區塊、功能、電郵及聯絡人",
+      "textTitle": "網站文字",
+      "textText": "編輯網站的中英文文字"
     }
   }
 }

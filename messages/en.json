@@ -644,7 +644,7 @@
       "reminderUnit": "hours",
       "reminderInvalid": "Please enter a valid positive integer",
       "emailTemplatesTitle": "Email Templates",
-      "emailTemplatesHint": "Supports variables: {name}, {event_title}, {event_date}",
+      "emailTemplatesHint": "Supports variables: '{name}', '{event_title}', '{event_date}'",
       "emailTemplatesEmpty": "No email templates configured.",
       "templateWelcome": "Welcome Email (New Member)",
       "templateEventReminder": "Event / Task Reminder",
@@ -692,6 +692,7 @@
     "finance": "Finance",
     "members": "Members",
     "manageAnnouncements": "Manage announcements",
+    "website": "Website",
     "back": "Back",
     "menu": "Menu",
     "close": "Close",
@@ -1169,6 +1170,20 @@
       "create": "Create",
       "save": "Save changes",
       "cancel": "Cancel"
+    },
+    "websitePage": {
+      "title": "Website",
+      "intro": "Edit what visitors see on the public website. Changes go live straight away.",
+      "sponsorsTitle": "Sponsors",
+      "sponsorsText": "Sponsor logos, links and which years they supported us",
+      "achievementsTitle": "Achievements",
+      "achievementsText": "Awards and milestones shown on the site",
+      "alumniTitle": "Alumni",
+      "alumniText": "Past executives and whether they're shown publicly",
+      "settingsTitle": "Site settings",
+      "settingsText": "Home page image and sections, features, emails and contacts",
+      "textTitle": "Website text",
+      "textText": "Edit the site's English and Chinese wording"
     }
   }
 }

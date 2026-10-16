@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { requirePermissionJson } from "@/lib/access/require";
 
 type Params = { params: Promise<{ id: string }> };
 
 /** GET /api/sponsors/[id] — 取得單一贊助商（含所有 histories） */
 export async function GET(req: NextRequest, { params }: Params) {
   try {
-    const guard = await requireAuthJson(3, req);
+    const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;
 
     const { id } = await params;
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest, { params }: Params) {
 /** PATCH /api/sponsors/[id] — 更新贊助商基本資料 */
 export async function PATCH(request: NextRequest, { params }: Params) {
   try {
-    const guard = await requireAuthJson(3, request);
+    const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;
 
     const { id } = await params;
@@ -59,7 +59,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 /** DELETE /api/sponsors/[id] — 刪除贊助商（histories cascade 刪除） */
 export async function DELETE(req: NextRequest, { params }: Params) {
   try {
-    const guard = await requireAuthJson(3, req);
+    const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;
 
     const { id } = await params;

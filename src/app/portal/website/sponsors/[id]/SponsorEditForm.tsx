@@ -34,10 +34,9 @@ interface SponsorData {
 
 interface Props {
   sponsor: SponsorData;
-  locale: string;
 }
 
-export default function SponsorEditForm({ sponsor, locale: _locale }: Props) {
+export default function SponsorEditForm({ sponsor }: Props) {
   const t = useTranslations("admin.sponsors");
   const tc = useTranslations("admin.common");
   const router = useRouter();

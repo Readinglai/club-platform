@@ -11,7 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { readFileSync } from "fs";
 import { join } from "path";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { requirePermissionJson } from "@/lib/access/require";
 import { db } from "@/lib/db";
 
 type Messages = Record<string, unknown>;
@@ -54,8 +54,8 @@ async function loadOverrides(): Promise<Overrides> {
   return { en: {}, zh: {} };
 }
 
-export async function GET(request: NextRequest) {
-  const guard = await requireAuthJson(4, request);
+export async function GET() {
+  const guard = await requirePermissionJson("content.manage");
   if (guard.error) return guard.error;
 
   const overrides = await loadOverrides();
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const guard = await requireAuthJson(4, request);
+  const guard = await requirePermissionJson("content.manage");
   if (guard.error) return guard.error;
 
   const body = (await request.json()) as { locale?: unknown; path?: unknown; value?: unknown };

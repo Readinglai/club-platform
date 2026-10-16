@@ -32,6 +32,7 @@ function navSections(s: PortalSections) {
   const admin: Item[] = [
     s.members && { href: "/portal/members", key: "members", icon: "☷" },
     s.announcements && { href: "/portal/announcements/manage", key: "manageAnnouncements", icon: "✎" },
+    s.website && { href: "/portal/website", key: "website", icon: "◫" },
   ].filter(Boolean) as Item[];
   return [
     { key: "sectionMe", items: me },

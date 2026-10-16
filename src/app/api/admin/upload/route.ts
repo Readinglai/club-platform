@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { requirePermissionJson } from "@/lib/access/require";
 import { getSupabaseUrl } from "@/lib/supabase-storage";
 
 export const maxDuration = 60;
@@ -16,7 +16,7 @@ const ALLOWED_TYPES = new Set([
 const MAX_BYTES = 5 * 1024 * 1024;
 
 export async function POST(request: NextRequest) {
-  const guard = await requireAuthJson(3, request);
+  const guard = await requirePermissionJson("uploads.create");
   if (guard.error) return guard.error;
 
   let formData: FormData;

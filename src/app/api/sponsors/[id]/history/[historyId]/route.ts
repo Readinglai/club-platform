@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { requirePermissionJson } from "@/lib/access/require";
 
 type Params = { params: Promise<{ id: string; historyId: string }> };
 
 /** DELETE /api/sponsors/[id]/history/[historyId] — 刪除某筆贊助歷史記錄 */
 export async function DELETE(req: NextRequest, { params }: Params) {
   try {
-    const guard = await requireAuthJson(3, req);
+    const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;
 
     const { id, historyId } = await params;

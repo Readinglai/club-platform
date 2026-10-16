@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -16,10 +17,9 @@ interface Props {
     description: string;
     imageUrl: string | null;
   };
-  locale: string;
 }
 
-export default function AchievementEditForm({ id, initial, locale }: Props) {
+export default function AchievementEditForm({ id, initial }: Props) {
   const t = useTranslations("admin.achievements");
   const tc = useTranslations("admin.common");
   const router = useRouter();
@@ -128,13 +128,13 @@ export default function AchievementEditForm({ id, initial, locale }: Props) {
         >
           {saving ? tc("saving") : tc("saveChanges")}
         </button>
-        <a
-          href={`/${locale}/admin/achievements`}
+        <Link
+          href="/portal/website/achievements"
           className="px-5 py-2 rounded-lg text-sm font-medium border transition-all hover:opacity-80"
           style={{ borderColor: "#d1d5db", color: "#374151" }}
         >
           {t("backToList")}
-        </a>
+        </Link>
       </div>
     </div>
   );

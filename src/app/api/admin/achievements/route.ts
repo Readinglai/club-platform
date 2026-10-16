@@ -11,7 +11,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { requirePermissionJson } from "@/lib/access/require";
 
 /**
  * GET /api/admin/achievements — 列出所有成果
@@ -21,7 +21,7 @@ import { requireAuthJson } from "@/lib/auth/guard";
  */
 export async function GET(request: NextRequest) {
   try {
-    const guard = await requireAuthJson(4, request);
+    const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;
 
     const yearParam = new URL(request.url).searchParams.get("year");
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const guard = await requireAuthJson(4, request);
+    const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;
 
     const body = await request.json();

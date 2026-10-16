@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { requirePermissionJson } from "@/lib/access/require";
 
 const VALID_TIERS = ["platinum", "gold", "silver", "bronze"];
 const YEAR_MIN = 2000;
@@ -11,7 +11,7 @@ type Params = { params: Promise<{ id: string }> };
 /** GET /api/sponsors/[id]/history — 取得某贊助商的所有歷史記錄 */
 export async function GET(req: NextRequest, { params }: Params) {
   try {
-    const guard = await requireAuthJson(3, req);
+    const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;
 
     const { id } = await params;
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest, { params }: Params) {
 /** POST /api/sponsors/[id]/history — 新增某年的贊助記錄 */
 export async function POST(request: NextRequest, { params }: Params) {
   try {
-    const guard = await requireAuthJson(3, request);
+    const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;
 
     const { id } = await params;

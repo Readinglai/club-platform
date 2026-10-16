@@ -22,7 +22,6 @@ interface AlumniRow {
 
 interface Props {
   alumni: AlumniRow[];
-  locale: string;
 }
 
 const EMPTY_FORM = {
@@ -107,7 +106,7 @@ function AlumniFormFields({ form, onChange, labels }: FormFieldsProps) {
   );
 }
 
-export default function AlumniManager({ alumni: initial, locale: _locale }: Props) {
+export default function AlumniManager({ alumni: initial }: Props) {
   const t = useTranslations("admin.alumni");
   const tc = useTranslations("admin.common");
   const router = useRouter();

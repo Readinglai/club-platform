@@ -1,18 +1,14 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
-import { getSessionUser } from "@/lib/get-session-user";
 import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
-import type { Role } from "@/generated/prisma/client";
+import { requirePermissionJson } from "@/lib/access/require";
 
 type Params = { params: Promise<{ id: string }> };
 
 /** GET /api/admin/achievements/[id] */
 export async function GET(request: NextRequest, { params }: Params) {
   try {
-    const sessionUser = await getSessionUser(request);
-    if (!sessionUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const role = (sessionUser.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requirePermissionJson("content.manage");
+    if (guard.error) return guard.error;
 
     const { id } = await params;
     const achievement = await db.achievement.findUnique({ where: { id } });
@@ -26,10 +22,8 @@ export async function GET(request: NextRequest, { params }: Params) {
 /** PATCH /api/admin/achievements/[id] */
 export async function PATCH(request: NextRequest, { params }: Params) {
   try {
-    const sessionUser = await getSessionUser(request);
-    if (!sessionUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const role = (sessionUser.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requirePermissionJson("content.manage");
+    if (guard.error) return guard.error;
 
     const { id } = await params;
     const body = await request.json();
@@ -64,10 +58,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 /** DELETE /api/admin/achievements/[id] */
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {
-    const sessionUser = await getSessionUser(request);
-    if (!sessionUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const role = (sessionUser.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const guard = await requirePermissionJson("content.manage");
+    if (guard.error) return guard.error;
 
     const { id } = await params;
     await db.achievement.delete({ where: { id } });

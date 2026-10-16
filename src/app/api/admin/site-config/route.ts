@@ -12,7 +12,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { requirePermissionJson } from "@/lib/access/require";
 
 /**
  * GET /api/admin/site-config?key=heroImageUrl
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
  */
 export async function PATCH(request: NextRequest) {
   try {
-    const guard = await requireAuthJson(4, request);
+    const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;
 
     const { key, value } = await request.json();

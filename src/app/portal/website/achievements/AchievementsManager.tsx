@@ -18,12 +18,11 @@ interface AchievementRow {
 
 interface Props {
   achievements: AchievementRow[];
-  locale: string;
 }
 
 const currentYear = new Date().getFullYear();
 
-export default function AchievementsManager({ achievements: initial, locale }: Props) {
+export default function AchievementsManager({ achievements: initial }: Props) {
   const t = useTranslations("admin.achievements");
   const tc = useTranslations("admin.common");
   const router = useRouter();
@@ -236,7 +235,7 @@ export default function AchievementsManager({ achievements: initial, locale }: P
                   <td className="px-5 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Link
-                        href={`/${locale}/admin/achievements/${a.id}`}
+                        href={`/portal/website/achievements/${a.id}`}
                         className="px-3 py-1 rounded text-xs font-medium border transition-all hover:opacity-80"
                         style={{ borderColor: PRIMARY, color: PRIMARY }}
                       >

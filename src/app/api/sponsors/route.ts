@@ -11,7 +11,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { requirePermissionJson } from "@/lib/access/require";
 
 /**
  * GET /api/sponsors — 列出所有贊助商（公開）
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const guard = await requireAuthJson(3, request);
+    const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;
 
     const body = await request.json();
