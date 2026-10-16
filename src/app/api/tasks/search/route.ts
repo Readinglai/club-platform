@@ -19,6 +19,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuthJson } from "@/lib/auth/guard";
+import { forbidUnless } from "@/lib/access/require";
 
 interface SearchResult {
   taskId: string;
@@ -42,6 +43,8 @@ function extractPreview(content: string, keyword: string): string {
 export async function GET(request: NextRequest) {
   const guard = await requireAuthJson(2, request);
   if (guard.error) return guard.error;
+  const forbidden = await forbidUnless(guard.userId, "tasks.use");
+  if (forbidden) return forbidden;
 
   const q = request.nextUrl.searchParams.get("q")?.trim() ?? "";
   // 關鍵字少於 1 個字元直接回傳空陣列，避免全表掃描

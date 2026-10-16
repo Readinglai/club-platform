@@ -6,6 +6,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { forbidUnless } from "@/lib/access/require";
 
 export async function PATCH(
   _request: Request,
@@ -15,6 +16,8 @@ export async function PATCH(
   if (!session?.user?.id) {
     return NextResponse.json({ error: "未登入" }, { status: 401 });
   }
+  const forbidden = await forbidUnless(session.user.id, "tasks.use");
+  if (forbidden) return forbidden;
 
   const { id: taskGroupId, voteId } = await params;
 

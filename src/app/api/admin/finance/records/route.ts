@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuthJson } from "@/lib/auth/guard";
+import { forbidUnless } from "@/lib/access/require";
 
 export async function GET(request: NextRequest) {
   const guard = await requireAuthJson(3, request);
   if (guard.error) return guard.error;
+  const forbidden = await forbidUnless(guard.userId, "finance.view");
+  if (forbidden) return forbidden;
 
   const { searchParams } = new URL(request.url);
   const year = searchParams.get("year") ? parseInt(searchParams.get("year")!, 10) : null;
@@ -35,6 +38,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const guard = await requireAuthJson(3, request);
   if (guard.error) return guard.error;
+  const forbidden = await forbidUnless(guard.userId, "finance.edit");
+  if (forbidden) return forbidden;
 
   let body: unknown;
   try { body = await request.json(); } catch {

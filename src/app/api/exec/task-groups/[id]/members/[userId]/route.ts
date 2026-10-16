@@ -7,6 +7,7 @@ import { ROLE_LEVEL } from "@/lib/rbac";
 import { NextRequest, NextResponse } from "next/server";
 import type { Role } from "@/generated/prisma/client";
 import { requireAuthJson } from "@/lib/auth/guard";
+import { forbidUnless } from "@/lib/access/require";
 
 export async function DELETE(
   request: NextRequest,
@@ -14,6 +15,8 @@ export async function DELETE(
 ) {
   const guard = await requireAuthJson(2, request);
   if (guard.error) return guard.error;
+  const forbidden = await forbidUnless(guard.userId, "tasks.use");
+  if (forbidden) return forbidden;
 
   const userRole = guard.role as Role;
   if (ROLE_LEVEL[userRole] < 3) {

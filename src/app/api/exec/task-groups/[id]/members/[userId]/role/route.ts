@@ -12,6 +12,7 @@ import { db } from "@/lib/db";
 import { ROLE_LEVEL } from "@/lib/rbac";
 import { NextResponse } from "next/server";
 import type { Role } from "@/generated/prisma/client";
+import { forbidUnless } from "@/lib/access/require";
 
 export async function PATCH(
   request: Request,
@@ -21,6 +22,8 @@ export async function PATCH(
   if (!session?.user?.id) {
     return NextResponse.json({ error: "未登入" }, { status: 401 });
   }
+  const forbidden = await forbidUnless(session.user.id, "tasks.use");
+  if (forbidden) return forbidden;
 
   const userRole = (session.user.role as Role | undefined) ?? "MEMBER";
   if (ROLE_LEVEL[userRole] < 3) {
