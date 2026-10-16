@@ -252,6 +252,8 @@ export async function sendMembershipConfirmationEmail(opts: {
   /** Already formatted, e.g. "Aug 31, 2027". */
   validUntil: string;
   portalUrl: string;
+  /** Pass2U "add to wallet" page, when a pass was issued. */
+  walletUrl?: string | null;
 }) {
   const e = escapeHtml;
 
@@ -267,6 +269,11 @@ export async function sendMembershipConfirmationEmail(opts: {
           <p><strong>Member code:</strong> ${e(opts.memberCode)}</p>
           <p><strong>Valid until:</strong> ${e(opts.validUntil)}</p>
         </div>
+        ${opts.walletUrl ? `<p>
+          <a href="${e(opts.walletUrl)}" style="display: inline-block; padding: 12px 20px; background: #111; color: #fff; text-decoration: none; border-radius: 6px;">
+            Add membership card to Wallet
+          </a>
+        </p>` : ""}
         <p>
           <a href="${e(opts.portalUrl)}" style="display: inline-block; padding: 12px 20px; background: #111; color: #fff; text-decoration: none; border-radius: 6px;">
             View my membership

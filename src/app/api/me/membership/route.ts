@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/access/current-user";
 import { getCurrentMembership } from "@/lib/membership/purchase";
 import { MEMBERSHIP_PRICE_CAD } from "@/lib/membership/config";
+import { walletPassUrl } from "@/lib/membership/wallet-pass";
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -26,6 +27,7 @@ export async function GET() {
       status: active ? "ACTIVE" : pending ? "PENDING" : "NONE",
       memberCode: active?.memberCode,
       validUntil: active?.termEnd.toISOString(),
+      walletUrl: active?.walletPassId ? walletPassUrl(active.walletPassId) : null,
       priceCad: MEMBERSHIP_PRICE_CAD,
     },
     { headers: { "Cache-Control": "no-store" } }

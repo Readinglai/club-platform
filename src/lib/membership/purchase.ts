@@ -140,8 +140,8 @@ export async function activateMembership(membershipId: string, stripeSessionId: 
       await tx.user.updateMany({ where: { id: updated.userId, role: "USER" }, data: { role: "MEMBER" } });
     }
 
-    // TODO(Phase 3, Pass2U): issue the wallet pass here and store walletPassId,
-    // once the club's Pass2U plan (API vs CSV import) is known.
+    // The wallet pass is issued after this transaction (it calls Pass2U);
+    // see handleMembershipCheckoutEvent.
 
     return { activated: true as const, reason: "activated" as const, membership: updated };
   });

@@ -4,8 +4,10 @@
  */
 
 import type Stripe from "stripe";
+import { db } from "@/lib/db";
 import { sendMembershipConfirmationEmail } from "@/lib/email";
 import { activateMembership, cancelMembershipCheckout, MEMBERSHIP_CHECKOUT_KIND } from "./purchase";
+import { createMemberPass, walletPassUrl } from "./wallet-pass";
 
 export async function handleMembershipCheckoutEvent(event: Stripe.Event): Promise<boolean> {
   if (
@@ -39,6 +41,21 @@ export async function handleMembershipCheckoutEvent(event: Stripe.Event): Promis
   }
 
   const m = result.membership;
+
+  // Wallet pass is best-effort: the membership is active either way, and
+  // scripts/issue-wallet-passes.ts fills in any that failed.
+  let walletUrl: string | null = null;
+  try {
+    // Test buyers use the reserved .invalid domain; never spend credits on them.
+    const passId = m.email?.endsWith(".invalid") ? null : await createMemberPass(m);
+    if (passId) {
+      await db.membership.update({ where: { id: m.id }, data: { walletPassId: passId } });
+      walletUrl = walletPassUrl(passId);
+    }
+  } catch (error) {
+    console.error(`Wallet pass failed for membership ${membershipId}:`, error);
+  }
+
   const origin = process.env.NEXTAUTH_URL;
   if (m.email && origin && !m.email.endsWith(".invalid")) {
     try {
@@ -53,6 +70,7 @@ export async function handleMembershipCheckoutEvent(event: Stripe.Event): Promis
           day: "numeric",
         }),
         portalUrl: `${origin}/portal/membership`,
+        walletUrl,
       });
     } catch (error) {
       console.error(`Failed to send membership email for ${membershipId}:`, error);

@@ -9,6 +9,7 @@ type State = {
   status: "ACTIVE" | "PENDING" | "NONE";
   memberCode?: string;
   validUntil?: string;
+  walletUrl?: string | null;
   priceCad: number;
 };
 
@@ -103,6 +104,17 @@ export default function MembershipPanel() {
         <p className="mt-1 text-2xl font-bold tracking-wide" style={{ color: PRIMARY }}>{state.memberCode}</p>
         <p className="mt-4 text-xs font-medium text-gray-500">Valid until 有效期限</p>
         <p className="mt-1 text-sm" style={{ color: PRIMARY }}>{until}</p>
+        {state.walletUrl && (
+          <a
+            href={state.walletUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-5 block w-full rounded-xl py-3 text-center text-base font-semibold text-white"
+            style={{ backgroundColor: PRIMARY }}
+          >
+            Add to Wallet 加入電子錢包
+          </a>
+        )}
       </div>
     );
   }
