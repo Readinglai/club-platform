@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/access/current-user";
 import { can, getAccess } from "@/lib/access/can";
@@ -11,6 +12,8 @@ const PRIMARY = "#1a2744";
 export default async function FinancePage({ searchParams }: { searchParams: Promise<{ year?: string }> }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  const t = await getTranslations("portal.financePage");
+  const dateLocale = (await getLocale()) === "zh" ? "zh-TW" : "en-CA";
 
   const canViewClub = can(await getAccess(user.id), "finance.view");
 
@@ -26,7 +29,7 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
   if (!canViewClub && myEvents.length === 0) {
     return (
       <main className="min-h-screen px-4 py-10" style={{ backgroundColor: "#f9f7f4" }}>
-        <p className="mx-auto max-w-3xl text-sm text-gray-600">You don&apos;t have access to finances. 你沒有財務權限。</p>
+        <p className="mx-auto max-w-3xl text-sm text-gray-600">{t("noAccess")}</p>
       </main>
     );
   }
@@ -44,23 +47,23 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
   return (
     <main className="min-h-screen px-4 py-10" style={{ backgroundColor: "#f9f7f4" }}>
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
-        <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>Finance 財務</h1>
+        <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>{t("title")}</h1>
 
         {summary && (
           <>
             <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <StatTile label="Confirmed balance 確認餘額" value={cad(summary.balance.confirmed)} hint="Club-wide entries + approved events" />
+              <StatTile label={t("confirmed")} value={cad(summary.balance.confirmed)} hint={t("confirmedHint")} />
               <StatTile
-                label="Including events under way 含未結案活動"
+                label={t("including")}
                 value={cad(summary.balance.includingPending)}
-                hint={`${summary.balance.pending >= 0 ? "+" : ""}${cad(summary.balance.pending)} not yet approved`}
+                hint={t("notYetApproved", { amount: `${summary.balance.pending >= 0 ? "+" : ""}${cad(summary.balance.pending)}` })}
               />
             </section>
 
             <section className="rounded-2xl bg-white p-5 shadow-sm">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>
-                  Spending by category 各類支出{selected ? ` · ${selected.schoolYear}` : ""}
+                  {t("spendingByCategory")}{selected ? ` · ${selected.schoolYear}` : ""}
                 </h2>
                 {years.length > 1 && (
                   <nav className="flex gap-2 text-xs">
@@ -77,13 +80,13 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
                   </nav>
                 )}
               </div>
-              <BarList rows={categoryRows} label="Spending by category" />
+              <BarList rows={categoryRows} label={t("spendingByCategory")} />
             </section>
           </>
         )}
 
         <section className="rounded-2xl bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>Event reports 活動財務報告</h2>
+          <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>{t("eventReports")}</h2>
           <ul className="mt-3 divide-y divide-gray-100">
             {myEvents.map((e) => {
               const result = summary?.events.find((s) => s.id === e.id);
@@ -93,8 +96,8 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-medium text-gray-900">{e.title}</span>
                       <span className="text-xs text-gray-500">
-                        {e.startAt.toLocaleDateString("en-CA", { timeZone: "America/Toronto", dateStyle: "medium" })}
-                        {result && ` · income ${cad(result.income)} · spent ${cad(result.spent)} · net ${cad(result.income - result.spent)}`}
+                        {e.startAt.toLocaleDateString(dateLocale, { timeZone: "America/Toronto", dateStyle: "medium" })}
+                        {result && ` · ${t("result", { income: cad(result.income), spent: cad(result.spent), net: cad(result.income - result.spent) })}`}
                       </span>
                     </span>
                     <StatusBadge status={e.settings?.financeStatus ?? "OPEN"} />
@@ -102,7 +105,7 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
                 </li>
               );
             })}
-            {myEvents.length === 0 && <li className="py-3 text-sm text-gray-500">No event reports yet.</li>}
+            {myEvents.length === 0 && <li className="py-3 text-sm text-gray-500">{t("noReports")}</li>}
           </ul>
         </section>
       </div>

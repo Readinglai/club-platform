@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { EventDetailsFields, Field, inputClass, PRIMARY, send, type EventForm } from "../EventFields";
 
 type Tier = {
@@ -24,12 +25,13 @@ type Loaded = EventForm & { id: string; published: boolean; ticketTypes: Tier[] 
 
 /** Scanner colours that never look like an error (red/amber mean problems at the door). */
 const TIER_COLORS = ["#0b6e4f", "#1d4ed8", "#6b21a8", "#0e7490", "#334155"];
+/** Colour names come from portal.eventEditor.<name>. */
 const COLOR_NAMES: Record<string, string> = {
-  "#0b6e4f": "Green 綠",
-  "#1d4ed8": "Blue 藍",
-  "#6b21a8": "Purple 紫",
-  "#0e7490": "Teal 青",
-  "#334155": "Grey 灰",
+  "#0b6e4f": "colorGreen",
+  "#1d4ed8": "colorBlue",
+  "#6b21a8": "colorPurple",
+  "#0e7490": "colorTeal",
+  "#334155": "colorGrey",
 };
 
 const blankTier = { name: "", price: "", memberPrice: "", capacity: "", salesStartAt: "", salesEndAt: "", membersOnly: false, color: TIER_COLORS[0], perks: "", description: "" };
@@ -49,6 +51,7 @@ const toForm = (t: Tier): TierForm => ({
 });
 
 export default function EventEditor({ eventId }: { eventId: string }) {
+  const t = useTranslations("portal.eventEditor");
   const base = `/api/manage/events/${eventId}`;
   const [data, setData] = useState<Loaded | null>(null);
   const [form, setForm] = useState<EventForm | null>(null);
@@ -78,11 +81,11 @@ export default function EventEditor({ eventId }: { eventId: string }) {
     let active = true;
     send(base, "GET")
       .then((d) => active && apply(d))
-      .catch((e) => active && setError(e instanceof Error ? e.message : "Could not load."));
+      .catch((e) => active && setError(e instanceof Error ? e.message : t("loadError")));
     return () => {
       active = false;
     };
-  }, [apply, base]);
+  }, [apply, base, t]);
 
   async function act(action: () => Promise<unknown>, done: string) {
     setError("");
@@ -92,37 +95,37 @@ export default function EventEditor({ eventId }: { eventId: string }) {
       await reload();
       setNotice(done);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
+      setError(e instanceof Error ? e.message : t("error"));
     }
   }
 
-  if (!data || !form) return <p className="text-sm text-gray-600">{error || "Loading… 載入中"}</p>;
+  if (!data || !form) return <p className="text-sm text-gray-600">{error || t("loading")}</p>;
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>{data.title}</h1>
         <span className="rounded-full border px-2.5 py-1 text-xs" style={{ borderColor: "#d6d4cc", color: data.published ? "#087208" : "#52514e" }}>
-          {data.published ? "● Published 已公開" : "○ Draft 未公開"}
+          {data.published ? t("published") : t("draft")}
         </span>
       </div>
 
       <nav className="flex flex-wrap gap-2 text-sm">
         <a href={`/e/${eventId}`} target="_blank" rel="noopener noreferrer" className="rounded-full border px-3 py-1.5" style={{ borderColor: PRIMARY, color: PRIMARY }}>
-          {data.published ? "Public page 公開頁面 ↗" : "Preview page 預覽頁面 ↗"}
+          {data.published ? t("publicPage") : t("previewPage")}
         </a>
         {data.dashboardEnabled && (
           <Link href={`/portal/events/${eventId}/dashboard`} className="rounded-full border px-3 py-1.5" style={{ borderColor: PRIMARY, color: PRIMARY }}>
-            Live dashboard 即時數據
+            {t("liveDashboard")}
           </Link>
         )}
         {data.budgetEnabled && (
           <Link href={`/portal/finance/events/${eventId}`} className="rounded-full border px-3 py-1.5" style={{ borderColor: PRIMARY, color: PRIMARY }}>
-            Budget & report 預算
+            {t("budget")}
           </Link>
         )}
         <Link href="/portal/team" className="rounded-full border px-3 py-1.5" style={{ borderColor: PRIMARY, color: PRIMARY }}>
-          Event team 活動團隊
+          {t("eventTeam")}
         </Link>
       </nav>
 
@@ -133,14 +136,14 @@ export default function EventEditor({ eventId }: { eventId: string }) {
         className="rounded-2xl bg-white p-5 shadow-sm"
         onSubmit={(e) => {
           e.preventDefault();
-          void act(() => send(base, "PATCH", form), "Saved 已儲存");
+          void act(() => send(base, "PATCH", form), t("saved"));
         }}
       >
-        <h2 className="mb-4 text-lg font-semibold" style={{ color: PRIMARY }}>Details 活動資訊</h2>
+        <h2 className="mb-4 text-lg font-semibold" style={{ color: PRIMARY }}>{t("details")}</h2>
         <EventDetailsFields value={form} onChange={setForm} />
         <div className="mt-4 flex flex-wrap gap-2">
           <button type="submit" className="rounded-lg px-4 py-2 text-sm font-semibold text-white" style={{ backgroundColor: PRIMARY }}>
-            Save 儲存
+            {t("save")}
           </button>
           <button
             type="button"
@@ -148,35 +151,35 @@ export default function EventEditor({ eventId }: { eventId: string }) {
             style={{ borderColor: PRIMARY, color: PRIMARY }}
             onClick={() => {
               const next = !data.published;
-              if (confirm(next ? "Publish? Everyone can then see the page. 公開？" : "Unpublish? Only managers will see it. 取消公開？")) {
-                void act(() => send(`${base}/publish`, "POST", { published: next }), next ? "Published 已公開" : "Unpublished 已取消公開");
+              if (confirm(next ? t("publishConfirm") : t("unpublishConfirm"))) {
+                void act(() => send(`${base}/publish`, "POST", { published: next }), next ? t("publishedDone") : t("unpublishedDone"));
               }
             }}
           >
-            {data.published ? "Unpublish 取消公開" : "Publish 公開"}
+            {data.published ? t("unpublish") : t("publish")}
           </button>
         </div>
       </form>
 
       {data.ticketsEnabled && (
         <section className="rounded-2xl bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>Ticket tiers 票種</h2>
-          <p className="mt-1 text-xs text-gray-500">Times are in the event&apos;s time zone ({data.timezone}). Price 0 = free registration.</p>
+          <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>{t("tiers")}</h2>
+          <p className="mt-1 text-xs text-gray-500">{t("tiersHint", { timezone: data.timezone })}</p>
           <div className="mt-4 flex flex-col gap-3">
-            {data.ticketTypes.map((t) => (
+            {data.ticketTypes.map((tier) => (
               <TierEditor
-                key={t.id}
-                initial={toForm(t)}
-                active={t.active}
-                onSave={(v) => act(() => send(`${base}/ticket-types/${t.id}`, "PATCH", { ...v, sortOrder: t.sortOrder, active: t.active }), "Tier saved 票種已儲存")}
-                onToggle={() => act(() => send(`${base}/ticket-types/${t.id}`, "PATCH", { ...toForm(t), sortOrder: t.sortOrder, active: !t.active }), t.active ? "Tier hidden 已隱藏" : "Tier shown 已顯示")}
+                key={tier.id}
+                initial={toForm(tier)}
+                active={tier.active}
+                onSave={(v) => act(() => send(`${base}/ticket-types/${tier.id}`, "PATCH", { ...v, sortOrder: tier.sortOrder, active: tier.active }), t("tierSaved"))}
+                onToggle={() => act(() => send(`${base}/ticket-types/${tier.id}`, "PATCH", { ...toForm(tier), sortOrder: tier.sortOrder, active: !tier.active }), tier.active ? t("tierHidden") : t("tierShown"))}
               />
             ))}
             <TierEditor
               key={data.ticketTypes.length}
               initial={blankTier}
               isNew
-              onSave={(v) => act(() => send(`${base}/ticket-types`, "POST", { ...v, sortOrder: data.ticketTypes.length }), "Tier added 已新增票種")}
+              onSave={(v) => act(() => send(`${base}/ticket-types`, "POST", { ...v, sortOrder: data.ticketTypes.length }), t("tierAdded"))}
             />
           </div>
         </section>
@@ -198,6 +201,7 @@ function TierEditor({
   onSave: (v: TierForm) => Promise<void>;
   onToggle?: () => Promise<void>;
 }) {
+  const t = useTranslations("portal.eventEditor");
   const [v, setV] = useState(initial);
   const [open, setOpen] = useState(false);
   const set = <K extends keyof TierForm>(k: K, val: TierForm[K]) => setV({ ...v, [k]: val });
@@ -205,7 +209,7 @@ function TierEditor({
   if (!open) {
     return isNew ? (
       <button className="self-start rounded-lg border px-3 py-2 text-sm font-semibold" style={{ borderColor: PRIMARY, color: PRIMARY }} onClick={() => setOpen(true)}>
-        + Add tier 新增票種
+        {t("addTier")}
       </button>
     ) : (
       <div className="flex items-center justify-between gap-3 rounded-xl border border-gray-200 p-3" style={{ opacity: active ? 1 : 0.55 }}>
@@ -214,19 +218,19 @@ function TierEditor({
           <span className="min-w-0">
             <span className="block truncate text-sm font-medium text-gray-900">
               {initial.name}
-              {initial.membersOnly && " · members only 限會員"}
-              {!active && " · hidden 已隱藏"}
+              {initial.membersOnly && t("membersOnlyTag")}
+              {!active && t("hiddenTag")}
             </span>
             <span className="text-xs text-gray-500">
-              {Number(initial.price) === 0 ? "Free" : `CA$${initial.price}`}
-              {initial.memberPrice !== "" && ` · member CA$${initial.memberPrice}`}
-              {` · ${initial.capacity === "" ? "unlimited" : `${initial.capacity} spots`}`}
+              {Number(initial.price) === 0 ? t("free") : `CA$${initial.price}`}
+              {initial.memberPrice !== "" && t("memberPriceTag", { price: initial.memberPrice })}
+              {` · ${initial.capacity === "" ? t("unlimited") : t("spots", { count: initial.capacity })}`}
             </span>
           </span>
         </span>
         <span className="flex shrink-0 gap-3 text-xs">
-          <button className="underline" style={{ color: PRIMARY }} onClick={() => setOpen(true)}>Edit 編輯</button>
-          <button className="text-gray-600 underline" onClick={() => void onToggle?.()}>{active ? "Hide 隱藏" : "Show 顯示"}</button>
+          <button className="underline" style={{ color: PRIMARY }} onClick={() => setOpen(true)}>{t("edit")}</button>
+          <button className="text-gray-600 underline" onClick={() => void onToggle?.()}>{active ? t("hide") : t("show")}</button>
         </span>
       </div>
     );
@@ -242,29 +246,29 @@ function TierEditor({
         if (isNew) setV(blankTier);
       }}
     >
-      <div className="col-span-2"><Field label="Name 名稱 *"><input className={inputClass} required value={v.name} onChange={(e) => set("name", e.target.value)} /></Field></div>
-      <Field label="Price CA$ *"><input className={inputClass} required inputMode="decimal" value={v.price} onChange={(e) => set("price", e.target.value)} /></Field>
-      <Field label="Member price"><input className={inputClass} inputMode="decimal" placeholder="none" value={v.memberPrice} onChange={(e) => set("memberPrice", e.target.value)} /></Field>
-      <Field label="Capacity 名額"><input className={inputClass} inputMode="numeric" placeholder="unlimited" value={v.capacity} onChange={(e) => set("capacity", e.target.value)} /></Field>
-      <Field label="Sales start"><input className={inputClass} type="datetime-local" value={v.salesStartAt} onChange={(e) => set("salesStartAt", e.target.value)} /></Field>
-      <Field label="Sales end"><input className={inputClass} type="datetime-local" value={v.salesEndAt} onChange={(e) => set("salesEndAt", e.target.value)} /></Field>
-      <Field label="Scanner colour">
+      <div className="col-span-2"><Field label={`${t("name")} *`}><input className={inputClass} required value={v.name} onChange={(e) => set("name", e.target.value)} /></Field></div>
+      <Field label={`${t("price")} *`}><input className={inputClass} required inputMode="decimal" value={v.price} onChange={(e) => set("price", e.target.value)} /></Field>
+      <Field label={t("memberPrice")}><input className={inputClass} inputMode="decimal" placeholder={t("none")} value={v.memberPrice} onChange={(e) => set("memberPrice", e.target.value)} /></Field>
+      <Field label={t("capacity")}><input className={inputClass} inputMode="numeric" placeholder={t("unlimited")} value={v.capacity} onChange={(e) => set("capacity", e.target.value)} /></Field>
+      <Field label={t("salesStart")}><input className={inputClass} type="datetime-local" value={v.salesStartAt} onChange={(e) => set("salesStartAt", e.target.value)} /></Field>
+      <Field label={t("salesEnd")}><input className={inputClass} type="datetime-local" value={v.salesEndAt} onChange={(e) => set("salesEndAt", e.target.value)} /></Field>
+      <Field label={t("scannerColour")}>
         <select className={inputClass} value={v.color} onChange={(e) => set("color", e.target.value)} style={{ color: v.color }}>
-          {TIER_COLORS.map((c) => <option key={c} value={c} style={{ color: c }}>● {COLOR_NAMES[c]}</option>)}
+          {TIER_COLORS.map((c) => <option key={c} value={c} style={{ color: c }}>● {t(COLOR_NAMES[c])}</option>)}
         </select>
       </Field>
-      <div className="col-span-2"><Field label="Perks 福利 (shown at the door)"><input className={inputClass} value={v.perks} onChange={(e) => set("perks", e.target.value)} /></Field></div>
-      <div className="col-span-2"><Field label="Description 說明"><input className={inputClass} value={v.description} onChange={(e) => set("description", e.target.value)} /></Field></div>
+      <div className="col-span-2"><Field label={t("perks")}><input className={inputClass} value={v.perks} onChange={(e) => set("perks", e.target.value)} /></Field></div>
+      <div className="col-span-2"><Field label={t("description")}><input className={inputClass} value={v.description} onChange={(e) => set("description", e.target.value)} /></Field></div>
       <label className="col-span-2 flex items-center gap-2 text-sm sm:col-span-4">
         <input type="checkbox" checked={v.membersOnly} onChange={(e) => set("membersOnly", e.target.checked)} />
-        Members only 限會員
+        {t("membersOnly")}
       </label>
       <div className="col-span-2 flex gap-2 sm:col-span-4">
         <button type="submit" className="rounded-lg px-4 py-2 text-sm font-semibold text-white" style={{ backgroundColor: PRIMARY }}>
-          {isNew ? "Add 新增" : "Save 儲存"}
+          {isNew ? t("add") : t("save")}
         </button>
         <button type="button" className="rounded-lg border px-4 py-2 text-sm" style={{ borderColor: "#d1d5db" }} onClick={() => { setV(initial); setOpen(false); }}>
-          Cancel 取消
+          {t("cancel")}
         </button>
       </div>
     </form>

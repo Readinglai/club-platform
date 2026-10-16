@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { cad, PlannedVsActual, StatTile, StatusBadge } from "../../charts";
 
 const PRIMARY = "#1a2744";
@@ -22,7 +23,10 @@ type Finance = {
   rights: { view: boolean; edit: boolean; submit: boolean; review: boolean };
 };
 
-const day = (iso: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: "America/Toronto", dateStyle: "medium" });
+function useDay() {
+  const dateLocale = useLocale() === "zh" ? "zh-TW" : "en-CA";
+  return (iso: string) => new Date(iso).toLocaleDateString(dateLocale, { timeZone: "America/Toronto", dateStyle: "medium" });
+}
 
 async function call(url: string, method: string, body?: unknown) {
   const res = await fetch(url, {
@@ -44,6 +48,8 @@ export default function EventReport({
   expenseCategories: string[];
   incomeCategories: string[];
 }) {
+  const t = useTranslations("portal.eventReport");
+  const day = useDay();
   const [data, setData] = useState<Finance | null>(null);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -57,11 +63,11 @@ export default function EventReport({
     let active = true;
     call(base, "GET")
       .then((d) => active && setData(d))
-      .catch((e) => active && setError(e instanceof Error ? e.message : "Could not load."));
+      .catch((e) => active && setError(e instanceof Error ? e.message : t("loadError")));
     return () => {
       active = false;
     };
-  }, [base]);
+  }, [base, t]);
 
   async function act(action: () => Promise<unknown>) {
     setMessage("");
@@ -69,12 +75,12 @@ export default function EventReport({
       await action();
       await refresh();
     } catch (e) {
-      setMessage(e instanceof Error ? e.message : "Something went wrong.");
+      setMessage(e instanceof Error ? e.message : t("error"));
     }
   }
 
   if (error) return <p className="text-sm text-red-700">{error}</p>;
-  if (!data) return <p className="text-sm text-gray-600">Loading… 載入中</p>;
+  if (!data) return <p className="text-sm text-gray-600">{t("loading")}</p>;
 
   const editable = data.rights.edit && (data.report.status === "OPEN" || data.report.status === "RETURNED");
 
@@ -95,22 +101,22 @@ export default function EventReport({
       </div>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatTile label="Planned 預算" value={cad(data.totals.planned)} />
-        <StatTile label="Spent 支出" value={cad(data.totals.spent)} />
-        <StatTile label="Income 收入" value={cad(data.totals.income)} />
-        <StatTile label="Net 結餘" value={cad(data.totals.net)} />
+        <StatTile label={t("planned")} value={cad(data.totals.planned)} />
+        <StatTile label={t("spent")} value={cad(data.totals.spent)} />
+        <StatTile label={t("income")} value={cad(data.totals.income)} />
+        <StatTile label={t("net")} value={cad(data.totals.net)} />
       </section>
 
       <section className="rounded-2xl bg-white p-5 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold" style={{ color: PRIMARY }}>Budget vs actual 預算與實際</h2>
+        <h2 className="mb-4 text-lg font-semibold" style={{ color: PRIMARY }}>{t("budgetVsActual")}</h2>
         <PlannedVsActual rows={data.byCategory} />
       </section>
 
       <section className="rounded-2xl bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>Budget 預算明細</h2>
+        <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>{t("budget")}</h2>
         <table className="mt-3 w-full text-sm">
           <thead className="text-left text-xs text-gray-500">
-            <tr><th className="py-1 font-medium">Category</th><th className="font-medium">Item</th><th className="text-right font-medium">Planned</th>{editable && <th />}</tr>
+            <tr><th className="py-1 font-medium">{t("category")}</th><th className="font-medium">{t("item")}</th><th className="text-right font-medium">{t("plannedCol")}</th>{editable && <th />}</tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {data.budgetLines.map((l) => (
@@ -125,8 +131,8 @@ export default function EventReport({
                 <td className="text-right tabular-nums text-gray-900">{cad(l.plannedAmount)}</td>
                 {editable && (
                   <td className="pl-2 text-right">
-                    <button className="text-xs text-red-700 underline" onClick={() => confirm("Remove this line?") && act(() => call(`${base}/budget-lines/${l.id}`, "DELETE"))}>
-                      Remove
+                    <button className="text-xs text-red-700 underline" onClick={() => confirm(t("removeLineConfirm")) && act(() => call(`${base}/budget-lines/${l.id}`, "DELETE"))}>
+                      {t("remove")}
                     </button>
                   </td>
                 )}
@@ -138,10 +144,10 @@ export default function EventReport({
       </section>
 
       <section className="rounded-2xl bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>Actual costs & income 實際收支</h2>
+        <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>{t("actualTitle")}</h2>
         <table className="mt-3 w-full text-sm">
           <thead className="text-left text-xs text-gray-500">
-            <tr><th className="py-1 font-medium">Date</th><th className="font-medium">What</th><th className="text-right font-medium">Amount</th>{editable && <th />}</tr>
+            <tr><th className="py-1 font-medium">{t("date")}</th><th className="font-medium">{t("what")}</th><th className="text-right font-medium">{t("amount")}</th>{editable && <th />}</tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {data.records.map((r) => (
@@ -150,15 +156,15 @@ export default function EventReport({
                 <td className="pr-2 text-gray-900">
                   {r.description}
                   <span className="block text-xs text-gray-500">
-                    {r.type === "INCOME" ? "Income" : "Cost"} · {r.category} · {r.enteredBy}
-                    {r.receiptUrl && <> · <a href={r.receiptUrl} target="_blank" rel="noopener noreferrer" className="underline">receipt</a></>}
+                    {r.type === "INCOME" ? t("incomeType") : t("costType")} · {r.category} · {r.enteredBy}
+                    {r.receiptUrl && <> · <a href={r.receiptUrl} target="_blank" rel="noopener noreferrer" className="underline">{t("receipt")}</a></>}
                   </span>
                 </td>
                 <td className="text-right tabular-nums text-gray-900">{r.type === "INCOME" ? "+" : "−"}{cad(r.amount)}</td>
                 {editable && (
                   <td className="pl-2 text-right">
-                    <button className="text-xs text-red-700 underline" onClick={() => confirm("Remove this entry?") && act(() => call(`${base}/records/${r.id}`, "DELETE"))}>
-                      Remove
+                    <button className="text-xs text-red-700 underline" onClick={() => confirm(t("removeEntryConfirm")) && act(() => call(`${base}/records/${r.id}`, "DELETE"))}>
+                      {t("remove")}
                     </button>
                   </td>
                 )}
@@ -177,9 +183,9 @@ export default function EventReport({
         <button
           className="rounded-xl py-3 text-base font-semibold text-white"
           style={{ backgroundColor: PRIMARY }}
-          onClick={() => confirm("Submit the final report? It locks until the Events VP reviews it. 送出後將鎖定。") && act(() => call(`${base}/submit`, "POST"))}
+          onClick={() => confirm(t("submitConfirm")) && act(() => call(`${base}/submit`, "POST"))}
         >
-          Submit final report 送出結案報告
+          {t("submit")}
         </button>
       )}
 
@@ -189,6 +195,7 @@ export default function EventReport({
 }
 
 function BudgetLineForm({ categories, onAdd }: { categories: string[]; onAdd: (v: Record<string, string>) => Promise<void> }) {
+  const t = useTranslations("portal.eventReport");
   const [v, setV] = useState({ category: categories[0], item: "", quantity: "", unitCost: "", plannedAmount: "" });
   const input = "rounded-lg border border-gray-300 px-2 py-2 text-sm text-gray-900";
   return (
@@ -203,12 +210,12 @@ function BudgetLineForm({ categories, onAdd }: { categories: string[]; onAdd: (v
       <select className={`${input} col-span-2 sm:col-span-1`} value={v.category} onChange={(e) => setV({ ...v, category: e.target.value })}>
         {categories.map((c) => <option key={c}>{c}</option>)}
       </select>
-      <input className={`${input} col-span-2`} required placeholder="Item 項目" value={v.item} onChange={(e) => setV({ ...v, item: e.target.value })} />
-      <input className={input} inputMode="decimal" placeholder="Qty" value={v.quantity} onChange={(e) => setV({ ...v, quantity: e.target.value })} />
-      <input className={input} inputMode="decimal" placeholder="Unit $" value={v.unitCost} onChange={(e) => setV({ ...v, unitCost: e.target.value })} />
-      <input className={input} inputMode="decimal" placeholder="or total $" value={v.plannedAmount} onChange={(e) => setV({ ...v, plannedAmount: e.target.value })} />
+      <input className={`${input} col-span-2`} required placeholder={t("itemPlaceholder")} value={v.item} onChange={(e) => setV({ ...v, item: e.target.value })} />
+      <input className={input} inputMode="decimal" placeholder={t("qty")} value={v.quantity} onChange={(e) => setV({ ...v, quantity: e.target.value })} />
+      <input className={input} inputMode="decimal" placeholder={t("unit")} value={v.unitCost} onChange={(e) => setV({ ...v, unitCost: e.target.value })} />
+      <input className={input} inputMode="decimal" placeholder={t("orTotal")} value={v.plannedAmount} onChange={(e) => setV({ ...v, plannedAmount: e.target.value })} />
       <button type="submit" className="col-span-2 rounded-lg border px-3 py-2 text-sm font-semibold sm:col-span-6" style={{ borderColor: PRIMARY, color: PRIMARY }}>
-        Add budget line 新增預算
+        {t("addBudgetLine")}
       </button>
     </form>
   );
@@ -223,6 +230,7 @@ function RecordForm({
   incomeCategories: string[];
   onAdd: (v: Record<string, string>) => Promise<void>;
 }) {
+  const t = useTranslations("portal.eventReport");
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Toronto" });
   const [v, setV] = useState({ type: "EXPENSE", category: expenseCategories[0], description: "", amount: "", date: today, receiptUrl: "" });
   const categories = v.type === "EXPENSE" ? expenseCategories : incomeCategories;
@@ -244,42 +252,43 @@ function RecordForm({
           setV({ ...v, type, category: (type === "EXPENSE" ? expenseCategories : incomeCategories)[0] });
         }}
       >
-        <option value="EXPENSE">Cost 支出</option>
-        <option value="INCOME">Income 收入</option>
+        <option value="EXPENSE">{t("costType")}</option>
+        <option value="INCOME">{t("incomeType")}</option>
       </select>
       <select className={input} value={v.category} onChange={(e) => setV({ ...v, category: e.target.value })}>
         {categories.map((c) => <option key={c}>{c}</option>)}
       </select>
-      <input className={`${input} col-span-2`} required placeholder="What for 用途" value={v.description} onChange={(e) => setV({ ...v, description: e.target.value })} />
-      <input className={input} required inputMode="decimal" placeholder="Amount $" value={v.amount} onChange={(e) => setV({ ...v, amount: e.target.value })} />
+      <input className={`${input} col-span-2`} required placeholder={t("whatFor")} value={v.description} onChange={(e) => setV({ ...v, description: e.target.value })} />
+      <input className={input} required inputMode="decimal" placeholder={t("amountPlaceholder")} value={v.amount} onChange={(e) => setV({ ...v, amount: e.target.value })} />
       <input className={input} required type="date" value={v.date} onChange={(e) => setV({ ...v, date: e.target.value })} />
-      <input className={`${input} col-span-2 sm:col-span-5`} type="url" placeholder="Receipt link (optional) 收據連結" value={v.receiptUrl} onChange={(e) => setV({ ...v, receiptUrl: e.target.value })} />
+      <input className={`${input} col-span-2 sm:col-span-5`} type="url" placeholder={t("receiptPlaceholder")} value={v.receiptUrl} onChange={(e) => setV({ ...v, receiptUrl: e.target.value })} />
       <button type="submit" className="col-span-2 rounded-lg border px-3 py-2 text-sm font-semibold sm:col-span-1" style={{ borderColor: PRIMARY, color: PRIMARY }}>
-        Add 新增
+        {t("add")}
       </button>
     </form>
   );
 }
 
 function ReviewPanel({ onDecide }: { onDecide: (decision: "APPROVED" | "RETURNED", note: string) => Promise<void> }) {
+  const t = useTranslations("portal.eventReport");
   const [note, setNote] = useState("");
   return (
     <section className="rounded-2xl bg-white p-5 shadow-sm" style={{ border: `2px solid ${PRIMARY}` }}>
-      <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>Review this report 審核報告</h2>
-      <p className="mt-1 text-sm text-gray-600">Approve to make it final, or return it with a note saying what to fix.</p>
+      <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>{t("reviewTitle")}</h2>
+      <p className="mt-1 text-sm text-gray-600">{t("reviewHint")}</p>
       <textarea
         value={note}
         onChange={(e) => setNote(e.target.value)}
-        placeholder="Note (required when returning) 備註（退回時必填）"
+        placeholder={t("notePlaceholder")}
         className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
         rows={2}
       />
       <div className="mt-3 flex gap-2">
         <button className="flex-1 rounded-lg py-2 text-sm font-semibold text-white" style={{ backgroundColor: PRIMARY }} onClick={() => onDecide("APPROVED", note)}>
-          Approve 核准
+          {t("approve")}
         </button>
         <button className="flex-1 rounded-lg border py-2 text-sm font-semibold" style={{ borderColor: PRIMARY, color: PRIMARY }} onClick={() => onDecide("RETURNED", note)}>
-          Return 退回
+          {t("return")}
         </button>
       </div>
     </section>

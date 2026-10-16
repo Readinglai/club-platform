@@ -4,6 +4,8 @@
  * surface; values and labels use text colours, never the series colour.
  */
 
+import { useTranslations } from "next-intl";
+
 const SERIES_1 = "#2a78d6"; // planned / single series
 const SERIES_2 = "#eb6834"; // actual
 const TEXT_SECONDARY = "#52514e";
@@ -21,8 +23,9 @@ export const cad = (n: number) => {
 
 /** One horizontal bar per row, one series (no legend: the title names it). */
 export function BarList({ rows, label }: { rows: Array<{ label: string; value: number }>; label: string }) {
+  const t = useTranslations("portal.financeCharts");
   const max = Math.max(1, ...rows.map((r) => r.value));
-  if (rows.length === 0) return <p className="text-sm text-gray-500">No spending recorded.</p>;
+  if (rows.length === 0) return <p className="text-sm text-gray-500">{t("noSpending")}</p>;
   return (
     <figure aria-label={label} className="flex flex-col gap-2">
       {rows.map((r) => (
@@ -40,16 +43,17 @@ export function BarList({ rows, label }: { rows: Array<{ label: string; value: n
 
 /** Planned vs actual per category: two thin bars per row, legend above. */
 export function PlannedVsActual({ rows }: { rows: Array<{ category: string; planned: number; actual: number }> }) {
+  const t = useTranslations("portal.financeCharts");
   const max = Math.max(1, ...rows.flatMap((r) => [r.planned, r.actual]));
-  if (rows.length === 0) return <p className="text-sm text-gray-500">No budget or costs yet.</p>;
+  if (rows.length === 0) return <p className="text-sm text-gray-500">{t("noBudget")}</p>;
   return (
-    <figure aria-label="Budget versus actual cost by category">
+    <figure aria-label={t("budgetVsActualLabel")}>
       <figcaption className="mb-3 flex gap-4 text-xs" style={{ color: TEXT_SECONDARY }}>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: SERIES_1 }} /> Planned 預算
+          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: SERIES_1 }} /> {t("planned")}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: SERIES_2 }} /> Actual 實際
+          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: SERIES_2 }} /> {t("actual")}
         </span>
       </figcaption>
       <div className="flex flex-col gap-4">
@@ -61,14 +65,14 @@ export function PlannedVsActual({ rows }: { rows: Array<{ category: string; plan
                 <p className="truncate text-gray-900">{r.category}</p>
                 {r.planned > 0 && diff !== 0 && (
                   <p className="text-xs" style={{ color: TEXT_SECONDARY }}>
-                    {diff > 0 ? `${cad(diff)} over` : `${cad(-diff)} under`}
+                    {diff > 0 ? t("over", { amount: cad(diff) }) : t("under", { amount: cad(-diff) })}
                   </p>
                 )}
               </div>
               <div className="flex flex-col gap-[2px]">
                 {[
-                  { name: "Planned", value: r.planned, color: SERIES_1 },
-                  { name: "Actual", value: r.actual, color: SERIES_2 },
+                  { name: t("planned"), value: r.planned, color: SERIES_1 },
+                  { name: t("actual"), value: r.actual, color: SERIES_2 },
                 ].map((bar) => (
                   <div key={bar.name} className="flex items-center gap-2" title={`${r.category} · ${bar.name}: ${cad(bar.value)}`}>
                     <span className="h-2.5 flex-1 rounded-r" style={{ backgroundColor: GRID }}>
@@ -86,20 +90,22 @@ export function PlannedVsActual({ rows }: { rows: Array<{ category: string; plan
   );
 }
 
-const STATUS: Record<string, { icon: string; label: string; color: string }> = {
-  OPEN: { icon: "✎", label: "Open · team editing 編輯中", color: "#52514e" },
-  SUBMITTED: { icon: "⏳", label: "Submitted · waiting for review 待審核", color: "#8a5a00" },
-  APPROVED: { icon: "✓", label: "Approved 已核准", color: "#087208" },
-  RETURNED: { icon: "↩", label: "Returned · needs changes 退回修改", color: "#b42318" },
+const STATUS: Record<string, { icon: string; color: string }> = {
+  OPEN: { icon: "✎", color: "#52514e" },
+  SUBMITTED: { icon: "⏳", color: "#8a5a00" },
+  APPROVED: { icon: "✓", color: "#087208" },
+  RETURNED: { icon: "↩", color: "#b42318" },
 };
 
 /** Report status: always icon + words, never colour alone. */
 export function StatusBadge({ status }: { status: string }) {
-  const s = STATUS[status] ?? STATUS.OPEN;
+  const t = useTranslations("portal.financeCharts");
+  const key = STATUS[status] ? status : "OPEN";
+  const s = STATUS[key];
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium" style={{ color: s.color, borderColor: "#d6d4cc" }}>
       <span aria-hidden="true">{s.icon}</span>
-      {s.label}
+      {t(`status${key}`)}
     </span>
   );
 }

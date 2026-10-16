@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { emptyEvent, EventDetailsFields, PRIMARY, send, type EventForm } from "./EventFields";
 
 type Row = {
@@ -15,6 +16,8 @@ type Row = {
 };
 
 export default function EventsList() {
+  const t = useTranslations("portal.eventsPage");
+  const dateLocale = useLocale() === "zh" ? "zh-TW" : "en-CA";
   const router = useRouter();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [canCreate, setCanCreate] = useState(false);
@@ -31,11 +34,11 @@ export default function EventsList() {
         setRows(d.events);
         setCanCreate(d.canCreate);
       })
-      .catch((e) => active && setError(e instanceof Error ? e.message : "Could not load."));
+      .catch((e) => active && setError(e instanceof Error ? e.message : t("loadError")));
     return () => {
       active = false;
     };
-  }, []);
+  }, [t]);
 
   async function create(e: React.FormEvent) {
     e.preventDefault();
@@ -45,12 +48,12 @@ export default function EventsList() {
       const { id } = await send("/api/manage/events", "POST", form);
       router.push(`/portal/events/${id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not create.");
+      setError(err instanceof Error ? err.message : t("createError"));
       setBusy(false);
     }
   }
 
-  if (!rows) return <p className="mt-6 text-sm text-gray-600">{error || "Loading… 載入中"}</p>;
+  if (!rows) return <p className="mt-6 text-sm text-gray-600">{error || t("loading")}</p>;
 
   return (
     <div className="mt-6 flex flex-col gap-6">
@@ -60,31 +63,31 @@ export default function EventsList() {
           style={{ backgroundColor: PRIMARY }}
           onClick={() => setCreating(true)}
         >
-          + New event 新增活動
+          {t("newEvent")}
         </button>
       )}
 
       {creating && (
         <form onSubmit={create} className="rounded-2xl bg-white p-5 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold" style={{ color: PRIMARY }}>New event 新增活動</h2>
+          <h2 className="mb-4 text-lg font-semibold" style={{ color: PRIMARY }}>{t("newEventTitle")}</h2>
           <EventDetailsFields value={form} onChange={setForm} />
           <p className="mt-3 text-xs text-gray-500">
-            It starts unpublished, so only managers can see it until you publish. 建立後預設不公開。
+            {t("startsUnpublished")}
           </p>
           {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
           <div className="mt-4 flex gap-2">
             <button type="submit" disabled={busy} className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: PRIMARY }}>
-              Create 建立
+              {t("create")}
             </button>
             <button type="button" onClick={() => setCreating(false)} className="rounded-lg border px-4 py-2 text-sm" style={{ borderColor: "#d1d5db" }}>
-              Cancel 取消
+              {t("cancel")}
             </button>
           </div>
         </form>
       )}
 
       <ul className="flex flex-col gap-2">
-        {rows.length === 0 && <li className="text-sm text-gray-500">No events yet. 尚無活動。</li>}
+        {rows.length === 0 && <li className="text-sm text-gray-500">{t("noEvents")}</li>}
         {rows.map((r) => (
           <li key={r.id}>
             <Link
@@ -94,7 +97,7 @@ export default function EventsList() {
               <span className="min-w-0">
                 <span className="block truncate text-sm font-medium text-gray-900">{r.title}</span>
                 <span className="text-xs text-gray-500">
-                  {new Date(r.startAt).toLocaleString("en-CA", {
+                  {new Date(r.startAt).toLocaleString(dateLocale, {
                     timeZone: r.settings?.timezone ?? "America/Toronto",
                     dateStyle: "medium",
                     timeStyle: "short",
@@ -103,7 +106,7 @@ export default function EventsList() {
                 </span>
               </span>
               <span className="shrink-0 rounded-full border px-2.5 py-1 text-xs" style={{ borderColor: "#d6d4cc", color: r.published ? "#087208" : "#52514e" }}>
-                {r.published ? "● Published 已公開" : "○ Draft 未公開"}
+                {r.published ? t("published") : t("draft")}
               </span>
             </Link>
           </li>

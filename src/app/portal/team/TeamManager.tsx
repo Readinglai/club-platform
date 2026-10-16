@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 const PRIMARY = "#1a2744";
 
@@ -15,11 +16,6 @@ type Group = {
   members: Array<{ id: string; position: Position; user: { id: string; name: string; email: string } }>;
 };
 
-const POSITION_LABEL: Record<Position, string> = {
-  PRESIDENT: "President 會長",
-  VP: "VP 副會長",
-  STAFF: "Staff 幹部",
-};
 
 async function send(url: string, method: string, body?: unknown) {
   const res = await fetch(url, {
@@ -33,6 +29,7 @@ async function send(url: string, method: string, body?: unknown) {
 }
 
 export default function TeamManager() {
+  const t = useTranslations("portal.teamPage");
   const [groups, setGroups] = useState<Group[] | null>(null);
   const [canAppointVps, setCanAppointVps] = useState(false);
   const [error, setError] = useState("");
@@ -51,16 +48,16 @@ export default function TeamManager() {
     let active = true;
     send("/api/team", "GET")
       .then((data) => active && apply(data))
-      .catch((e) => active && setError(e instanceof Error ? e.message : "Could not load."));
+      .catch((e) => active && setError(e instanceof Error ? e.message : t("loadError")));
     return () => {
       active = false;
     };
-  }, [apply]);
+  }, [apply, t]);
 
   if (error && !groups) return <p className="mt-6 text-sm text-red-700">{error}</p>;
-  if (!groups) return <p className="mt-6 text-sm text-gray-600">Loading… 載入中</p>;
+  if (!groups) return <p className="mt-6 text-sm text-gray-600">{t("loading")}</p>;
   if (groups.length === 0) {
-    return <p className="mt-6 text-sm text-gray-600">You don&apos;t manage any groups. 你目前沒有可管理的群組。</p>;
+    return <p className="mt-6 text-sm text-gray-600">{t("noGroups")}</p>;
   }
 
   // Show each group under its parent when the parent is also visible.
@@ -90,6 +87,8 @@ function GroupCard({
   onChange: () => Promise<void>;
   depth: number;
 }) {
+  const t = useTranslations("portal.teamPage");
+  const positionLabel = (p: Position) => t(`position${p}`);
   const [email, setEmail] = useState("");
   const [position, setPosition] = useState<Position>("STAFF");
   const [subgroupName, setSubgroupName] = useState("");
@@ -109,7 +108,7 @@ function GroupCard({
       done?.();
       await onChange();
     } catch (e) {
-      setMessage(e instanceof Error ? e.message : "Something went wrong.");
+      setMessage(e instanceof Error ? e.message : t("error"));
     } finally {
       setBusy(false);
     }
@@ -127,39 +126,39 @@ function GroupCard({
             type="button"
             disabled={busy}
             onClick={() => {
-              if (confirm(`Archive "${group.name}"? Its members keep their accounts. 封存此群組？`)) {
+              if (confirm(t("archiveConfirm", { name: group.name }))) {
                 void run(() => send(`/api/team/groups/${group.id}/archive`, "POST"));
               }
             }}
             className="text-xs text-gray-500 underline disabled:opacity-50"
           >
-            Archive 封存
+            {t("archive")}
           </button>
         )}
       </div>
 
       <ul className="mt-3 divide-y divide-gray-100">
-        {group.members.length === 0 && <li className="py-2 text-sm text-gray-400">No one yet 尚無成員</li>}
+        {group.members.length === 0 && <li className="py-2 text-sm text-gray-400">{t("noOne")}</li>}
         {group.members.map((m) => {
           const removable = m.position === "STAFF" || canAppointVps;
           return (
             <li key={m.id} className="flex items-center justify-between gap-3 py-2">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-gray-900">{m.user.name || m.user.email}</p>
-                <p className="truncate text-xs text-gray-500">{m.user.email} · {POSITION_LABEL[m.position]}</p>
+                <p className="truncate text-xs text-gray-500">{m.user.email} · {positionLabel(m.position)}</p>
               </div>
               {removable && (
                 <button
                   type="button"
                   disabled={busy}
                   onClick={() => {
-                    if (confirm(`Remove ${m.user.name || m.user.email} from ${group.name}? 移除？`)) {
+                    if (confirm(t("removeConfirm", { person: m.user.name || m.user.email, group: group.name }))) {
                       void run(() => send(`/api/team/members/${m.id}`, "DELETE"));
                     }
                   }}
                   className="shrink-0 text-xs text-red-700 underline disabled:opacity-50"
                 >
-                  Remove 移除
+                  {t("remove")}
                 </button>
               )}
             </li>
@@ -179,7 +178,7 @@ function GroupCard({
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="login email 登入信箱"
+          placeholder={t("emailPlaceholder")}
           className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
         />
         {positions.length > 1 && (
@@ -189,7 +188,7 @@ function GroupCard({
             className="rounded-lg border border-gray-300 px-2 py-2 text-sm text-gray-900"
           >
             {positions.map((p) => (
-              <option key={p} value={p}>{POSITION_LABEL[p]}</option>
+              <option key={p} value={p}>{positionLabel(p)}</option>
             ))}
           </select>
         )}
@@ -199,7 +198,7 @@ function GroupCard({
           className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           style={{ backgroundColor: PRIMARY }}
         >
-          Add 新增
+          {t("add")}
         </button>
       </form>
 
@@ -215,7 +214,7 @@ function GroupCard({
             required
             value={subgroupName}
             onChange={(e) => setSubgroupName(e.target.value)}
-            placeholder="new subgroup name 新子群組名稱"
+            placeholder={t("subgroupPlaceholder")}
             className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
           />
           <button
@@ -224,7 +223,7 @@ function GroupCard({
             className="rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50"
             style={{ borderColor: PRIMARY, color: PRIMARY }}
           >
-            Create 建立
+            {t("create")}
           </button>
         </form>
       )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { cad, StatTile } from "../../../finance/charts";
 
 const PRIMARY = "#1a2744";
@@ -18,6 +19,8 @@ type Data = {
 };
 
 export default function LiveDashboard({ eventId }: { eventId: string }) {
+  const t = useTranslations("portal.dashboard");
+  const timeLocale = useLocale() === "zh" ? "zh-TW" : "en-CA";
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState("");
 
@@ -30,13 +33,13 @@ export default function LiveDashboard({ eventId }: { eventId: string }) {
         const body = await res.json();
         if (!active) return;
         if (!res.ok) {
-          setError(body.error ?? "Could not load.");
+          setError(body.error ?? t("loadError"));
           return;
         }
         setData(body);
         setError("");
       } catch {
-        if (active) setError("Connection lost — retrying… 連線中斷，重試中");
+        if (active) setError(t("connectionLost"));
       }
       if (active) timer = setTimeout(tick, REFRESH_MS);
     };
@@ -45,12 +48,12 @@ export default function LiveDashboard({ eventId }: { eventId: string }) {
       active = false;
       clearTimeout(timer);
     };
-  }, [eventId]);
+  }, [eventId, t]);
 
-  if (!data) return <p className="text-sm text-gray-600">{error || "Loading… 載入中"}</p>;
+  if (!data) return <p className="text-sm text-gray-600">{error || t("loading")}</p>;
 
   const time = (iso: string) =>
-    new Date(iso).toLocaleTimeString("en-CA", { timeZone: data.event.timezone, hour: "numeric", minute: "2-digit" });
+    new Date(iso).toLocaleTimeString(timeLocale, { timeZone: data.event.timezone, hour: "numeric", minute: "2-digit" });
   const { totals } = data;
 
   return (
@@ -58,50 +61,49 @@ export default function LiveDashboard({ eventId }: { eventId: string }) {
       <div>
         <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>{data.event.title}</h1>
         <p className="mt-1 text-xs text-gray-500" aria-live="polite">
-          Live · updated {time(data.updatedAt)} · refreshes every 10 s 每 10 秒更新
+          {t("live", { time: time(data.updatedAt) })}
           {error && ` · ${error}`}
         </p>
       </div>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatTile label="Checked in 已入場" value={`${totals.checkedIn}`} hint={`of ${totals.sold} sold`} />
-        <StatTile label="Sold 已售出" value={`${totals.sold}`} hint={totals.capacity === null ? "no cap" : `of ${totals.capacity} spots`} />
-        <StatTile label="In checkout 付款中" value={`${totals.held}`} hint="held for 30 min" />
-        <StatTile label="Revenue 收入" value={cad(totals.revenue)} />
+        <StatTile label={t("checkedIn")} value={`${totals.checkedIn}`} hint={t("ofSold", { sold: totals.sold })} />
+        <StatTile label={t("sold")} value={`${totals.sold}`} hint={totals.capacity === null ? t("noCap") : t("ofSpots", { capacity: totals.capacity })} />
+        <StatTile label={t("inCheckout")} value={`${totals.held}`} hint={t("heldFor")} />
+        <StatTile label={t("revenue")} value={cad(totals.revenue)} />
       </section>
 
       <section className="rounded-2xl bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>By tier 各票種</h2>
+        <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>{t("byTier")}</h2>
         <p className="mb-4 mt-1 flex gap-4 text-xs text-gray-600">
-          <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: SERIES_1 }} />Checked in 已入場</span>
-          <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: SOLD }} />Sold, not in yet 未入場</span>
+          <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: SERIES_1 }} />{t("legendIn")}</span>
+          <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: SOLD }} />{t("legendSold")}</span>
         </p>
         <div className="flex flex-col gap-4">
-          {data.tiers.map((t) => {
-            const scale = Math.max(1, t.capacity ?? t.sold);
+          {data.tiers.map((tier) => {
+            const scale = Math.max(1, tier.capacity ?? tier.sold);
+            const line = `${t("tierLine", { in: tier.checkedIn, sold: tier.sold })}${tier.capacity !== null ? ` / ${tier.capacity}` : ""}`;
             return (
-              <div key={t.id} title={`${t.name}: ${t.checkedIn} in · ${t.sold} sold${t.capacity !== null ? ` · ${t.capacity} spots` : ""}`}>
+              <div key={tier.id} title={`${tier.name}: ${line}`}>
                 <div className="flex items-baseline justify-between gap-3 text-sm">
-                  <span className="text-gray-900">{t.name}{!t.active && " (hidden)"}</span>
-                  <span className="tabular-nums text-gray-700">
-                    {t.checkedIn} in / {t.sold} sold{t.capacity !== null ? ` / ${t.capacity}` : ""}
-                  </span>
+                  <span className="text-gray-900">{tier.name}{!tier.active && ` ${t("hidden")}`}</span>
+                  <span className="tabular-nums text-gray-700">{line}</span>
                 </div>
                 <div className="mt-1.5 flex h-3 overflow-hidden rounded-r" style={{ backgroundColor: TRACK }}>
-                  <span style={{ width: `${(t.checkedIn / scale) * 100}%`, backgroundColor: SERIES_1 }} />
-                  <span style={{ width: `${((t.sold - t.checkedIn) / scale) * 100}%`, backgroundColor: SOLD, marginLeft: t.checkedIn ? 2 : 0 }} />
+                  <span style={{ width: `${(tier.checkedIn / scale) * 100}%`, backgroundColor: SERIES_1 }} />
+                  <span style={{ width: `${((tier.sold - tier.checkedIn) / scale) * 100}%`, backgroundColor: SOLD, marginLeft: tier.checkedIn ? 2 : 0 }} />
                 </div>
               </div>
             );
           })}
-          {data.tiers.length === 0 && <p className="text-sm text-gray-500">No tiers yet.</p>}
+          {data.tiers.length === 0 && <p className="text-sm text-gray-500">{t("noTiers")}</p>}
         </div>
       </section>
 
       <section className="rounded-2xl bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>Latest check-ins 最新入場</h2>
+        <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>{t("latest")}</h2>
         <ul className="mt-3 divide-y divide-gray-100 text-sm">
-          {data.recentCheckIns.length === 0 && <li className="py-2 text-gray-500">Nobody yet. 尚無人入場。</li>}
+          {data.recentCheckIns.length === 0 && <li className="py-2 text-gray-500">{t("nobody")}</li>}
           {data.recentCheckIns.map((c, i) => (
             <li key={`${c.at}-${i}`} className="flex justify-between gap-3 py-2">
               <span className="text-gray-900">{c.name} · <span className="text-gray-500">{c.tier}</span></span>
