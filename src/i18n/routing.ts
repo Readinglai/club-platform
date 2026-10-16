@@ -12,4 +12,8 @@ export const routing = defineRouting({
   defaultLocale: "en",
   localePrefix: "as-needed",
   localeDetection: false,
+  // The public site takes its language from the address only. The cookie is
+  // the portal's language choice (set by its language switch), so visiting
+  // an English page such as /login must not overwrite it.
+  localeCookie: false,
 });
