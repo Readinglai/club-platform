@@ -49,6 +49,8 @@ const publicPatterns = [
 
   /^\/order(\/|$)/,
 
+  /^\/e(\/|$)/,
+
   /^\/staff(\/|$)/,
 ];
 
@@ -58,6 +60,7 @@ const NO_I18N_PREFIXES = [
   /^\/portal(\/|$)/,
   /^\/ticket(\/|$)/,
   /^\/order(\/|$)/,
+  /^\/e(\/|$)/,
   /^\/staff(\/|$)/,
 ];
 

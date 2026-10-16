@@ -8,14 +8,16 @@
  *   markOrderPaid (webhook checkout.session.completed) → PAID / VALID
  *   expireOrder   (webhook checkout.session.expired)   → EXPIRED / VOID
  *
- * Member pricing and members-only tiers need the Membership table (Phase 1);
- * until then memberPrice is ignored and members-only tiers cannot be bought.
+ * Member pricing: a signed-in buyer with an active membership pays the tier's
+ * memberPrice, once per event (members-only tiers count as that one use and
+ * need an active membership). Later tickets at the same event are full price.
  */
 
 import crypto from "crypto";
 import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 import { Prisma } from "@/generated/prisma/client";
+import { getCurrentMembership } from "@/lib/membership/purchase";
 
 /** How long a paid checkout holds its ticket before Stripe expires it. */
 export const CHECKOUT_HOLD_MINUTES = 30;
@@ -80,9 +82,6 @@ export async function createOrder(input: {
   if (!ticketType) {
     return fail(400, "This ticket type is not available.");
   }
-  if (ticketType.membersOnly) {
-    return fail(400, "This ticket type is for members only.");
-  }
   if (quantity > ticketType.maxPerOrder) {
     return fail(400, `You can buy up to ${ticketType.maxPerOrder} ticket(s) per order.`);
   }
@@ -95,15 +94,40 @@ export async function createOrder(input: {
     return fail(400, "Ticket sales have ended.");
   }
 
-  const unitPrice = ticketType.price;
-  const total = unitPrice.mul(quantity);
-  const free = total.isZero();
+  const isMember = input.userId ? Boolean(await getCurrentMembership(input.userId)) : false;
+  if (ticketType.membersOnly && !isMember) {
+    return fail(403, "This ticket type is for members only. Log in with your member account.");
+  }
   const currency = event.settings.currency;
 
   // Create the order and its tickets under a per-tier lock so two buyers
   // cannot both take the last seat.
   const created = await db.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${ticketType.id}))`;
+
+    // Member price once per member per event (serialised per member + event).
+    let memberPricing = false;
+    if (isMember && input.userId) {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`member-price-${event.id}-${input.userId}`}))`;
+      const holdCutoff = new Date(now.getTime() - CHECKOUT_HOLD_MINUTES * 60_000);
+      const used = await tx.ticket.count({
+        where: {
+          eventId: event.id,
+          userId: input.userId,
+          memberPricing: true,
+          OR: [
+            { status: "VALID" },
+            { status: "RESERVED", order: { status: "PENDING", createdAt: { gt: holdCutoff } } },
+          ],
+        },
+      });
+      if (used > 0 && ticketType.membersOnly) return "member_limit" as const;
+      memberPricing = used === 0 && (ticketType.membersOnly || ticketType.memberPrice !== null);
+    }
+
+    const unitPrice = memberPricing && ticketType.memberPrice !== null ? ticketType.memberPrice : ticketType.price;
+    const total = unitPrice.mul(quantity);
+    const free = total.isZero();
 
     if (ticketType.capacity !== null) {
       const holdCutoff = new Date(now.getTime() - CHECKOUT_HOLD_MINUTES * 60_000);
@@ -121,7 +145,7 @@ export async function createOrder(input: {
       }
     }
 
-    return tx.order.create({
+    const order = await tx.order.create({
       data: {
         eventId: event.id,
         userId: input.userId ?? null,
@@ -143,19 +167,25 @@ export async function createOrder(input: {
             token: crypto.randomUUID(),
             status: free ? ("VALID" as const) : ("RESERVED" as const),
             pricePaid: unitPrice,
+            memberPricing,
           })),
         },
       },
       include: { tickets: { select: { token: true } } },
     });
+    return { order, unitPrice, free };
   });
 
+  if (created === "member_limit") {
+    return fail(409, "You've already used your member ticket for this event.");
+  }
   if (!created) {
     return fail(409, "This ticket type is sold out.");
   }
+  const { unitPrice, free } = created;
 
   if (free) {
-    return { ok: true, orderId: created.id, free: true, ticketToken: created.tickets[0].token };
+    return { ok: true, orderId: created.order.id, free: true, ticketToken: created.order.tickets[0].token };
   }
 
   try {
@@ -173,22 +203,22 @@ export async function createOrder(input: {
           quantity,
         },
       ],
-      metadata: { kind: ORDER_CHECKOUT_KIND, orderId: created.id, eventId: event.id },
+      metadata: { kind: ORDER_CHECKOUT_KIND, orderId: created.order.id, eventId: event.id },
       // The session id in the return URL proves to /order/[id] that the visitor
       // is the buyer, so the ticket links are only shown to them.
-      success_url: `${input.origin}/order/${created.id}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${input.origin}/order/${created.id}?session_id={CHECKOUT_SESSION_ID}&cancelled=1`,
+      success_url: `${input.origin}/order/${created.order.id}?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${input.origin}/order/${created.order.id}?session_id={CHECKOUT_SESSION_ID}&cancelled=1`,
     });
 
     await db.order.update({
-      where: { id: created.id },
+      where: { id: created.order.id },
       data: { stripeSessionId: session.id },
     });
 
-    return { ok: true, orderId: created.id, free: false, checkoutUrl: session.url! };
+    return { ok: true, orderId: created.order.id, free: false, checkoutUrl: session.url! };
   } catch (error) {
-    console.error("Stripe checkout creation failed for order", created.id, error);
-    await releaseOrder(created.id, "CANCELLED");
+    console.error("Stripe checkout creation failed for order", created.order.id, error);
+    await releaseOrder(created.order.id, "CANCELLED");
     return fail(502, "Payment could not be started. Please try again.");
   }
 }

@@ -24,6 +24,8 @@ export default async function PortalPage() {
   // Team and Approvals only appear for people who can use them.
   const access = await getAccess(session.user.id);
   const canManageTeam = can(access, "groups.manage");
+  const canSeeEvents =
+    can(access, "events.create") || can(access, "events.manage") || can(access, "events.checkin");
   const canSeeFinance =
     can(access, "finance.view") || can(access, "budget.edit") || can(access, "expense.approve");
   const leadsSomething =
@@ -31,6 +33,7 @@ export default async function PortalPage() {
       where: { userId: session.user.id, position: { in: ["PRESIDENT", "VP"] } },
     })) > 0;
   const staffLinks = [
+    canSeeEvents && { href: "/portal/events", title: "活動 Events", text: "建立活動、票種與即時數據" },
     canManageTeam && { href: "/portal/team", title: "團隊 Team", text: "管理群組成員與子群組" },
     leadsSomething && { href: "/portal/approvals", title: "審核 Approvals", text: "待審項目與你的申請" },
     canSeeFinance && { href: "/portal/finance", title: "財務 Finance", text: "預算、實際支出與活動財務報告" },
