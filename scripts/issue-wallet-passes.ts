@@ -1,16 +1,17 @@
 /**
- * Issues Pass2U wallet passes for active memberships that don't have one yet
- * (failed attempts, or imported members). Each pass costs 3 Pass2U credits.
+ * Issues Pass2U wallet passes for active online memberships that don't have one
+ * yet (e.g. Pass2U was down at payment time). Each pass costs 3 Pass2U credits.
+ * Imported members already have passes from before, so they're skipped unless
+ * --include-imported is given.
  *
  *   npx tsx --env-file=.env.local scripts/issue-wallet-passes.ts            # dry run: list + credit cost
  *   npx tsx --env-file=.env.local scripts/issue-wallet-passes.ts --apply    # issue
- *   ... --only-online   # skip imported members (source IMPORTED)
  */
 import { db } from "../src/lib/db";
 import { createMemberPass, walletPassesEnabled } from "../src/lib/membership/wallet-pass";
 
 const apply = process.argv.includes("--apply");
-const onlyOnline = process.argv.includes("--only-online");
+const includeImported = process.argv.includes("--include-imported");
 const CREDITS_PER_PASS = 3;
 
 async function main() {
@@ -20,7 +21,7 @@ async function main() {
       status: "ACTIVE",
       walletPassId: null,
       termEnd: { gte: now },
-      ...(onlyOnline ? { source: { not: "IMPORTED" } } : {}),
+      ...(includeImported ? {} : { source: { not: "IMPORTED" } }),
       // Never spend credits on test data (members without an email still count).
       OR: [{ email: null }, { NOT: { email: { endsWith: ".invalid" } } }],
     },
