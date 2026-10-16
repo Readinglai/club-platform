@@ -94,6 +94,7 @@ const RULES: Rule[] = [
   // Operations: the VP sees all members and the finances and edits budgets;
   // the Finance subgroup sees the finances.
   { permission: "members.view", heldIn: G.operations, minPosition: "VP", global: true },
+  { permission: "members.manage", heldIn: G.operations, minPosition: "VP", global: true },
   { permission: "budget.edit", heldIn: G.operations, minPosition: "VP" },
   { permission: "finance.view", heldIn: G.operations, minPosition: "VP" },
   { permission: "finance.edit", heldIn: G.operations, minPosition: "VP" },

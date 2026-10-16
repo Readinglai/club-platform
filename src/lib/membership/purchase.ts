@@ -20,8 +20,8 @@ import {
   MEMBERSHIP_CHECKOUT_MINUTES,
   MEMBERSHIP_CURRENCY,
   MEMBERSHIP_PRICE_CAD,
-  ONLINE_MEMBER_CODE_END,
-  ONLINE_MEMBER_CODE_START,
+  MEMBER_RANGE,
+  type CodeRange,
 } from "./config";
 
 /** Stripe metadata marker that routes a checkout to this flow in the webhook. */
@@ -124,7 +124,7 @@ export async function activateMembership(membershipId: string, stripeSessionId: 
     if (membership.status === "ACTIVE") return { activated: false as const, reason: "already_active" as const };
 
     // A late payment for a cancelled checkout still activates: the person paid.
-    const memberCode = await nextMemberCode(tx, membership.termStart);
+    const memberCode = await nextMemberCode(tx, membership.termStart, MEMBER_RANGE);
 
     const updated = await tx.membership.update({
       where: { id: membershipId },
@@ -154,26 +154,27 @@ export async function cancelMembershipCheckout(membershipId: string) {
   });
 }
 
-/** Next free online code for the term, e.g. OTSA-2026-0300. Call inside a transaction. */
-async function nextMemberCode(tx: Prisma.TransactionClient, termStart: Date) {
+/**
+ * Next free code in a range for the term, e.g. OTSA-2026-0300 (members) or
+ * OTSA-2026-1073 (staff). Call inside a transaction.
+ */
+export async function nextMemberCode(tx: Prisma.TransactionClient, termStart: Date, range: CodeRange) {
   const year = termStart.getUTCFullYear();
   const prefix = `${MEMBER_CODE_PREFIX}-${year}-`;
 
-  // One code at a time per year, so two payments can't get the same number.
+  // One code at a time per year, so two people can't get the same number.
   await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`member-code-${year}`}))`;
 
   const pad = (n: number) => String(n).padStart(4, "0");
   const last = await tx.membership.findFirst({
-    where: {
-      memberCode: { gte: `${prefix}${pad(ONLINE_MEMBER_CODE_START)}`, lte: `${prefix}${pad(ONLINE_MEMBER_CODE_END)}` },
-    },
+    where: { memberCode: { gte: `${prefix}${pad(range.start)}`, lte: `${prefix}${pad(range.end)}` } },
     orderBy: { memberCode: "desc" },
     select: { memberCode: true },
   });
 
-  const next = last ? Number(last.memberCode.slice(prefix.length)) + 1 : ONLINE_MEMBER_CODE_START;
-  if (next > ONLINE_MEMBER_CODE_END) {
-    throw new Error(`No member codes left for ${year} (${prefix}${pad(ONLINE_MEMBER_CODE_END)} reached)`);
+  const next = last ? Number(last.memberCode.slice(prefix.length)) + 1 : range.start;
+  if (next > range.end) {
+    throw new Error(`No member codes left for ${year} (${prefix}${pad(range.end)} reached)`);
   }
   return `${prefix}${pad(next)}`;
 }

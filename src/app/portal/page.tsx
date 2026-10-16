@@ -63,6 +63,7 @@ export default async function PortalPage() {
     sections.team && { href: "/portal/team", title: nav("team"), text: t("teamText") },
     sections.approvals && { href: "/portal/approvals", title: nav("approvals"), text: t("approvalsText") },
     sections.finance && { href: "/portal/finance", title: nav("finance"), text: t("financeText") },
+    sections.members && { href: "/portal/members", title: nav("members"), text: t("membersText") },
     { href: "/portal/profile", title: nav("profile"), text: t("profileText") },
   ].filter((card): card is Card => Boolean(card));
 

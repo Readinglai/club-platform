@@ -13,6 +13,7 @@ export type PortalSections = {
   finance: boolean;
   /** Any group position at all (staff). */
   staff: boolean;
+  members: boolean;
 };
 
 export async function getPortalSections(userId: string): Promise<PortalSections> {
@@ -28,5 +29,6 @@ export async function getPortalSections(userId: string): Promise<PortalSections>
     approvals: positions.some((p) => p.position === "PRESIDENT" || p.position === "VP"),
     finance: can(access, "finance.view") || can(access, "budget.edit") || can(access, "expense.approve"),
     staff: positions.length > 0,
+    members: can(access, "members.view"),
   };
 }

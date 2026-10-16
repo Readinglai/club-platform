@@ -29,9 +29,13 @@ function navSections(s: PortalSections) {
     s.approvals && { href: "/portal/approvals", key: "approvals", icon: "✓" },
     s.finance && { href: "/portal/finance", key: "finance", icon: "$" },
   ].filter(Boolean) as Item[];
+  const admin: Item[] = [
+    s.members && { href: "/portal/members", key: "members", icon: "☷" },
+  ].filter(Boolean) as Item[];
   return [
     { key: "sectionMe", items: me },
     ...(work.length ? [{ key: "sectionWork", items: work }] : []),
+    ...(admin.length ? [{ key: "sectionAdmin", items: admin }] : []),
   ];
 }
 
