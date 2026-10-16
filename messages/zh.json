@@ -675,5 +675,26 @@
       "zhColumn": "中文",
       "saved": "已儲存"
     }
+  },
+  "portal": {
+    "sectionMe": "我的",
+    "sectionWork": "工作",
+    "sectionAdmin": "社團管理",
+    "home": "首頁",
+    "tickets": "我的票券",
+    "membership": "會員資格",
+    "profile": "個人資料",
+    "announcements": "公告",
+    "tasks": "任務",
+    "events": "活動",
+    "team": "部門與群組",
+    "approvals": "審核",
+    "finance": "財務",
+    "back": "返回",
+    "menu": "選單",
+    "close": "關閉",
+    "language": "語言",
+    "signOut": "登出",
+    "portalName": "ROCSAUT 會員入口"
   }
 }

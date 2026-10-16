@@ -675,5 +675,26 @@
       "zhColumn": "Chinese",
       "saved": "Saved"
     }
+  },
+  "portal": {
+    "sectionMe": "Me",
+    "sectionWork": "Work",
+    "sectionAdmin": "Club admin",
+    "home": "Home",
+    "tickets": "My tickets",
+    "membership": "Membership",
+    "profile": "Profile",
+    "announcements": "Announcements",
+    "tasks": "Tasks",
+    "events": "Events",
+    "team": "Departments & groups",
+    "approvals": "Approvals",
+    "finance": "Finance",
+    "back": "Back",
+    "menu": "Menu",
+    "close": "Close",
+    "language": "Language",
+    "signOut": "Sign out",
+    "portalName": "ROCSAUT Portal"
   }
 }
