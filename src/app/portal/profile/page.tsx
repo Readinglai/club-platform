@@ -1,5 +1,4 @@
 
-import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import type { Role } from "@/generated/prisma/client";
@@ -30,14 +29,6 @@ export default async function ProfilePage() {
       {/* 頂部 Banner */}
       <section className="px-4 py-12" style={{ backgroundColor: PRIMARY }}>
         <div className="max-w-3xl mx-auto">
-          <Link
-            href="/"
-            className="text-sm mb-4 inline-block hover:underline"
-            style={{ color: SECONDARY }}
-          >
-            ← 回到 Portal
-          </Link>
-
           <p
             className="text-xs font-medium uppercase tracking-widest mb-1"
             style={{ color: `${SECONDARY}99` }}
