@@ -1,8 +1,8 @@
 /**
  * [locale]/login/page.tsx — 多語系登入頁面
  *
- * 社團成員登入入口，使用 Google OAuth 或 Email magic link。
- * 僅限 utoronto.ca 或 mail.utoronto.ca 信箱。
+ * 登入入口，使用 Google OAuth 或 Email magic link。任何信箱皆可註冊，
+ * 新帳號為 USER，首次登入後需完成個人資料。
  *
  * 已登入使用者：直接依角色跳轉（不經過 /api/auth/post-login），
  * 避免額外 redirect hop 造成 ERR_TOO_MANY_REDIRECTS。

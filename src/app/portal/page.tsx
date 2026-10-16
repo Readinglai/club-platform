@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { isProfileComplete } from "@/lib/membership/profile";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -11,6 +12,11 @@ export default async function PortalPage() {
 
   if (!session?.user?.id) {
     redirect("/login");
+  }
+
+  // Everyone fills in their details once before using the portal.
+  if (!(await isProfileComplete(session.user.id))) {
+    redirect("/portal/complete-profile");
   }
 
   return (
