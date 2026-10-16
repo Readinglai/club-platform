@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     results.push({
       taskId: task.id,
       taskTitle: task.title,
-      taskGroupName: task.taskGroup.name,
+      taskGroupName: task.taskGroup?.name ?? "",
       matchType: isTitle ? "title" : "description",
       matchPreview: isTitle
         ? extractPreview(task.title, q)
@@ -131,7 +131,7 @@ export async function GET(request: NextRequest) {
   // 建立 taskGroupId → 對應任務 的 Map（每個群組取第一個被指派任務作為代表）
   const taskGroupMap = new Map<string, typeof userTasks[0]>();
   for (const task of userTasks) {
-    if (!taskGroupMap.has(task.taskGroupId)) {
+    if (task.taskGroupId && !taskGroupMap.has(task.taskGroupId)) {
       taskGroupMap.set(task.taskGroupId, task);
     }
   }
@@ -161,7 +161,7 @@ export async function GET(request: NextRequest) {
       results.push({
         taskId: representativeTask.id,
         taskTitle: representativeTask.title,
-        taskGroupName: representativeTask.taskGroup.name,
+        taskGroupName: representativeTask.taskGroup?.name ?? "",
         matchType: "discussion",
         matchPreview: extractPreview(comment.content, q),
       });

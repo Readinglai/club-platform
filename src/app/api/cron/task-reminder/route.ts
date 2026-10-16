@@ -56,7 +56,7 @@ export async function GET(request: Request) {
         to: task.assignee.email,
         taskTitle: task.title,
         dueAt: task.dueAt,
-        taskGroupName: task.taskGroup.name,
+        taskGroupName: task.taskGroup?.name ?? "",
       });
       results.push({ taskId: task.id, status: "sent" });
     } catch (err) {

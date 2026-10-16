@@ -573,7 +573,10 @@ model Group {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members GroupMember[]
+  members    GroupMember[]
+  tasks      Task[]
+  votes      Vote[]
+  discussion Discussion?
 
   @@index([parentId])
 }
@@ -629,6 +632,9 @@ model Discussion {
   event       Event?     @relation(fields: [eventId], references: [id])
   taskGroupId String?
   taskGroup   TaskGroup? @relation(fields: [taskGroupId], references: [id])
+  /// A department's or group's discussion (one per group).
+  groupId     String?    @unique
+  group       Group?     @relation(fields: [groupId], references: [id], onDelete: Restrict)
   createdAt   DateTime   @default(now())
 
   comments Comment[]
@@ -710,8 +716,13 @@ model Task {
   title       String
   description String?
 
-  taskGroupId String
-  taskGroup   TaskGroup @relation(fields: [taskGroupId], references: [id])
+  /// Legacy task groups (unused); tasks now belong to a department or group.
+  taskGroupId String?
+  taskGroup   TaskGroup? @relation(fields: [taskGroupId], references: [id], onDelete: Restrict)
+
+  /// The department or group the task belongs to; its people see it.
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: Restrict)
 
   assigneeId String?
   assignee   User?   @relation("TaskAssignee", fields: [assigneeId], references: [id])
@@ -753,11 +764,14 @@ model TaskView {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Vote {
-  id          String    @id @default(cuid())
+  id          String     @id @default(cuid())
   title       String
   description String?
-  taskGroupId String
-  taskGroup   TaskGroup @relation(fields: [taskGroupId], references: [id])
+  taskGroupId String?
+  taskGroup   TaskGroup? @relation(fields: [taskGroupId], references: [id], onDelete: Restrict)
+
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: Restrict)
 
   createdById String
   createdBy   User   @relation("VoteCreator", fields: [createdById], references: [id])

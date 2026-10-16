@@ -4020,6 +4020,7 @@ export const DiscussionScalarFieldEnum = {
   id: 'id',
   eventId: 'eventId',
   taskGroupId: 'taskGroupId',
+  groupId: 'groupId',
   createdAt: 'createdAt'
 } as const
 
@@ -4090,6 +4091,7 @@ export const TaskScalarFieldEnum = {
   title: 'title',
   description: 'description',
   taskGroupId: 'taskGroupId',
+  groupId: 'groupId',
   assigneeId: 'assigneeId',
   status: 'status',
   dueAt: 'dueAt',
@@ -4124,6 +4126,7 @@ export const VoteScalarFieldEnum = {
   title: 'title',
   description: 'description',
   taskGroupId: 'taskGroupId',
+  groupId: 'groupId',
   createdById: 'createdById',
   closedAt: 'closedAt',
   createdAt: 'createdAt',

@@ -210,6 +210,9 @@ export type GroupWhereInput = {
   children?: Prisma.GroupListRelationFilter
   event?: Prisma.XOR<Prisma.EventNullableScalarRelationFilter, Prisma.EventWhereInput> | null
   members?: Prisma.GroupMemberListRelationFilter
+  tasks?: Prisma.TaskListRelationFilter
+  votes?: Prisma.VoteListRelationFilter
+  discussion?: Prisma.XOR<Prisma.DiscussionNullableScalarRelationFilter, Prisma.DiscussionWhereInput> | null
 }
 
 export type GroupOrderByWithRelationInput = {
@@ -225,6 +228,9 @@ export type GroupOrderByWithRelationInput = {
   children?: Prisma.GroupOrderByRelationAggregateInput
   event?: Prisma.EventOrderByWithRelationInput
   members?: Prisma.GroupMemberOrderByRelationAggregateInput
+  tasks?: Prisma.TaskOrderByRelationAggregateInput
+  votes?: Prisma.VoteOrderByRelationAggregateInput
+  discussion?: Prisma.DiscussionOrderByWithRelationInput
 }
 
 export type GroupWhereUniqueInput = Prisma.AtLeast<{
@@ -243,6 +249,9 @@ export type GroupWhereUniqueInput = Prisma.AtLeast<{
   children?: Prisma.GroupListRelationFilter
   event?: Prisma.XOR<Prisma.EventNullableScalarRelationFilter, Prisma.EventWhereInput> | null
   members?: Prisma.GroupMemberListRelationFilter
+  tasks?: Prisma.TaskListRelationFilter
+  votes?: Prisma.VoteListRelationFilter
+  discussion?: Prisma.XOR<Prisma.DiscussionNullableScalarRelationFilter, Prisma.DiscussionWhereInput> | null
 }, "id" | "slug" | "eventId">
 
 export type GroupOrderByWithAggregationInput = {
@@ -284,6 +293,9 @@ export type GroupCreateInput = {
   children?: Prisma.GroupCreateNestedManyWithoutParentInput
   event?: Prisma.EventCreateNestedOneWithoutTeamInput
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateInput = {
@@ -297,6 +309,9 @@ export type GroupUncheckedCreateInput = {
   updatedAt?: Date | string
   children?: Prisma.GroupUncheckedCreateNestedManyWithoutParentInput
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteUncheckedCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUpdateInput = {
@@ -310,6 +325,9 @@ export type GroupUpdateInput = {
   children?: Prisma.GroupUpdateManyWithoutParentNestedInput
   event?: Prisma.EventUpdateOneWithoutTeamNestedInput
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateInput = {
@@ -323,6 +341,9 @@ export type GroupUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.GroupUncheckedUpdateManyWithoutParentNestedInput
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUncheckedUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupCreateManyInput = {
@@ -513,6 +534,54 @@ export type GroupUpdateOneRequiredWithoutMembersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutMembersInput, Prisma.GroupUpdateWithoutMembersInput>, Prisma.GroupUncheckedUpdateWithoutMembersInput>
 }
 
+export type GroupCreateNestedOneWithoutDiscussionInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutDiscussionInput, Prisma.GroupUncheckedCreateWithoutDiscussionInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutDiscussionInput
+  connect?: Prisma.GroupWhereUniqueInput
+}
+
+export type GroupUpdateOneWithoutDiscussionNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutDiscussionInput, Prisma.GroupUncheckedCreateWithoutDiscussionInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutDiscussionInput
+  upsert?: Prisma.GroupUpsertWithoutDiscussionInput
+  disconnect?: Prisma.GroupWhereInput | boolean
+  delete?: Prisma.GroupWhereInput | boolean
+  connect?: Prisma.GroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutDiscussionInput, Prisma.GroupUpdateWithoutDiscussionInput>, Prisma.GroupUncheckedUpdateWithoutDiscussionInput>
+}
+
+export type GroupCreateNestedOneWithoutTasksInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutTasksInput, Prisma.GroupUncheckedCreateWithoutTasksInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutTasksInput
+  connect?: Prisma.GroupWhereUniqueInput
+}
+
+export type GroupUpdateOneWithoutTasksNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutTasksInput, Prisma.GroupUncheckedCreateWithoutTasksInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutTasksInput
+  upsert?: Prisma.GroupUpsertWithoutTasksInput
+  disconnect?: Prisma.GroupWhereInput | boolean
+  delete?: Prisma.GroupWhereInput | boolean
+  connect?: Prisma.GroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutTasksInput, Prisma.GroupUpdateWithoutTasksInput>, Prisma.GroupUncheckedUpdateWithoutTasksInput>
+}
+
+export type GroupCreateNestedOneWithoutVotesInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutVotesInput, Prisma.GroupUncheckedCreateWithoutVotesInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutVotesInput
+  connect?: Prisma.GroupWhereUniqueInput
+}
+
+export type GroupUpdateOneWithoutVotesNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutVotesInput, Prisma.GroupUncheckedCreateWithoutVotesInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutVotesInput
+  upsert?: Prisma.GroupUpsertWithoutVotesInput
+  disconnect?: Prisma.GroupWhereInput | boolean
+  delete?: Prisma.GroupWhereInput | boolean
+  connect?: Prisma.GroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutVotesInput, Prisma.GroupUpdateWithoutVotesInput>, Prisma.GroupUncheckedUpdateWithoutVotesInput>
+}
+
 export type GroupCreateWithoutEventInput = {
   id?: string
   name: string
@@ -523,6 +592,9 @@ export type GroupCreateWithoutEventInput = {
   parent?: Prisma.GroupCreateNestedOneWithoutChildrenInput
   children?: Prisma.GroupCreateNestedManyWithoutParentInput
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutEventInput = {
@@ -535,6 +607,9 @@ export type GroupUncheckedCreateWithoutEventInput = {
   updatedAt?: Date | string
   children?: Prisma.GroupUncheckedCreateNestedManyWithoutParentInput
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteUncheckedCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutEventInput = {
@@ -563,6 +638,9 @@ export type GroupUpdateWithoutEventInput = {
   parent?: Prisma.GroupUpdateOneWithoutChildrenNestedInput
   children?: Prisma.GroupUpdateManyWithoutParentNestedInput
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutEventInput = {
@@ -575,6 +653,9 @@ export type GroupUncheckedUpdateWithoutEventInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.GroupUncheckedUpdateManyWithoutParentNestedInput
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUncheckedUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupCreateWithoutChildrenInput = {
@@ -587,6 +668,9 @@ export type GroupCreateWithoutChildrenInput = {
   parent?: Prisma.GroupCreateNestedOneWithoutChildrenInput
   event?: Prisma.EventCreateNestedOneWithoutTeamInput
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutChildrenInput = {
@@ -599,6 +683,9 @@ export type GroupUncheckedCreateWithoutChildrenInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteUncheckedCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutChildrenInput = {
@@ -616,6 +703,9 @@ export type GroupCreateWithoutParentInput = {
   children?: Prisma.GroupCreateNestedManyWithoutParentInput
   event?: Prisma.EventCreateNestedOneWithoutTeamInput
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutParentInput = {
@@ -628,6 +718,9 @@ export type GroupUncheckedCreateWithoutParentInput = {
   updatedAt?: Date | string
   children?: Prisma.GroupUncheckedCreateNestedManyWithoutParentInput
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteUncheckedCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutParentInput = {
@@ -661,6 +754,9 @@ export type GroupUpdateWithoutChildrenInput = {
   parent?: Prisma.GroupUpdateOneWithoutChildrenNestedInput
   event?: Prisma.EventUpdateOneWithoutTeamNestedInput
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutChildrenInput = {
@@ -673,6 +769,9 @@ export type GroupUncheckedUpdateWithoutChildrenInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUncheckedUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUpsertWithWhereUniqueWithoutParentInput = {
@@ -715,6 +814,9 @@ export type GroupCreateWithoutMembersInput = {
   parent?: Prisma.GroupCreateNestedOneWithoutChildrenInput
   children?: Prisma.GroupCreateNestedManyWithoutParentInput
   event?: Prisma.EventCreateNestedOneWithoutTeamInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutMembersInput = {
@@ -727,6 +829,9 @@ export type GroupUncheckedCreateWithoutMembersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.GroupUncheckedCreateNestedManyWithoutParentInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteUncheckedCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutMembersInput = {
@@ -755,6 +860,9 @@ export type GroupUpdateWithoutMembersInput = {
   parent?: Prisma.GroupUpdateOneWithoutChildrenNestedInput
   children?: Prisma.GroupUpdateManyWithoutParentNestedInput
   event?: Prisma.EventUpdateOneWithoutTeamNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutMembersInput = {
@@ -767,6 +875,237 @@ export type GroupUncheckedUpdateWithoutMembersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.GroupUncheckedUpdateManyWithoutParentNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUncheckedUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUncheckedUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutDiscussionInput = {
+  id?: string
+  name: string
+  slug: string
+  archived?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parent?: Prisma.GroupCreateNestedOneWithoutChildrenInput
+  children?: Prisma.GroupCreateNestedManyWithoutParentInput
+  event?: Prisma.EventCreateNestedOneWithoutTeamInput
+  members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteCreateNestedManyWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutDiscussionInput = {
+  id?: string
+  name: string
+  slug: string
+  parentId?: string | null
+  eventId?: string | null
+  archived?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.GroupUncheckedCreateNestedManyWithoutParentInput
+  members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutDiscussionInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutDiscussionInput, Prisma.GroupUncheckedCreateWithoutDiscussionInput>
+}
+
+export type GroupUpsertWithoutDiscussionInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutDiscussionInput, Prisma.GroupUncheckedUpdateWithoutDiscussionInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutDiscussionInput, Prisma.GroupUncheckedCreateWithoutDiscussionInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutDiscussionInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutDiscussionInput, Prisma.GroupUncheckedUpdateWithoutDiscussionInput>
+}
+
+export type GroupUpdateWithoutDiscussionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.GroupUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.GroupUpdateManyWithoutParentNestedInput
+  event?: Prisma.EventUpdateOneWithoutTeamNestedInput
+  members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutDiscussionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.GroupUncheckedUpdateManyWithoutParentNestedInput
+  members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutTasksInput = {
+  id?: string
+  name: string
+  slug: string
+  archived?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parent?: Prisma.GroupCreateNestedOneWithoutChildrenInput
+  children?: Prisma.GroupCreateNestedManyWithoutParentInput
+  event?: Prisma.EventCreateNestedOneWithoutTeamInput
+  members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionCreateNestedOneWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutTasksInput = {
+  id?: string
+  name: string
+  slug: string
+  parentId?: string | null
+  eventId?: string | null
+  archived?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.GroupUncheckedCreateNestedManyWithoutParentInput
+  members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  votes?: Prisma.VoteUncheckedCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionUncheckedCreateNestedOneWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutTasksInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutTasksInput, Prisma.GroupUncheckedCreateWithoutTasksInput>
+}
+
+export type GroupUpsertWithoutTasksInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutTasksInput, Prisma.GroupUncheckedUpdateWithoutTasksInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutTasksInput, Prisma.GroupUncheckedCreateWithoutTasksInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutTasksInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutTasksInput, Prisma.GroupUncheckedUpdateWithoutTasksInput>
+}
+
+export type GroupUpdateWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.GroupUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.GroupUpdateManyWithoutParentNestedInput
+  event?: Prisma.EventUpdateOneWithoutTeamNestedInput
+  members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.GroupUncheckedUpdateManyWithoutParentNestedInput
+  members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUncheckedUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUncheckedUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutVotesInput = {
+  id?: string
+  name: string
+  slug: string
+  archived?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parent?: Prisma.GroupCreateNestedOneWithoutChildrenInput
+  children?: Prisma.GroupCreateNestedManyWithoutParentInput
+  event?: Prisma.EventCreateNestedOneWithoutTeamInput
+  members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionCreateNestedOneWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutVotesInput = {
+  id?: string
+  name: string
+  slug: string
+  parentId?: string | null
+  eventId?: string | null
+  archived?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.GroupUncheckedCreateNestedManyWithoutParentInput
+  members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutGroupInput
+  discussion?: Prisma.DiscussionUncheckedCreateNestedOneWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutVotesInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutVotesInput, Prisma.GroupUncheckedCreateWithoutVotesInput>
+}
+
+export type GroupUpsertWithoutVotesInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutVotesInput, Prisma.GroupUncheckedUpdateWithoutVotesInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutVotesInput, Prisma.GroupUncheckedCreateWithoutVotesInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutVotesInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutVotesInput, Prisma.GroupUncheckedUpdateWithoutVotesInput>
+}
+
+export type GroupUpdateWithoutVotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.GroupUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.GroupUpdateManyWithoutParentNestedInput
+  event?: Prisma.EventUpdateOneWithoutTeamNestedInput
+  members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutVotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.GroupUncheckedUpdateManyWithoutParentNestedInput
+  members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupCreateManyParentInput = {
@@ -789,6 +1128,9 @@ export type GroupUpdateWithoutParentInput = {
   children?: Prisma.GroupUpdateManyWithoutParentNestedInput
   event?: Prisma.EventUpdateOneWithoutTeamNestedInput
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutParentInput = {
@@ -801,6 +1143,9 @@ export type GroupUncheckedUpdateWithoutParentInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.GroupUncheckedUpdateManyWithoutParentNestedInput
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutGroupNestedInput
+  votes?: Prisma.VoteUncheckedUpdateManyWithoutGroupNestedInput
+  discussion?: Prisma.DiscussionUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateManyWithoutParentInput = {
@@ -821,11 +1166,15 @@ export type GroupUncheckedUpdateManyWithoutParentInput = {
 export type GroupCountOutputType = {
   children: number
   members: number
+  tasks: number
+  votes: number
 }
 
 export type GroupCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   children?: boolean | GroupCountOutputTypeCountChildrenArgs
   members?: boolean | GroupCountOutputTypeCountMembersArgs
+  tasks?: boolean | GroupCountOutputTypeCountTasksArgs
+  votes?: boolean | GroupCountOutputTypeCountVotesArgs
 }
 
 /**
@@ -852,6 +1201,20 @@ export type GroupCountOutputTypeCountMembersArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.GroupMemberWhereInput
 }
 
+/**
+ * GroupCountOutputType without action
+ */
+export type GroupCountOutputTypeCountTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskWhereInput
+}
+
+/**
+ * GroupCountOutputType without action
+ */
+export type GroupCountOutputTypeCountVotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.VoteWhereInput
+}
+
 
 export type GroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -866,6 +1229,9 @@ export type GroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   children?: boolean | Prisma.Group$childrenArgs<ExtArgs>
   event?: boolean | Prisma.Group$eventArgs<ExtArgs>
   members?: boolean | Prisma.Group$membersArgs<ExtArgs>
+  tasks?: boolean | Prisma.Group$tasksArgs<ExtArgs>
+  votes?: boolean | Prisma.Group$votesArgs<ExtArgs>
+  discussion?: boolean | Prisma.Group$discussionArgs<ExtArgs>
   _count?: boolean | Prisma.GroupCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["group"]>
 
@@ -912,6 +1278,9 @@ export type GroupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   children?: boolean | Prisma.Group$childrenArgs<ExtArgs>
   event?: boolean | Prisma.Group$eventArgs<ExtArgs>
   members?: boolean | Prisma.Group$membersArgs<ExtArgs>
+  tasks?: boolean | Prisma.Group$tasksArgs<ExtArgs>
+  votes?: boolean | Prisma.Group$votesArgs<ExtArgs>
+  discussion?: boolean | Prisma.Group$discussionArgs<ExtArgs>
   _count?: boolean | Prisma.GroupCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GroupIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -930,6 +1299,9 @@ export type $GroupPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     children: Prisma.$GroupPayload<ExtArgs>[]
     event: Prisma.$EventPayload<ExtArgs> | null
     members: Prisma.$GroupMemberPayload<ExtArgs>[]
+    tasks: Prisma.$TaskPayload<ExtArgs>[]
+    votes: Prisma.$VotePayload<ExtArgs>[]
+    discussion: Prisma.$DiscussionPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1338,6 +1710,9 @@ export interface Prisma__GroupClient<T, Null = never, ExtArgs extends runtime.Ty
   children<T extends Prisma.Group$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   event<T extends Prisma.Group$eventArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$eventArgs<ExtArgs>>): Prisma.Prisma__EventClient<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   members<T extends Prisma.Group$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tasks<T extends Prisma.Group$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  votes<T extends Prisma.Group$votesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$votesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  discussion<T extends Prisma.Group$discussionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$discussionArgs<ExtArgs>>): Prisma.Prisma__DiscussionClient<runtime.Types.Result.GetResult<Prisma.$DiscussionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1859,6 +2234,73 @@ export type Group$membersArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.GroupMemberScalarFieldEnum | Prisma.GroupMemberScalarFieldEnum[]
+}
+
+/**
+ * Group.tasks
+ */
+export type Group$tasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Task
+   */
+  select?: Prisma.TaskSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Task
+   */
+  omit?: Prisma.TaskOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskInclude<ExtArgs> | null
+  where?: Prisma.TaskWhereInput
+  orderBy?: Prisma.TaskOrderByWithRelationInput | Prisma.TaskOrderByWithRelationInput[]
+  cursor?: Prisma.TaskWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskScalarFieldEnum | Prisma.TaskScalarFieldEnum[]
+}
+
+/**
+ * Group.votes
+ */
+export type Group$votesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Vote
+   */
+  select?: Prisma.VoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Vote
+   */
+  omit?: Prisma.VoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VoteInclude<ExtArgs> | null
+  where?: Prisma.VoteWhereInput
+  orderBy?: Prisma.VoteOrderByWithRelationInput | Prisma.VoteOrderByWithRelationInput[]
+  cursor?: Prisma.VoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.VoteScalarFieldEnum | Prisma.VoteScalarFieldEnum[]
+}
+
+/**
+ * Group.discussion
+ */
+export type Group$discussionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Discussion
+   */
+  select?: Prisma.DiscussionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Discussion
+   */
+  omit?: Prisma.DiscussionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DiscussionInclude<ExtArgs> | null
+  where?: Prisma.DiscussionWhereInput
 }
 
 /**

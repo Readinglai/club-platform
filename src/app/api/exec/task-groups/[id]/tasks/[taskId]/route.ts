@@ -53,7 +53,7 @@ export async function PATCH(
     return NextResponse.json({ error: "任務不存在" }, { status: 404 });
   }
 
-  if (existingTask.taskGroup.status !== "ACTIVE") {
+  if (existingTask.taskGroup?.status !== "ACTIVE") {
     return NextResponse.json({ error: "此小組已完成或封存，無法修改" }, { status: 409 });
   }
 
@@ -156,7 +156,7 @@ export async function PATCH(
       to: updated.assignee.email,
       taskTitle: updated.title,
       newStatus: status as string,
-      taskGroupName: updated.taskGroup.name,
+      taskGroupName: updated.taskGroup?.name ?? "",
     }).catch((err) => console.error("[task status email]", err));
   }
 
@@ -207,14 +207,14 @@ export async function DELETE(
   }
 
   const member = await getMember(taskGroupId, guard.userId);
-  const isGroupCreator = task.taskGroup.createdById === guard.userId;
+  const isGroupCreator = task.taskGroup?.createdById === guard.userId;
   const isLeaderMember = member?.role === "LEADER";
 
   if (!isLeaderMember && !isGroupCreator) {
     return NextResponse.json({ error: "只有組長可以刪除任務" }, { status: 403 });
   }
 
-  if (task.taskGroup.status !== "ACTIVE") {
+  if (task.taskGroup?.status !== "ACTIVE") {
     return NextResponse.json({ error: "此小組已完成或封存，無法修改" }, { status: 409 });
   }
 
