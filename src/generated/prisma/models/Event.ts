@@ -274,6 +274,8 @@ export type EventWhereInput = {
   orders?: Prisma.OrderListRelationFilter
   entryTickets?: Prisma.TicketListRelationFilter
   team?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
+  budgetLines?: Prisma.EventBudgetLineListRelationFilter
+  financeRecords?: Prisma.FinanceRecordListRelationFilter
 }
 
 export type EventOrderByWithRelationInput = {
@@ -298,6 +300,8 @@ export type EventOrderByWithRelationInput = {
   orders?: Prisma.OrderOrderByRelationAggregateInput
   entryTickets?: Prisma.TicketOrderByRelationAggregateInput
   team?: Prisma.GroupOrderByWithRelationInput
+  budgetLines?: Prisma.EventBudgetLineOrderByRelationAggregateInput
+  financeRecords?: Prisma.FinanceRecordOrderByRelationAggregateInput
 }
 
 export type EventWhereUniqueInput = Prisma.AtLeast<{
@@ -325,6 +329,8 @@ export type EventWhereUniqueInput = Prisma.AtLeast<{
   orders?: Prisma.OrderListRelationFilter
   entryTickets?: Prisma.TicketListRelationFilter
   team?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
+  budgetLines?: Prisma.EventBudgetLineListRelationFilter
+  financeRecords?: Prisma.FinanceRecordListRelationFilter
 }, "id">
 
 export type EventOrderByWithAggregationInput = {
@@ -385,6 +391,8 @@ export type EventCreateInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketCreateNestedManyWithoutEventInput
   team?: Prisma.GroupCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateInput = {
@@ -409,6 +417,8 @@ export type EventUncheckedCreateInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutEventInput
   team?: Prisma.GroupUncheckedCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventUpdateInput = {
@@ -433,6 +443,8 @@ export type EventUpdateInput = {
   orders?: Prisma.OrderUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateInput = {
@@ -457,6 +469,8 @@ export type EventUncheckedUpdateInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUncheckedUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUncheckedUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventCreateManyInput = {
@@ -635,6 +649,20 @@ export type EventUpdateOneRequiredWithoutSettingsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EventUpdateToOneWithWhereWithoutSettingsInput, Prisma.EventUpdateWithoutSettingsInput>, Prisma.EventUncheckedUpdateWithoutSettingsInput>
 }
 
+export type EventCreateNestedOneWithoutBudgetLinesInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutBudgetLinesInput, Prisma.EventUncheckedCreateWithoutBudgetLinesInput>
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutBudgetLinesInput
+  connect?: Prisma.EventWhereUniqueInput
+}
+
+export type EventUpdateOneRequiredWithoutBudgetLinesNestedInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutBudgetLinesInput, Prisma.EventUncheckedCreateWithoutBudgetLinesInput>
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutBudgetLinesInput
+  upsert?: Prisma.EventUpsertWithoutBudgetLinesInput
+  connect?: Prisma.EventWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EventUpdateToOneWithWhereWithoutBudgetLinesInput, Prisma.EventUpdateWithoutBudgetLinesInput>, Prisma.EventUncheckedUpdateWithoutBudgetLinesInput>
+}
+
 export type EventCreateNestedOneWithoutTicketTypesInput = {
   create?: Prisma.XOR<Prisma.EventCreateWithoutTicketTypesInput, Prisma.EventUncheckedCreateWithoutTicketTypesInput>
   connectOrCreate?: Prisma.EventCreateOrConnectWithoutTicketTypesInput
@@ -709,6 +737,22 @@ export type EventUpdateOneWithoutDiscussionNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EventUpdateToOneWithWhereWithoutDiscussionInput, Prisma.EventUpdateWithoutDiscussionInput>, Prisma.EventUncheckedUpdateWithoutDiscussionInput>
 }
 
+export type EventCreateNestedOneWithoutFinanceRecordsInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutFinanceRecordsInput, Prisma.EventUncheckedCreateWithoutFinanceRecordsInput>
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutFinanceRecordsInput
+  connect?: Prisma.EventWhereUniqueInput
+}
+
+export type EventUpdateOneWithoutFinanceRecordsNestedInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutFinanceRecordsInput, Prisma.EventUncheckedCreateWithoutFinanceRecordsInput>
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutFinanceRecordsInput
+  upsert?: Prisma.EventUpsertWithoutFinanceRecordsInput
+  disconnect?: Prisma.EventWhereInput | boolean
+  delete?: Prisma.EventWhereInput | boolean
+  connect?: Prisma.EventWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EventUpdateToOneWithWhereWithoutFinanceRecordsInput, Prisma.EventUpdateWithoutFinanceRecordsInput>, Prisma.EventUncheckedUpdateWithoutFinanceRecordsInput>
+}
+
 export type EventCreateWithoutRegistrationsInput = {
   id?: string
   title: string
@@ -730,6 +774,8 @@ export type EventCreateWithoutRegistrationsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketCreateNestedManyWithoutEventInput
   team?: Prisma.GroupCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateWithoutRegistrationsInput = {
@@ -753,6 +799,8 @@ export type EventUncheckedCreateWithoutRegistrationsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutEventInput
   team?: Prisma.GroupUncheckedCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventCreateOrConnectWithoutRegistrationsInput = {
@@ -792,6 +840,8 @@ export type EventUpdateWithoutRegistrationsInput = {
   orders?: Prisma.OrderUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateWithoutRegistrationsInput = {
@@ -815,6 +865,8 @@ export type EventUncheckedUpdateWithoutRegistrationsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUncheckedUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUncheckedUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventCreateWithoutTicketTiersInput = {
@@ -838,6 +890,8 @@ export type EventCreateWithoutTicketTiersInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketCreateNestedManyWithoutEventInput
   team?: Prisma.GroupCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateWithoutTicketTiersInput = {
@@ -861,6 +915,8 @@ export type EventUncheckedCreateWithoutTicketTiersInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutEventInput
   team?: Prisma.GroupUncheckedCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventCreateOrConnectWithoutTicketTiersInput = {
@@ -900,6 +956,8 @@ export type EventUpdateWithoutTicketTiersInput = {
   orders?: Prisma.OrderUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateWithoutTicketTiersInput = {
@@ -923,6 +981,8 @@ export type EventUncheckedUpdateWithoutTicketTiersInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUncheckedUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUncheckedUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventCreateWithoutTicketsInput = {
@@ -946,6 +1006,8 @@ export type EventCreateWithoutTicketsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketCreateNestedManyWithoutEventInput
   team?: Prisma.GroupCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateWithoutTicketsInput = {
@@ -969,6 +1031,8 @@ export type EventUncheckedCreateWithoutTicketsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutEventInput
   team?: Prisma.GroupUncheckedCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventCreateOrConnectWithoutTicketsInput = {
@@ -1008,6 +1072,8 @@ export type EventUpdateWithoutTicketsInput = {
   orders?: Prisma.OrderUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateWithoutTicketsInput = {
@@ -1031,6 +1097,8 @@ export type EventUncheckedUpdateWithoutTicketsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUncheckedUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUncheckedUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventCreateWithoutMemberRedemptionsInput = {
@@ -1054,6 +1122,8 @@ export type EventCreateWithoutMemberRedemptionsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketCreateNestedManyWithoutEventInput
   team?: Prisma.GroupCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateWithoutMemberRedemptionsInput = {
@@ -1077,6 +1147,8 @@ export type EventUncheckedCreateWithoutMemberRedemptionsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutEventInput
   team?: Prisma.GroupUncheckedCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventCreateOrConnectWithoutMemberRedemptionsInput = {
@@ -1116,6 +1188,8 @@ export type EventUpdateWithoutMemberRedemptionsInput = {
   orders?: Prisma.OrderUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateWithoutMemberRedemptionsInput = {
@@ -1139,6 +1213,8 @@ export type EventUncheckedUpdateWithoutMemberRedemptionsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUncheckedUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUncheckedUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventCreateWithoutSettingsInput = {
@@ -1162,6 +1238,8 @@ export type EventCreateWithoutSettingsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketCreateNestedManyWithoutEventInput
   team?: Prisma.GroupCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateWithoutSettingsInput = {
@@ -1185,6 +1263,8 @@ export type EventUncheckedCreateWithoutSettingsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutEventInput
   team?: Prisma.GroupUncheckedCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventCreateOrConnectWithoutSettingsInput = {
@@ -1224,6 +1304,8 @@ export type EventUpdateWithoutSettingsInput = {
   orders?: Prisma.OrderUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateWithoutSettingsInput = {
@@ -1247,6 +1329,124 @@ export type EventUncheckedUpdateWithoutSettingsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUncheckedUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUncheckedUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutEventNestedInput
+}
+
+export type EventCreateWithoutBudgetLinesInput = {
+  id?: string
+  title: string
+  description?: string | null
+  startAt: Date | string
+  endAt?: Date | string | null
+  location?: string | null
+  capacity?: number | null
+  imageUrl?: string | null
+  published?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutEventInput
+  discussion?: Prisma.DiscussionCreateNestedOneWithoutEventInput
+  tickets?: Prisma.EventTicketCreateNestedManyWithoutEventInput
+  ticketTiers?: Prisma.TicketTierCreateNestedManyWithoutEventInput
+  memberRedemptions?: Prisma.MemberRedemptionCreateNestedManyWithoutEventInput
+  settings?: Prisma.EventSettingsCreateNestedOneWithoutEventInput
+  ticketTypes?: Prisma.TicketTypeCreateNestedManyWithoutEventInput
+  orders?: Prisma.OrderCreateNestedManyWithoutEventInput
+  entryTickets?: Prisma.TicketCreateNestedManyWithoutEventInput
+  team?: Prisma.GroupCreateNestedOneWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutEventInput
+}
+
+export type EventUncheckedCreateWithoutBudgetLinesInput = {
+  id?: string
+  title: string
+  description?: string | null
+  startAt: Date | string
+  endAt?: Date | string | null
+  location?: string | null
+  capacity?: number | null
+  imageUrl?: string | null
+  published?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutEventInput
+  discussion?: Prisma.DiscussionUncheckedCreateNestedOneWithoutEventInput
+  tickets?: Prisma.EventTicketUncheckedCreateNestedManyWithoutEventInput
+  ticketTiers?: Prisma.TicketTierUncheckedCreateNestedManyWithoutEventInput
+  memberRedemptions?: Prisma.MemberRedemptionUncheckedCreateNestedManyWithoutEventInput
+  settings?: Prisma.EventSettingsUncheckedCreateNestedOneWithoutEventInput
+  ticketTypes?: Prisma.TicketTypeUncheckedCreateNestedManyWithoutEventInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutEventInput
+  entryTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutEventInput
+  team?: Prisma.GroupUncheckedCreateNestedOneWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutEventInput
+}
+
+export type EventCreateOrConnectWithoutBudgetLinesInput = {
+  where: Prisma.EventWhereUniqueInput
+  create: Prisma.XOR<Prisma.EventCreateWithoutBudgetLinesInput, Prisma.EventUncheckedCreateWithoutBudgetLinesInput>
+}
+
+export type EventUpsertWithoutBudgetLinesInput = {
+  update: Prisma.XOR<Prisma.EventUpdateWithoutBudgetLinesInput, Prisma.EventUncheckedUpdateWithoutBudgetLinesInput>
+  create: Prisma.XOR<Prisma.EventCreateWithoutBudgetLinesInput, Prisma.EventUncheckedCreateWithoutBudgetLinesInput>
+  where?: Prisma.EventWhereInput
+}
+
+export type EventUpdateToOneWithWhereWithoutBudgetLinesInput = {
+  where?: Prisma.EventWhereInput
+  data: Prisma.XOR<Prisma.EventUpdateWithoutBudgetLinesInput, Prisma.EventUncheckedUpdateWithoutBudgetLinesInput>
+}
+
+export type EventUpdateWithoutBudgetLinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  registrations?: Prisma.RegistrationUpdateManyWithoutEventNestedInput
+  discussion?: Prisma.DiscussionUpdateOneWithoutEventNestedInput
+  tickets?: Prisma.EventTicketUpdateManyWithoutEventNestedInput
+  ticketTiers?: Prisma.TicketTierUpdateManyWithoutEventNestedInput
+  memberRedemptions?: Prisma.MemberRedemptionUpdateManyWithoutEventNestedInput
+  settings?: Prisma.EventSettingsUpdateOneWithoutEventNestedInput
+  ticketTypes?: Prisma.TicketTypeUpdateManyWithoutEventNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutEventNestedInput
+  entryTickets?: Prisma.TicketUpdateManyWithoutEventNestedInput
+  team?: Prisma.GroupUpdateOneWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutEventNestedInput
+}
+
+export type EventUncheckedUpdateWithoutBudgetLinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutEventNestedInput
+  discussion?: Prisma.DiscussionUncheckedUpdateOneWithoutEventNestedInput
+  tickets?: Prisma.EventTicketUncheckedUpdateManyWithoutEventNestedInput
+  ticketTiers?: Prisma.TicketTierUncheckedUpdateManyWithoutEventNestedInput
+  memberRedemptions?: Prisma.MemberRedemptionUncheckedUpdateManyWithoutEventNestedInput
+  settings?: Prisma.EventSettingsUncheckedUpdateOneWithoutEventNestedInput
+  ticketTypes?: Prisma.TicketTypeUncheckedUpdateManyWithoutEventNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutEventNestedInput
+  entryTickets?: Prisma.TicketUncheckedUpdateManyWithoutEventNestedInput
+  team?: Prisma.GroupUncheckedUpdateOneWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventCreateWithoutTicketTypesInput = {
@@ -1270,6 +1470,8 @@ export type EventCreateWithoutTicketTypesInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketCreateNestedManyWithoutEventInput
   team?: Prisma.GroupCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateWithoutTicketTypesInput = {
@@ -1293,6 +1495,8 @@ export type EventUncheckedCreateWithoutTicketTypesInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutEventInput
   team?: Prisma.GroupUncheckedCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventCreateOrConnectWithoutTicketTypesInput = {
@@ -1332,6 +1536,8 @@ export type EventUpdateWithoutTicketTypesInput = {
   orders?: Prisma.OrderUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateWithoutTicketTypesInput = {
@@ -1355,6 +1561,8 @@ export type EventUncheckedUpdateWithoutTicketTypesInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUncheckedUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUncheckedUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventCreateWithoutOrdersInput = {
@@ -1378,6 +1586,8 @@ export type EventCreateWithoutOrdersInput = {
   ticketTypes?: Prisma.TicketTypeCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketCreateNestedManyWithoutEventInput
   team?: Prisma.GroupCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateWithoutOrdersInput = {
@@ -1401,6 +1611,8 @@ export type EventUncheckedCreateWithoutOrdersInput = {
   ticketTypes?: Prisma.TicketTypeUncheckedCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutEventInput
   team?: Prisma.GroupUncheckedCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventCreateOrConnectWithoutOrdersInput = {
@@ -1440,6 +1652,8 @@ export type EventUpdateWithoutOrdersInput = {
   ticketTypes?: Prisma.TicketTypeUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateWithoutOrdersInput = {
@@ -1463,6 +1677,8 @@ export type EventUncheckedUpdateWithoutOrdersInput = {
   ticketTypes?: Prisma.TicketTypeUncheckedUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUncheckedUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUncheckedUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventCreateWithoutEntryTicketsInput = {
@@ -1486,6 +1702,8 @@ export type EventCreateWithoutEntryTicketsInput = {
   ticketTypes?: Prisma.TicketTypeCreateNestedManyWithoutEventInput
   orders?: Prisma.OrderCreateNestedManyWithoutEventInput
   team?: Prisma.GroupCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateWithoutEntryTicketsInput = {
@@ -1509,6 +1727,8 @@ export type EventUncheckedCreateWithoutEntryTicketsInput = {
   ticketTypes?: Prisma.TicketTypeUncheckedCreateNestedManyWithoutEventInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutEventInput
   team?: Prisma.GroupUncheckedCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventCreateOrConnectWithoutEntryTicketsInput = {
@@ -1548,6 +1768,8 @@ export type EventUpdateWithoutEntryTicketsInput = {
   ticketTypes?: Prisma.TicketTypeUpdateManyWithoutEventNestedInput
   orders?: Prisma.OrderUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateWithoutEntryTicketsInput = {
@@ -1571,6 +1793,8 @@ export type EventUncheckedUpdateWithoutEntryTicketsInput = {
   ticketTypes?: Prisma.TicketTypeUncheckedUpdateManyWithoutEventNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUncheckedUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventCreateWithoutTeamInput = {
@@ -1594,6 +1818,8 @@ export type EventCreateWithoutTeamInput = {
   ticketTypes?: Prisma.TicketTypeCreateNestedManyWithoutEventInput
   orders?: Prisma.OrderCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketCreateNestedManyWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateWithoutTeamInput = {
@@ -1617,6 +1843,8 @@ export type EventUncheckedCreateWithoutTeamInput = {
   ticketTypes?: Prisma.TicketTypeUncheckedCreateNestedManyWithoutEventInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventCreateOrConnectWithoutTeamInput = {
@@ -1656,6 +1884,8 @@ export type EventUpdateWithoutTeamInput = {
   ticketTypes?: Prisma.TicketTypeUpdateManyWithoutEventNestedInput
   orders?: Prisma.OrderUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUpdateManyWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateWithoutTeamInput = {
@@ -1679,6 +1909,8 @@ export type EventUncheckedUpdateWithoutTeamInput = {
   ticketTypes?: Prisma.TicketTypeUncheckedUpdateManyWithoutEventNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUncheckedUpdateManyWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventCreateWithoutDiscussionInput = {
@@ -1702,6 +1934,8 @@ export type EventCreateWithoutDiscussionInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketCreateNestedManyWithoutEventInput
   team?: Prisma.GroupCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateWithoutDiscussionInput = {
@@ -1725,6 +1959,8 @@ export type EventUncheckedCreateWithoutDiscussionInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutEventInput
   entryTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutEventInput
   team?: Prisma.GroupUncheckedCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedCreateNestedManyWithoutEventInput
+  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventCreateOrConnectWithoutDiscussionInput = {
@@ -1764,6 +2000,8 @@ export type EventUpdateWithoutDiscussionInput = {
   orders?: Prisma.OrderUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateWithoutDiscussionInput = {
@@ -1787,6 +2025,124 @@ export type EventUncheckedUpdateWithoutDiscussionInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutEventNestedInput
   entryTickets?: Prisma.TicketUncheckedUpdateManyWithoutEventNestedInput
   team?: Prisma.GroupUncheckedUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedUpdateManyWithoutEventNestedInput
+  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutEventNestedInput
+}
+
+export type EventCreateWithoutFinanceRecordsInput = {
+  id?: string
+  title: string
+  description?: string | null
+  startAt: Date | string
+  endAt?: Date | string | null
+  location?: string | null
+  capacity?: number | null
+  imageUrl?: string | null
+  published?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutEventInput
+  discussion?: Prisma.DiscussionCreateNestedOneWithoutEventInput
+  tickets?: Prisma.EventTicketCreateNestedManyWithoutEventInput
+  ticketTiers?: Prisma.TicketTierCreateNestedManyWithoutEventInput
+  memberRedemptions?: Prisma.MemberRedemptionCreateNestedManyWithoutEventInput
+  settings?: Prisma.EventSettingsCreateNestedOneWithoutEventInput
+  ticketTypes?: Prisma.TicketTypeCreateNestedManyWithoutEventInput
+  orders?: Prisma.OrderCreateNestedManyWithoutEventInput
+  entryTickets?: Prisma.TicketCreateNestedManyWithoutEventInput
+  team?: Prisma.GroupCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineCreateNestedManyWithoutEventInput
+}
+
+export type EventUncheckedCreateWithoutFinanceRecordsInput = {
+  id?: string
+  title: string
+  description?: string | null
+  startAt: Date | string
+  endAt?: Date | string | null
+  location?: string | null
+  capacity?: number | null
+  imageUrl?: string | null
+  published?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutEventInput
+  discussion?: Prisma.DiscussionUncheckedCreateNestedOneWithoutEventInput
+  tickets?: Prisma.EventTicketUncheckedCreateNestedManyWithoutEventInput
+  ticketTiers?: Prisma.TicketTierUncheckedCreateNestedManyWithoutEventInput
+  memberRedemptions?: Prisma.MemberRedemptionUncheckedCreateNestedManyWithoutEventInput
+  settings?: Prisma.EventSettingsUncheckedCreateNestedOneWithoutEventInput
+  ticketTypes?: Prisma.TicketTypeUncheckedCreateNestedManyWithoutEventInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutEventInput
+  entryTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutEventInput
+  team?: Prisma.GroupUncheckedCreateNestedOneWithoutEventInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedCreateNestedManyWithoutEventInput
+}
+
+export type EventCreateOrConnectWithoutFinanceRecordsInput = {
+  where: Prisma.EventWhereUniqueInput
+  create: Prisma.XOR<Prisma.EventCreateWithoutFinanceRecordsInput, Prisma.EventUncheckedCreateWithoutFinanceRecordsInput>
+}
+
+export type EventUpsertWithoutFinanceRecordsInput = {
+  update: Prisma.XOR<Prisma.EventUpdateWithoutFinanceRecordsInput, Prisma.EventUncheckedUpdateWithoutFinanceRecordsInput>
+  create: Prisma.XOR<Prisma.EventCreateWithoutFinanceRecordsInput, Prisma.EventUncheckedCreateWithoutFinanceRecordsInput>
+  where?: Prisma.EventWhereInput
+}
+
+export type EventUpdateToOneWithWhereWithoutFinanceRecordsInput = {
+  where?: Prisma.EventWhereInput
+  data: Prisma.XOR<Prisma.EventUpdateWithoutFinanceRecordsInput, Prisma.EventUncheckedUpdateWithoutFinanceRecordsInput>
+}
+
+export type EventUpdateWithoutFinanceRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  registrations?: Prisma.RegistrationUpdateManyWithoutEventNestedInput
+  discussion?: Prisma.DiscussionUpdateOneWithoutEventNestedInput
+  tickets?: Prisma.EventTicketUpdateManyWithoutEventNestedInput
+  ticketTiers?: Prisma.TicketTierUpdateManyWithoutEventNestedInput
+  memberRedemptions?: Prisma.MemberRedemptionUpdateManyWithoutEventNestedInput
+  settings?: Prisma.EventSettingsUpdateOneWithoutEventNestedInput
+  ticketTypes?: Prisma.TicketTypeUpdateManyWithoutEventNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutEventNestedInput
+  entryTickets?: Prisma.TicketUpdateManyWithoutEventNestedInput
+  team?: Prisma.GroupUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUpdateManyWithoutEventNestedInput
+}
+
+export type EventUncheckedUpdateWithoutFinanceRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutEventNestedInput
+  discussion?: Prisma.DiscussionUncheckedUpdateOneWithoutEventNestedInput
+  tickets?: Prisma.EventTicketUncheckedUpdateManyWithoutEventNestedInput
+  ticketTiers?: Prisma.TicketTierUncheckedUpdateManyWithoutEventNestedInput
+  memberRedemptions?: Prisma.MemberRedemptionUncheckedUpdateManyWithoutEventNestedInput
+  settings?: Prisma.EventSettingsUncheckedUpdateOneWithoutEventNestedInput
+  ticketTypes?: Prisma.TicketTypeUncheckedUpdateManyWithoutEventNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutEventNestedInput
+  entryTickets?: Prisma.TicketUncheckedUpdateManyWithoutEventNestedInput
+  team?: Prisma.GroupUncheckedUpdateOneWithoutEventNestedInput
+  budgetLines?: Prisma.EventBudgetLineUncheckedUpdateManyWithoutEventNestedInput
 }
 
 
@@ -1802,6 +2158,8 @@ export type EventCountOutputType = {
   ticketTypes: number
   orders: number
   entryTickets: number
+  budgetLines: number
+  financeRecords: number
 }
 
 export type EventCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1812,6 +2170,8 @@ export type EventCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   ticketTypes?: boolean | EventCountOutputTypeCountTicketTypesArgs
   orders?: boolean | EventCountOutputTypeCountOrdersArgs
   entryTickets?: boolean | EventCountOutputTypeCountEntryTicketsArgs
+  budgetLines?: boolean | EventCountOutputTypeCountBudgetLinesArgs
+  financeRecords?: boolean | EventCountOutputTypeCountFinanceRecordsArgs
 }
 
 /**
@@ -1873,6 +2233,20 @@ export type EventCountOutputTypeCountEntryTicketsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.TicketWhereInput
 }
 
+/**
+ * EventCountOutputType without action
+ */
+export type EventCountOutputTypeCountBudgetLinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EventBudgetLineWhereInput
+}
+
+/**
+ * EventCountOutputType without action
+ */
+export type EventCountOutputTypeCountFinanceRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FinanceRecordWhereInput
+}
+
 
 export type EventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1896,6 +2270,8 @@ export type EventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   orders?: boolean | Prisma.Event$ordersArgs<ExtArgs>
   entryTickets?: boolean | Prisma.Event$entryTicketsArgs<ExtArgs>
   team?: boolean | Prisma.Event$teamArgs<ExtArgs>
+  budgetLines?: boolean | Prisma.Event$budgetLinesArgs<ExtArgs>
+  financeRecords?: boolean | Prisma.Event$financeRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.EventCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["event"]>
 
@@ -1953,6 +2329,8 @@ export type EventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   orders?: boolean | Prisma.Event$ordersArgs<ExtArgs>
   entryTickets?: boolean | Prisma.Event$entryTicketsArgs<ExtArgs>
   team?: boolean | Prisma.Event$teamArgs<ExtArgs>
+  budgetLines?: boolean | Prisma.Event$budgetLinesArgs<ExtArgs>
+  financeRecords?: boolean | Prisma.Event$financeRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.EventCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EventIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1971,6 +2349,8 @@ export type $EventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     orders: Prisma.$OrderPayload<ExtArgs>[]
     entryTickets: Prisma.$TicketPayload<ExtArgs>[]
     team: Prisma.$GroupPayload<ExtArgs> | null
+    budgetLines: Prisma.$EventBudgetLinePayload<ExtArgs>[]
+    financeRecords: Prisma.$FinanceRecordPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2388,6 +2768,8 @@ export interface Prisma__EventClient<T, Null = never, ExtArgs extends runtime.Ty
   orders<T extends Prisma.Event$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Event$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   entryTickets<T extends Prisma.Event$entryTicketsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Event$entryTicketsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   team<T extends Prisma.Event$teamArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Event$teamArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  budgetLines<T extends Prisma.Event$budgetLinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Event$budgetLinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventBudgetLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  financeRecords<T extends Prisma.Event$financeRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Event$financeRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FinanceRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3043,6 +3425,54 @@ export type Event$teamArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   include?: Prisma.GroupInclude<ExtArgs> | null
   where?: Prisma.GroupWhereInput
+}
+
+/**
+ * Event.budgetLines
+ */
+export type Event$budgetLinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EventBudgetLine
+   */
+  select?: Prisma.EventBudgetLineSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EventBudgetLine
+   */
+  omit?: Prisma.EventBudgetLineOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EventBudgetLineInclude<ExtArgs> | null
+  where?: Prisma.EventBudgetLineWhereInput
+  orderBy?: Prisma.EventBudgetLineOrderByWithRelationInput | Prisma.EventBudgetLineOrderByWithRelationInput[]
+  cursor?: Prisma.EventBudgetLineWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EventBudgetLineScalarFieldEnum | Prisma.EventBudgetLineScalarFieldEnum[]
+}
+
+/**
+ * Event.financeRecords
+ */
+export type Event$financeRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FinanceRecord
+   */
+  select?: Prisma.FinanceRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FinanceRecord
+   */
+  omit?: Prisma.FinanceRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FinanceRecordInclude<ExtArgs> | null
+  where?: Prisma.FinanceRecordWhereInput
+  orderBy?: Prisma.FinanceRecordOrderByWithRelationInput | Prisma.FinanceRecordOrderByWithRelationInput[]
+  cursor?: Prisma.FinanceRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FinanceRecordScalarFieldEnum | Prisma.FinanceRecordScalarFieldEnum[]
 }
 
 /**

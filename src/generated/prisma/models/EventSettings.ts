@@ -34,6 +34,12 @@ export type EventSettingsMinAggregateOutputType = {
   checkInEnabled: boolean | null
   budgetEnabled: boolean | null
   dashboardEnabled: boolean | null
+  financeStatus: $Enums.FinanceReportStatus | null
+  financeSubmittedAt: Date | null
+  financeSubmittedById: string | null
+  financeReviewedAt: Date | null
+  financeReviewedById: string | null
+  financeReviewNote: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -48,6 +54,12 @@ export type EventSettingsMaxAggregateOutputType = {
   checkInEnabled: boolean | null
   budgetEnabled: boolean | null
   dashboardEnabled: boolean | null
+  financeStatus: $Enums.FinanceReportStatus | null
+  financeSubmittedAt: Date | null
+  financeSubmittedById: string | null
+  financeReviewedAt: Date | null
+  financeReviewedById: string | null
+  financeReviewNote: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +74,12 @@ export type EventSettingsCountAggregateOutputType = {
   checkInEnabled: number
   budgetEnabled: number
   dashboardEnabled: number
+  financeStatus: number
+  financeSubmittedAt: number
+  financeSubmittedById: number
+  financeReviewedAt: number
+  financeReviewedById: number
+  financeReviewNote: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -78,6 +96,12 @@ export type EventSettingsMinAggregateInputType = {
   checkInEnabled?: true
   budgetEnabled?: true
   dashboardEnabled?: true
+  financeStatus?: true
+  financeSubmittedAt?: true
+  financeSubmittedById?: true
+  financeReviewedAt?: true
+  financeReviewedById?: true
+  financeReviewNote?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -92,6 +116,12 @@ export type EventSettingsMaxAggregateInputType = {
   checkInEnabled?: true
   budgetEnabled?: true
   dashboardEnabled?: true
+  financeStatus?: true
+  financeSubmittedAt?: true
+  financeSubmittedById?: true
+  financeReviewedAt?: true
+  financeReviewedById?: true
+  financeReviewNote?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -106,6 +136,12 @@ export type EventSettingsCountAggregateInputType = {
   checkInEnabled?: true
   budgetEnabled?: true
   dashboardEnabled?: true
+  financeStatus?: true
+  financeSubmittedAt?: true
+  financeSubmittedById?: true
+  financeReviewedAt?: true
+  financeReviewedById?: true
+  financeReviewNote?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -193,6 +229,12 @@ export type EventSettingsGroupByOutputType = {
   checkInEnabled: boolean
   budgetEnabled: boolean
   dashboardEnabled: boolean
+  financeStatus: $Enums.FinanceReportStatus
+  financeSubmittedAt: Date | null
+  financeSubmittedById: string | null
+  financeReviewedAt: Date | null
+  financeReviewedById: string | null
+  financeReviewNote: string | null
   createdAt: Date
   updatedAt: Date
   _count: EventSettingsCountAggregateOutputType | null
@@ -228,9 +270,17 @@ export type EventSettingsWhereInput = {
   checkInEnabled?: Prisma.BoolFilter<"EventSettings"> | boolean
   budgetEnabled?: Prisma.BoolFilter<"EventSettings"> | boolean
   dashboardEnabled?: Prisma.BoolFilter<"EventSettings"> | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFilter<"EventSettings"> | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.DateTimeNullableFilter<"EventSettings"> | Date | string | null
+  financeSubmittedById?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  financeReviewedAt?: Prisma.DateTimeNullableFilter<"EventSettings"> | Date | string | null
+  financeReviewedById?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  financeReviewNote?: Prisma.StringNullableFilter<"EventSettings"> | string | null
   createdAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
+  financeSubmittedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  financeReviewedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type EventSettingsOrderByWithRelationInput = {
@@ -243,9 +293,17 @@ export type EventSettingsOrderByWithRelationInput = {
   checkInEnabled?: Prisma.SortOrder
   budgetEnabled?: Prisma.SortOrder
   dashboardEnabled?: Prisma.SortOrder
+  financeStatus?: Prisma.SortOrder
+  financeSubmittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  financeSubmittedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  financeReviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  financeReviewedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  financeReviewNote?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   event?: Prisma.EventOrderByWithRelationInput
+  financeSubmittedBy?: Prisma.UserOrderByWithRelationInput
+  financeReviewedBy?: Prisma.UserOrderByWithRelationInput
 }
 
 export type EventSettingsWhereUniqueInput = Prisma.AtLeast<{
@@ -261,9 +319,17 @@ export type EventSettingsWhereUniqueInput = Prisma.AtLeast<{
   checkInEnabled?: Prisma.BoolFilter<"EventSettings"> | boolean
   budgetEnabled?: Prisma.BoolFilter<"EventSettings"> | boolean
   dashboardEnabled?: Prisma.BoolFilter<"EventSettings"> | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFilter<"EventSettings"> | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.DateTimeNullableFilter<"EventSettings"> | Date | string | null
+  financeSubmittedById?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  financeReviewedAt?: Prisma.DateTimeNullableFilter<"EventSettings"> | Date | string | null
+  financeReviewedById?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  financeReviewNote?: Prisma.StringNullableFilter<"EventSettings"> | string | null
   createdAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
+  financeSubmittedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  financeReviewedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id" | "eventId">
 
 export type EventSettingsOrderByWithAggregationInput = {
@@ -276,6 +342,12 @@ export type EventSettingsOrderByWithAggregationInput = {
   checkInEnabled?: Prisma.SortOrder
   budgetEnabled?: Prisma.SortOrder
   dashboardEnabled?: Prisma.SortOrder
+  financeStatus?: Prisma.SortOrder
+  financeSubmittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  financeSubmittedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  financeReviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  financeReviewedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  financeReviewNote?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.EventSettingsCountOrderByAggregateInput
@@ -296,6 +368,12 @@ export type EventSettingsScalarWhereWithAggregatesInput = {
   checkInEnabled?: Prisma.BoolWithAggregatesFilter<"EventSettings"> | boolean
   budgetEnabled?: Prisma.BoolWithAggregatesFilter<"EventSettings"> | boolean
   dashboardEnabled?: Prisma.BoolWithAggregatesFilter<"EventSettings"> | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusWithAggregatesFilter<"EventSettings"> | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"EventSettings"> | Date | string | null
+  financeSubmittedById?: Prisma.StringNullableWithAggregatesFilter<"EventSettings"> | string | null
+  financeReviewedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"EventSettings"> | Date | string | null
+  financeReviewedById?: Prisma.StringNullableWithAggregatesFilter<"EventSettings"> | string | null
+  financeReviewNote?: Prisma.StringNullableWithAggregatesFilter<"EventSettings"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"EventSettings"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"EventSettings"> | Date | string
 }
@@ -309,9 +387,15 @@ export type EventSettingsCreateInput = {
   checkInEnabled?: boolean
   budgetEnabled?: boolean
   dashboardEnabled?: boolean
+  financeStatus?: $Enums.FinanceReportStatus
+  financeSubmittedAt?: Date | string | null
+  financeReviewedAt?: Date | string | null
+  financeReviewNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutSettingsInput
+  financeSubmittedBy?: Prisma.UserCreateNestedOneWithoutFinanceSubmissionsInput
+  financeReviewedBy?: Prisma.UserCreateNestedOneWithoutFinanceReviewsInput
 }
 
 export type EventSettingsUncheckedCreateInput = {
@@ -324,6 +408,12 @@ export type EventSettingsUncheckedCreateInput = {
   checkInEnabled?: boolean
   budgetEnabled?: boolean
   dashboardEnabled?: boolean
+  financeStatus?: $Enums.FinanceReportStatus
+  financeSubmittedAt?: Date | string | null
+  financeSubmittedById?: string | null
+  financeReviewedAt?: Date | string | null
+  financeReviewedById?: string | null
+  financeReviewNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -337,9 +427,15 @@ export type EventSettingsUpdateInput = {
   checkInEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   budgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dashboardEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFieldUpdateOperationsInput | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutSettingsNestedInput
+  financeSubmittedBy?: Prisma.UserUpdateOneWithoutFinanceSubmissionsNestedInput
+  financeReviewedBy?: Prisma.UserUpdateOneWithoutFinanceReviewsNestedInput
 }
 
 export type EventSettingsUncheckedUpdateInput = {
@@ -352,6 +448,12 @@ export type EventSettingsUncheckedUpdateInput = {
   checkInEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   budgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dashboardEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFieldUpdateOperationsInput | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeSubmittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -366,6 +468,12 @@ export type EventSettingsCreateManyInput = {
   checkInEnabled?: boolean
   budgetEnabled?: boolean
   dashboardEnabled?: boolean
+  financeStatus?: $Enums.FinanceReportStatus
+  financeSubmittedAt?: Date | string | null
+  financeSubmittedById?: string | null
+  financeReviewedAt?: Date | string | null
+  financeReviewedById?: string | null
+  financeReviewNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -379,6 +487,10 @@ export type EventSettingsUpdateManyMutationInput = {
   checkInEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   budgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dashboardEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFieldUpdateOperationsInput | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -393,8 +505,24 @@ export type EventSettingsUncheckedUpdateManyInput = {
   checkInEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   budgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dashboardEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFieldUpdateOperationsInput | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeSubmittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type EventSettingsListRelationFilter = {
+  every?: Prisma.EventSettingsWhereInput
+  some?: Prisma.EventSettingsWhereInput
+  none?: Prisma.EventSettingsWhereInput
+}
+
+export type EventSettingsOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type EventSettingsNullableScalarRelationFilter = {
@@ -412,6 +540,12 @@ export type EventSettingsCountOrderByAggregateInput = {
   checkInEnabled?: Prisma.SortOrder
   budgetEnabled?: Prisma.SortOrder
   dashboardEnabled?: Prisma.SortOrder
+  financeStatus?: Prisma.SortOrder
+  financeSubmittedAt?: Prisma.SortOrder
+  financeSubmittedById?: Prisma.SortOrder
+  financeReviewedAt?: Prisma.SortOrder
+  financeReviewedById?: Prisma.SortOrder
+  financeReviewNote?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -426,6 +560,12 @@ export type EventSettingsMaxOrderByAggregateInput = {
   checkInEnabled?: Prisma.SortOrder
   budgetEnabled?: Prisma.SortOrder
   dashboardEnabled?: Prisma.SortOrder
+  financeStatus?: Prisma.SortOrder
+  financeSubmittedAt?: Prisma.SortOrder
+  financeSubmittedById?: Prisma.SortOrder
+  financeReviewedAt?: Prisma.SortOrder
+  financeReviewedById?: Prisma.SortOrder
+  financeReviewNote?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -440,8 +580,98 @@ export type EventSettingsMinOrderByAggregateInput = {
   checkInEnabled?: Prisma.SortOrder
   budgetEnabled?: Prisma.SortOrder
   dashboardEnabled?: Prisma.SortOrder
+  financeStatus?: Prisma.SortOrder
+  financeSubmittedAt?: Prisma.SortOrder
+  financeSubmittedById?: Prisma.SortOrder
+  financeReviewedAt?: Prisma.SortOrder
+  financeReviewedById?: Prisma.SortOrder
+  financeReviewNote?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput = {
+  create?: Prisma.XOR<Prisma.EventSettingsCreateWithoutFinanceSubmittedByInput, Prisma.EventSettingsUncheckedCreateWithoutFinanceSubmittedByInput> | Prisma.EventSettingsCreateWithoutFinanceSubmittedByInput[] | Prisma.EventSettingsUncheckedCreateWithoutFinanceSubmittedByInput[]
+  connectOrCreate?: Prisma.EventSettingsCreateOrConnectWithoutFinanceSubmittedByInput | Prisma.EventSettingsCreateOrConnectWithoutFinanceSubmittedByInput[]
+  createMany?: Prisma.EventSettingsCreateManyFinanceSubmittedByInputEnvelope
+  connect?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+}
+
+export type EventSettingsCreateNestedManyWithoutFinanceReviewedByInput = {
+  create?: Prisma.XOR<Prisma.EventSettingsCreateWithoutFinanceReviewedByInput, Prisma.EventSettingsUncheckedCreateWithoutFinanceReviewedByInput> | Prisma.EventSettingsCreateWithoutFinanceReviewedByInput[] | Prisma.EventSettingsUncheckedCreateWithoutFinanceReviewedByInput[]
+  connectOrCreate?: Prisma.EventSettingsCreateOrConnectWithoutFinanceReviewedByInput | Prisma.EventSettingsCreateOrConnectWithoutFinanceReviewedByInput[]
+  createMany?: Prisma.EventSettingsCreateManyFinanceReviewedByInputEnvelope
+  connect?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+}
+
+export type EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput = {
+  create?: Prisma.XOR<Prisma.EventSettingsCreateWithoutFinanceSubmittedByInput, Prisma.EventSettingsUncheckedCreateWithoutFinanceSubmittedByInput> | Prisma.EventSettingsCreateWithoutFinanceSubmittedByInput[] | Prisma.EventSettingsUncheckedCreateWithoutFinanceSubmittedByInput[]
+  connectOrCreate?: Prisma.EventSettingsCreateOrConnectWithoutFinanceSubmittedByInput | Prisma.EventSettingsCreateOrConnectWithoutFinanceSubmittedByInput[]
+  createMany?: Prisma.EventSettingsCreateManyFinanceSubmittedByInputEnvelope
+  connect?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+}
+
+export type EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput = {
+  create?: Prisma.XOR<Prisma.EventSettingsCreateWithoutFinanceReviewedByInput, Prisma.EventSettingsUncheckedCreateWithoutFinanceReviewedByInput> | Prisma.EventSettingsCreateWithoutFinanceReviewedByInput[] | Prisma.EventSettingsUncheckedCreateWithoutFinanceReviewedByInput[]
+  connectOrCreate?: Prisma.EventSettingsCreateOrConnectWithoutFinanceReviewedByInput | Prisma.EventSettingsCreateOrConnectWithoutFinanceReviewedByInput[]
+  createMany?: Prisma.EventSettingsCreateManyFinanceReviewedByInputEnvelope
+  connect?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+}
+
+export type EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput = {
+  create?: Prisma.XOR<Prisma.EventSettingsCreateWithoutFinanceSubmittedByInput, Prisma.EventSettingsUncheckedCreateWithoutFinanceSubmittedByInput> | Prisma.EventSettingsCreateWithoutFinanceSubmittedByInput[] | Prisma.EventSettingsUncheckedCreateWithoutFinanceSubmittedByInput[]
+  connectOrCreate?: Prisma.EventSettingsCreateOrConnectWithoutFinanceSubmittedByInput | Prisma.EventSettingsCreateOrConnectWithoutFinanceSubmittedByInput[]
+  upsert?: Prisma.EventSettingsUpsertWithWhereUniqueWithoutFinanceSubmittedByInput | Prisma.EventSettingsUpsertWithWhereUniqueWithoutFinanceSubmittedByInput[]
+  createMany?: Prisma.EventSettingsCreateManyFinanceSubmittedByInputEnvelope
+  set?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  disconnect?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  delete?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  connect?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  update?: Prisma.EventSettingsUpdateWithWhereUniqueWithoutFinanceSubmittedByInput | Prisma.EventSettingsUpdateWithWhereUniqueWithoutFinanceSubmittedByInput[]
+  updateMany?: Prisma.EventSettingsUpdateManyWithWhereWithoutFinanceSubmittedByInput | Prisma.EventSettingsUpdateManyWithWhereWithoutFinanceSubmittedByInput[]
+  deleteMany?: Prisma.EventSettingsScalarWhereInput | Prisma.EventSettingsScalarWhereInput[]
+}
+
+export type EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput = {
+  create?: Prisma.XOR<Prisma.EventSettingsCreateWithoutFinanceReviewedByInput, Prisma.EventSettingsUncheckedCreateWithoutFinanceReviewedByInput> | Prisma.EventSettingsCreateWithoutFinanceReviewedByInput[] | Prisma.EventSettingsUncheckedCreateWithoutFinanceReviewedByInput[]
+  connectOrCreate?: Prisma.EventSettingsCreateOrConnectWithoutFinanceReviewedByInput | Prisma.EventSettingsCreateOrConnectWithoutFinanceReviewedByInput[]
+  upsert?: Prisma.EventSettingsUpsertWithWhereUniqueWithoutFinanceReviewedByInput | Prisma.EventSettingsUpsertWithWhereUniqueWithoutFinanceReviewedByInput[]
+  createMany?: Prisma.EventSettingsCreateManyFinanceReviewedByInputEnvelope
+  set?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  disconnect?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  delete?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  connect?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  update?: Prisma.EventSettingsUpdateWithWhereUniqueWithoutFinanceReviewedByInput | Prisma.EventSettingsUpdateWithWhereUniqueWithoutFinanceReviewedByInput[]
+  updateMany?: Prisma.EventSettingsUpdateManyWithWhereWithoutFinanceReviewedByInput | Prisma.EventSettingsUpdateManyWithWhereWithoutFinanceReviewedByInput[]
+  deleteMany?: Prisma.EventSettingsScalarWhereInput | Prisma.EventSettingsScalarWhereInput[]
+}
+
+export type EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput = {
+  create?: Prisma.XOR<Prisma.EventSettingsCreateWithoutFinanceSubmittedByInput, Prisma.EventSettingsUncheckedCreateWithoutFinanceSubmittedByInput> | Prisma.EventSettingsCreateWithoutFinanceSubmittedByInput[] | Prisma.EventSettingsUncheckedCreateWithoutFinanceSubmittedByInput[]
+  connectOrCreate?: Prisma.EventSettingsCreateOrConnectWithoutFinanceSubmittedByInput | Prisma.EventSettingsCreateOrConnectWithoutFinanceSubmittedByInput[]
+  upsert?: Prisma.EventSettingsUpsertWithWhereUniqueWithoutFinanceSubmittedByInput | Prisma.EventSettingsUpsertWithWhereUniqueWithoutFinanceSubmittedByInput[]
+  createMany?: Prisma.EventSettingsCreateManyFinanceSubmittedByInputEnvelope
+  set?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  disconnect?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  delete?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  connect?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  update?: Prisma.EventSettingsUpdateWithWhereUniqueWithoutFinanceSubmittedByInput | Prisma.EventSettingsUpdateWithWhereUniqueWithoutFinanceSubmittedByInput[]
+  updateMany?: Prisma.EventSettingsUpdateManyWithWhereWithoutFinanceSubmittedByInput | Prisma.EventSettingsUpdateManyWithWhereWithoutFinanceSubmittedByInput[]
+  deleteMany?: Prisma.EventSettingsScalarWhereInput | Prisma.EventSettingsScalarWhereInput[]
+}
+
+export type EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput = {
+  create?: Prisma.XOR<Prisma.EventSettingsCreateWithoutFinanceReviewedByInput, Prisma.EventSettingsUncheckedCreateWithoutFinanceReviewedByInput> | Prisma.EventSettingsCreateWithoutFinanceReviewedByInput[] | Prisma.EventSettingsUncheckedCreateWithoutFinanceReviewedByInput[]
+  connectOrCreate?: Prisma.EventSettingsCreateOrConnectWithoutFinanceReviewedByInput | Prisma.EventSettingsCreateOrConnectWithoutFinanceReviewedByInput[]
+  upsert?: Prisma.EventSettingsUpsertWithWhereUniqueWithoutFinanceReviewedByInput | Prisma.EventSettingsUpsertWithWhereUniqueWithoutFinanceReviewedByInput[]
+  createMany?: Prisma.EventSettingsCreateManyFinanceReviewedByInputEnvelope
+  set?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  disconnect?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  delete?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  connect?: Prisma.EventSettingsWhereUniqueInput | Prisma.EventSettingsWhereUniqueInput[]
+  update?: Prisma.EventSettingsUpdateWithWhereUniqueWithoutFinanceReviewedByInput | Prisma.EventSettingsUpdateWithWhereUniqueWithoutFinanceReviewedByInput[]
+  updateMany?: Prisma.EventSettingsUpdateManyWithWhereWithoutFinanceReviewedByInput | Prisma.EventSettingsUpdateManyWithWhereWithoutFinanceReviewedByInput[]
+  deleteMany?: Prisma.EventSettingsScalarWhereInput | Prisma.EventSettingsScalarWhereInput[]
 }
 
 export type EventSettingsCreateNestedOneWithoutEventInput = {
@@ -476,6 +706,161 @@ export type EventSettingsUncheckedUpdateOneWithoutEventNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EventSettingsUpdateToOneWithWhereWithoutEventInput, Prisma.EventSettingsUpdateWithoutEventInput>, Prisma.EventSettingsUncheckedUpdateWithoutEventInput>
 }
 
+export type EnumFinanceReportStatusFieldUpdateOperationsInput = {
+  set?: $Enums.FinanceReportStatus
+}
+
+export type EventSettingsCreateWithoutFinanceSubmittedByInput = {
+  id?: string
+  timezone?: string
+  currency?: string
+  registrationEnabled?: boolean
+  ticketsEnabled?: boolean
+  checkInEnabled?: boolean
+  budgetEnabled?: boolean
+  dashboardEnabled?: boolean
+  financeStatus?: $Enums.FinanceReportStatus
+  financeSubmittedAt?: Date | string | null
+  financeReviewedAt?: Date | string | null
+  financeReviewNote?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  event: Prisma.EventCreateNestedOneWithoutSettingsInput
+  financeReviewedBy?: Prisma.UserCreateNestedOneWithoutFinanceReviewsInput
+}
+
+export type EventSettingsUncheckedCreateWithoutFinanceSubmittedByInput = {
+  id?: string
+  eventId: string
+  timezone?: string
+  currency?: string
+  registrationEnabled?: boolean
+  ticketsEnabled?: boolean
+  checkInEnabled?: boolean
+  budgetEnabled?: boolean
+  dashboardEnabled?: boolean
+  financeStatus?: $Enums.FinanceReportStatus
+  financeSubmittedAt?: Date | string | null
+  financeReviewedAt?: Date | string | null
+  financeReviewedById?: string | null
+  financeReviewNote?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EventSettingsCreateOrConnectWithoutFinanceSubmittedByInput = {
+  where: Prisma.EventSettingsWhereUniqueInput
+  create: Prisma.XOR<Prisma.EventSettingsCreateWithoutFinanceSubmittedByInput, Prisma.EventSettingsUncheckedCreateWithoutFinanceSubmittedByInput>
+}
+
+export type EventSettingsCreateManyFinanceSubmittedByInputEnvelope = {
+  data: Prisma.EventSettingsCreateManyFinanceSubmittedByInput | Prisma.EventSettingsCreateManyFinanceSubmittedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type EventSettingsCreateWithoutFinanceReviewedByInput = {
+  id?: string
+  timezone?: string
+  currency?: string
+  registrationEnabled?: boolean
+  ticketsEnabled?: boolean
+  checkInEnabled?: boolean
+  budgetEnabled?: boolean
+  dashboardEnabled?: boolean
+  financeStatus?: $Enums.FinanceReportStatus
+  financeSubmittedAt?: Date | string | null
+  financeReviewedAt?: Date | string | null
+  financeReviewNote?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  event: Prisma.EventCreateNestedOneWithoutSettingsInput
+  financeSubmittedBy?: Prisma.UserCreateNestedOneWithoutFinanceSubmissionsInput
+}
+
+export type EventSettingsUncheckedCreateWithoutFinanceReviewedByInput = {
+  id?: string
+  eventId: string
+  timezone?: string
+  currency?: string
+  registrationEnabled?: boolean
+  ticketsEnabled?: boolean
+  checkInEnabled?: boolean
+  budgetEnabled?: boolean
+  dashboardEnabled?: boolean
+  financeStatus?: $Enums.FinanceReportStatus
+  financeSubmittedAt?: Date | string | null
+  financeSubmittedById?: string | null
+  financeReviewedAt?: Date | string | null
+  financeReviewNote?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EventSettingsCreateOrConnectWithoutFinanceReviewedByInput = {
+  where: Prisma.EventSettingsWhereUniqueInput
+  create: Prisma.XOR<Prisma.EventSettingsCreateWithoutFinanceReviewedByInput, Prisma.EventSettingsUncheckedCreateWithoutFinanceReviewedByInput>
+}
+
+export type EventSettingsCreateManyFinanceReviewedByInputEnvelope = {
+  data: Prisma.EventSettingsCreateManyFinanceReviewedByInput | Prisma.EventSettingsCreateManyFinanceReviewedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type EventSettingsUpsertWithWhereUniqueWithoutFinanceSubmittedByInput = {
+  where: Prisma.EventSettingsWhereUniqueInput
+  update: Prisma.XOR<Prisma.EventSettingsUpdateWithoutFinanceSubmittedByInput, Prisma.EventSettingsUncheckedUpdateWithoutFinanceSubmittedByInput>
+  create: Prisma.XOR<Prisma.EventSettingsCreateWithoutFinanceSubmittedByInput, Prisma.EventSettingsUncheckedCreateWithoutFinanceSubmittedByInput>
+}
+
+export type EventSettingsUpdateWithWhereUniqueWithoutFinanceSubmittedByInput = {
+  where: Prisma.EventSettingsWhereUniqueInput
+  data: Prisma.XOR<Prisma.EventSettingsUpdateWithoutFinanceSubmittedByInput, Prisma.EventSettingsUncheckedUpdateWithoutFinanceSubmittedByInput>
+}
+
+export type EventSettingsUpdateManyWithWhereWithoutFinanceSubmittedByInput = {
+  where: Prisma.EventSettingsScalarWhereInput
+  data: Prisma.XOR<Prisma.EventSettingsUpdateManyMutationInput, Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByInput>
+}
+
+export type EventSettingsScalarWhereInput = {
+  AND?: Prisma.EventSettingsScalarWhereInput | Prisma.EventSettingsScalarWhereInput[]
+  OR?: Prisma.EventSettingsScalarWhereInput[]
+  NOT?: Prisma.EventSettingsScalarWhereInput | Prisma.EventSettingsScalarWhereInput[]
+  id?: Prisma.StringFilter<"EventSettings"> | string
+  eventId?: Prisma.StringFilter<"EventSettings"> | string
+  timezone?: Prisma.StringFilter<"EventSettings"> | string
+  currency?: Prisma.StringFilter<"EventSettings"> | string
+  registrationEnabled?: Prisma.BoolFilter<"EventSettings"> | boolean
+  ticketsEnabled?: Prisma.BoolFilter<"EventSettings"> | boolean
+  checkInEnabled?: Prisma.BoolFilter<"EventSettings"> | boolean
+  budgetEnabled?: Prisma.BoolFilter<"EventSettings"> | boolean
+  dashboardEnabled?: Prisma.BoolFilter<"EventSettings"> | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFilter<"EventSettings"> | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.DateTimeNullableFilter<"EventSettings"> | Date | string | null
+  financeSubmittedById?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  financeReviewedAt?: Prisma.DateTimeNullableFilter<"EventSettings"> | Date | string | null
+  financeReviewedById?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  financeReviewNote?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
+}
+
+export type EventSettingsUpsertWithWhereUniqueWithoutFinanceReviewedByInput = {
+  where: Prisma.EventSettingsWhereUniqueInput
+  update: Prisma.XOR<Prisma.EventSettingsUpdateWithoutFinanceReviewedByInput, Prisma.EventSettingsUncheckedUpdateWithoutFinanceReviewedByInput>
+  create: Prisma.XOR<Prisma.EventSettingsCreateWithoutFinanceReviewedByInput, Prisma.EventSettingsUncheckedCreateWithoutFinanceReviewedByInput>
+}
+
+export type EventSettingsUpdateWithWhereUniqueWithoutFinanceReviewedByInput = {
+  where: Prisma.EventSettingsWhereUniqueInput
+  data: Prisma.XOR<Prisma.EventSettingsUpdateWithoutFinanceReviewedByInput, Prisma.EventSettingsUncheckedUpdateWithoutFinanceReviewedByInput>
+}
+
+export type EventSettingsUpdateManyWithWhereWithoutFinanceReviewedByInput = {
+  where: Prisma.EventSettingsScalarWhereInput
+  data: Prisma.XOR<Prisma.EventSettingsUpdateManyMutationInput, Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByInput>
+}
+
 export type EventSettingsCreateWithoutEventInput = {
   id?: string
   timezone?: string
@@ -485,8 +870,14 @@ export type EventSettingsCreateWithoutEventInput = {
   checkInEnabled?: boolean
   budgetEnabled?: boolean
   dashboardEnabled?: boolean
+  financeStatus?: $Enums.FinanceReportStatus
+  financeSubmittedAt?: Date | string | null
+  financeReviewedAt?: Date | string | null
+  financeReviewNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  financeSubmittedBy?: Prisma.UserCreateNestedOneWithoutFinanceSubmissionsInput
+  financeReviewedBy?: Prisma.UserCreateNestedOneWithoutFinanceReviewsInput
 }
 
 export type EventSettingsUncheckedCreateWithoutEventInput = {
@@ -498,6 +889,12 @@ export type EventSettingsUncheckedCreateWithoutEventInput = {
   checkInEnabled?: boolean
   budgetEnabled?: boolean
   dashboardEnabled?: boolean
+  financeStatus?: $Enums.FinanceReportStatus
+  financeSubmittedAt?: Date | string | null
+  financeSubmittedById?: string | null
+  financeReviewedAt?: Date | string | null
+  financeReviewedById?: string | null
+  financeReviewNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -527,8 +924,14 @@ export type EventSettingsUpdateWithoutEventInput = {
   checkInEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   budgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dashboardEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFieldUpdateOperationsInput | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  financeSubmittedBy?: Prisma.UserUpdateOneWithoutFinanceSubmissionsNestedInput
+  financeReviewedBy?: Prisma.UserUpdateOneWithoutFinanceReviewsNestedInput
 }
 
 export type EventSettingsUncheckedUpdateWithoutEventInput = {
@@ -540,6 +943,164 @@ export type EventSettingsUncheckedUpdateWithoutEventInput = {
   checkInEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   budgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dashboardEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFieldUpdateOperationsInput | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeSubmittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type EventSettingsCreateManyFinanceSubmittedByInput = {
+  id?: string
+  eventId: string
+  timezone?: string
+  currency?: string
+  registrationEnabled?: boolean
+  ticketsEnabled?: boolean
+  checkInEnabled?: boolean
+  budgetEnabled?: boolean
+  dashboardEnabled?: boolean
+  financeStatus?: $Enums.FinanceReportStatus
+  financeSubmittedAt?: Date | string | null
+  financeReviewedAt?: Date | string | null
+  financeReviewedById?: string | null
+  financeReviewNote?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EventSettingsCreateManyFinanceReviewedByInput = {
+  id?: string
+  eventId: string
+  timezone?: string
+  currency?: string
+  registrationEnabled?: boolean
+  ticketsEnabled?: boolean
+  checkInEnabled?: boolean
+  budgetEnabled?: boolean
+  dashboardEnabled?: boolean
+  financeStatus?: $Enums.FinanceReportStatus
+  financeSubmittedAt?: Date | string | null
+  financeSubmittedById?: string | null
+  financeReviewedAt?: Date | string | null
+  financeReviewNote?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EventSettingsUpdateWithoutFinanceSubmittedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ticketsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkInEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  budgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dashboardEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFieldUpdateOperationsInput | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  event?: Prisma.EventUpdateOneRequiredWithoutSettingsNestedInput
+  financeReviewedBy?: Prisma.UserUpdateOneWithoutFinanceReviewsNestedInput
+}
+
+export type EventSettingsUncheckedUpdateWithoutFinanceSubmittedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ticketsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkInEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  budgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dashboardEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFieldUpdateOperationsInput | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ticketsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkInEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  budgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dashboardEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFieldUpdateOperationsInput | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type EventSettingsUpdateWithoutFinanceReviewedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ticketsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkInEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  budgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dashboardEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFieldUpdateOperationsInput | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  event?: Prisma.EventUpdateOneRequiredWithoutSettingsNestedInput
+  financeSubmittedBy?: Prisma.UserUpdateOneWithoutFinanceSubmissionsNestedInput
+}
+
+export type EventSettingsUncheckedUpdateWithoutFinanceReviewedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ticketsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkInEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  budgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dashboardEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFieldUpdateOperationsInput | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeSubmittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ticketsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkInEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  budgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dashboardEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeStatus?: Prisma.EnumFinanceReportStatusFieldUpdateOperationsInput | $Enums.FinanceReportStatus
+  financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeSubmittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -556,9 +1117,17 @@ export type EventSettingsSelect<ExtArgs extends runtime.Types.Extensions.Interna
   checkInEnabled?: boolean
   budgetEnabled?: boolean
   dashboardEnabled?: boolean
+  financeStatus?: boolean
+  financeSubmittedAt?: boolean
+  financeSubmittedById?: boolean
+  financeReviewedAt?: boolean
+  financeReviewedById?: boolean
+  financeReviewNote?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  financeSubmittedBy?: boolean | Prisma.EventSettings$financeSubmittedByArgs<ExtArgs>
+  financeReviewedBy?: boolean | Prisma.EventSettings$financeReviewedByArgs<ExtArgs>
 }, ExtArgs["result"]["eventSettings"]>
 
 export type EventSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -571,9 +1140,17 @@ export type EventSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   checkInEnabled?: boolean
   budgetEnabled?: boolean
   dashboardEnabled?: boolean
+  financeStatus?: boolean
+  financeSubmittedAt?: boolean
+  financeSubmittedById?: boolean
+  financeReviewedAt?: boolean
+  financeReviewedById?: boolean
+  financeReviewNote?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  financeSubmittedBy?: boolean | Prisma.EventSettings$financeSubmittedByArgs<ExtArgs>
+  financeReviewedBy?: boolean | Prisma.EventSettings$financeReviewedByArgs<ExtArgs>
 }, ExtArgs["result"]["eventSettings"]>
 
 export type EventSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -586,9 +1163,17 @@ export type EventSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   checkInEnabled?: boolean
   budgetEnabled?: boolean
   dashboardEnabled?: boolean
+  financeStatus?: boolean
+  financeSubmittedAt?: boolean
+  financeSubmittedById?: boolean
+  financeReviewedAt?: boolean
+  financeReviewedById?: boolean
+  financeReviewNote?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  financeSubmittedBy?: boolean | Prisma.EventSettings$financeSubmittedByArgs<ExtArgs>
+  financeReviewedBy?: boolean | Prisma.EventSettings$financeReviewedByArgs<ExtArgs>
 }, ExtArgs["result"]["eventSettings"]>
 
 export type EventSettingsSelectScalar = {
@@ -601,25 +1186,39 @@ export type EventSettingsSelectScalar = {
   checkInEnabled?: boolean
   budgetEnabled?: boolean
   dashboardEnabled?: boolean
+  financeStatus?: boolean
+  financeSubmittedAt?: boolean
+  financeSubmittedById?: boolean
+  financeReviewedAt?: boolean
+  financeReviewedById?: boolean
+  financeReviewNote?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EventSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "timezone" | "currency" | "registrationEnabled" | "ticketsEnabled" | "checkInEnabled" | "budgetEnabled" | "dashboardEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["eventSettings"]>
+export type EventSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "timezone" | "currency" | "registrationEnabled" | "ticketsEnabled" | "checkInEnabled" | "budgetEnabled" | "dashboardEnabled" | "financeStatus" | "financeSubmittedAt" | "financeSubmittedById" | "financeReviewedAt" | "financeReviewedById" | "financeReviewNote" | "createdAt" | "updatedAt", ExtArgs["result"]["eventSettings"]>
 export type EventSettingsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  financeSubmittedBy?: boolean | Prisma.EventSettings$financeSubmittedByArgs<ExtArgs>
+  financeReviewedBy?: boolean | Prisma.EventSettings$financeReviewedByArgs<ExtArgs>
 }
 export type EventSettingsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  financeSubmittedBy?: boolean | Prisma.EventSettings$financeSubmittedByArgs<ExtArgs>
+  financeReviewedBy?: boolean | Prisma.EventSettings$financeReviewedByArgs<ExtArgs>
 }
 export type EventSettingsIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  financeSubmittedBy?: boolean | Prisma.EventSettings$financeSubmittedByArgs<ExtArgs>
+  financeReviewedBy?: boolean | Prisma.EventSettings$financeReviewedByArgs<ExtArgs>
 }
 
 export type $EventSettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "EventSettings"
   objects: {
     event: Prisma.$EventPayload<ExtArgs>
+    financeSubmittedBy: Prisma.$UserPayload<ExtArgs> | null
+    financeReviewedBy: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -634,6 +1233,16 @@ export type $EventSettingsPayload<ExtArgs extends runtime.Types.Extensions.Inter
     checkInEnabled: boolean
     budgetEnabled: boolean
     dashboardEnabled: boolean
+    /**
+     * The event's finance report: the team edits while OPEN/RETURNED, then
+     * submits it once; the Events VP approves or returns it.
+     */
+    financeStatus: $Enums.FinanceReportStatus
+    financeSubmittedAt: Date | null
+    financeSubmittedById: string | null
+    financeReviewedAt: Date | null
+    financeReviewedById: string | null
+    financeReviewNote: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["eventSettings"]>
@@ -1031,6 +1640,8 @@ readonly fields: EventSettingsFieldRefs;
 export interface Prisma__EventSettingsClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   event<T extends Prisma.EventDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EventDefaultArgs<ExtArgs>>): Prisma.Prisma__EventClient<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  financeSubmittedBy<T extends Prisma.EventSettings$financeSubmittedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EventSettings$financeSubmittedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  financeReviewedBy<T extends Prisma.EventSettings$financeReviewedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EventSettings$financeReviewedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1069,6 +1680,12 @@ export interface EventSettingsFieldRefs {
   readonly checkInEnabled: Prisma.FieldRef<"EventSettings", 'Boolean'>
   readonly budgetEnabled: Prisma.FieldRef<"EventSettings", 'Boolean'>
   readonly dashboardEnabled: Prisma.FieldRef<"EventSettings", 'Boolean'>
+  readonly financeStatus: Prisma.FieldRef<"EventSettings", 'FinanceReportStatus'>
+  readonly financeSubmittedAt: Prisma.FieldRef<"EventSettings", 'DateTime'>
+  readonly financeSubmittedById: Prisma.FieldRef<"EventSettings", 'String'>
+  readonly financeReviewedAt: Prisma.FieldRef<"EventSettings", 'DateTime'>
+  readonly financeReviewedById: Prisma.FieldRef<"EventSettings", 'String'>
+  readonly financeReviewNote: Prisma.FieldRef<"EventSettings", 'String'>
   readonly createdAt: Prisma.FieldRef<"EventSettings", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"EventSettings", 'DateTime'>
 }
@@ -1469,6 +2086,44 @@ export type EventSettingsDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many EventSettings to delete.
    */
   limit?: number
+}
+
+/**
+ * EventSettings.financeSubmittedBy
+ */
+export type EventSettings$financeSubmittedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * EventSettings.financeReviewedBy
+ */
+export type EventSettings$financeReviewedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

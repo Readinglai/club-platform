@@ -408,6 +408,7 @@ export const ModelName = {
   EventTicket: 'EventTicket',
   MemberRedemption: 'MemberRedemption',
   EventSettings: 'EventSettings',
+  EventBudgetLine: 'EventBudgetLine',
   TicketType: 'TicketType',
   Order: 'Order',
   Ticket: 'Ticket',
@@ -454,7 +455,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "department" | "event" | "registration" | "ticketTier" | "eventTicket" | "memberRedemption" | "eventSettings" | "ticketType" | "order" | "ticket" | "profile" | "membership" | "group" | "groupMember" | "approvalRequest" | "discussion" | "comment" | "announcement" | "announcementRead" | "taskGroup" | "taskGroupMember" | "task" | "taskAssignee" | "taskView" | "vote" | "voteOption" | "voteResponse" | "sponsor" | "sponsorHistory" | "siteConfig" | "achievement" | "alumni" | "financeRecord" | "budget" | "featureFlag" | "emailTemplate" | "pushSubscription" | "rOCSAUT_Membership_Info"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "department" | "event" | "registration" | "ticketTier" | "eventTicket" | "memberRedemption" | "eventSettings" | "eventBudgetLine" | "ticketType" | "order" | "ticket" | "profile" | "membership" | "group" | "groupMember" | "approvalRequest" | "discussion" | "comment" | "announcement" | "announcementRead" | "taskGroup" | "taskGroupMember" | "task" | "taskAssignee" | "taskView" | "vote" | "voteOption" | "voteResponse" | "sponsor" | "sponsorHistory" | "siteConfig" | "achievement" | "alumni" | "financeRecord" | "budget" | "featureFlag" | "emailTemplate" | "pushSubscription" | "rOCSAUT_Membership_Info"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1269,6 +1270,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.EventSettingsCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.EventSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
+    EventBudgetLine: {
+      payload: Prisma.$EventBudgetLinePayload<ExtArgs>
+      fields: Prisma.EventBudgetLineFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EventBudgetLineFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventBudgetLinePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EventBudgetLineFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventBudgetLinePayload>
+        }
+        findFirst: {
+          args: Prisma.EventBudgetLineFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventBudgetLinePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EventBudgetLineFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventBudgetLinePayload>
+        }
+        findMany: {
+          args: Prisma.EventBudgetLineFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventBudgetLinePayload>[]
+        }
+        create: {
+          args: Prisma.EventBudgetLineCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventBudgetLinePayload>
+        }
+        createMany: {
+          args: Prisma.EventBudgetLineCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EventBudgetLineCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventBudgetLinePayload>[]
+        }
+        delete: {
+          args: Prisma.EventBudgetLineDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventBudgetLinePayload>
+        }
+        update: {
+          args: Prisma.EventBudgetLineUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventBudgetLinePayload>
+        }
+        deleteMany: {
+          args: Prisma.EventBudgetLineDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EventBudgetLineUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EventBudgetLineUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventBudgetLinePayload>[]
+        }
+        upsert: {
+          args: Prisma.EventBudgetLineUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventBudgetLinePayload>
+        }
+        aggregate: {
+          args: Prisma.EventBudgetLineAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEventBudgetLine>
+        }
+        groupBy: {
+          args: Prisma.EventBudgetLineGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EventBudgetLineGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EventBudgetLineCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EventBudgetLineCountAggregateOutputType> | number
         }
       }
     }
@@ -3764,11 +3839,35 @@ export const EventSettingsScalarFieldEnum = {
   checkInEnabled: 'checkInEnabled',
   budgetEnabled: 'budgetEnabled',
   dashboardEnabled: 'dashboardEnabled',
+  financeStatus: 'financeStatus',
+  financeSubmittedAt: 'financeSubmittedAt',
+  financeSubmittedById: 'financeSubmittedById',
+  financeReviewedAt: 'financeReviewedAt',
+  financeReviewedById: 'financeReviewedById',
+  financeReviewNote: 'financeReviewNote',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type EventSettingsScalarFieldEnum = (typeof EventSettingsScalarFieldEnum)[keyof typeof EventSettingsScalarFieldEnum]
+
+
+export const EventBudgetLineScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  category: 'category',
+  item: 'item',
+  quantity: 'quantity',
+  unitCost: 'unitCost',
+  plannedAmount: 'plannedAmount',
+  note: 'note',
+  sortOrder: 'sortOrder',
+  importBatchId: 'importBatchId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventBudgetLineScalarFieldEnum = (typeof EventBudgetLineScalarFieldEnum)[keyof typeof EventBudgetLineScalarFieldEnum]
 
 
 export const TicketTypeScalarFieldEnum = {
@@ -4126,6 +4225,9 @@ export const FinanceRecordScalarFieldEnum = {
   description: 'description',
   date: 'date',
   createdById: 'createdById',
+  eventId: 'eventId',
+  receiptUrl: 'receiptUrl',
+  importBatchId: 'importBatchId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -4329,6 +4431,20 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'Decimal[]'
  */
 export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FinanceReportStatus'
+ */
+export type EnumFinanceReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceReportStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'FinanceReportStatus[]'
+ */
+export type ListEnumFinanceReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceReportStatus[]'>
     
 
 
@@ -4661,6 +4777,7 @@ export type GlobalOmitConfig = {
   eventTicket?: Prisma.EventTicketOmit
   memberRedemption?: Prisma.MemberRedemptionOmit
   eventSettings?: Prisma.EventSettingsOmit
+  eventBudgetLine?: Prisma.EventBudgetLineOmit
   ticketType?: Prisma.TicketTypeOmit
   order?: Prisma.OrderOmit
   ticket?: Prisma.TicketOmit

@@ -56,18 +56,36 @@ async function eventDeletionCheck(eventId: string) {
   const event = await db.event.findUnique({ where: { id: eventId }, select: { id: true, title: true, startAt: true } });
   if (!event) return { ok: false as const, message: "Event not found." };
 
-  const [tickets, orders, legacyTickets, registrations] = await Promise.all([
+  const [tickets, orders, legacyTickets, registrations, financeRecords, budgetLines] = await Promise.all([
     db.ticket.count({ where: { eventId } }),
     db.order.count({ where: { eventId } }),
     db.eventTicket.count({ where: { eventId } }),
     db.registration.count({ where: { eventId } }),
+    db.financeRecord.count({ where: { eventId } }),
+    db.eventBudgetLine.count({ where: { eventId } }),
   ]);
-  const snapshot = { title: event.title, startAt: event.startAt.toISOString(), tickets, orders, legacyTickets, registrations };
+  const snapshot = {
+    title: event.title,
+    startAt: event.startAt.toISOString(),
+    tickets,
+    orders,
+    legacyTickets,
+    registrations,
+    financeRecords,
+    budgetLines,
+  };
 
   if (tickets + orders + legacyTickets + registrations > 0) {
     return {
       ok: false as const,
       message: "This event has tickets, orders or registrations, so it can't be deleted.",
+      snapshot,
+    };
+  }
+  if (financeRecords + budgetLines > 0) {
+    return {
+      ok: false as const,
+      message: "This event has a budget or finance records, so it can't be deleted.",
       snapshot,
     };
   }

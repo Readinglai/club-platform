@@ -83,6 +83,16 @@ export const TicketStatus = {
 export type TicketStatus = (typeof TicketStatus)[keyof typeof TicketStatus]
 
 
+export const FinanceReportStatus = {
+  OPEN: 'OPEN',
+  SUBMITTED: 'SUBMITTED',
+  APPROVED: 'APPROVED',
+  RETURNED: 'RETURNED'
+} as const
+
+export type FinanceReportStatus = (typeof FinanceReportStatus)[keyof typeof FinanceReportStatus]
+
+
 export const MembershipStatus = {
   PENDING: 'PENDING',
   ACTIVE: 'ACTIVE',

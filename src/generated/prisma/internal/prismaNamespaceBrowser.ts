@@ -62,6 +62,7 @@ export const ModelName = {
   EventTicket: 'EventTicket',
   MemberRedemption: 'MemberRedemption',
   EventSettings: 'EventSettings',
+  EventBudgetLine: 'EventBudgetLine',
   TicketType: 'TicketType',
   Order: 'Order',
   Ticket: 'Ticket',
@@ -270,11 +271,35 @@ export const EventSettingsScalarFieldEnum = {
   checkInEnabled: 'checkInEnabled',
   budgetEnabled: 'budgetEnabled',
   dashboardEnabled: 'dashboardEnabled',
+  financeStatus: 'financeStatus',
+  financeSubmittedAt: 'financeSubmittedAt',
+  financeSubmittedById: 'financeSubmittedById',
+  financeReviewedAt: 'financeReviewedAt',
+  financeReviewedById: 'financeReviewedById',
+  financeReviewNote: 'financeReviewNote',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type EventSettingsScalarFieldEnum = (typeof EventSettingsScalarFieldEnum)[keyof typeof EventSettingsScalarFieldEnum]
+
+
+export const EventBudgetLineScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  category: 'category',
+  item: 'item',
+  quantity: 'quantity',
+  unitCost: 'unitCost',
+  plannedAmount: 'plannedAmount',
+  note: 'note',
+  sortOrder: 'sortOrder',
+  importBatchId: 'importBatchId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventBudgetLineScalarFieldEnum = (typeof EventBudgetLineScalarFieldEnum)[keyof typeof EventBudgetLineScalarFieldEnum]
 
 
 export const TicketTypeScalarFieldEnum = {
@@ -632,6 +657,9 @@ export const FinanceRecordScalarFieldEnum = {
   description: 'description',
   date: 'date',
   createdById: 'createdById',
+  eventId: 'eventId',
+  receiptUrl: 'receiptUrl',
+  importBatchId: 'importBatchId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

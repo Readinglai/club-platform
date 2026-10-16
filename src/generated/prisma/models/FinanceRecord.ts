@@ -43,6 +43,9 @@ export type FinanceRecordMinAggregateOutputType = {
   description: string | null
   date: Date | null
   createdById: string | null
+  eventId: string | null
+  receiptUrl: string | null
+  importBatchId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +59,9 @@ export type FinanceRecordMaxAggregateOutputType = {
   description: string | null
   date: Date | null
   createdById: string | null
+  eventId: string | null
+  receiptUrl: string | null
+  importBatchId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -69,6 +75,9 @@ export type FinanceRecordCountAggregateOutputType = {
   description: number
   date: number
   createdById: number
+  eventId: number
+  receiptUrl: number
+  importBatchId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -92,6 +101,9 @@ export type FinanceRecordMinAggregateInputType = {
   description?: true
   date?: true
   createdById?: true
+  eventId?: true
+  receiptUrl?: true
+  importBatchId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -105,6 +117,9 @@ export type FinanceRecordMaxAggregateInputType = {
   description?: true
   date?: true
   createdById?: true
+  eventId?: true
+  receiptUrl?: true
+  importBatchId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -118,6 +133,9 @@ export type FinanceRecordCountAggregateInputType = {
   description?: true
   date?: true
   createdById?: true
+  eventId?: true
+  receiptUrl?: true
+  importBatchId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -218,6 +236,9 @@ export type FinanceRecordGroupByOutputType = {
   description: string | null
   date: Date
   createdById: string
+  eventId: string | null
+  receiptUrl: string | null
+  importBatchId: string | null
   createdAt: Date
   updatedAt: Date
   _count: FinanceRecordCountAggregateOutputType | null
@@ -254,9 +275,13 @@ export type FinanceRecordWhereInput = {
   description?: Prisma.StringNullableFilter<"FinanceRecord"> | string | null
   date?: Prisma.DateTimeFilter<"FinanceRecord"> | Date | string
   createdById?: Prisma.StringFilter<"FinanceRecord"> | string
+  eventId?: Prisma.StringNullableFilter<"FinanceRecord"> | string | null
+  receiptUrl?: Prisma.StringNullableFilter<"FinanceRecord"> | string | null
+  importBatchId?: Prisma.StringNullableFilter<"FinanceRecord"> | string | null
   createdAt?: Prisma.DateTimeFilter<"FinanceRecord"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FinanceRecord"> | Date | string
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  event?: Prisma.XOR<Prisma.EventNullableScalarRelationFilter, Prisma.EventWhereInput> | null
 }
 
 export type FinanceRecordOrderByWithRelationInput = {
@@ -268,9 +293,13 @@ export type FinanceRecordOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   date?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  eventId?: Prisma.SortOrderInput | Prisma.SortOrder
+  receiptUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  importBatchId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   createdBy?: Prisma.UserOrderByWithRelationInput
+  event?: Prisma.EventOrderByWithRelationInput
 }
 
 export type FinanceRecordWhereUniqueInput = Prisma.AtLeast<{
@@ -285,9 +314,13 @@ export type FinanceRecordWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"FinanceRecord"> | string | null
   date?: Prisma.DateTimeFilter<"FinanceRecord"> | Date | string
   createdById?: Prisma.StringFilter<"FinanceRecord"> | string
+  eventId?: Prisma.StringNullableFilter<"FinanceRecord"> | string | null
+  receiptUrl?: Prisma.StringNullableFilter<"FinanceRecord"> | string | null
+  importBatchId?: Prisma.StringNullableFilter<"FinanceRecord"> | string | null
   createdAt?: Prisma.DateTimeFilter<"FinanceRecord"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FinanceRecord"> | Date | string
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  event?: Prisma.XOR<Prisma.EventNullableScalarRelationFilter, Prisma.EventWhereInput> | null
 }, "id">
 
 export type FinanceRecordOrderByWithAggregationInput = {
@@ -299,6 +332,9 @@ export type FinanceRecordOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   date?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  eventId?: Prisma.SortOrderInput | Prisma.SortOrder
+  receiptUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  importBatchId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.FinanceRecordCountOrderByAggregateInput
@@ -320,6 +356,9 @@ export type FinanceRecordScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"FinanceRecord"> | string | null
   date?: Prisma.DateTimeWithAggregatesFilter<"FinanceRecord"> | Date | string
   createdById?: Prisma.StringWithAggregatesFilter<"FinanceRecord"> | string
+  eventId?: Prisma.StringNullableWithAggregatesFilter<"FinanceRecord"> | string | null
+  receiptUrl?: Prisma.StringNullableWithAggregatesFilter<"FinanceRecord"> | string | null
+  importBatchId?: Prisma.StringNullableWithAggregatesFilter<"FinanceRecord"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FinanceRecord"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"FinanceRecord"> | Date | string
 }
@@ -332,9 +371,12 @@ export type FinanceRecordCreateInput = {
   category: string
   description?: string | null
   date: Date | string
+  receiptUrl?: string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy: Prisma.UserCreateNestedOneWithoutFinanceRecordsInput
+  event?: Prisma.EventCreateNestedOneWithoutFinanceRecordsInput
 }
 
 export type FinanceRecordUncheckedCreateInput = {
@@ -346,6 +388,9 @@ export type FinanceRecordUncheckedCreateInput = {
   description?: string | null
   date: Date | string
   createdById: string
+  eventId?: string | null
+  receiptUrl?: string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -358,9 +403,12 @@ export type FinanceRecordUpdateInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneRequiredWithoutFinanceRecordsNestedInput
+  event?: Prisma.EventUpdateOneWithoutFinanceRecordsNestedInput
 }
 
 export type FinanceRecordUncheckedUpdateInput = {
@@ -372,6 +420,9 @@ export type FinanceRecordUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -385,6 +436,9 @@ export type FinanceRecordCreateManyInput = {
   description?: string | null
   date: Date | string
   createdById: string
+  eventId?: string | null
+  receiptUrl?: string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -397,6 +451,8 @@ export type FinanceRecordUpdateManyMutationInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -410,6 +466,9 @@ export type FinanceRecordUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -433,6 +492,9 @@ export type FinanceRecordCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  eventId?: Prisma.SortOrder
+  receiptUrl?: Prisma.SortOrder
+  importBatchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -450,6 +512,9 @@ export type FinanceRecordMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  eventId?: Prisma.SortOrder
+  receiptUrl?: Prisma.SortOrder
+  importBatchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -463,6 +528,9 @@ export type FinanceRecordMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  eventId?: Prisma.SortOrder
+  receiptUrl?: Prisma.SortOrder
+  importBatchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -513,6 +581,48 @@ export type FinanceRecordUncheckedUpdateManyWithoutCreatedByNestedInput = {
   deleteMany?: Prisma.FinanceRecordScalarWhereInput | Prisma.FinanceRecordScalarWhereInput[]
 }
 
+export type FinanceRecordCreateNestedManyWithoutEventInput = {
+  create?: Prisma.XOR<Prisma.FinanceRecordCreateWithoutEventInput, Prisma.FinanceRecordUncheckedCreateWithoutEventInput> | Prisma.FinanceRecordCreateWithoutEventInput[] | Prisma.FinanceRecordUncheckedCreateWithoutEventInput[]
+  connectOrCreate?: Prisma.FinanceRecordCreateOrConnectWithoutEventInput | Prisma.FinanceRecordCreateOrConnectWithoutEventInput[]
+  createMany?: Prisma.FinanceRecordCreateManyEventInputEnvelope
+  connect?: Prisma.FinanceRecordWhereUniqueInput | Prisma.FinanceRecordWhereUniqueInput[]
+}
+
+export type FinanceRecordUncheckedCreateNestedManyWithoutEventInput = {
+  create?: Prisma.XOR<Prisma.FinanceRecordCreateWithoutEventInput, Prisma.FinanceRecordUncheckedCreateWithoutEventInput> | Prisma.FinanceRecordCreateWithoutEventInput[] | Prisma.FinanceRecordUncheckedCreateWithoutEventInput[]
+  connectOrCreate?: Prisma.FinanceRecordCreateOrConnectWithoutEventInput | Prisma.FinanceRecordCreateOrConnectWithoutEventInput[]
+  createMany?: Prisma.FinanceRecordCreateManyEventInputEnvelope
+  connect?: Prisma.FinanceRecordWhereUniqueInput | Prisma.FinanceRecordWhereUniqueInput[]
+}
+
+export type FinanceRecordUpdateManyWithoutEventNestedInput = {
+  create?: Prisma.XOR<Prisma.FinanceRecordCreateWithoutEventInput, Prisma.FinanceRecordUncheckedCreateWithoutEventInput> | Prisma.FinanceRecordCreateWithoutEventInput[] | Prisma.FinanceRecordUncheckedCreateWithoutEventInput[]
+  connectOrCreate?: Prisma.FinanceRecordCreateOrConnectWithoutEventInput | Prisma.FinanceRecordCreateOrConnectWithoutEventInput[]
+  upsert?: Prisma.FinanceRecordUpsertWithWhereUniqueWithoutEventInput | Prisma.FinanceRecordUpsertWithWhereUniqueWithoutEventInput[]
+  createMany?: Prisma.FinanceRecordCreateManyEventInputEnvelope
+  set?: Prisma.FinanceRecordWhereUniqueInput | Prisma.FinanceRecordWhereUniqueInput[]
+  disconnect?: Prisma.FinanceRecordWhereUniqueInput | Prisma.FinanceRecordWhereUniqueInput[]
+  delete?: Prisma.FinanceRecordWhereUniqueInput | Prisma.FinanceRecordWhereUniqueInput[]
+  connect?: Prisma.FinanceRecordWhereUniqueInput | Prisma.FinanceRecordWhereUniqueInput[]
+  update?: Prisma.FinanceRecordUpdateWithWhereUniqueWithoutEventInput | Prisma.FinanceRecordUpdateWithWhereUniqueWithoutEventInput[]
+  updateMany?: Prisma.FinanceRecordUpdateManyWithWhereWithoutEventInput | Prisma.FinanceRecordUpdateManyWithWhereWithoutEventInput[]
+  deleteMany?: Prisma.FinanceRecordScalarWhereInput | Prisma.FinanceRecordScalarWhereInput[]
+}
+
+export type FinanceRecordUncheckedUpdateManyWithoutEventNestedInput = {
+  create?: Prisma.XOR<Prisma.FinanceRecordCreateWithoutEventInput, Prisma.FinanceRecordUncheckedCreateWithoutEventInput> | Prisma.FinanceRecordCreateWithoutEventInput[] | Prisma.FinanceRecordUncheckedCreateWithoutEventInput[]
+  connectOrCreate?: Prisma.FinanceRecordCreateOrConnectWithoutEventInput | Prisma.FinanceRecordCreateOrConnectWithoutEventInput[]
+  upsert?: Prisma.FinanceRecordUpsertWithWhereUniqueWithoutEventInput | Prisma.FinanceRecordUpsertWithWhereUniqueWithoutEventInput[]
+  createMany?: Prisma.FinanceRecordCreateManyEventInputEnvelope
+  set?: Prisma.FinanceRecordWhereUniqueInput | Prisma.FinanceRecordWhereUniqueInput[]
+  disconnect?: Prisma.FinanceRecordWhereUniqueInput | Prisma.FinanceRecordWhereUniqueInput[]
+  delete?: Prisma.FinanceRecordWhereUniqueInput | Prisma.FinanceRecordWhereUniqueInput[]
+  connect?: Prisma.FinanceRecordWhereUniqueInput | Prisma.FinanceRecordWhereUniqueInput[]
+  update?: Prisma.FinanceRecordUpdateWithWhereUniqueWithoutEventInput | Prisma.FinanceRecordUpdateWithWhereUniqueWithoutEventInput[]
+  updateMany?: Prisma.FinanceRecordUpdateManyWithWhereWithoutEventInput | Prisma.FinanceRecordUpdateManyWithWhereWithoutEventInput[]
+  deleteMany?: Prisma.FinanceRecordScalarWhereInput | Prisma.FinanceRecordScalarWhereInput[]
+}
+
 export type EnumFinanceTypeFieldUpdateOperationsInput = {
   set?: $Enums.FinanceType
 }
@@ -525,8 +635,11 @@ export type FinanceRecordCreateWithoutCreatedByInput = {
   category: string
   description?: string | null
   date: Date | string
+  receiptUrl?: string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  event?: Prisma.EventCreateNestedOneWithoutFinanceRecordsInput
 }
 
 export type FinanceRecordUncheckedCreateWithoutCreatedByInput = {
@@ -537,6 +650,9 @@ export type FinanceRecordUncheckedCreateWithoutCreatedByInput = {
   category: string
   description?: string | null
   date: Date | string
+  eventId?: string | null
+  receiptUrl?: string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -579,8 +695,67 @@ export type FinanceRecordScalarWhereInput = {
   description?: Prisma.StringNullableFilter<"FinanceRecord"> | string | null
   date?: Prisma.DateTimeFilter<"FinanceRecord"> | Date | string
   createdById?: Prisma.StringFilter<"FinanceRecord"> | string
+  eventId?: Prisma.StringNullableFilter<"FinanceRecord"> | string | null
+  receiptUrl?: Prisma.StringNullableFilter<"FinanceRecord"> | string | null
+  importBatchId?: Prisma.StringNullableFilter<"FinanceRecord"> | string | null
   createdAt?: Prisma.DateTimeFilter<"FinanceRecord"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FinanceRecord"> | Date | string
+}
+
+export type FinanceRecordCreateWithoutEventInput = {
+  id?: string
+  type: $Enums.FinanceType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: string
+  category: string
+  description?: string | null
+  date: Date | string
+  receiptUrl?: string | null
+  importBatchId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: Prisma.UserCreateNestedOneWithoutFinanceRecordsInput
+}
+
+export type FinanceRecordUncheckedCreateWithoutEventInput = {
+  id?: string
+  type: $Enums.FinanceType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: string
+  category: string
+  description?: string | null
+  date: Date | string
+  createdById: string
+  receiptUrl?: string | null
+  importBatchId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type FinanceRecordCreateOrConnectWithoutEventInput = {
+  where: Prisma.FinanceRecordWhereUniqueInput
+  create: Prisma.XOR<Prisma.FinanceRecordCreateWithoutEventInput, Prisma.FinanceRecordUncheckedCreateWithoutEventInput>
+}
+
+export type FinanceRecordCreateManyEventInputEnvelope = {
+  data: Prisma.FinanceRecordCreateManyEventInput | Prisma.FinanceRecordCreateManyEventInput[]
+  skipDuplicates?: boolean
+}
+
+export type FinanceRecordUpsertWithWhereUniqueWithoutEventInput = {
+  where: Prisma.FinanceRecordWhereUniqueInput
+  update: Prisma.XOR<Prisma.FinanceRecordUpdateWithoutEventInput, Prisma.FinanceRecordUncheckedUpdateWithoutEventInput>
+  create: Prisma.XOR<Prisma.FinanceRecordCreateWithoutEventInput, Prisma.FinanceRecordUncheckedCreateWithoutEventInput>
+}
+
+export type FinanceRecordUpdateWithWhereUniqueWithoutEventInput = {
+  where: Prisma.FinanceRecordWhereUniqueInput
+  data: Prisma.XOR<Prisma.FinanceRecordUpdateWithoutEventInput, Prisma.FinanceRecordUncheckedUpdateWithoutEventInput>
+}
+
+export type FinanceRecordUpdateManyWithWhereWithoutEventInput = {
+  where: Prisma.FinanceRecordScalarWhereInput
+  data: Prisma.XOR<Prisma.FinanceRecordUpdateManyMutationInput, Prisma.FinanceRecordUncheckedUpdateManyWithoutEventInput>
 }
 
 export type FinanceRecordCreateManyCreatedByInput = {
@@ -591,6 +766,9 @@ export type FinanceRecordCreateManyCreatedByInput = {
   category: string
   description?: string | null
   date: Date | string
+  eventId?: string | null
+  receiptUrl?: string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -603,8 +781,11 @@ export type FinanceRecordUpdateWithoutCreatedByInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  event?: Prisma.EventUpdateOneWithoutFinanceRecordsNestedInput
 }
 
 export type FinanceRecordUncheckedUpdateWithoutCreatedByInput = {
@@ -615,6 +796,9 @@ export type FinanceRecordUncheckedUpdateWithoutCreatedByInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -627,6 +811,69 @@ export type FinanceRecordUncheckedUpdateManyWithoutCreatedByInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type FinanceRecordCreateManyEventInput = {
+  id?: string
+  type: $Enums.FinanceType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: string
+  category: string
+  description?: string | null
+  date: Date | string
+  createdById: string
+  receiptUrl?: string | null
+  importBatchId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type FinanceRecordUpdateWithoutEventInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFinanceTypeFieldUpdateOperationsInput | $Enums.FinanceType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutFinanceRecordsNestedInput
+}
+
+export type FinanceRecordUncheckedUpdateWithoutEventInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFinanceTypeFieldUpdateOperationsInput | $Enums.FinanceType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type FinanceRecordUncheckedUpdateManyWithoutEventInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFinanceTypeFieldUpdateOperationsInput | $Enums.FinanceType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -642,9 +889,13 @@ export type FinanceRecordSelect<ExtArgs extends runtime.Types.Extensions.Interna
   description?: boolean
   date?: boolean
   createdById?: boolean
+  eventId?: boolean
+  receiptUrl?: boolean
+  importBatchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  event?: boolean | Prisma.FinanceRecord$eventArgs<ExtArgs>
 }, ExtArgs["result"]["financeRecord"]>
 
 export type FinanceRecordSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -656,9 +907,13 @@ export type FinanceRecordSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   description?: boolean
   date?: boolean
   createdById?: boolean
+  eventId?: boolean
+  receiptUrl?: boolean
+  importBatchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  event?: boolean | Prisma.FinanceRecord$eventArgs<ExtArgs>
 }, ExtArgs["result"]["financeRecord"]>
 
 export type FinanceRecordSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -670,9 +925,13 @@ export type FinanceRecordSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   description?: boolean
   date?: boolean
   createdById?: boolean
+  eventId?: boolean
+  receiptUrl?: boolean
+  importBatchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  event?: boolean | Prisma.FinanceRecord$eventArgs<ExtArgs>
 }, ExtArgs["result"]["financeRecord"]>
 
 export type FinanceRecordSelectScalar = {
@@ -684,25 +943,32 @@ export type FinanceRecordSelectScalar = {
   description?: boolean
   date?: boolean
   createdById?: boolean
+  eventId?: boolean
+  receiptUrl?: boolean
+  importBatchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type FinanceRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "amount" | "currency" | "category" | "description" | "date" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["financeRecord"]>
+export type FinanceRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "amount" | "currency" | "category" | "description" | "date" | "createdById" | "eventId" | "receiptUrl" | "importBatchId" | "createdAt" | "updatedAt", ExtArgs["result"]["financeRecord"]>
 export type FinanceRecordInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  event?: boolean | Prisma.FinanceRecord$eventArgs<ExtArgs>
 }
 export type FinanceRecordIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  event?: boolean | Prisma.FinanceRecord$eventArgs<ExtArgs>
 }
 export type FinanceRecordIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  event?: boolean | Prisma.FinanceRecord$eventArgs<ExtArgs>
 }
 
 export type $FinanceRecordPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "FinanceRecord"
   objects: {
     createdBy: Prisma.$UserPayload<ExtArgs>
+    event: Prisma.$EventPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -713,6 +979,12 @@ export type $FinanceRecordPayload<ExtArgs extends runtime.Types.Extensions.Inter
     description: string | null
     date: Date
     createdById: string
+    /**
+     * Set for an event's income and costs; null for club-wide entries.
+     */
+    eventId: string | null
+    receiptUrl: string | null
+    importBatchId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["financeRecord"]>
@@ -1110,6 +1382,7 @@ readonly fields: FinanceRecordFieldRefs;
 export interface Prisma__FinanceRecordClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  event<T extends Prisma.FinanceRecord$eventArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FinanceRecord$eventArgs<ExtArgs>>): Prisma.Prisma__EventClient<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1147,6 +1420,9 @@ export interface FinanceRecordFieldRefs {
   readonly description: Prisma.FieldRef<"FinanceRecord", 'String'>
   readonly date: Prisma.FieldRef<"FinanceRecord", 'DateTime'>
   readonly createdById: Prisma.FieldRef<"FinanceRecord", 'String'>
+  readonly eventId: Prisma.FieldRef<"FinanceRecord", 'String'>
+  readonly receiptUrl: Prisma.FieldRef<"FinanceRecord", 'String'>
+  readonly importBatchId: Prisma.FieldRef<"FinanceRecord", 'String'>
   readonly createdAt: Prisma.FieldRef<"FinanceRecord", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"FinanceRecord", 'DateTime'>
 }
@@ -1547,6 +1823,25 @@ export type FinanceRecordDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many FinanceRecords to delete.
    */
   limit?: number
+}
+
+/**
+ * FinanceRecord.event
+ */
+export type FinanceRecord$eventArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Event
+   */
+  select?: Prisma.EventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Event
+   */
+  omit?: Prisma.EventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EventInclude<ExtArgs> | null
+  where?: Prisma.EventWhereInput
 }
 
 /**

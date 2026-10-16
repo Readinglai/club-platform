@@ -77,6 +77,12 @@ export type MemberRedemption = Prisma.MemberRedemptionModel
  */
 export type EventSettings = Prisma.EventSettingsModel
 /**
+ * Model EventBudgetLine
+ * One planned item of an event's budget. Shaped like a spreadsheet row so
+ * budgets can be imported from Excel later (importBatchId groups an upload).
+ */
+export type EventBudgetLine = Prisma.EventBudgetLineModel
+/**
  * Model TicketType
  * A ticket tier of an event. price 0 means free.
  */

@@ -263,6 +263,23 @@ export type IntWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedIntFilter<$PrismaModel>
 }
 
+export type EnumFinanceReportStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.FinanceReportStatus | Prisma.EnumFinanceReportStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.FinanceReportStatus[] | Prisma.ListEnumFinanceReportStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FinanceReportStatus[] | Prisma.ListEnumFinanceReportStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFinanceReportStatusFilter<$PrismaModel> | $Enums.FinanceReportStatus
+}
+
+export type EnumFinanceReportStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FinanceReportStatus | Prisma.EnumFinanceReportStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.FinanceReportStatus[] | Prisma.ListEnumFinanceReportStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FinanceReportStatus[] | Prisma.ListEnumFinanceReportStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFinanceReportStatusWithAggregatesFilter<$PrismaModel> | $Enums.FinanceReportStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFinanceReportStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFinanceReportStatusFilter<$PrismaModel>
+}
+
 export type DecimalNullableFilter<$PrismaModel = never> = {
   equals?: runtime.Decimal | runtime.DecimalJsLike | number | string | Prisma.DecimalFieldRefInput<$PrismaModel> | null
   in?: runtime.Decimal[] | runtime.DecimalJsLike[] | number[] | string[] | Prisma.ListDecimalFieldRefInput<$PrismaModel> | null
@@ -798,6 +815,23 @@ export type NestedFloatFilter<$PrismaModel = never> = {
   gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   not?: Prisma.NestedFloatFilter<$PrismaModel> | number
+}
+
+export type NestedEnumFinanceReportStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.FinanceReportStatus | Prisma.EnumFinanceReportStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.FinanceReportStatus[] | Prisma.ListEnumFinanceReportStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FinanceReportStatus[] | Prisma.ListEnumFinanceReportStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFinanceReportStatusFilter<$PrismaModel> | $Enums.FinanceReportStatus
+}
+
+export type NestedEnumFinanceReportStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FinanceReportStatus | Prisma.EnumFinanceReportStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.FinanceReportStatus[] | Prisma.ListEnumFinanceReportStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FinanceReportStatus[] | Prisma.ListEnumFinanceReportStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFinanceReportStatusWithAggregatesFilter<$PrismaModel> | $Enums.FinanceReportStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFinanceReportStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFinanceReportStatusFilter<$PrismaModel>
 }
 
 export type NestedDecimalNullableFilter<$PrismaModel = never> = {

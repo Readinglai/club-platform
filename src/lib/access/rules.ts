@@ -20,11 +20,13 @@ import { GROUP_SLUGS as G } from "./groups";
 export const PERMISSIONS = [
   /** See the club budget, balance and cost history. */
   "finance.view",
-  /** Edit budgets (club-wide, or an event's when scoped to its team). */
+  /** Add or edit club-wide income and costs (not tied to an event). */
+  "finance.edit",
+  /** Edit budgets (club-wide, or an event's budget and costs when scoped to its team). */
   "budget.edit",
-  /** Submit an actual cost for an event. */
+  /** Submit an event's finance report for review. */
   "expense.submit",
-  /** Approve or reject submitted costs. */
+  /** Review (approve or return) an event's finance report. */
   "expense.approve",
   /** Create new events. */
   "events.create",
@@ -76,14 +78,16 @@ const RULES: Rule[] = [
     { permission: "groups.manage" as const, heldIn: dept, minPosition: "VP" as const },
   ]),
 
-  // Events: the VP creates and runs events and verifies their spending.
+  // Events: the VP creates and runs events and reviews each event's finances.
   { permission: "events.create", heldIn: G.events, minPosition: "VP" },
   { permission: "events.manage", heldIn: G.events, minPosition: "VP" },
   { permission: "budget.edit", heldIn: G.events, minPosition: "VP" },
   { permission: "expense.approve", heldIn: G.events, minPosition: "VP" },
   { permission: "events.checkin", heldIn: G.events, minPosition: "STAFF" },
 
-  // Event teams: everyone on the team works the door and submits costs.
+  // Event teams run their own event's budget and costs, and submit the
+  // finance report once; they also work the door.
+  { permission: "budget.edit", heldIn: `${G.events}/*`, minPosition: "STAFF" },
   { permission: "expense.submit", heldIn: `${G.events}/*`, minPosition: "STAFF" },
   { permission: "events.checkin", heldIn: `${G.events}/*`, minPosition: "STAFF" },
 
@@ -92,7 +96,9 @@ const RULES: Rule[] = [
   { permission: "members.view", heldIn: G.operations, minPosition: "VP", global: true },
   { permission: "budget.edit", heldIn: G.operations, minPosition: "VP" },
   { permission: "finance.view", heldIn: G.operations, minPosition: "VP" },
+  { permission: "finance.edit", heldIn: G.operations, minPosition: "VP" },
   { permission: "finance.view", heldIn: G.finance, minPosition: "STAFF" },
+  { permission: "finance.edit", heldIn: G.finance, minPosition: "STAFF" },
 
   // Marketing and Social: department management only for now; content
   // permissions (website, announcements) come later.

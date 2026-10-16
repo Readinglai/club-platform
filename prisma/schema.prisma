@@ -77,29 +77,31 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  accounts          Account[]
-  sessions          Session[]
-  registrations     Registration[]
-  assignedTasks     Task[]             @relation("TaskAssignee")
-  taskAssignments   TaskAssignee[]
-  comments          Comment[]
-  announcements     Announcement[]
-  announcementReads AnnouncementRead[]
-  taskGroups        TaskGroupMember[]
-  createdTaskGroups TaskGroup[]        @relation("TaskGroupCreator")
-  createdVotes      Vote[]             @relation("VoteCreator")
-  voteResponses     VoteResponse[]
-  financeRecords    FinanceRecord[]    @relation("FinanceRecordCreator")
-  pushSubscriptions PushSubscription[]
-  taskViews         TaskView[]
-  orders            Order[]
-  heldTickets       Ticket[]           @relation("TicketHolder")
-  checkedInTickets  Ticket[]           @relation("TicketCheckedInBy")
-  profile           Profile?
-  memberships       Membership[]
-  groupMemberships  GroupMember[]
-  approvalRequests  ApprovalRequest[]  @relation("ApprovalRequester")
-  approvalDecisions ApprovalRequest[]  @relation("ApprovalDecider")
+  accounts           Account[]
+  sessions           Session[]
+  registrations      Registration[]
+  assignedTasks      Task[]             @relation("TaskAssignee")
+  taskAssignments    TaskAssignee[]
+  comments           Comment[]
+  announcements      Announcement[]
+  announcementReads  AnnouncementRead[]
+  taskGroups         TaskGroupMember[]
+  createdTaskGroups  TaskGroup[]        @relation("TaskGroupCreator")
+  createdVotes       Vote[]             @relation("VoteCreator")
+  voteResponses      VoteResponse[]
+  financeRecords     FinanceRecord[]    @relation("FinanceRecordCreator")
+  pushSubscriptions  PushSubscription[]
+  taskViews          TaskView[]
+  orders             Order[]
+  heldTickets        Ticket[]           @relation("TicketHolder")
+  checkedInTickets   Ticket[]           @relation("TicketCheckedInBy")
+  profile            Profile?
+  memberships        Membership[]
+  groupMemberships   GroupMember[]
+  approvalRequests   ApprovalRequest[]  @relation("ApprovalRequester")
+  approvalDecisions  ApprovalRequest[]  @relation("ApprovalDecider")
+  financeSubmissions EventSettings[]    @relation("FinanceSubmittedBy")
+  financeReviews     EventSettings[]    @relation("FinanceReviewedBy")
 }
 
 model Account {
@@ -176,11 +178,13 @@ model Event {
   ticketTiers       TicketTier[]
   memberRedemptions MemberRedemption[]
 
-  settings     EventSettings?
-  ticketTypes  TicketType[]
-  orders       Order[]
-  entryTickets Ticket[]
-  team         Group?
+  settings       EventSettings?
+  ticketTypes    TicketType[]
+  orders         Order[]
+  entryTickets   Ticket[]
+  team           Group?
+  budgetLines    EventBudgetLine[]
+  financeRecords FinanceRecord[]
 }
 
 model Registration {
@@ -318,8 +322,49 @@ model EventSettings {
   budgetEnabled       Boolean @default(false)
   dashboardEnabled    Boolean @default(false)
 
+  /// The event's finance report: the team edits while OPEN/RETURNED, then
+  /// submits it once; the Events VP approves or returns it.
+  financeStatus        FinanceReportStatus @default(OPEN)
+  financeSubmittedAt   DateTime?
+  financeSubmittedById String?
+  financeSubmittedBy   User?               @relation("FinanceSubmittedBy", fields: [financeSubmittedById], references: [id])
+  financeReviewedAt    DateTime?
+  financeReviewedById  String?
+  financeReviewedBy    User?               @relation("FinanceReviewedBy", fields: [financeReviewedById], references: [id])
+  financeReviewNote    String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum FinanceReportStatus {
+  OPEN
+  SUBMITTED
+  APPROVED
+  RETURNED
+}
+
+/// One planned item of an event's budget. Shaped like a spreadsheet row so
+/// budgets can be imported from Excel later (importBatchId groups an upload).
+model EventBudgetLine {
+  id      String @id @default(cuid())
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Restrict)
+
+  /// One of the standard categories (src/lib/finance/categories.ts).
+  category      String
+  item          String
+  quantity      Decimal? @db.Decimal(10, 2)
+  unitCost      Decimal? @db.Decimal(12, 2)
+  plannedAmount Decimal  @db.Decimal(12, 2)
+  note          String?
+  sortOrder     Int      @default(0)
+  importBatchId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
 }
 
 /// A ticket tier of an event. price 0 means free.
@@ -822,8 +867,16 @@ model FinanceRecord {
   createdById String
   createdBy   User   @relation("FinanceRecordCreator", fields: [createdById], references: [id])
 
+  /// Set for an event's income and costs; null for club-wide entries.
+  eventId       String?
+  event         Event?  @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  receiptUrl    String?
+  importBatchId String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([eventId])
 }
 
 model Budget {
