@@ -11,6 +11,7 @@
 import { getRequestConfig } from "next-intl/server";
 import { unstable_cache } from "next/cache";
 import { routing } from "./routing";
+import { DEFAULT_TIME_ZONE } from "./time-zone";
 import { db } from "@/lib/db";
 
 type Messages = Record<string, unknown>;
@@ -56,5 +57,5 @@ export default getRequestConfig(async ({ requestLocale }) => {
   }
 
   // Fixed so server and browser format dates the same way (club is in Toronto).
-  return { locale, messages, timeZone: "America/Toronto" };
+  return { locale, messages, timeZone: DEFAULT_TIME_ZONE };
 });
