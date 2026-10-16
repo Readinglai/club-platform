@@ -12,6 +12,7 @@ const RENEW_WINDOW_DAYS = 30;
 
 export type Attention = {
   approvalsWaiting: number;
+  openTasks: number;
   reportsToReview: Array<{ eventId: string; title: string }>;
   reportsReturned: Array<{ eventId: string; title: string }>;
   nextTicket: MyTicket | null;
@@ -20,7 +21,7 @@ export type Attention = {
 };
 
 export async function getAttention(userId: string, email: string): Promise<Attention> {
-  const [pendingApprovals, reviewEvents, membership, tickets, unreadAnnouncements] = await Promise.all([
+  const [pendingApprovals, reviewEvents, membership, tickets, unreadAnnouncements, openTasks] = await Promise.all([
     db.approvalRequest.findMany({
       where: { status: "PENDING" },
       select: { requestedById: true, approverPosition: true, details: true },
@@ -32,6 +33,7 @@ export async function getAttention(userId: string, email: string): Promise<Atten
     getCurrentMembership(userId),
     getMyTickets(userId, email),
     db.announcement.count({ where: { published: true, reads: { none: { userId } } } }),
+    db.task.count({ where: { groupId: { not: null }, status: { not: "DONE" }, assignees: { some: { userId } } } }),
   ]);
 
   let approvalsWaiting = 0;
@@ -51,6 +53,7 @@ export async function getAttention(userId: string, email: string): Promise<Atten
 
   return {
     approvalsWaiting,
+    openTasks,
     reportsToReview,
     reportsReturned,
     nextTicket,

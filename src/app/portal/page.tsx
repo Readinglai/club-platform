@@ -31,6 +31,9 @@ export default async function PortalPage() {
   if (attention.approvalsWaiting > 0) {
     needs.push({ href: "/portal/approvals", title: t("approvalsWaiting", { count: attention.approvalsWaiting }), tone: "action" });
   }
+  if (attention.openTasks > 0) {
+    needs.push({ href: "/portal/tasks", title: t("openTasks", { count: attention.openTasks }), tone: "action" });
+  }
   for (const r of attention.reportsToReview) {
     needs.push({ href: `/portal/finance/events/${r.eventId}`, title: t("reviewReport", { title: r.title }), tone: "action" });
   }
@@ -54,6 +57,7 @@ export default async function PortalPage() {
 
   const links: Card[] = [
     { href: "/portal/tickets", title: nav("tickets") },
+    sections.staff && { href: "/portal/tasks", title: nav("tasks") },
     { href: "/portal/membership", title: nav("membership"), text: t("membershipText") },
     sections.events && { href: "/portal/events", title: nav("events"), text: t("eventsText") },
     sections.team && { href: "/portal/team", title: nav("team"), text: t("teamText") },

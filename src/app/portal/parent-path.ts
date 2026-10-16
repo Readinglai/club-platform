@@ -1,5 +1,5 @@
 /** Segments that are folders, not pages, so "back" skips over them. */
-const NOT_A_PAGE = new Set(["/portal/finance/events"]);
+const NOT_A_PAGE = new Set(["/portal/finance/events", "/portal/tasks/groups"]);
 
 /** The page one level up, e.g. /portal/finance/events/x → /portal/finance. */
 export function parentPath(pathname: string) {
