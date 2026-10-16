@@ -691,6 +691,7 @@
     "approvals": "Approvals",
     "finance": "Finance",
     "members": "Members",
+    "manageAnnouncements": "Manage announcements",
     "back": "Back",
     "menu": "Menu",
     "close": "Close",
@@ -1143,6 +1144,31 @@
       "ticketValid": "Valid",
       "ticketVoid": "Void",
       "checkedIn": "Checked in"
+    },
+    "manageAnnouncementsPage": {
+      "title": "Manage announcements",
+      "intro": "Write announcements for all members. Drafts stay hidden until you publish them.",
+      "new": "New announcement",
+      "empty": "No announcements yet.",
+      "published": "Published",
+      "draft": "Draft",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "delete": "Delete",
+      "reads": "{count, plural, one {# read} other {# reads}}",
+      "confirmPublish": "Publish “{title}”? Every member will see it and get a notification.",
+      "confirmDelete": "Delete “{title}”? This can't be undone.",
+      "saveError": "Something went wrong. Please try again.",
+      "newTitle": "New announcement",
+      "editTitle": "Edit announcement",
+      "fieldTitle": "Title",
+      "fieldContent": "Announcement",
+      "fieldPublished": "Published (visible to all members)",
+      "notifyHint": "Members will get a notification when this is published.",
+      "saved": "Saved.",
+      "create": "Create",
+      "save": "Save changes",
+      "cancel": "Cancel"
     }
   }
 }

@@ -691,6 +691,7 @@
     "approvals": "審核",
     "finance": "財務",
     "members": "會員",
+    "manageAnnouncements": "管理公告",
     "back": "返回",
     "menu": "選單",
     "close": "關閉",
@@ -1143,6 +1144,31 @@
       "ticketValid": "有效",
       "ticketVoid": "已作廢",
       "checkedIn": "已入場"
+    },
+    "manageAnnouncementsPage": {
+      "title": "管理公告",
+      "intro": "撰寫給所有會員的公告。草稿在發布前不會顯示。",
+      "new": "新增公告",
+      "empty": "尚無公告。",
+      "published": "已發布",
+      "draft": "草稿",
+      "publish": "發布",
+      "unpublish": "取消發布",
+      "delete": "刪除",
+      "reads": "{count} 人已讀",
+      "confirmPublish": "發布「{title}」？所有會員都會看到並收到通知。",
+      "confirmDelete": "刪除「{title}」？此操作無法復原。",
+      "saveError": "發生錯誤，請再試一次。",
+      "newTitle": "新增公告",
+      "editTitle": "編輯公告",
+      "fieldTitle": "標題",
+      "fieldContent": "內容",
+      "fieldPublished": "發布（所有會員可見）",
+      "notifyHint": "發布後會員會收到通知。",
+      "saved": "已儲存。",
+      "create": "建立",
+      "save": "儲存變更",
+      "cancel": "取消"
     }
   }
 }

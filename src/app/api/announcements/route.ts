@@ -11,9 +11,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
-import type { Role } from "@/generated/prisma/client";
-import { sendPushNotification } from "@/lib/webpush";
+import { createAnnouncement } from "@/lib/announcements/manage";
 
 /** GET /api/announcements — 取得已發布公告列表 */
 export async function GET(_req: NextRequest) {
@@ -48,46 +46,12 @@ export async function GET(_req: NextRequest) {
   return NextResponse.json(result);
 }
 
-/** POST /api/announcements — 建立公告（EXEC+） */
+/** POST /api/announcements — 建立公告（VP 以上，見 announcements.manage） */
 export async function POST(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session?.user?.id) return NextResponse.json({ error: "未登入" }, { status: 401 });
-
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    if (ROLE_LEVEL[role] < 3) return NextResponse.json({ error: "權限不足" }, { status: 403 });
-
-    const body = await request.json();
-    const { title, content, published } = body;
-    if (!title || !content) {
-      return NextResponse.json({ error: "title 和 content 為必填" }, { status: 400 });
-    }
-
-    const announcement = await db.announcement.create({
-      data: {
-        title,
-        content,
-        published: published ?? false,
-        authorId: session.user.id,
-      },
-    });
-
-    if (announcement.published) {
-      const subscriptions = await db.pushSubscription.findMany();
-      await Promise.allSettled(
-        subscriptions.map((sub) =>
-          sendPushNotification(sub, {
-            title: "新公告",
-            body: announcement.title,
-            url: "/portal/announcements",
-            data: { type: "announcement", announcementId: announcement.id },
-          })
-        )
-      );
-    }
-
-    return NextResponse.json(announcement, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "伺服器錯誤" }, { status: 500 });
-  }
+  const session = await auth();
+  if (!session?.user?.id) return NextResponse.json({ error: "未登入" }, { status: 401 });
+  const body = await request.json().catch(() => ({}));
+  const result = await createAnnouncement(session.user.id, body);
+  if (!result.ok) return NextResponse.json({ error: result.message }, { status: result.status });
+  return NextResponse.json(result.value, { status: 201 });
 }

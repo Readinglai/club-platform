@@ -38,6 +38,10 @@ export const PERMISSIONS = [
   "members.view",
   /** Add, edit or grant memberships. */
   "members.manage",
+  /** Write, publish and delete announcements. */
+  "announcements.manage",
+  /** Edit the public website: sponsors, achievements, alumni, settings, text. */
+  "content.manage",
   /** Assign people to groups and positions. */
   "groups.manage",
   /** Decide approval requests (e.g. deleting an event). */
@@ -73,9 +77,12 @@ const RULES: Rule[] = [
   { permission: "tasks.use", heldIn: "*", minPosition: "STAFF" },
   { permission: "uploads.create", heldIn: "*", minPosition: "STAFF" },
 
-  // Every VP assigns people within their own department.
+  // Every VP assigns people within their own department, and any VP may
+  // post announcements and edit the website.
   ...[G.events, G.marketing, G.operations, G.social].flatMap((dept) => [
     { permission: "groups.manage" as const, heldIn: dept, minPosition: "VP" as const },
+    { permission: "announcements.manage" as const, heldIn: dept, minPosition: "VP" as const },
+    { permission: "content.manage" as const, heldIn: dept, minPosition: "VP" as const },
   ]),
 
   // Events: the VP creates and runs events and reviews each event's finances.
@@ -101,8 +108,6 @@ const RULES: Rule[] = [
   { permission: "finance.view", heldIn: G.finance, minPosition: "STAFF" },
   { permission: "finance.edit", heldIn: G.finance, minPosition: "STAFF" },
 
-  // Marketing and Social: department management only for now; content
-  // permissions (website, announcements) come later.
 ];
 
 /** Async so the rules can later come from the database without changing callers. */

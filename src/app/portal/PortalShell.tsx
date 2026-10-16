@@ -31,6 +31,7 @@ function navSections(s: PortalSections) {
   ].filter(Boolean) as Item[];
   const admin: Item[] = [
     s.members && { href: "/portal/members", key: "members", icon: "☷" },
+    s.announcements && { href: "/portal/announcements/manage", key: "manageAnnouncements", icon: "✎" },
   ].filter(Boolean) as Item[];
   return [
     { key: "sectionMe", items: me },
@@ -85,6 +86,12 @@ function LanguageSwitch() {
 
 function NavList({ sections, pathname, onNavigate }: { sections: ReturnType<typeof navSections>; pathname: string; onNavigate?: () => void }) {
   const t = useTranslations("portal");
+  // Highlight only the closest match, e.g. "Manage announcements" rather than
+  // "Announcements" too when on /portal/announcements/manage.
+  const activeHref = sections
+    .flatMap((section) => section.items.map((item) => item.href))
+    .filter((href) => isActive(pathname, href))
+    .sort((a, b) => b.length - a.length)[0];
   return (
     <nav aria-label={t("portalName")} className="flex flex-col gap-5">
       {sections.map((section) => (
@@ -92,7 +99,7 @@ function NavList({ sections, pathname, onNavigate }: { sections: ReturnType<type
           <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500">{t(section.key)}</p>
           <ul className="flex flex-col gap-0.5">
             {section.items.map((item) => {
-              const active = isActive(pathname, item.href);
+              const active = item.href === activeHref;
               return (
                 <li key={item.href}>
                   <Link
