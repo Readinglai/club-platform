@@ -93,6 +93,11 @@ model User {
   orders            Order[]
   heldTickets       Ticket[]           @relation("TicketHolder")
   checkedInTickets  Ticket[]           @relation("TicketCheckedInBy")
+  profile           Profile?
+  memberships       Membership[]
+  groupMemberships  GroupMember[]
+  approvalRequests  ApprovalRequest[]  @relation("ApprovalRequester")
+  approvalDecisions ApprovalRequest[]  @relation("ApprovalDecider")
 }
 
 model Account {
@@ -173,6 +178,7 @@ model Event {
   ticketTypes  TicketType[]
   orders       Order[]
   entryTickets Ticket[]
+  team         Group?
 }
 
 model Registration {
@@ -410,6 +416,161 @@ model Ticket {
   @@index([eventId])
   @@index([orderId])
   @@index([userId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Members & Organization
+//
+// Membership replaces "ROCSAUT Membership Info" (frozen; its rows are copied
+// here with source IMPORTED). Group replaces the flat Department table, which
+// is left in place unused.
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum MembershipStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum MembershipSource {
+  STRIPE
+  IMPORTED
+  MANUAL
+  COMPLIMENTARY
+}
+
+/// Highest first. Club membership is separate (Membership), not a position.
+enum GroupPosition {
+  PRESIDENT
+  VP
+  LEAD
+  STAFF
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+/// Details collected once and reused to pre-fill registrations.
+/// Required fields are enforced by the profile form, so partial saves work.
+model Profile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  phone         String?
+  studentNumber String?
+  personalEmail String?
+  program       String?
+  yearOfStudy   String?
+
+  /// Set when the "complete your profile" form is submitted.
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// One row per member per term (Sep 1 – Aug 31), so renewals keep history.
+model Membership {
+  id String @id @default(cuid())
+
+  /// Null for imported members until they first log in with a matching email.
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+  email  String?
+  name   String?
+
+  /// OTSA-<year>-0xxx for members, OTSA-<year>-1xxx for staff.
+  memberCode String @unique
+
+  status    MembershipStatus @default(PENDING)
+  source    MembershipSource
+  termStart DateTime
+  termEnd   DateTime
+
+  stripeSessionId String?  @unique
+  amountPaid      Decimal? @db.Decimal(10, 2)
+
+  /// id of the copied "ROCSAUT Membership Info" row; makes the copy re-runnable.
+  legacyId String? @unique
+
+  /// Pass2U wallet pass, once issued (Phase 3).
+  walletPassId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([email])
+}
+
+/// A department (no parent) or a subgroup. Event teams link to their event.
+model Group {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  parentId String?
+  parent   Group?  @relation("GroupTree", fields: [parentId], references: [id])
+  children Group[] @relation("GroupTree")
+
+  eventId String? @unique
+  event   Event?  @relation(fields: [eventId], references: [id])
+
+  archived Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members GroupMember[]
+
+  @@index([parentId])
+}
+
+model GroupMember {
+  id       String        @id @default(cuid())
+  groupId  String
+  group    Group         @relation(fields: [groupId], references: [id])
+  userId   String
+  user     User          @relation(fields: [userId], references: [id])
+  position GroupPosition @default(STAFF)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+/// A destructive action waiting for a second person (rules live in code).
+model ApprovalRequest {
+  id       String @id @default(cuid())
+  /// e.g. "event.delete"
+  action   String
+  targetId String
+  /// Snapshot of what will be affected, shown to the approver.
+  details  Json?
+
+  requestedById    String
+  requestedBy      User          @relation("ApprovalRequester", fields: [requestedById], references: [id])
+  approverPosition GroupPosition @default(PRESIDENT)
+
+  status      ApprovalStatus @default(PENDING)
+  decidedById String?
+  decidedBy   User?          @relation("ApprovalDecider", fields: [decidedById], references: [id])
+  decidedAt   DateTime?
+  note        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([action, targetId])
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

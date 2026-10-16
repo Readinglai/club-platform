@@ -80,3 +80,43 @@ export const TicketStatus = {
 } as const
 
 export type TicketStatus = (typeof TicketStatus)[keyof typeof TicketStatus]
+
+
+export const MembershipStatus = {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type MembershipStatus = (typeof MembershipStatus)[keyof typeof MembershipStatus]
+
+
+export const MembershipSource = {
+  STRIPE: 'STRIPE',
+  IMPORTED: 'IMPORTED',
+  MANUAL: 'MANUAL',
+  COMPLIMENTARY: 'COMPLIMENTARY'
+} as const
+
+export type MembershipSource = (typeof MembershipSource)[keyof typeof MembershipSource]
+
+
+export const GroupPosition = {
+  PRESIDENT: 'PRESIDENT',
+  VP: 'VP',
+  LEAD: 'LEAD',
+  STAFF: 'STAFF'
+} as const
+
+export type GroupPosition = (typeof GroupPosition)[keyof typeof GroupPosition]
+
+
+export const ApprovalStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ApprovalStatus = (typeof ApprovalStatus)[keyof typeof ApprovalStatus]
