@@ -11,6 +11,7 @@ import { getPublicEvent } from "../src/lib/events/public";
 import { canSeeDashboard, getEventDashboard } from "../src/lib/events/dashboard";
 import { createOrder } from "../src/lib/ticketing/orders";
 import { termFor } from "../src/lib/membership/term";
+import { getMyTickets, splitByTime } from "../src/lib/tickets/mine";
 
 const TITLE = "[TEST] Phase 6 Taipei night";
 let failed = 0;
@@ -91,6 +92,16 @@ async function main() {
   check("dashboard counts the sold ticket", dash.totals.sold === 1 && reg?.sold === 1 && reg?.capacity === 3);
   const pubAfter = await getPublicEvent(eventId, null);
   check("availability shown (2 of 3 left)", pubAfter?.tiers.find((t) => t.name === "Regular")?.remaining === 2);
+
+  // My tickets: linked to the account, and found by email when bought logged out.
+  const mine = await getMyTickets(memberOnly.id, memberOnly.email);
+  check("my tickets: ticket linked to the account", mine.some((x) => x.eventTitle === TITLE));
+  const free = await db.ticketType.findFirstOrThrow({ where: { eventId, name: "Regular" } });
+  await db.ticketType.update({ where: { id: free.id }, data: { price: 0 } });
+  const guest = await createOrder({ ...base, ticketTypeId: free.id, buyer: { name: "Guest", email: "GUEST-MINE@test.rocsaut.invalid" } });
+  const byEmail = await getMyTickets(buyer.id, "guest-mine@test.rocsaut.invalid");
+  check("my tickets: found by email (any case) without an account link", guest.ok && byEmail.some((x) => x.eventTitle === TITLE));
+  check("my tickets: a 2027 event counts as upcoming", splitByTime(byEmail).upcoming.some((x) => x.eventTitle === TITLE));
 
   await cleanup();
   console.log(`\n${failed ? "SOME CHECKS FAILED" : "all checks passed"}`);

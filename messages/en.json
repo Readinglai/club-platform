@@ -703,7 +703,20 @@
       "eventsText": "Create events, tiers and live dashboards",
       "teamText": "Manage departments, groups and people",
       "approvalsText": "Requests waiting for you, and your own",
-      "financeText": "Budgets, spending and event reports"
+      "financeText": "Budgets, spending and event reports",
+      "attentionTitle": "Needs your attention",
+      "allClear": "You're all caught up.",
+      "approvalsWaiting": "{count, plural, one {# request} other {# requests}} waiting for your approval",
+      "reviewReport": "Review the finance report for {title}",
+      "reportReturned": "The finance report for {title} was returned — please fix it",
+      "nextEvent": "Your next event: {title}",
+      "nextEventWhen": "{when}",
+      "joinTitle": "You're not a member yet",
+      "joinText": "Join for member prices and the member pass.",
+      "renewTitle": "Your membership ends {date}",
+      "renewText": "Renew to stay a member next school year.",
+      "unread": "{count, plural, one {# unread announcement} other {# unread announcements}}",
+      "quickLinks": "Go to"
     },
     "membershipPage": {
       "title": "Membership",
@@ -992,6 +1005,18 @@
       "membersOnly": "Members only",
       "add": "Add",
       "cancel": "Cancel"
+    },
+    "ticketsPage": {
+      "title": "My tickets",
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "none": "No tickets yet. Tickets you buy or claim show up here.",
+      "showQr": "Show QR code",
+      "hideQr": "Hide QR code",
+      "openTicket": "Open ticket page",
+      "checkedIn": "Checked in {time}",
+      "void": "Cancelled",
+      "holder": "For {name}"
     }
   }
 }

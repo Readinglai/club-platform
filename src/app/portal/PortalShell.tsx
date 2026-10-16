@@ -17,6 +17,7 @@ type Item = { href: string; key: string; icon: string };
 function navSections(s: PortalSections) {
   const me: Item[] = [
     { href: "/portal", key: "home", icon: "⌂" },
+    { href: "/portal/tickets", key: "tickets", icon: "▤" },
     { href: "/portal/membership", key: "membership", icon: "◎" },
     { href: "/portal/profile", key: "profile", icon: "☺" },
     { href: "/portal/announcements", key: "announcements", icon: "✉" },
@@ -36,8 +37,8 @@ function navSections(s: PortalSections) {
 /** Bottom tabs on phones: the most-used pages. */
 const TABS: Item[] = [
   { href: "/portal", key: "home", icon: "⌂" },
+  { href: "/portal/tickets", key: "tickets", icon: "▤" },
   { href: "/portal/membership", key: "membership", icon: "◎" },
-  { href: "/portal/profile", key: "profile", icon: "☺" },
 ];
 
 const isActive = (pathname: string, href: string) =>
