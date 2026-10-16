@@ -47,7 +47,11 @@ export default function EventsTable({ events: initial, locale }: Props) {
     if (!confirm(t("confirmDelete", { title }))) return;
     setLoading(id);
     const res = await fetch(`/api/admin/events/${id}`, { method: "DELETE" });
-    if (res.ok) {
+    if (res.status === 202) {
+      // Deletion needs approval; the event stays until it's approved.
+      const data = await res.json();
+      alert(data.message);
+    } else if (res.ok) {
       setEvents((prev) => prev.filter((e) => e.id !== id));
     } else {
       const data = await res.json();

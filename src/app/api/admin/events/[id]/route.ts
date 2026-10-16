@@ -1,5 +1,6 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/get-session-user";
+import { requestApproval } from "@/lib/access/approvals";
 import { db } from "@/lib/db";
 import { ROLE_LEVEL } from "@/lib/rbac";
 import type { Role } from "@/generated/prisma/client";
@@ -63,17 +64,21 @@ export async function PUT(request: NextRequest, { params }: Params) {
   }
 }
 
+// Deleting an event needs a second person: this files an approval request
+// (see src/lib/access/approvals.ts); the event is deleted once it's approved.
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {
     const sessionUser = await getSessionUser(request);
     if (!sessionUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    if (sessionUser.roleLevel < 4) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-
     const { id } = await params;
-    await db.event.delete({ where: { id } });
+    const result = await requestApproval({ userId: sessionUser.id, action: "event.delete", targetId: id });
+    if (!result.ok) return NextResponse.json({ error: result.message }, { status: result.status });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json(
+      { requested: true, message: "Deletion requested. It happens once it's approved in Portal → Approvals." },
+      { status: 202 }
+    );
   } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
