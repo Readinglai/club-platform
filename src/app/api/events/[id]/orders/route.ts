@@ -23,12 +23,12 @@ export async function POST(
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ message: "Invalid request body." }, { status: 400 });
+    return NextResponse.json({ code: "invalid_request", message: "Invalid request body." }, { status: 400 });
   }
 
   const ticketTypeId = typeof body.ticketTypeId === "string" ? body.ticketTypeId : "";
   if (!ticketTypeId) {
-    return NextResponse.json({ message: "Please choose a ticket type." }, { status: 400 });
+    return NextResponse.json({ code: "type_unavailable", message: "Please choose a ticket type." }, { status: 400 });
   }
 
   const session = await auth();
@@ -50,7 +50,7 @@ export async function POST(
     });
 
     if (!result.ok) {
-      return NextResponse.json({ message: result.message }, { status: result.status });
+      return NextResponse.json({ code: result.code, message: result.message, max: result.max }, { status: result.status });
     }
 
     if (result.free) {
@@ -70,7 +70,7 @@ export async function POST(
   } catch (error) {
     console.error("Order creation error:", error);
     return NextResponse.json(
-      { message: "Something went wrong. Please try again later." },
+      { code: "server_error", message: "Something went wrong. Please try again later." },
       { status: 500 }
     );
   }

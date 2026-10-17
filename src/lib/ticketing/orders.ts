@@ -31,13 +31,31 @@ export type BuyerInput = {
   phone?: string;
 };
 
+/**
+ * Why an order was refused. Pages show their own translated text for each
+ * code; `message` is the English fallback for other callers.
+ */
+export type OrderErrorCode =
+  | "missing_details"
+  | "waiver_required"
+  | "invalid_quantity"
+  | "tickets_unavailable"
+  | "type_unavailable"
+  | "max_per_order"
+  | "not_started"
+  | "ended"
+  | "members_only"
+  | "member_limit"
+  | "sold_out"
+  | "payment_failed";
+
 export type CreateOrderResult =
   | { ok: true; orderId: string; free: true; ticketToken: string }
   | { ok: true; orderId: string; free: false; checkoutUrl: string }
-  | { ok: false; status: number; message: string };
+  | { ok: false; status: number; code: OrderErrorCode; message: string; max?: number };
 
-function fail(status: number, message: string): CreateOrderResult {
-  return { ok: false, status, message };
+function fail(status: number, code: OrderErrorCode, message: string, extra?: { max?: number }): CreateOrderResult {
+  return { ok: false, status, code, message, ...extra };
 }
 
 export async function createOrder(input: {
@@ -57,13 +75,13 @@ export async function createOrder(input: {
   };
 
   if (!buyer.name || !buyer.email) {
-    return fail(400, "Please enter your name and email.");
+    return fail(400, "missing_details", "Please enter your name and email.");
   }
   if (!input.waiverAccepted) {
-    return fail(400, "You must agree to the waiver.");
+    return fail(400, "waiver_required", "You must agree to the waiver.");
   }
   if (!Number.isInteger(quantity) || quantity < 1) {
-    return fail(400, "Invalid quantity.");
+    return fail(400, "invalid_quantity", "Invalid quantity.");
   }
 
   const event = await db.event.findUnique({
@@ -73,30 +91,30 @@ export async function createOrder(input: {
   // ticketsEnabled is the on-switch for sales, independent of whether the
   // event is listed publicly (test events stay unpublished).
   if (!event || !event.settings?.ticketsEnabled) {
-    return fail(404, "Tickets are not available for this event.");
+    return fail(404, "tickets_unavailable", "Tickets are not available for this event.");
   }
 
   const ticketType = await db.ticketType.findFirst({
     where: { id: input.ticketTypeId, eventId: event.id, active: true },
   });
   if (!ticketType) {
-    return fail(400, "This ticket type is not available.");
+    return fail(400, "type_unavailable", "This ticket type is not available.");
   }
   if (quantity > ticketType.maxPerOrder) {
-    return fail(400, `You can buy up to ${ticketType.maxPerOrder} ticket(s) per order.`);
+    return fail(400, "max_per_order", `You can buy up to ${ticketType.maxPerOrder} ticket(s) per order.`, { max: ticketType.maxPerOrder });
   }
 
   const now = new Date();
   if (ticketType.salesStartAt && now < ticketType.salesStartAt) {
-    return fail(400, "Ticket sales have not started yet.");
+    return fail(400, "not_started", "Ticket sales have not started yet.");
   }
   if (ticketType.salesEndAt && now > ticketType.salesEndAt) {
-    return fail(400, "Ticket sales have ended.");
+    return fail(400, "ended", "Ticket sales have ended.");
   }
 
   const isMember = input.userId ? Boolean(await getCurrentMembership(input.userId)) : false;
   if (ticketType.membersOnly && !isMember) {
-    return fail(403, "This ticket type is for members only. Log in with your member account.");
+    return fail(403, "members_only", "This ticket type is for members only. Log in with your member account.");
   }
   const currency = event.settings.currency;
 
@@ -177,10 +195,10 @@ export async function createOrder(input: {
   });
 
   if (created === "member_limit") {
-    return fail(409, "You've already used your member ticket for this event.");
+    return fail(409, "member_limit", "You've already used your member ticket for this event.");
   }
   if (!created) {
-    return fail(409, "This ticket type is sold out.");
+    return fail(409, "sold_out", "This ticket type is sold out.");
   }
   const { unitPrice, free } = created;
 
@@ -219,7 +237,7 @@ export async function createOrder(input: {
   } catch (error) {
     console.error("Stripe checkout creation failed for order", created.order.id, error);
     await releaseOrder(created.order.id, "CANCELLED");
-    return fail(502, "Payment could not be started. Please try again.");
+    return fail(502, "payment_failed", "Payment could not be started. Please try again.");
   }
 }
 
