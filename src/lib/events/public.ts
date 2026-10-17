@@ -73,6 +73,7 @@ export async function getPublicEvent(eventId: string, viewerId: string | null) {
       name: t.name,
       description: t.description,
       perks: t.perks,
+      color: t.color,
       price: t.price.toNumber(),
       memberPrice: t.memberPrice?.toNumber() ?? null,
       membersOnly: t.membersOnly,

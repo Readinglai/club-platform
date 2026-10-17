@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import type { PortalSections } from "@/lib/access/portal-nav";
+import { saveLocale } from "@/i18n/save-locale";
 import { parentPath } from "./parent-path";
 
 const PRIMARY = "#1a2744";
@@ -51,11 +52,6 @@ const TABS: Item[] = [
 
 const isActive = (pathname: string, href: string) =>
   href === "/portal" ? pathname === "/portal" : pathname === href || pathname.startsWith(`${href}/`);
-
-/** Remember the chosen language for a year (read by src/i18n/request.ts). */
-function saveLocale(locale: string) {
-  document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=31536000; samesite=lax`;
-}
 
 function LanguageSwitch() {
   const locale = useLocale();
