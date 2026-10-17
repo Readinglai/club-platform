@@ -16,6 +16,7 @@ export type PortalSections = {
   members: boolean;
   announcements: boolean;
   website: boolean;
+  reports: boolean;
 };
 
 export async function getPortalSections(userId: string): Promise<PortalSections> {
@@ -34,5 +35,6 @@ export async function getPortalSections(userId: string): Promise<PortalSections>
     members: can(access, "members.view"),
     announcements: can(access, "announcements.manage"),
     website: can(access, "content.manage"),
+    reports: can(access, "reports.view"),
   };
 }

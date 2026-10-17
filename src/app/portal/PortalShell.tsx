@@ -33,6 +33,7 @@ function navSections(s: PortalSections) {
     s.members && { href: "/portal/members", key: "members", icon: "☷" },
     s.announcements && { href: "/portal/announcements/manage", key: "manageAnnouncements", icon: "✎" },
     s.website && { href: "/portal/website", key: "website", icon: "◫" },
+    s.reports && { href: "/portal/reports", key: "reports", icon: "▥" },
   ].filter(Boolean) as Item[];
   return [
     { key: "sectionMe", items: me },

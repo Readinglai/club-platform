@@ -42,6 +42,8 @@ export const PERMISSIONS = [
   "announcements.manage",
   /** Edit the public website: sponsors, achievements, alumni, settings, text. */
   "content.manage",
+  /** See club-wide totals: event attendance and memberships (no personal details). */
+  "reports.view",
   /** Assign people to groups and positions. */
   "groups.manage",
   /** Decide approval requests (e.g. deleting an event). */
@@ -78,11 +80,12 @@ const RULES: Rule[] = [
   { permission: "uploads.create", heldIn: "*", minPosition: "STAFF" },
 
   // Every VP assigns people within their own department, and any VP may
-  // post announcements and edit the website.
+  // post announcements, edit the website and see the club reports.
   ...[G.events, G.marketing, G.operations, G.social].flatMap((dept) => [
     { permission: "groups.manage" as const, heldIn: dept, minPosition: "VP" as const },
     { permission: "announcements.manage" as const, heldIn: dept, minPosition: "VP" as const },
     { permission: "content.manage" as const, heldIn: dept, minPosition: "VP" as const },
+    { permission: "reports.view" as const, heldIn: dept, minPosition: "VP" as const },
   ]),
 
   // Events: the VP creates and runs events and reviews each event's finances.

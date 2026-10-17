@@ -693,6 +693,7 @@
     "members": "會員",
     "manageAnnouncements": "管理公告",
     "website": "網站",
+    "reports": "報表",
     "back": "返回",
     "menu": "選單",
     "close": "關閉",
@@ -721,7 +722,8 @@
       "unread": "{count} 則未讀公告",
       "quickLinks": "前往",
       "openTasks": "{count} 項任務待你處理",
-      "membersText": "查詢、新增及匯出會員"
+      "membersText": "查詢、新增及匯出會員",
+      "reportsText": "活動出席及會籍總數"
     },
     "membershipPage": {
       "title": "會員資格",
@@ -1184,6 +1186,27 @@
       "settingsText": "首頁圖片與區塊、功能、電郵及聯絡人",
       "textTitle": "網站文字",
       "textText": "編輯網站的中英文文字"
+    },
+    "reportsPage": {
+      "title": "報表",
+      "intro": "社團整體數據：各活動出席人數及入會人數。只有總數，不含個人資料。",
+      "eventsTitle": "活動出席",
+      "eventsEmpty": "尚無售票活動。",
+      "event": "活動",
+      "date": "日期",
+      "sold": "門票",
+      "checkedIn": "已入場",
+      "rate": "出席率",
+      "downloadCsv": "下載 CSV",
+      "membersTitle": "會籍",
+      "schoolYear": "學年",
+      "total": "總數",
+      "source_STRIPE": "線上付款",
+      "source_MANUAL": "手動新增",
+      "source_COMPLIMENTARY": "幹部（免費）",
+      "source_IMPORTED": "匯入",
+      "byMonth": "每月新會籍",
+      "byMonthNote": "依會籍登記日期計算；匯入的會員計入匯入當月。"
     }
   }
 }

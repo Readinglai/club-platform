@@ -693,6 +693,7 @@
     "members": "Members",
     "manageAnnouncements": "Manage announcements",
     "website": "Website",
+    "reports": "Reports",
     "back": "Back",
     "menu": "Menu",
     "close": "Close",
@@ -721,7 +722,8 @@
       "unread": "{count, plural, one {# unread announcement} other {# unread announcements}}",
       "quickLinks": "Go to",
       "openTasks": "{count, plural, one {# open task} other {# open tasks}} assigned to you",
-      "membersText": "Look up, add and export members"
+      "membersText": "Look up, add and export members",
+      "reportsText": "Event attendance and membership totals"
     },
     "membershipPage": {
       "title": "Membership",
@@ -1184,6 +1186,27 @@
       "settingsText": "Home page image and sections, features, emails and contacts",
       "textTitle": "Website text",
       "textText": "Edit the site's English and Chinese wording"
+    },
+    "reportsPage": {
+      "title": "Reports",
+      "intro": "Club-wide totals: how many came to each event and how many joined. Totals only, no personal details.",
+      "eventsTitle": "Event attendance",
+      "eventsEmpty": "No events with tickets yet.",
+      "event": "Event",
+      "date": "Date",
+      "sold": "Tickets",
+      "checkedIn": "Checked in",
+      "rate": "Attendance",
+      "downloadCsv": "Download CSV",
+      "membersTitle": "Memberships",
+      "schoolYear": "School year",
+      "total": "Total",
+      "source_STRIPE": "Paid online",
+      "source_MANUAL": "Added by hand",
+      "source_COMPLIMENTARY": "Staff (free)",
+      "source_IMPORTED": "Imported",
+      "byMonth": "New memberships by month",
+      "byMonthNote": "Counted by the date each membership was recorded; imported members count in the month they were imported."
     }
   }
 }
