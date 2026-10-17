@@ -1,8 +1,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
+import { can, getAccess } from "@/lib/access/can";
 import { NextResponse } from "next/server";
-import type { Role } from "@/generated/prisma/client";
 
 const PROTECTED_EMAIL = "flyincloud2001@gmail.com";
 
@@ -47,8 +46,8 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "未登入" }, { status: 401 });
   }
 
-  const currentRole = (session.user.role as Role | undefined) ?? "MEMBER";
-  if (ROLE_LEVEL[currentRole] < 4) {
+  // Public profiles (bio, links) are for people holding a position.
+  if (!can(await getAccess(session.user.id), "tasks.use")) {
     return NextResponse.json({ error: "權限不足" }, { status: 403 });
   }
 

@@ -45,3 +45,10 @@ export async function requirePagePermission(permission: Permission) {
   if (!can(await getAccess(user.id), permission)) redirect("/portal");
   return user;
 }
+
+/** For API routes open to anyone signed in: like requirePermissionJson, without a permission. */
+export async function requireUserJson(): Promise<{ error: NextResponse } | { error: null; userId: string }> {
+  const user = await getCurrentUser();
+  if (!user) return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
+  return { error: null, userId: user.id };
+}

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { requireUserJson } from "@/lib/access/require";
 import { getSupabaseUrl } from "@/lib/supabase-storage";
 
 export const maxDuration = 60;
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Profile picture uploads are turned off" }, { status: 404 });
   }
 
-  const guard = await requireAuthJson(2, request);
+  const guard = await requireUserJson();
   if (guard.error) return guard.error;
 
   let formData: FormData;

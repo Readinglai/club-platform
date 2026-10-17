@@ -1,8 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
-import type { Role } from "@/generated/prisma/client";
+import { can, getAccess } from "@/lib/access/can";
 
 const PROTECTED_EMAIL = "flyincloud2001@gmail.com";
 
@@ -30,7 +29,7 @@ async function tryGetUserId(): Promise<string | null> {
   return null;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const userId = await tryGetUserId();
   if (!userId) {
     return NextResponse.json({ error: "æœªç™»å…¥" }, { status: 401 });
@@ -56,14 +55,14 @@ export async function PATCH(request: NextRequest) {
 
   const selfUser = await db.user.findUnique({
     where: { id: userId },
-    select: { email: true, role: true },
+    select: { email: true },
   });
   if (!selfUser) {
     return NextResponse.json({ error: "ä½¿ç”¨è€…ä¸å­˜åœ¨" }, { status: 404 });
   }
 
-  const currentRole = (selfUser.role as Role | undefined) ?? "MEMBER";
-  if (ROLE_LEVEL[currentRole] < 4) {
+  // Public profiles (bio, links) are for people holding a position.
+  if (!can(await getAccess(userId), "tasks.use")) {
     return NextResponse.json({ error: "æ¬Šé™ä¸è¶³" }, { status: 403 });
   }
 

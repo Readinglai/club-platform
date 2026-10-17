@@ -4,7 +4,7 @@
  * 登入入口，使用 Google OAuth 或 Email magic link。任何信箱皆可註冊，
  * 新帳號為 USER，首次登入後需完成個人資料。
  *
- * 已登入使用者：直接依角色跳轉（不經過 /api/auth/post-login），
+ * 已登入使用者：直接進入 /portal（不經過 /api/auth/post-login），
  * 避免額外 redirect hop 造成 ERR_TOO_MANY_REDIRECTS。
  */
 
@@ -12,8 +12,6 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
-import { ROLE_LEVEL } from "@/lib/rbac";
-import type { Role } from "@/generated/prisma/client";
 import { LoginButtons } from "./LoginButtons";
 
 interface LoginPageProps {
@@ -39,17 +37,10 @@ function getErrorKey(error: string | undefined): string | null {
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  // 已登入的使用者直接依角色導向，不顯示登入頁
-  // 注意：不再經過 /api/auth/post-login 中轉，避免多一層 redirect
-  // 造成 /zh/login → /api/auth/post-login → /zh/admin → ... 無限迴圈
+  // 已登入的使用者直接進入會員入口，不顯示登入頁；入口依職位顯示可用的功能。
+  // 注意：不經過 /api/auth/post-login 中轉，避免多一層 redirect。
   const session = await auth();
-  if (session?.user) {
-    const role = (session.user.role as Role | undefined) ?? "USER";
-    const level = ROLE_LEVEL[role] ?? ROLE_LEVEL.USER;
-    if (level >= 4) redirect("/admin");
-    else if (level === 3) redirect("/exec");
-    else redirect("/portal");
-  }
+  if (session?.user) redirect("/portal");
 
   const params = await searchParams;
   const errorKey = getErrorKey(params.error);

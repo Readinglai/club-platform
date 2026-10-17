@@ -120,7 +120,8 @@ members **already have passes** — never bulk-issue for them.
 
 - [ ] Halloween 2026 is over.
 - [ ] **Assign every current staff member a group position** (President, VPs, staff) —
-      tasks and finances now require one. List of names/emails/groups: _to be provided_.
+      the old ADMIN/EXEC roles no longer grant anything, so without a position an exec
+      only sees the member pages. List of names/emails/groups: _to be provided_.
 - [ ] Paid ticket test (Stripe test mode): checkout, webhook, sell-out, expiry, duplicate, cancel.
 - [ ] Scanner test: new ticket ADMIT → ALREADY IN, fake code NOT FOUND, no staff code refused,
       a Halloween ticket still works.
@@ -128,7 +129,8 @@ members **already have passes** — never bulk-issue for them.
 - [ ] Fresh backups of the protected tables.
 - [ ] Read-only check: production database vs the migration files.
 - [ ] Remove test data (`@test.rocsaut.invalid`, `[TEST]`, `[DEMO]` unless kept on purpose,
-      `john@president.invalid` once a real President exists).
+      `john@president.invalid` once a real President exists, the abandoned PENDING membership
+      checkout of hrex2006@gmail.com from 2026-10-16).
 - [ ] Re-run `scripts/copy-legacy-members.ts` (dry run, then `--apply`) to catch new members.
 - [ ] Vercel env vars and outside settings (section 2).
 
@@ -144,4 +146,9 @@ members **already have passes** — never bulk-issue for them.
 - Partner types (sponsors vs collab stores).
 - Clubs-fair signup experience.
 - Drop the unused `GroupPosition_old` type.
-- Phase 7: what the merged admin portal contains.
+- Phase 8 (public site): the members directory (`/members`, `/api/members`) still groups
+  people by the old EXEC/MEMBER role; base it on positions instead.
+- Companion iOS app: its token sign-in was removed and the old `/api/exec/*` and
+  `/api/admin/*` task, member, event and finance routes are gone; it needs a new sign-in
+  and the `/api/work/*`, `/api/club/*` and `/api/me/*` routes.
+- Tidy the `admin.*` text keys that only the removed /admin pages used.
