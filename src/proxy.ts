@@ -10,14 +10,15 @@
  *
  * Protected routes still require authentication:
  * - member
- * - admin
- * - exec
  * - portal
+ *
+ * The old /admin and /exec pages forward to the portal (legacy-paths.ts).
  */
 
 import { type NextRequest, NextResponse } from "next/server";
 import createNextIntlMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
+import { portalPathFor } from "@/lib/portal/legacy-paths";
 
 /** next-intl 語言路由 handler */
 const handleI18nRouting = createNextIntlMiddleware(routing);
@@ -25,12 +26,8 @@ const handleI18nRouting = createNextIntlMiddleware(routing);
 /** 需要登入才能訪問的路徑 */
 const protectedPatterns = [
   /^\/(zh|en)\/member(\/|$)/,
-  /^\/(zh|en)\/admin(\/|$)/,
-  /^\/(zh|en)\/exec(\/|$)/,
   /^\/(zh|en)\/portal(\/|$)/,
   /^\/member(\/|$)/,
-  /^\/admin(\/|$)/,
-  /^\/exec(\/|$)/,
   /^\/portal(\/|$)/,
 ];
 
@@ -56,7 +53,6 @@ const publicPatterns = [
 
 /** 不需要 i18n locale 前綴的內部路徑 */
 const NO_I18N_PREFIXES = [
-  /^\/exec(\/|$)/,
   /^\/portal(\/|$)/,
   /^\/ticket(\/|$)/,
   /^\/order(\/|$)/,
@@ -71,6 +67,10 @@ const EVENT_PATH_EN = "/event/fall-2026";
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Step 0: the old /admin and /exec pages moved into the portal.
+  const moved = portalPathFor(pathname);
+  if (moved) return NextResponse.redirect(new URL(moved, request.url));
+
   // Step 1：公開白名單路徑直接放行
   if (publicPatterns.some((p) => p.test(pathname))) {
     if (NO_I18N_PREFIXES.some((p) => p.test(pathname))) {
@@ -80,9 +80,9 @@ export default async function proxy(request: NextRequest) {
     return handleI18nRouting(request);
   }
 
-  // Step 2：exec/portal locale prefix → 移除 locale
+  // Step 2：portal locale prefix → 移除 locale
   const localeInternalMatch = pathname.match(
-    /^\/(zh|en)\/(exec|portal)(\/.*)?$/
+    /^\/(zh|en)\/(portal)(\/.*)?$/
   );
 
   if (localeInternalMatch) {
@@ -102,7 +102,7 @@ export default async function proxy(request: NextRequest) {
   const isProtected = protectedPatterns.some((p) => p.test(pathname));
 
   if (isProtected) {
-    // exec / portal / ticket / staff are internal routes
+    // portal / ticket / staff are internal routes
     // and should not be processed by next-intl.
     if (NO_I18N_PREFIXES.some((p) => p.test(pathname))) {
       return NextResponse.next();
