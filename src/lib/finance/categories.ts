@@ -6,6 +6,11 @@
 
 export const EXPENSE_CATEGORIES = [
   "Venue",
+  // The budget sheet template's categories (Financial Overview → allocation).
+  "Alcohol & Beverages",
+  "Game Incentives",
+  "Decor",
+  "Consumables",
   "Transportation",
   "Lodging",
   "Food & Drinks",
@@ -35,4 +40,16 @@ export type IncomeCategory = (typeof INCOME_CATEGORIES)[number];
 export function chartCategory(category: string, type: "INCOME" | "EXPENSE"): string {
   const list: readonly string[] = type === "EXPENSE" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
   return list.includes(category) ? category : type === "EXPENSE" ? "Other" : "Other income";
+}
+
+/** A budget sheet allocation label → a category here (the template spells some differently). */
+export function sheetCategory(label: string): ExpenseCategory {
+  const key = label.trim().toLowerCase().replace(/\s+/g, " ");
+  if (/^alc?h?oh?ol/.test(key) || key.includes("beverage")) return "Alcohol & Beverages";
+  if (key.startsWith("game")) return "Game Incentives";
+  if (key.startsWith("decor")) return "Decor";
+  if (key.startsWith("consumable")) return "Consumables";
+  if (key.startsWith("venue")) return "Venue";
+  const exact = EXPENSE_CATEGORIES.find((c) => c.toLowerCase() === key);
+  return exact ?? "Other";
 }

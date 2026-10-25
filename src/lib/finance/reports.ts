@@ -14,6 +14,7 @@ import type { FinanceReportStatus } from "@/generated/prisma/client";
 import { can, getAccess } from "@/lib/access/can";
 import { termFor } from "@/lib/membership/term";
 import { chartCategory } from "./categories";
+import { readSheetData } from "./budget-sheet";
 
 /** The event's team group, which scopes who may work on its finances. */
 export async function eventTeamGroupId(eventId: string) {
@@ -21,7 +22,7 @@ export async function eventTeamGroupId(eventId: string) {
   return group?.id ?? null;
 }
 
-/** Whether this person may see one event's finances. */
+/** Whether this person may see one event's finances, and connect or sync its budget sheet. */
 export async function eventFinanceAccess(userId: string, eventId: string) {
   const access = await getAccess(userId);
   const groupId = await eventTeamGroupId(eventId);
@@ -31,7 +32,8 @@ export async function eventFinanceAccess(userId: string, eventId: string) {
     target
       ? can(access, permission, target)
       : access.globalGrants.has("*") || access.globalGrants.has(permission);
-  return { view: scoped("budget.edit") || scoped("expense.approve") || can(access, "finance.view") };
+  const connect = scoped("budget.edit") || scoped("expense.approve");
+  return { view: connect || can(access, "finance.view"), connect };
 }
 
 const num = (d: { toNumber(): number } | number | null | undefined) =>
@@ -54,6 +56,10 @@ export async function getEventFinance(eventId: string) {
           financeReviewNote: true,
           financeSubmittedBy: { select: { name: true } },
           financeReviewedBy: { select: { name: true } },
+          budgetSheetId: true,
+          budgetSheetSyncedAt: true,
+          budgetSheetSyncError: true,
+          budgetSheetData: true,
         },
       },
       budgetLines: { orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }] },
@@ -95,6 +101,15 @@ export async function getEventFinance(eventId: string) {
       reviewedBy: event.settings?.financeReviewedBy?.name ?? null,
       reviewNote: event.settings?.financeReviewNote ?? null,
     },
+    sheet: event.settings?.budgetSheetId
+      ? {
+          id: event.settings.budgetSheetId,
+          url: `https://docs.google.com/spreadsheets/d/${event.settings.budgetSheetId}/edit`,
+          syncedAt: event.settings.budgetSheetSyncedAt,
+          error: event.settings.budgetSheetSyncError,
+          data: readSheetData(event.settings.budgetSheetData),
+        }
+      : null,
     totals: { planned, spent, income, net: income - spent },
     byCategory: [...categories.entries()]
       .map(([category, v]) => ({ category, ...v }))

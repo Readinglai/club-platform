@@ -254,3 +254,15 @@ export function parseBudgetSheet(overview: Grid, detailed: Grid): ParsedBudget {
   const d = parseDetailed(detailed, warnings);
   return { ...o, ...d, warnings };
 }
+
+/** What a sync stores in EventSettings.budgetSheetData. */
+export type SheetData = ParsedBudget & { title: string | null };
+
+export function readSheetData(json: string | null): SheetData | null {
+  if (!json) return null;
+  try {
+    return JSON.parse(json) as SheetData;
+  } catch {
+    return null;
+  }
+}

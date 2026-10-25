@@ -26,7 +26,14 @@ Merge only after Halloween 2026.
 
 After that, **each event host** shares their event's budget sheet with that
 email as **Viewer** (Share → paste the email → Viewer) and pastes the sheet
-link into the event page. Sheets must **not** be "anyone with the link".
+link on the event's **Finance** page (Connect, then Sync now). Sheets must **not**
+be "anyone with the link".
+
+What the website does with it (already built, switched on by these two env vars):
+- **Sync now** on the event's Finance page reads the sheet straight away.
+- A daily job (`/api/cron/budget-sync`, 08:00 UTC, in `vercel.json`) re-reads every
+  connected sheet for events from 60 days ago to a year ahead. It needs `CRON_SECRET`.
+- Testing round: the "Later round" checklist in the team testing handout.
 
 ---
 
