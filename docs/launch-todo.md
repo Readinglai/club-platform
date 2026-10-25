@@ -114,6 +114,15 @@ members **already have passes** — never bulk-issue for them.
    Portal → Membership should show **"Add to Wallet"**.
 5. If API access isn't possible: keep issuing passes by hand (or ask about CSV import).
 
+**Until this is decided, every online membership skips the wallet pass** (the
+welcome email and Portal → Membership simply show no "Add to Wallet" button).
+- [ ] Decide: Pass2U Enterprise/API access, issuing by hand, or dropping wallet passes.
+- [ ] If passes are switched on later, backfill everyone who joined online in the
+      meantime: `npx tsx --env-file=.env.local scripts/issue-wallet-passes.ts`
+      (dry run first, then `--apply`; imported members are skipped automatically).
+- [ ] If issuing by hand instead, list online members without a pass from the
+      Members page (source "Paid online") and issue them in the Pass2U dashboard.
+
 ---
 
 ## 5. Before merging into main
