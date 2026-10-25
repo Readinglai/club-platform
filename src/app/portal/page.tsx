@@ -34,12 +34,6 @@ export default async function PortalPage() {
   if (attention.openTasks > 0) {
     needs.push({ href: "/portal/tasks", title: t("openTasks", { count: attention.openTasks }), tone: "action" });
   }
-  for (const r of attention.reportsToReview) {
-    needs.push({ href: `/portal/finance/events/${r.eventId}`, title: t("reviewReport", { title: r.title }), tone: "action" });
-  }
-  for (const r of attention.reportsReturned) {
-    needs.push({ href: `/portal/finance/events/${r.eventId}`, title: t("reportReturned", { title: r.title }), tone: "action" });
-  }
   if (attention.membership.state === "none") {
     needs.push({ href: "/portal/membership", title: t("joinTitle"), text: t("joinText"), tone: "info" });
   } else if (attention.membership.endsSoon) {

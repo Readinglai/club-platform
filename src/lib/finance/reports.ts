@@ -4,8 +4,9 @@
  * Nothing here is stored: budget vs actual, balances and per-year charts are
  * calculated from EventBudgetLine (planned) and FinanceRecord (actual).
  *
- * An event's report: OPEN/RETURNED (team edits freely) → SUBMITTED (locked)
- * → APPROVED by the Events VP (final) or RETURNED with a note.
+ * The website only shows money; budgets are kept in each event's Google
+ * Sheet, which is also where they are approved. Report statuses already
+ * recorded (e.g. the [DEMO] events) are shown as they are.
  */
 
 import { db } from "@/lib/db";
@@ -14,18 +15,13 @@ import { can, getAccess } from "@/lib/access/can";
 import { termFor } from "@/lib/membership/term";
 import { chartCategory } from "./categories";
 
-type Outcome = { ok: true } | { ok: false; status: number; message: string };
-const fail = (status: number, message: string) => ({ ok: false as const, status, message });
-
-export const EDITABLE_STATUSES: FinanceReportStatus[] = ["OPEN", "RETURNED"];
-
 /** The event's team group, which scopes who may work on its finances. */
 export async function eventTeamGroupId(eventId: string) {
   const group = await db.group.findUnique({ where: { eventId }, select: { id: true } });
   return group?.id ?? null;
 }
 
-/** What this person may do with one event's finances. */
+/** Whether this person may see one event's finances. */
 export async function eventFinanceAccess(userId: string, eventId: string) {
   const access = await getAccess(userId);
   const groupId = await eventTeamGroupId(eventId);
@@ -35,12 +31,7 @@ export async function eventFinanceAccess(userId: string, eventId: string) {
     target
       ? can(access, permission, target)
       : access.globalGrants.has("*") || access.globalGrants.has(permission);
-  const clubView = can(access, "finance.view");
-
-  const edit = scoped("budget.edit");
-  const submit = scoped("expense.submit");
-  const review = scoped("expense.approve");
-  return { view: edit || review || clubView, edit, submit, review };
+  return { view: scoped("budget.edit") || scoped("expense.approve") || can(access, "finance.view") };
 }
 
 const num = (d: { toNumber(): number } | number | null | undefined) =>
@@ -188,57 +179,4 @@ export async function getClubFinanceSummary() {
       })),
     events: [...byEvent.values()].sort((a, b) => b.startAt.getTime() - a.startAt.getTime()),
   };
-}
-
-export async function submitReport(actorId: string, eventId: string): Promise<Outcome> {
-  const rights = await eventFinanceAccess(actorId, eventId);
-  if (!rights.submit) return fail(403, "Only the event's team can submit its report.");
-
-  const { count } = await db.eventSettings.updateMany({
-    where: { eventId, financeStatus: { in: EDITABLE_STATUSES } },
-    data: { financeStatus: "SUBMITTED", financeSubmittedAt: new Date(), financeSubmittedById: actorId },
-  });
-  return count ? { ok: true } : fail(409, "This report is already submitted or approved.");
-}
-
-export async function reviewReport(input: {
-  actorId: string;
-  eventId: string;
-  decision: "APPROVED" | "RETURNED";
-  note?: string;
-}): Promise<Outcome> {
-  const rights = await eventFinanceAccess(input.actorId, input.eventId);
-  if (!rights.review) return fail(403, "Only the Events VP can review this report.");
-
-  const settings = await db.eventSettings.findUnique({
-    where: { eventId: input.eventId },
-    select: { financeSubmittedById: true },
-  });
-  if (settings?.financeSubmittedById === input.actorId) return fail(403, "You can't review a report you submitted.");
-  if (input.decision === "RETURNED" && !input.note?.trim()) {
-    return fail(400, "Please add a note saying what needs fixing.");
-  }
-
-  const { count } = await db.eventSettings.updateMany({
-    where: { eventId: input.eventId, financeStatus: "SUBMITTED" },
-    data: {
-      financeStatus: input.decision,
-      financeReviewedAt: new Date(),
-      financeReviewedById: input.actorId,
-      financeReviewNote: input.note?.trim() || null,
-    },
-  });
-  return count ? { ok: true } : fail(409, "This report isn't waiting for review.");
-}
-
-/** Budget lines and costs can only change while the report is open or returned. */
-export async function assertEditable(actorId: string, eventId: string): Promise<Outcome> {
-  const rights = await eventFinanceAccess(actorId, eventId);
-  if (!rights.edit) return fail(403, "You can't edit this event's finances.");
-  const settings = await db.eventSettings.findUnique({ where: { eventId }, select: { financeStatus: true } });
-  const status = settings?.financeStatus ?? "OPEN";
-  if (!EDITABLE_STATUSES.includes(status)) {
-    return fail(409, "This report has been submitted, so it's locked. It reopens if the Events VP returns it.");
-  }
-  return { ok: true };
 }
