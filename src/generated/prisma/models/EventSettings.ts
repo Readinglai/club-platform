@@ -40,6 +40,11 @@ export type EventSettingsMinAggregateOutputType = {
   financeReviewedAt: Date | null
   financeReviewedById: string | null
   financeReviewNote: string | null
+  budgetSheetId: string | null
+  budgetSheetConnectedBy: string | null
+  budgetSheetSyncedAt: Date | null
+  budgetSheetSyncError: string | null
+  budgetSheetData: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +65,11 @@ export type EventSettingsMaxAggregateOutputType = {
   financeReviewedAt: Date | null
   financeReviewedById: string | null
   financeReviewNote: string | null
+  budgetSheetId: string | null
+  budgetSheetConnectedBy: string | null
+  budgetSheetSyncedAt: Date | null
+  budgetSheetSyncError: string | null
+  budgetSheetData: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -80,6 +90,11 @@ export type EventSettingsCountAggregateOutputType = {
   financeReviewedAt: number
   financeReviewedById: number
   financeReviewNote: number
+  budgetSheetId: number
+  budgetSheetConnectedBy: number
+  budgetSheetSyncedAt: number
+  budgetSheetSyncError: number
+  budgetSheetData: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -102,6 +117,11 @@ export type EventSettingsMinAggregateInputType = {
   financeReviewedAt?: true
   financeReviewedById?: true
   financeReviewNote?: true
+  budgetSheetId?: true
+  budgetSheetConnectedBy?: true
+  budgetSheetSyncedAt?: true
+  budgetSheetSyncError?: true
+  budgetSheetData?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -122,6 +142,11 @@ export type EventSettingsMaxAggregateInputType = {
   financeReviewedAt?: true
   financeReviewedById?: true
   financeReviewNote?: true
+  budgetSheetId?: true
+  budgetSheetConnectedBy?: true
+  budgetSheetSyncedAt?: true
+  budgetSheetSyncError?: true
+  budgetSheetData?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -142,6 +167,11 @@ export type EventSettingsCountAggregateInputType = {
   financeReviewedAt?: true
   financeReviewedById?: true
   financeReviewNote?: true
+  budgetSheetId?: true
+  budgetSheetConnectedBy?: true
+  budgetSheetSyncedAt?: true
+  budgetSheetSyncError?: true
+  budgetSheetData?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -235,6 +265,11 @@ export type EventSettingsGroupByOutputType = {
   financeReviewedAt: Date | null
   financeReviewedById: string | null
   financeReviewNote: string | null
+  budgetSheetId: string | null
+  budgetSheetConnectedBy: string | null
+  budgetSheetSyncedAt: Date | null
+  budgetSheetSyncError: string | null
+  budgetSheetData: string | null
   createdAt: Date
   updatedAt: Date
   _count: EventSettingsCountAggregateOutputType | null
@@ -276,6 +311,11 @@ export type EventSettingsWhereInput = {
   financeReviewedAt?: Prisma.DateTimeNullableFilter<"EventSettings"> | Date | string | null
   financeReviewedById?: Prisma.StringNullableFilter<"EventSettings"> | string | null
   financeReviewNote?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  budgetSheetId?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  budgetSheetConnectedBy?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  budgetSheetSyncedAt?: Prisma.DateTimeNullableFilter<"EventSettings"> | Date | string | null
+  budgetSheetSyncError?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  budgetSheetData?: Prisma.StringNullableFilter<"EventSettings"> | string | null
   createdAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
@@ -299,6 +339,11 @@ export type EventSettingsOrderByWithRelationInput = {
   financeReviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   financeReviewedById?: Prisma.SortOrderInput | Prisma.SortOrder
   financeReviewNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  budgetSheetId?: Prisma.SortOrderInput | Prisma.SortOrder
+  budgetSheetConnectedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  budgetSheetSyncedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  budgetSheetSyncError?: Prisma.SortOrderInput | Prisma.SortOrder
+  budgetSheetData?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   event?: Prisma.EventOrderByWithRelationInput
@@ -325,6 +370,11 @@ export type EventSettingsWhereUniqueInput = Prisma.AtLeast<{
   financeReviewedAt?: Prisma.DateTimeNullableFilter<"EventSettings"> | Date | string | null
   financeReviewedById?: Prisma.StringNullableFilter<"EventSettings"> | string | null
   financeReviewNote?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  budgetSheetId?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  budgetSheetConnectedBy?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  budgetSheetSyncedAt?: Prisma.DateTimeNullableFilter<"EventSettings"> | Date | string | null
+  budgetSheetSyncError?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  budgetSheetData?: Prisma.StringNullableFilter<"EventSettings"> | string | null
   createdAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
@@ -348,6 +398,11 @@ export type EventSettingsOrderByWithAggregationInput = {
   financeReviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   financeReviewedById?: Prisma.SortOrderInput | Prisma.SortOrder
   financeReviewNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  budgetSheetId?: Prisma.SortOrderInput | Prisma.SortOrder
+  budgetSheetConnectedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  budgetSheetSyncedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  budgetSheetSyncError?: Prisma.SortOrderInput | Prisma.SortOrder
+  budgetSheetData?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.EventSettingsCountOrderByAggregateInput
@@ -374,6 +429,11 @@ export type EventSettingsScalarWhereWithAggregatesInput = {
   financeReviewedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"EventSettings"> | Date | string | null
   financeReviewedById?: Prisma.StringNullableWithAggregatesFilter<"EventSettings"> | string | null
   financeReviewNote?: Prisma.StringNullableWithAggregatesFilter<"EventSettings"> | string | null
+  budgetSheetId?: Prisma.StringNullableWithAggregatesFilter<"EventSettings"> | string | null
+  budgetSheetConnectedBy?: Prisma.StringNullableWithAggregatesFilter<"EventSettings"> | string | null
+  budgetSheetSyncedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"EventSettings"> | Date | string | null
+  budgetSheetSyncError?: Prisma.StringNullableWithAggregatesFilter<"EventSettings"> | string | null
+  budgetSheetData?: Prisma.StringNullableWithAggregatesFilter<"EventSettings"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"EventSettings"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"EventSettings"> | Date | string
 }
@@ -391,6 +451,11 @@ export type EventSettingsCreateInput = {
   financeSubmittedAt?: Date | string | null
   financeReviewedAt?: Date | string | null
   financeReviewNote?: string | null
+  budgetSheetId?: string | null
+  budgetSheetConnectedBy?: string | null
+  budgetSheetSyncedAt?: Date | string | null
+  budgetSheetSyncError?: string | null
+  budgetSheetData?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutSettingsInput
@@ -414,6 +479,11 @@ export type EventSettingsUncheckedCreateInput = {
   financeReviewedAt?: Date | string | null
   financeReviewedById?: string | null
   financeReviewNote?: string | null
+  budgetSheetId?: string | null
+  budgetSheetConnectedBy?: string | null
+  budgetSheetSyncedAt?: Date | string | null
+  budgetSheetSyncError?: string | null
+  budgetSheetData?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -431,6 +501,11 @@ export type EventSettingsUpdateInput = {
   financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetConnectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutSettingsNestedInput
@@ -454,6 +529,11 @@ export type EventSettingsUncheckedUpdateInput = {
   financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetConnectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -474,6 +554,11 @@ export type EventSettingsCreateManyInput = {
   financeReviewedAt?: Date | string | null
   financeReviewedById?: string | null
   financeReviewNote?: string | null
+  budgetSheetId?: string | null
+  budgetSheetConnectedBy?: string | null
+  budgetSheetSyncedAt?: Date | string | null
+  budgetSheetSyncError?: string | null
+  budgetSheetData?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -491,6 +576,11 @@ export type EventSettingsUpdateManyMutationInput = {
   financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetConnectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -511,6 +601,11 @@ export type EventSettingsUncheckedUpdateManyInput = {
   financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetConnectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -546,6 +641,11 @@ export type EventSettingsCountOrderByAggregateInput = {
   financeReviewedAt?: Prisma.SortOrder
   financeReviewedById?: Prisma.SortOrder
   financeReviewNote?: Prisma.SortOrder
+  budgetSheetId?: Prisma.SortOrder
+  budgetSheetConnectedBy?: Prisma.SortOrder
+  budgetSheetSyncedAt?: Prisma.SortOrder
+  budgetSheetSyncError?: Prisma.SortOrder
+  budgetSheetData?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -566,6 +666,11 @@ export type EventSettingsMaxOrderByAggregateInput = {
   financeReviewedAt?: Prisma.SortOrder
   financeReviewedById?: Prisma.SortOrder
   financeReviewNote?: Prisma.SortOrder
+  budgetSheetId?: Prisma.SortOrder
+  budgetSheetConnectedBy?: Prisma.SortOrder
+  budgetSheetSyncedAt?: Prisma.SortOrder
+  budgetSheetSyncError?: Prisma.SortOrder
+  budgetSheetData?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -586,6 +691,11 @@ export type EventSettingsMinOrderByAggregateInput = {
   financeReviewedAt?: Prisma.SortOrder
   financeReviewedById?: Prisma.SortOrder
   financeReviewNote?: Prisma.SortOrder
+  budgetSheetId?: Prisma.SortOrder
+  budgetSheetConnectedBy?: Prisma.SortOrder
+  budgetSheetSyncedAt?: Prisma.SortOrder
+  budgetSheetSyncError?: Prisma.SortOrder
+  budgetSheetData?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -723,6 +833,11 @@ export type EventSettingsCreateWithoutFinanceSubmittedByInput = {
   financeSubmittedAt?: Date | string | null
   financeReviewedAt?: Date | string | null
   financeReviewNote?: string | null
+  budgetSheetId?: string | null
+  budgetSheetConnectedBy?: string | null
+  budgetSheetSyncedAt?: Date | string | null
+  budgetSheetSyncError?: string | null
+  budgetSheetData?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutSettingsInput
@@ -744,6 +859,11 @@ export type EventSettingsUncheckedCreateWithoutFinanceSubmittedByInput = {
   financeReviewedAt?: Date | string | null
   financeReviewedById?: string | null
   financeReviewNote?: string | null
+  budgetSheetId?: string | null
+  budgetSheetConnectedBy?: string | null
+  budgetSheetSyncedAt?: Date | string | null
+  budgetSheetSyncError?: string | null
+  budgetSheetData?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -771,6 +891,11 @@ export type EventSettingsCreateWithoutFinanceReviewedByInput = {
   financeSubmittedAt?: Date | string | null
   financeReviewedAt?: Date | string | null
   financeReviewNote?: string | null
+  budgetSheetId?: string | null
+  budgetSheetConnectedBy?: string | null
+  budgetSheetSyncedAt?: Date | string | null
+  budgetSheetSyncError?: string | null
+  budgetSheetData?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutSettingsInput
@@ -792,6 +917,11 @@ export type EventSettingsUncheckedCreateWithoutFinanceReviewedByInput = {
   financeSubmittedById?: string | null
   financeReviewedAt?: Date | string | null
   financeReviewNote?: string | null
+  budgetSheetId?: string | null
+  budgetSheetConnectedBy?: string | null
+  budgetSheetSyncedAt?: Date | string | null
+  budgetSheetSyncError?: string | null
+  budgetSheetData?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -841,6 +971,11 @@ export type EventSettingsScalarWhereInput = {
   financeReviewedAt?: Prisma.DateTimeNullableFilter<"EventSettings"> | Date | string | null
   financeReviewedById?: Prisma.StringNullableFilter<"EventSettings"> | string | null
   financeReviewNote?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  budgetSheetId?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  budgetSheetConnectedBy?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  budgetSheetSyncedAt?: Prisma.DateTimeNullableFilter<"EventSettings"> | Date | string | null
+  budgetSheetSyncError?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  budgetSheetData?: Prisma.StringNullableFilter<"EventSettings"> | string | null
   createdAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
 }
@@ -874,6 +1009,11 @@ export type EventSettingsCreateWithoutEventInput = {
   financeSubmittedAt?: Date | string | null
   financeReviewedAt?: Date | string | null
   financeReviewNote?: string | null
+  budgetSheetId?: string | null
+  budgetSheetConnectedBy?: string | null
+  budgetSheetSyncedAt?: Date | string | null
+  budgetSheetSyncError?: string | null
+  budgetSheetData?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   financeSubmittedBy?: Prisma.UserCreateNestedOneWithoutFinanceSubmissionsInput
@@ -895,6 +1035,11 @@ export type EventSettingsUncheckedCreateWithoutEventInput = {
   financeReviewedAt?: Date | string | null
   financeReviewedById?: string | null
   financeReviewNote?: string | null
+  budgetSheetId?: string | null
+  budgetSheetConnectedBy?: string | null
+  budgetSheetSyncedAt?: Date | string | null
+  budgetSheetSyncError?: string | null
+  budgetSheetData?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -928,6 +1073,11 @@ export type EventSettingsUpdateWithoutEventInput = {
   financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetConnectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   financeSubmittedBy?: Prisma.UserUpdateOneWithoutFinanceSubmissionsNestedInput
@@ -949,6 +1099,11 @@ export type EventSettingsUncheckedUpdateWithoutEventInput = {
   financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetConnectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -968,6 +1123,11 @@ export type EventSettingsCreateManyFinanceSubmittedByInput = {
   financeReviewedAt?: Date | string | null
   financeReviewedById?: string | null
   financeReviewNote?: string | null
+  budgetSheetId?: string | null
+  budgetSheetConnectedBy?: string | null
+  budgetSheetSyncedAt?: Date | string | null
+  budgetSheetSyncError?: string | null
+  budgetSheetData?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -987,6 +1147,11 @@ export type EventSettingsCreateManyFinanceReviewedByInput = {
   financeSubmittedById?: string | null
   financeReviewedAt?: Date | string | null
   financeReviewNote?: string | null
+  budgetSheetId?: string | null
+  budgetSheetConnectedBy?: string | null
+  budgetSheetSyncedAt?: Date | string | null
+  budgetSheetSyncError?: string | null
+  budgetSheetData?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1004,6 +1169,11 @@ export type EventSettingsUpdateWithoutFinanceSubmittedByInput = {
   financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetConnectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutSettingsNestedInput
@@ -1025,6 +1195,11 @@ export type EventSettingsUncheckedUpdateWithoutFinanceSubmittedByInput = {
   financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetConnectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1044,6 +1219,11 @@ export type EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByInput = {
   financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetConnectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1061,6 +1241,11 @@ export type EventSettingsUpdateWithoutFinanceReviewedByInput = {
   financeSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetConnectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutSettingsNestedInput
@@ -1082,6 +1267,11 @@ export type EventSettingsUncheckedUpdateWithoutFinanceReviewedByInput = {
   financeSubmittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetConnectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1101,6 +1291,11 @@ export type EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByInput = {
   financeSubmittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   financeReviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeReviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetConnectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1123,6 +1318,11 @@ export type EventSettingsSelect<ExtArgs extends runtime.Types.Extensions.Interna
   financeReviewedAt?: boolean
   financeReviewedById?: boolean
   financeReviewNote?: boolean
+  budgetSheetId?: boolean
+  budgetSheetConnectedBy?: boolean
+  budgetSheetSyncedAt?: boolean
+  budgetSheetSyncError?: boolean
+  budgetSheetData?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
@@ -1146,6 +1346,11 @@ export type EventSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   financeReviewedAt?: boolean
   financeReviewedById?: boolean
   financeReviewNote?: boolean
+  budgetSheetId?: boolean
+  budgetSheetConnectedBy?: boolean
+  budgetSheetSyncedAt?: boolean
+  budgetSheetSyncError?: boolean
+  budgetSheetData?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
@@ -1169,6 +1374,11 @@ export type EventSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   financeReviewedAt?: boolean
   financeReviewedById?: boolean
   financeReviewNote?: boolean
+  budgetSheetId?: boolean
+  budgetSheetConnectedBy?: boolean
+  budgetSheetSyncedAt?: boolean
+  budgetSheetSyncError?: boolean
+  budgetSheetData?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
@@ -1192,11 +1402,16 @@ export type EventSettingsSelectScalar = {
   financeReviewedAt?: boolean
   financeReviewedById?: boolean
   financeReviewNote?: boolean
+  budgetSheetId?: boolean
+  budgetSheetConnectedBy?: boolean
+  budgetSheetSyncedAt?: boolean
+  budgetSheetSyncError?: boolean
+  budgetSheetData?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EventSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "timezone" | "currency" | "registrationEnabled" | "ticketsEnabled" | "checkInEnabled" | "budgetEnabled" | "dashboardEnabled" | "financeStatus" | "financeSubmittedAt" | "financeSubmittedById" | "financeReviewedAt" | "financeReviewedById" | "financeReviewNote" | "createdAt" | "updatedAt", ExtArgs["result"]["eventSettings"]>
+export type EventSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "timezone" | "currency" | "registrationEnabled" | "ticketsEnabled" | "checkInEnabled" | "budgetEnabled" | "dashboardEnabled" | "financeStatus" | "financeSubmittedAt" | "financeSubmittedById" | "financeReviewedAt" | "financeReviewedById" | "financeReviewNote" | "budgetSheetId" | "budgetSheetConnectedBy" | "budgetSheetSyncedAt" | "budgetSheetSyncError" | "budgetSheetData" | "createdAt" | "updatedAt", ExtArgs["result"]["eventSettings"]>
 export type EventSettingsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
   financeSubmittedBy?: boolean | Prisma.EventSettings$financeSubmittedByArgs<ExtArgs>
@@ -1243,6 +1458,17 @@ export type $EventSettingsPayload<ExtArgs extends runtime.Types.Extensions.Inter
     financeReviewedAt: Date | null
     financeReviewedById: string | null
     financeReviewNote: string | null
+    /**
+     * The event's budget lives in a Google Sheet (standard club template); the
+     * website only reads it. Each sync replaces the event's sheet-sourced
+     * budget lines and costs; budgetSheetData keeps the rest of what was read
+     * (summary row, allocation by category, approval block) as JSON.
+     */
+    budgetSheetId: string | null
+    budgetSheetConnectedBy: string | null
+    budgetSheetSyncedAt: Date | null
+    budgetSheetSyncError: string | null
+    budgetSheetData: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["eventSettings"]>
@@ -1686,6 +1912,11 @@ export interface EventSettingsFieldRefs {
   readonly financeReviewedAt: Prisma.FieldRef<"EventSettings", 'DateTime'>
   readonly financeReviewedById: Prisma.FieldRef<"EventSettings", 'String'>
   readonly financeReviewNote: Prisma.FieldRef<"EventSettings", 'String'>
+  readonly budgetSheetId: Prisma.FieldRef<"EventSettings", 'String'>
+  readonly budgetSheetConnectedBy: Prisma.FieldRef<"EventSettings", 'String'>
+  readonly budgetSheetSyncedAt: Prisma.FieldRef<"EventSettings", 'DateTime'>
+  readonly budgetSheetSyncError: Prisma.FieldRef<"EventSettings", 'String'>
+  readonly budgetSheetData: Prisma.FieldRef<"EventSettings", 'String'>
   readonly createdAt: Prisma.FieldRef<"EventSettings", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"EventSettings", 'DateTime'>
 }

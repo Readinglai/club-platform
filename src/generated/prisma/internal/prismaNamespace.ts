@@ -3845,6 +3845,11 @@ export const EventSettingsScalarFieldEnum = {
   financeReviewedAt: 'financeReviewedAt',
   financeReviewedById: 'financeReviewedById',
   financeReviewNote: 'financeReviewNote',
+  budgetSheetId: 'budgetSheetId',
+  budgetSheetConnectedBy: 'budgetSheetConnectedBy',
+  budgetSheetSyncedAt: 'budgetSheetSyncedAt',
+  budgetSheetSyncError: 'budgetSheetSyncError',
+  budgetSheetData: 'budgetSheetData',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

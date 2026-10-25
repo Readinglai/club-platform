@@ -333,6 +333,16 @@ model EventSettings {
   financeReviewedBy    User?               @relation("FinanceReviewedBy", fields: [financeReviewedById], references: [id])
   financeReviewNote    String?
 
+  /// The event's budget lives in a Google Sheet (standard club template); the
+  /// website only reads it. Each sync replaces the event's sheet-sourced
+  /// budget lines and costs; budgetSheetData keeps the rest of what was read
+  /// (summary row, allocation by category, approval block) as JSON.
+  budgetSheetId          String?
+  budgetSheetConnectedBy String?
+  budgetSheetSyncedAt    DateTime?
+  budgetSheetSyncError   String?
+  budgetSheetData        String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
