@@ -43,13 +43,6 @@ function navSections(s: PortalSections) {
   ];
 }
 
-/** Bottom tabs on phones: the most-used pages. */
-const TABS: Item[] = [
-  { href: "/portal", key: "home", icon: "⌂" },
-  { href: "/portal/tickets", key: "tickets", icon: "▤" },
-  { href: "/portal/membership", key: "membership", icon: "◎" },
-];
-
 const isActive = (pathname: string, href: string) =>
   href === "/portal" ? pathname === "/portal" : pathname === href || pathname.startsWith(`${href}/`);
 
@@ -144,9 +137,9 @@ export default function PortalShell({ sections: allowed, children }: { sections:
   );
 
   return (
-    <div className="min-h-screen lg:flex" style={{ backgroundColor: SURFACE }}>
-      {/* Computer: sidebar */}
-      <aside className="hidden w-60 shrink-0 flex-col justify-between border-r px-3 py-5 lg:sticky lg:top-0 lg:flex lg:h-screen" style={{ borderColor: LINE }}>
+    <div className="min-h-screen md:flex" style={{ backgroundColor: SURFACE }}>
+      {/* Tablet and computer: sidebar */}
+      <aside className="hidden w-60 shrink-0 flex-col justify-between border-r px-3 py-5 md:sticky md:top-0 md:flex md:h-screen" style={{ borderColor: LINE }}>
         <div className="flex flex-col gap-6 overflow-y-auto">
           <Link href="/portal" className="px-3 text-base font-bold" style={{ color: PRIMARY }}>{t("portalName")}</Link>
           <NavList sections={sections} pathname={pathname} />
@@ -154,11 +147,11 @@ export default function PortalShell({ sections: allowed, children }: { sections:
         {footer}
       </aside>
 
-      <div className="min-w-0 flex-1 pb-20 lg:pb-0">
+      <div className="min-w-0 flex-1">
         {/* Top bar: back link everywhere; menu button on phones */}
         <header className="sticky top-0 z-20 flex items-center justify-between border-b px-4 py-2.5 text-sm" style={{ backgroundColor: SURFACE, borderColor: LINE }}>
           {atHome ? (
-            <span className="font-semibold lg:invisible" style={{ color: PRIMARY }}>{t("portalName")}</span>
+            <span className="font-semibold md:invisible" style={{ color: PRIMARY }}>{t("portalName")}</span>
           ) : (
             <Link href={parentPath(pathname)} className="font-medium hover:underline" style={{ color: PRIMARY }}>
               ← {t("back")}
@@ -166,7 +159,7 @@ export default function PortalShell({ sections: allowed, children }: { sections:
           )}
           <button
             type="button"
-            className="rounded-lg border px-3 py-1.5 lg:hidden"
+            className="rounded-lg border px-3 py-1.5 md:hidden"
             style={{ borderColor: LINE, color: PRIMARY }}
             aria-expanded={drawer}
             aria-controls="portal-drawer"
@@ -181,7 +174,7 @@ export default function PortalShell({ sections: allowed, children }: { sections:
 
       {/* Phone: menu drawer */}
       {drawer && (
-        <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" id="portal-drawer">
+        <div className="fixed inset-0 z-40 md:hidden" role="dialog" aria-modal="true" id="portal-drawer">
           <button type="button" aria-label={t("close")} className="absolute inset-0 bg-black/30" onClick={() => setDrawer(false)} />
           <div className="absolute right-0 top-0 flex h-full w-72 max-w-[85%] flex-col justify-between overflow-y-auto px-3 py-5 shadow-xl" style={{ backgroundColor: SURFACE }}>
             <div className="flex flex-col gap-6">
@@ -195,29 +188,6 @@ export default function PortalShell({ sections: allowed, children }: { sections:
           </div>
         </div>
       )}
-
-      {/* Phone: bottom tabs */}
-      <nav aria-label={t("menu")} className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t lg:hidden" style={{ backgroundColor: SURFACE, borderColor: LINE }}>
-        {TABS.map((tab) => {
-          const active = isActive(pathname, tab.href);
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              aria-current={active ? "page" : undefined}
-              className="flex flex-col items-center gap-0.5 py-2 text-[11px]"
-              style={{ color: active ? PRIMARY : "#6b7280", fontWeight: active ? 600 : 400 }}
-            >
-              <span aria-hidden="true" className="text-base leading-none">{tab.icon}</span>
-              {t(tab.key)}
-            </Link>
-          );
-        })}
-        <button type="button" onClick={() => setDrawer(true)} className="flex flex-col items-center gap-0.5 py-2 text-[11px] text-gray-500">
-          <span aria-hidden="true" className="text-base leading-none">☰</span>
-          {t("menu")}
-        </button>
-      </nav>
     </div>
   );
 }
