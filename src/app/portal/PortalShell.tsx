@@ -116,6 +116,7 @@ function NavList({ sections, pathname, onNavigate }: { sections: ReturnType<type
 export default function PortalShell({ sections: allowed, children }: { sections: PortalSections; children: React.ReactNode }) {
   const pathname = usePathname();
   const t = useTranslations("portal");
+  const locale = useLocale();
   const [drawer, setDrawer] = useState(false);
   const sections = navSections(allowed);
   const atHome = pathname === "/portal";
@@ -129,6 +130,10 @@ export default function PortalShell({ sections: allowed, children }: { sections:
 
   const footer = (
     <div className="flex flex-col gap-3">
+      {/* English is the website's default language and has no prefix. */}
+      <Link href={locale === "en" ? "/" : `/${locale}`} className="px-3 text-sm font-medium hover:underline" style={{ color: PRIMARY }}>
+        {t("backToSite")}
+      </Link>
       <LanguageSwitch />
       <button type="button" onClick={() => signOut({ callbackUrl: "/login" })} className="px-3 text-left text-xs text-gray-600 underline">
         {t("signOut")}
