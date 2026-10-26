@@ -481,10 +481,12 @@ export type TaskGroupCreateNestedOneWithoutTasksInput = {
   connect?: Prisma.TaskGroupWhereUniqueInput
 }
 
-export type TaskGroupUpdateOneRequiredWithoutTasksNestedInput = {
+export type TaskGroupUpdateOneWithoutTasksNestedInput = {
   create?: Prisma.XOR<Prisma.TaskGroupCreateWithoutTasksInput, Prisma.TaskGroupUncheckedCreateWithoutTasksInput>
   connectOrCreate?: Prisma.TaskGroupCreateOrConnectWithoutTasksInput
   upsert?: Prisma.TaskGroupUpsertWithoutTasksInput
+  disconnect?: Prisma.TaskGroupWhereInput | boolean
+  delete?: Prisma.TaskGroupWhereInput | boolean
   connect?: Prisma.TaskGroupWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.TaskGroupUpdateToOneWithWhereWithoutTasksInput, Prisma.TaskGroupUpdateWithoutTasksInput>, Prisma.TaskGroupUncheckedUpdateWithoutTasksInput>
 }
@@ -495,10 +497,12 @@ export type TaskGroupCreateNestedOneWithoutVotesInput = {
   connect?: Prisma.TaskGroupWhereUniqueInput
 }
 
-export type TaskGroupUpdateOneRequiredWithoutVotesNestedInput = {
+export type TaskGroupUpdateOneWithoutVotesNestedInput = {
   create?: Prisma.XOR<Prisma.TaskGroupCreateWithoutVotesInput, Prisma.TaskGroupUncheckedCreateWithoutVotesInput>
   connectOrCreate?: Prisma.TaskGroupCreateOrConnectWithoutVotesInput
   upsert?: Prisma.TaskGroupUpsertWithoutVotesInput
+  disconnect?: Prisma.TaskGroupWhereInput | boolean
+  delete?: Prisma.TaskGroupWhereInput | boolean
   connect?: Prisma.TaskGroupWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.TaskGroupUpdateToOneWithWhereWithoutVotesInput, Prisma.TaskGroupUpdateWithoutVotesInput>, Prisma.TaskGroupUncheckedUpdateWithoutVotesInput>
 }

@@ -2,19 +2,12 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { db } from "@/lib/db";
-import { Role } from "@/generated/prisma/client";
+import { getPublicTeamMember } from "@/lib/team/public";
 
 export const dynamic = "force-dynamic";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
-
-const DEPARTMENT_COLORS: Record<string, { bg: string; text: string }> = {
-  event: { bg: "#dbeafe", text: "#1e40af" },
-  marketing: { bg: "#fce7f3", text: "#9d174d" },
-  operation: { bg: "#d1fae5", text: "#065f46" },
-};
 
 function getInitials(name: string): string {
   const trimmed = name.trim();
@@ -35,39 +28,17 @@ export default async function MemberDetailPage({ params }: MemberDetailPageProps
   setRequestLocale(locale);
   const t = await getTranslations("members");
 
-  const member = await db.user.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      name: true,
-      image: true,
-      role: true,
-      bio: true,
-      major: true,
-      rocsautYear: true,
-      instagram: true,
-      linkedin: true,
-      department: { select: { id: true, name: true, slug: true } },
-    },
-  });
+  // Only people on the club's public team have a profile page (src/lib/team/public.ts).
+  const member = await getPublicTeamMember(id);
+  if (!member) notFound();
 
-  // Hide SUPER_ADMIN / ADMIN from public profile pages
-  if (!member || member.role === Role.SUPER_ADMIN || member.role === Role.ADMIN) {
-    notFound();
-  }
-
-  const deptSlug = member.department?.slug ?? "";
-  const deptColor = DEPARTMENT_COLORS[deptSlug] ?? { bg: "#f3f4f6", text: "#374151" };
   const initials = getInitials(member.name);
-
-  const roleLabel =
-    locale === "zh"
-      ? member.role === Role.EXEC
-        ? "執行委員"
-        : "成員"
-      : member.role === Role.EXEC
-      ? "Executive"
-      : "Member";
+  const positionLabels = [
+    ...(member.title ? [member.title] : []),
+    ...member.positions.map((p) =>
+      [t(`position_${p.position}`), p.group ?? (p.department ? t(`dept_${p.department}`) : null)].filter(Boolean).join(" · ")
+    ),
+  ];
 
   const hasSocial = member.instagram || member.linkedin;
   const hasInfo = member.major || member.rocsautYear != null;
@@ -124,17 +95,11 @@ export default async function MemberDetailPage({ params }: MemberDetailPageProps
               <h1 className="text-3xl sm:text-4xl font-bold" style={{ color: SECONDARY }}>
                 {member.name}
               </h1>
-              <p className="text-base font-medium" style={{ color: `${SECONDARY}bb` }}>
-                {roleLabel}
-              </p>
-              {member.department && (
-                <span
-                  className="px-3 py-0.5 rounded-full text-xs font-semibold"
-                  style={{ backgroundColor: deptColor.bg, color: deptColor.text }}
-                >
-                  {member.department.name}
-                </span>
-              )}
+              {positionLabels.map((label) => (
+                <p key={label} className="text-base font-medium" style={{ color: `${SECONDARY}bb` }}>
+                  {label}
+                </p>
+              ))}
             </div>
           </div>
         </div>

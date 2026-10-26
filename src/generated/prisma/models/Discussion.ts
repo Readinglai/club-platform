@@ -28,6 +28,7 @@ export type DiscussionMinAggregateOutputType = {
   id: string | null
   eventId: string | null
   taskGroupId: string | null
+  groupId: string | null
   createdAt: Date | null
 }
 
@@ -35,6 +36,7 @@ export type DiscussionMaxAggregateOutputType = {
   id: string | null
   eventId: string | null
   taskGroupId: string | null
+  groupId: string | null
   createdAt: Date | null
 }
 
@@ -42,6 +44,7 @@ export type DiscussionCountAggregateOutputType = {
   id: number
   eventId: number
   taskGroupId: number
+  groupId: number
   createdAt: number
   _all: number
 }
@@ -51,6 +54,7 @@ export type DiscussionMinAggregateInputType = {
   id?: true
   eventId?: true
   taskGroupId?: true
+  groupId?: true
   createdAt?: true
 }
 
@@ -58,6 +62,7 @@ export type DiscussionMaxAggregateInputType = {
   id?: true
   eventId?: true
   taskGroupId?: true
+  groupId?: true
   createdAt?: true
 }
 
@@ -65,6 +70,7 @@ export type DiscussionCountAggregateInputType = {
   id?: true
   eventId?: true
   taskGroupId?: true
+  groupId?: true
   createdAt?: true
   _all?: true
 }
@@ -145,6 +151,7 @@ export type DiscussionGroupByOutputType = {
   id: string
   eventId: string | null
   taskGroupId: string | null
+  groupId: string | null
   createdAt: Date
   _count: DiscussionCountAggregateOutputType | null
   _min: DiscussionMinAggregateOutputType | null
@@ -173,9 +180,11 @@ export type DiscussionWhereInput = {
   id?: Prisma.StringFilter<"Discussion"> | string
   eventId?: Prisma.StringNullableFilter<"Discussion"> | string | null
   taskGroupId?: Prisma.StringNullableFilter<"Discussion"> | string | null
+  groupId?: Prisma.StringNullableFilter<"Discussion"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Discussion"> | Date | string
   event?: Prisma.XOR<Prisma.EventNullableScalarRelationFilter, Prisma.EventWhereInput> | null
   taskGroup?: Prisma.XOR<Prisma.TaskGroupNullableScalarRelationFilter, Prisma.TaskGroupWhereInput> | null
+  group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
   comments?: Prisma.CommentListRelationFilter
 }
 
@@ -183,15 +192,18 @@ export type DiscussionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   eventId?: Prisma.SortOrderInput | Prisma.SortOrder
   taskGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   event?: Prisma.EventOrderByWithRelationInput
   taskGroup?: Prisma.TaskGroupOrderByWithRelationInput
+  group?: Prisma.GroupOrderByWithRelationInput
   comments?: Prisma.CommentOrderByRelationAggregateInput
 }
 
 export type DiscussionWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   eventId?: string
+  groupId?: string
   AND?: Prisma.DiscussionWhereInput | Prisma.DiscussionWhereInput[]
   OR?: Prisma.DiscussionWhereInput[]
   NOT?: Prisma.DiscussionWhereInput | Prisma.DiscussionWhereInput[]
@@ -199,13 +211,15 @@ export type DiscussionWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Discussion"> | Date | string
   event?: Prisma.XOR<Prisma.EventNullableScalarRelationFilter, Prisma.EventWhereInput> | null
   taskGroup?: Prisma.XOR<Prisma.TaskGroupNullableScalarRelationFilter, Prisma.TaskGroupWhereInput> | null
+  group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
   comments?: Prisma.CommentListRelationFilter
-}, "id" | "eventId">
+}, "id" | "eventId" | "groupId">
 
 export type DiscussionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   eventId?: Prisma.SortOrderInput | Prisma.SortOrder
   taskGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.DiscussionCountOrderByAggregateInput
   _max?: Prisma.DiscussionMaxOrderByAggregateInput
@@ -219,6 +233,7 @@ export type DiscussionScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Discussion"> | string
   eventId?: Prisma.StringNullableWithAggregatesFilter<"Discussion"> | string | null
   taskGroupId?: Prisma.StringNullableWithAggregatesFilter<"Discussion"> | string | null
+  groupId?: Prisma.StringNullableWithAggregatesFilter<"Discussion"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Discussion"> | Date | string
 }
 
@@ -227,6 +242,7 @@ export type DiscussionCreateInput = {
   createdAt?: Date | string
   event?: Prisma.EventCreateNestedOneWithoutDiscussionInput
   taskGroup?: Prisma.TaskGroupCreateNestedOneWithoutDiscussionsInput
+  group?: Prisma.GroupCreateNestedOneWithoutDiscussionInput
   comments?: Prisma.CommentCreateNestedManyWithoutDiscussionInput
 }
 
@@ -234,6 +250,7 @@ export type DiscussionUncheckedCreateInput = {
   id?: string
   eventId?: string | null
   taskGroupId?: string | null
+  groupId?: string | null
   createdAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutDiscussionInput
 }
@@ -243,6 +260,7 @@ export type DiscussionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneWithoutDiscussionNestedInput
   taskGroup?: Prisma.TaskGroupUpdateOneWithoutDiscussionsNestedInput
+  group?: Prisma.GroupUpdateOneWithoutDiscussionNestedInput
   comments?: Prisma.CommentUpdateManyWithoutDiscussionNestedInput
 }
 
@@ -250,6 +268,7 @@ export type DiscussionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taskGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutDiscussionNestedInput
 }
@@ -258,6 +277,7 @@ export type DiscussionCreateManyInput = {
   id?: string
   eventId?: string | null
   taskGroupId?: string | null
+  groupId?: string | null
   createdAt?: Date | string
 }
 
@@ -270,6 +290,7 @@ export type DiscussionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taskGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -282,6 +303,7 @@ export type DiscussionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   eventId?: Prisma.SortOrder
   taskGroupId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -289,6 +311,7 @@ export type DiscussionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   eventId?: Prisma.SortOrder
   taskGroupId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -296,6 +319,7 @@ export type DiscussionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   eventId?: Prisma.SortOrder
   taskGroupId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -344,6 +368,38 @@ export type DiscussionUncheckedUpdateOneWithoutEventNestedInput = {
   delete?: Prisma.DiscussionWhereInput | boolean
   connect?: Prisma.DiscussionWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.DiscussionUpdateToOneWithWhereWithoutEventInput, Prisma.DiscussionUpdateWithoutEventInput>, Prisma.DiscussionUncheckedUpdateWithoutEventInput>
+}
+
+export type DiscussionCreateNestedOneWithoutGroupInput = {
+  create?: Prisma.XOR<Prisma.DiscussionCreateWithoutGroupInput, Prisma.DiscussionUncheckedCreateWithoutGroupInput>
+  connectOrCreate?: Prisma.DiscussionCreateOrConnectWithoutGroupInput
+  connect?: Prisma.DiscussionWhereUniqueInput
+}
+
+export type DiscussionUncheckedCreateNestedOneWithoutGroupInput = {
+  create?: Prisma.XOR<Prisma.DiscussionCreateWithoutGroupInput, Prisma.DiscussionUncheckedCreateWithoutGroupInput>
+  connectOrCreate?: Prisma.DiscussionCreateOrConnectWithoutGroupInput
+  connect?: Prisma.DiscussionWhereUniqueInput
+}
+
+export type DiscussionUpdateOneWithoutGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.DiscussionCreateWithoutGroupInput, Prisma.DiscussionUncheckedCreateWithoutGroupInput>
+  connectOrCreate?: Prisma.DiscussionCreateOrConnectWithoutGroupInput
+  upsert?: Prisma.DiscussionUpsertWithoutGroupInput
+  disconnect?: Prisma.DiscussionWhereInput | boolean
+  delete?: Prisma.DiscussionWhereInput | boolean
+  connect?: Prisma.DiscussionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DiscussionUpdateToOneWithWhereWithoutGroupInput, Prisma.DiscussionUpdateWithoutGroupInput>, Prisma.DiscussionUncheckedUpdateWithoutGroupInput>
+}
+
+export type DiscussionUncheckedUpdateOneWithoutGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.DiscussionCreateWithoutGroupInput, Prisma.DiscussionUncheckedCreateWithoutGroupInput>
+  connectOrCreate?: Prisma.DiscussionCreateOrConnectWithoutGroupInput
+  upsert?: Prisma.DiscussionUpsertWithoutGroupInput
+  disconnect?: Prisma.DiscussionWhereInput | boolean
+  delete?: Prisma.DiscussionWhereInput | boolean
+  connect?: Prisma.DiscussionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DiscussionUpdateToOneWithWhereWithoutGroupInput, Prisma.DiscussionUpdateWithoutGroupInput>, Prisma.DiscussionUncheckedUpdateWithoutGroupInput>
 }
 
 export type DiscussionCreateNestedOneWithoutCommentsInput = {
@@ -406,12 +462,14 @@ export type DiscussionCreateWithoutEventInput = {
   id?: string
   createdAt?: Date | string
   taskGroup?: Prisma.TaskGroupCreateNestedOneWithoutDiscussionsInput
+  group?: Prisma.GroupCreateNestedOneWithoutDiscussionInput
   comments?: Prisma.CommentCreateNestedManyWithoutDiscussionInput
 }
 
 export type DiscussionUncheckedCreateWithoutEventInput = {
   id?: string
   taskGroupId?: string | null
+  groupId?: string | null
   createdAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutDiscussionInput
 }
@@ -436,11 +494,61 @@ export type DiscussionUpdateWithoutEventInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   taskGroup?: Prisma.TaskGroupUpdateOneWithoutDiscussionsNestedInput
+  group?: Prisma.GroupUpdateOneWithoutDiscussionNestedInput
   comments?: Prisma.CommentUpdateManyWithoutDiscussionNestedInput
 }
 
 export type DiscussionUncheckedUpdateWithoutEventInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  taskGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutDiscussionNestedInput
+}
+
+export type DiscussionCreateWithoutGroupInput = {
+  id?: string
+  createdAt?: Date | string
+  event?: Prisma.EventCreateNestedOneWithoutDiscussionInput
+  taskGroup?: Prisma.TaskGroupCreateNestedOneWithoutDiscussionsInput
+  comments?: Prisma.CommentCreateNestedManyWithoutDiscussionInput
+}
+
+export type DiscussionUncheckedCreateWithoutGroupInput = {
+  id?: string
+  eventId?: string | null
+  taskGroupId?: string | null
+  createdAt?: Date | string
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutDiscussionInput
+}
+
+export type DiscussionCreateOrConnectWithoutGroupInput = {
+  where: Prisma.DiscussionWhereUniqueInput
+  create: Prisma.XOR<Prisma.DiscussionCreateWithoutGroupInput, Prisma.DiscussionUncheckedCreateWithoutGroupInput>
+}
+
+export type DiscussionUpsertWithoutGroupInput = {
+  update: Prisma.XOR<Prisma.DiscussionUpdateWithoutGroupInput, Prisma.DiscussionUncheckedUpdateWithoutGroupInput>
+  create: Prisma.XOR<Prisma.DiscussionCreateWithoutGroupInput, Prisma.DiscussionUncheckedCreateWithoutGroupInput>
+  where?: Prisma.DiscussionWhereInput
+}
+
+export type DiscussionUpdateToOneWithWhereWithoutGroupInput = {
+  where?: Prisma.DiscussionWhereInput
+  data: Prisma.XOR<Prisma.DiscussionUpdateWithoutGroupInput, Prisma.DiscussionUncheckedUpdateWithoutGroupInput>
+}
+
+export type DiscussionUpdateWithoutGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  event?: Prisma.EventUpdateOneWithoutDiscussionNestedInput
+  taskGroup?: Prisma.TaskGroupUpdateOneWithoutDiscussionsNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutDiscussionNestedInput
+}
+
+export type DiscussionUncheckedUpdateWithoutGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taskGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutDiscussionNestedInput
@@ -451,12 +559,14 @@ export type DiscussionCreateWithoutCommentsInput = {
   createdAt?: Date | string
   event?: Prisma.EventCreateNestedOneWithoutDiscussionInput
   taskGroup?: Prisma.TaskGroupCreateNestedOneWithoutDiscussionsInput
+  group?: Prisma.GroupCreateNestedOneWithoutDiscussionInput
 }
 
 export type DiscussionUncheckedCreateWithoutCommentsInput = {
   id?: string
   eventId?: string | null
   taskGroupId?: string | null
+  groupId?: string | null
   createdAt?: Date | string
 }
 
@@ -481,12 +591,14 @@ export type DiscussionUpdateWithoutCommentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneWithoutDiscussionNestedInput
   taskGroup?: Prisma.TaskGroupUpdateOneWithoutDiscussionsNestedInput
+  group?: Prisma.GroupUpdateOneWithoutDiscussionNestedInput
 }
 
 export type DiscussionUncheckedUpdateWithoutCommentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taskGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -494,12 +606,14 @@ export type DiscussionCreateWithoutTaskGroupInput = {
   id?: string
   createdAt?: Date | string
   event?: Prisma.EventCreateNestedOneWithoutDiscussionInput
+  group?: Prisma.GroupCreateNestedOneWithoutDiscussionInput
   comments?: Prisma.CommentCreateNestedManyWithoutDiscussionInput
 }
 
 export type DiscussionUncheckedCreateWithoutTaskGroupInput = {
   id?: string
   eventId?: string | null
+  groupId?: string | null
   createdAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutDiscussionInput
 }
@@ -537,12 +651,14 @@ export type DiscussionScalarWhereInput = {
   id?: Prisma.StringFilter<"Discussion"> | string
   eventId?: Prisma.StringNullableFilter<"Discussion"> | string | null
   taskGroupId?: Prisma.StringNullableFilter<"Discussion"> | string | null
+  groupId?: Prisma.StringNullableFilter<"Discussion"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Discussion"> | Date | string
 }
 
 export type DiscussionCreateManyTaskGroupInput = {
   id?: string
   eventId?: string | null
+  groupId?: string | null
   createdAt?: Date | string
 }
 
@@ -550,12 +666,14 @@ export type DiscussionUpdateWithoutTaskGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneWithoutDiscussionNestedInput
+  group?: Prisma.GroupUpdateOneWithoutDiscussionNestedInput
   comments?: Prisma.CommentUpdateManyWithoutDiscussionNestedInput
 }
 
 export type DiscussionUncheckedUpdateWithoutTaskGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutDiscussionNestedInput
 }
@@ -563,6 +681,7 @@ export type DiscussionUncheckedUpdateWithoutTaskGroupInput = {
 export type DiscussionUncheckedUpdateManyWithoutTaskGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -601,9 +720,11 @@ export type DiscussionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   id?: boolean
   eventId?: boolean
   taskGroupId?: boolean
+  groupId?: boolean
   createdAt?: boolean
   event?: boolean | Prisma.Discussion$eventArgs<ExtArgs>
   taskGroup?: boolean | Prisma.Discussion$taskGroupArgs<ExtArgs>
+  group?: boolean | Prisma.Discussion$groupArgs<ExtArgs>
   comments?: boolean | Prisma.Discussion$commentsArgs<ExtArgs>
   _count?: boolean | Prisma.DiscussionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["discussion"]>
@@ -612,41 +733,49 @@ export type DiscussionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   eventId?: boolean
   taskGroupId?: boolean
+  groupId?: boolean
   createdAt?: boolean
   event?: boolean | Prisma.Discussion$eventArgs<ExtArgs>
   taskGroup?: boolean | Prisma.Discussion$taskGroupArgs<ExtArgs>
+  group?: boolean | Prisma.Discussion$groupArgs<ExtArgs>
 }, ExtArgs["result"]["discussion"]>
 
 export type DiscussionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   eventId?: boolean
   taskGroupId?: boolean
+  groupId?: boolean
   createdAt?: boolean
   event?: boolean | Prisma.Discussion$eventArgs<ExtArgs>
   taskGroup?: boolean | Prisma.Discussion$taskGroupArgs<ExtArgs>
+  group?: boolean | Prisma.Discussion$groupArgs<ExtArgs>
 }, ExtArgs["result"]["discussion"]>
 
 export type DiscussionSelectScalar = {
   id?: boolean
   eventId?: boolean
   taskGroupId?: boolean
+  groupId?: boolean
   createdAt?: boolean
 }
 
-export type DiscussionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "taskGroupId" | "createdAt", ExtArgs["result"]["discussion"]>
+export type DiscussionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "taskGroupId" | "groupId" | "createdAt", ExtArgs["result"]["discussion"]>
 export type DiscussionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   event?: boolean | Prisma.Discussion$eventArgs<ExtArgs>
   taskGroup?: boolean | Prisma.Discussion$taskGroupArgs<ExtArgs>
+  group?: boolean | Prisma.Discussion$groupArgs<ExtArgs>
   comments?: boolean | Prisma.Discussion$commentsArgs<ExtArgs>
   _count?: boolean | Prisma.DiscussionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DiscussionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   event?: boolean | Prisma.Discussion$eventArgs<ExtArgs>
   taskGroup?: boolean | Prisma.Discussion$taskGroupArgs<ExtArgs>
+  group?: boolean | Prisma.Discussion$groupArgs<ExtArgs>
 }
 export type DiscussionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   event?: boolean | Prisma.Discussion$eventArgs<ExtArgs>
   taskGroup?: boolean | Prisma.Discussion$taskGroupArgs<ExtArgs>
+  group?: boolean | Prisma.Discussion$groupArgs<ExtArgs>
 }
 
 export type $DiscussionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -654,12 +783,17 @@ export type $DiscussionPayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     event: Prisma.$EventPayload<ExtArgs> | null
     taskGroup: Prisma.$TaskGroupPayload<ExtArgs> | null
+    group: Prisma.$GroupPayload<ExtArgs> | null
     comments: Prisma.$CommentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     eventId: string | null
     taskGroupId: string | null
+    /**
+     * A department's or group's discussion (one per group).
+     */
+    groupId: string | null
     createdAt: Date
   }, ExtArgs["result"]["discussion"]>
   composites: {}
@@ -1057,6 +1191,7 @@ export interface Prisma__DiscussionClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   event<T extends Prisma.Discussion$eventArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Discussion$eventArgs<ExtArgs>>): Prisma.Prisma__EventClient<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   taskGroup<T extends Prisma.Discussion$taskGroupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Discussion$taskGroupArgs<ExtArgs>>): Prisma.Prisma__TaskGroupClient<runtime.Types.Result.GetResult<Prisma.$TaskGroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  group<T extends Prisma.Discussion$groupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Discussion$groupArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   comments<T extends Prisma.Discussion$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Discussion$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1090,6 +1225,7 @@ export interface DiscussionFieldRefs {
   readonly id: Prisma.FieldRef<"Discussion", 'String'>
   readonly eventId: Prisma.FieldRef<"Discussion", 'String'>
   readonly taskGroupId: Prisma.FieldRef<"Discussion", 'String'>
+  readonly groupId: Prisma.FieldRef<"Discussion", 'String'>
   readonly createdAt: Prisma.FieldRef<"Discussion", 'DateTime'>
 }
     
@@ -1527,6 +1663,25 @@ export type Discussion$taskGroupArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   include?: Prisma.TaskGroupInclude<ExtArgs> | null
   where?: Prisma.TaskGroupWhereInput
+}
+
+/**
+ * Discussion.group
+ */
+export type Discussion$groupArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Group
+   */
+  select?: Prisma.GroupSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Group
+   */
+  omit?: Prisma.GroupOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupInclude<ExtArgs> | null
+  where?: Prisma.GroupWhereInput
 }
 
 /**

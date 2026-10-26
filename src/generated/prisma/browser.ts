@@ -48,6 +48,13 @@ export type Department = Prisma.DepartmentModel
  */
 export type Event = Prisma.EventModel
 /**
+ * Model EventMemoryPhoto
+ * A photo in an event's "past memories" on its public detail page, added in
+ * the portal by the Events VP or the Website group. The recap text lives in
+ * EventSettings.memoriesRecap.
+ */
+export type EventMemoryPhoto = Prisma.EventMemoryPhotoModel
+/**
  * Model Registration
  * 
  */
@@ -71,6 +78,58 @@ export type EventTicket = Prisma.EventTicketModel
  * more than once for the same event.
  */
 export type MemberRedemption = Prisma.MemberRedemptionModel
+/**
+ * Model EventSettings
+ * Per-event settings that the Event table does not hold.
+ */
+export type EventSettings = Prisma.EventSettingsModel
+/**
+ * Model EventBudgetLine
+ * One planned item of an event's budget. Shaped like a spreadsheet row so
+ * budgets can be imported from Excel later (importBatchId groups an upload).
+ */
+export type EventBudgetLine = Prisma.EventBudgetLineModel
+/**
+ * Model TicketType
+ * A ticket tier of an event. price 0 means free.
+ */
+export type TicketType = Prisma.TicketTypeModel
+/**
+ * Model Order
+ * One checkout. Free orders have no Stripe session.
+ */
+export type Order = Prisma.OrderModel
+/**
+ * Model Ticket
+ * One entry pass per attendee; token is the QR code value.
+ */
+export type Ticket = Prisma.TicketModel
+/**
+ * Model Profile
+ * Details collected once and reused to pre-fill registrations.
+ * Required fields are enforced by the profile form, so partial saves work.
+ */
+export type Profile = Prisma.ProfileModel
+/**
+ * Model Membership
+ * One row per member per term (Sep 1 – Aug 31), so renewals keep history.
+ */
+export type Membership = Prisma.MembershipModel
+/**
+ * Model Group
+ * A department (no parent) or a subgroup. Event teams link to their event.
+ */
+export type Group = Prisma.GroupModel
+/**
+ * Model GroupMember
+ * 
+ */
+export type GroupMember = Prisma.GroupMemberModel
+/**
+ * Model ApprovalRequest
+ * A destructive action waiting for a second person (rules live in code).
+ */
+export type ApprovalRequest = Prisma.ApprovalRequestModel
 /**
  * Model Discussion
  * 

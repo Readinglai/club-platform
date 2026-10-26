@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { requireUserJson } from "@/lib/access/require";
+import { getSupabaseUrl } from "@/lib/supabase-storage";
 
 export const maxDuration = 60;
 
-const SUPABASE_URL = "https://rbwchvwiuazfrsoabwni.supabase.co";
 const BUCKET = "images";
 
 const ALLOWED_TYPES = new Set([
@@ -15,9 +15,17 @@ const ALLOWED_TYPES = new Set([
 ]);
 const MAX_BYTES = 5 * 1024 * 1024;
 
+// Profile pictures are not offered for now, and with open signup this would
+// let any new account upload to the public bucket. Flip to re-enable.
+const PROFILE_PICTURE_UPLOADS_ENABLED = false;
+
 // Any logged-in member (level 2+) can upload profile images
 export async function POST(request: NextRequest) {
-  const guard = await requireAuthJson(2, request);
+  if (!PROFILE_PICTURE_UPLOADS_ENABLED) {
+    return NextResponse.json({ error: "Profile picture uploads are turned off" }, { status: 404 });
+  }
+
+  const guard = await requireUserJson();
   if (guard.error) return guard.error;
 
   let formData: FormData;
@@ -47,6 +55,8 @@ export async function POST(request: NextRequest) {
   if (!key) {
     return NextResponse.json({ error: "Storage not configured" }, { status: 500 });
   }
+
+  const SUPABASE_URL = getSupabaseUrl();
 
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "bin";
   const filename = `avatars/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;

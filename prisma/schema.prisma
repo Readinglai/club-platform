@@ -22,6 +22,8 @@ enum Role {
   ADMIN
   EXEC
   MEMBER
+  /// Signed up but no active membership (before paying, or after a term ends).
+  USER
 }
 
 enum RegistrationStatus {
@@ -61,7 +63,7 @@ model User {
   name          String
   image         String?
   emailVerified DateTime?
-  role          Role      @default(MEMBER)
+  role          Role      @default(USER)
 
   departmentId String?
   department   Department? @relation(fields: [departmentId], references: [id])
@@ -75,21 +77,31 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  accounts          Account[]
-  sessions          Session[]
-  registrations     Registration[]
-  assignedTasks     Task[]           @relation("TaskAssignee")
-  taskAssignments   TaskAssignee[]
-  comments          Comment[]
-  announcements    Announcement[]
-  announcementReads AnnouncementRead[]
-  taskGroups        TaskGroupMember[]
-  createdTaskGroups TaskGroup[]      @relation("TaskGroupCreator")
-  createdVotes      Vote[]           @relation("VoteCreator")
-  voteResponses     VoteResponse[]
-  financeRecords    FinanceRecord[]  @relation("FinanceRecordCreator")
-  pushSubscriptions PushSubscription[]
-  taskViews         TaskView[]
+  accounts           Account[]
+  sessions           Session[]
+  registrations      Registration[]
+  assignedTasks      Task[]             @relation("TaskAssignee")
+  taskAssignments    TaskAssignee[]
+  comments           Comment[]
+  announcements      Announcement[]
+  announcementReads  AnnouncementRead[]
+  taskGroups         TaskGroupMember[]
+  createdTaskGroups  TaskGroup[]        @relation("TaskGroupCreator")
+  createdVotes       Vote[]             @relation("VoteCreator")
+  voteResponses      VoteResponse[]
+  financeRecords     FinanceRecord[]    @relation("FinanceRecordCreator")
+  pushSubscriptions  PushSubscription[]
+  taskViews          TaskView[]
+  orders             Order[]
+  heldTickets        Ticket[]           @relation("TicketHolder")
+  checkedInTickets   Ticket[]           @relation("TicketCheckedInBy")
+  profile            Profile?
+  memberships        Membership[]
+  groupMemberships   GroupMember[]
+  approvalRequests   ApprovalRequest[]  @relation("ApprovalRequester")
+  approvalDecisions  ApprovalRequest[]  @relation("ApprovalDecider")
+  financeSubmissions EventSettings[]    @relation("FinanceSubmittedBy")
+  financeReviews     EventSettings[]    @relation("FinanceReviewedBy")
 }
 
 model Account {
@@ -165,17 +177,44 @@ model Event {
   tickets           EventTicket[]
   ticketTiers       TicketTier[]
   memberRedemptions MemberRedemption[]
+
+  settings       EventSettings?
+  ticketTypes    TicketType[]
+  orders         Order[]
+  entryTickets   Ticket[]
+  team           Group?
+  budgetLines    EventBudgetLine[]
+  financeRecords FinanceRecord[]
+  memoryPhotos   EventMemoryPhoto[]
+}
+
+/// A photo in an event's "past memories" on its public detail page, added in
+/// the portal by the Events VP or the Website group. The recap text lives in
+/// EventSettings.memoriesRecap.
+model EventMemoryPhoto {
+  id      String @id @default(cuid())
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  imageUrl    String
+  caption     String?
+  sortOrder   Int     @default(0)
+  createdById String?
+
+  createdAt DateTime @default(now())
+
+  @@index([eventId])
 }
 
 model Registration {
-  id      String             @id @default(cuid())
-  userId  String
-  user    User               @relation(fields: [userId], references: [id])
-  eventId String
-  event   Event              @relation(fields: [eventId], references: [id])
-  status  RegistrationStatus @default(REGISTERED)
+  id         String             @id @default(cuid())
+  userId     String
+  user       User               @relation(fields: [userId], references: [id])
+  eventId    String
+  event      Event              @relation(fields: [eventId], references: [id])
+  status     RegistrationStatus @default(REGISTERED)
   attendedAt DateTime?
-  createdAt DateTime         @default(now())
+  createdAt  DateTime           @default(now())
 
   @@unique([userId, eventId])
 }
@@ -188,14 +227,14 @@ model Registration {
 /// Price and Stripe Price ID are controlled by the backend/database,
 /// not by the public frontend.
 model TicketTier {
-  id             String   @id @default(cuid()) @map("id")
-  eventId        String   @map("event_id")
-  tier           String
-  price          Decimal  @db.Decimal(10, 2)
-  stripePriceId  String   @map("stripe_price_id")
-  capacity       Int
-  salesCloseAt   DateTime @map("sales_close_at")
-  createdAt      DateTime @default(now()) @map("created_at")
+  id            String   @id @default(cuid()) @map("id")
+  eventId       String   @map("event_id")
+  tier          String
+  price         Decimal  @db.Decimal(10, 2)
+  stripePriceId String   @map("stripe_price_id")
+  capacity      Int
+  salesCloseAt  DateTime @map("sales_close_at")
+  createdAt     DateTime @default(now()) @map("created_at")
 
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
@@ -207,8 +246,8 @@ model TicketTier {
 /// Final ticket record.
 /// Created only after Stripe webhook confirms successful payment.
 model EventTicket {
-  id       String @id @default(cuid())
-  eventId  String @map("event_id")
+  id      String @id @default(cuid())
+  eventId String @map("event_id")
 
   token String @unique
 
@@ -216,10 +255,10 @@ model EventTicket {
   email String
   phone String
 
-  tier      String
-  price     Decimal @db.Decimal(10, 2)
-  isMember  Boolean @default(false) @map("is_member")
-  memberId  String? @map("member_id")
+  tier     String
+  price    Decimal @db.Decimal(10, 2)
+  isMember Boolean @default(false) @map("is_member")
+  memberId String? @map("member_id")
 
   stripeSessionId String @unique @map("stripe_session_id")
 
@@ -252,7 +291,7 @@ model MemberRedemption {
 
   status String @default("pending")
 
-  stripeSessionId String? @unique @map("stripe_session_id")
+  stripeSessionId String?   @unique @map("stripe_session_id")
   lockedAt        DateTime? @map("locked_at")
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -265,29 +304,383 @@ model MemberRedemption {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Event Ticketing (all events after Halloween 2026)
+//
+// Halloween keeps using TicketTier / EventTicket / MemberRedemption above;
+// those tables are frozen. New events use the tables below.
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FREE
+  EXPIRED
+  CANCELLED
+  REFUNDED
+}
+
+enum TicketStatus {
+  RESERVED
+  VALID
+  VOID
+}
+
+/// Per-event settings that the Event table does not hold.
+model EventSettings {
+  id      String @id @default(cuid())
+  eventId String @unique
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  /// IANA zone used to display this event's times, e.g. "Asia/Taipei".
+  timezone String @default("America/Toronto")
+  currency String @default("CAD")
+
+  registrationEnabled Boolean @default(false)
+  ticketsEnabled      Boolean @default(false)
+  checkInEnabled      Boolean @default(false)
+  budgetEnabled       Boolean @default(false)
+  dashboardEnabled    Boolean @default(false)
+
+  /// The event's finance report: the team edits while OPEN/RETURNED, then
+  /// submits it once; the Events VP approves or returns it.
+  financeStatus        FinanceReportStatus @default(OPEN)
+  financeSubmittedAt   DateTime?
+  financeSubmittedById String?
+  financeSubmittedBy   User?               @relation("FinanceSubmittedBy", fields: [financeSubmittedById], references: [id])
+  financeReviewedAt    DateTime?
+  financeReviewedById  String?
+  financeReviewedBy    User?               @relation("FinanceReviewedBy", fields: [financeReviewedById], references: [id])
+  financeReviewNote    String?
+
+  /// The event's budget lives in a Google Sheet (standard club template); the
+  /// website only reads it. Each sync replaces the event's sheet-sourced
+  /// budget lines and costs; budgetSheetData keeps the rest of what was read
+  /// (summary row, allocation by category, approval block) as JSON.
+  budgetSheetId          String?
+  budgetSheetConnectedBy String?
+  budgetSheetSyncedAt    DateTime?
+  budgetSheetSyncError   String?
+  budgetSheetData        String?
+
+  /// A few sentences about how the event went, shown with its memory photos.
+  memoriesRecap String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum FinanceReportStatus {
+  OPEN
+  SUBMITTED
+  APPROVED
+  RETURNED
+}
+
+/// One planned item of an event's budget. Shaped like a spreadsheet row so
+/// budgets can be imported from Excel later (importBatchId groups an upload).
+model EventBudgetLine {
+  id      String @id @default(cuid())
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Restrict)
+
+  /// One of the standard categories (src/lib/finance/categories.ts).
+  category      String
+  item          String
+  quantity      Decimal? @db.Decimal(10, 2)
+  unitCost      Decimal? @db.Decimal(12, 2)
+  plannedAmount Decimal  @db.Decimal(12, 2)
+  note          String?
+  sortOrder     Int      @default(0)
+  importBatchId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+}
+
+/// A ticket tier of an event. price 0 means free.
+model TicketType {
+  id      String @id @default(cuid())
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  name        String
+  description String?
+
+  price       Decimal  @db.Decimal(10, 2)
+  /// Null means no member discount.
+  memberPrice Decimal? @db.Decimal(10, 2)
+
+  /// Null means unlimited.
+  capacity     Int?
+  salesStartAt DateTime?
+  salesEndAt   DateTime?
+  membersOnly  Boolean   @default(false)
+  maxPerOrder  Int       @default(1)
+
+  color     String?
+  perks     String?
+  sortOrder Int     @default(0)
+  active    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tickets Ticket[]
+
+  @@index([eventId])
+}
+
+/// One checkout. Free orders have no Stripe session.
+model Order {
+  id      String  @id @default(cuid())
+  eventId String
+  event   Event   @relation(fields: [eventId], references: [id])
+  userId  String?
+  user    User?   @relation(fields: [userId], references: [id])
+
+  buyerName  String
+  buyerEmail String
+  buyerPhone String?
+
+  status      OrderStatus @default(PENDING)
+  totalAmount Decimal     @db.Decimal(10, 2)
+  currency    String      @default("CAD")
+
+  stripeSessionId String?   @unique
+  paidAt          DateTime?
+
+  waiverAcceptedAt DateTime?
+  waiverVersion    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tickets Ticket[]
+
+  @@index([eventId])
+  @@index([userId])
+  @@index([buyerEmail])
+}
+
+/// One entry pass per attendee; token is the QR code value.
+model Ticket {
+  id           String     @id @default(cuid())
+  orderId      String
+  order        Order      @relation(fields: [orderId], references: [id])
+  eventId      String
+  event        Event      @relation(fields: [eventId], references: [id])
+  ticketTypeId String
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
+  userId       String?
+  user         User?      @relation("TicketHolder", fields: [userId], references: [id])
+
+  holderName  String
+  holderEmail String?
+
+  token  String       @unique
+  status TicketStatus @default(RESERVED)
+
+  pricePaid     Decimal @db.Decimal(10, 2)
+  memberPricing Boolean @default(false)
+
+  checkedInAt   DateTime?
+  checkedInById String?
+  checkedInBy   User?     @relation("TicketCheckedInBy", fields: [checkedInById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([orderId])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Members & Organization
+//
+// Membership replaces "ROCSAUT Membership Info" (frozen; its rows are copied
+// here with source IMPORTED). Group replaces the flat Department table, which
+// is left in place unused.
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum MembershipStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum MembershipSource {
+  STRIPE
+  IMPORTED
+  MANUAL
+  COMPLIMENTARY
+}
+
+/// Highest first. Club membership is separate (Membership), not a position.
+enum GroupPosition {
+  PRESIDENT
+  VP
+  STAFF
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+/// Details collected once and reused to pre-fill registrations.
+/// Required fields are enforced by the profile form, so partial saves work.
+model Profile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  phone         String?
+  studentNumber String?
+  personalEmail String?
+  program       String?
+  yearOfStudy   String?
+
+  /// Set when the "complete your profile" form is submitted.
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// One row per member per term (Sep 1 – Aug 31), so renewals keep history.
+model Membership {
+  id String @id @default(cuid())
+
+  /// Null for imported members until they first log in with a matching email.
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+  email  String?
+  name   String?
+
+  /// OTSA-<year>-0xxx for members, OTSA-<year>-1xxx for staff.
+  memberCode String @unique
+
+  status    MembershipStatus @default(PENDING)
+  source    MembershipSource
+  termStart DateTime
+  termEnd   DateTime
+
+  stripeSessionId String?  @unique
+  amountPaid      Decimal? @db.Decimal(10, 2)
+
+  /// id of the copied "ROCSAUT Membership Info" row; makes the copy re-runnable.
+  legacyId String? @unique
+
+  /// Pass2U wallet pass, once issued (Phase 3).
+  walletPassId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([email])
+}
+
+/// A department (no parent) or a subgroup. Event teams link to their event.
+model Group {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  parentId String?
+  parent   Group?  @relation("GroupTree", fields: [parentId], references: [id])
+  children Group[] @relation("GroupTree")
+
+  eventId String? @unique
+  event   Event?  @relation(fields: [eventId], references: [id])
+
+  archived Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members    GroupMember[]
+  tasks      Task[]
+  votes      Vote[]
+  discussion Discussion?
+
+  @@index([parentId])
+}
+
+model GroupMember {
+  id       String        @id @default(cuid())
+  groupId  String
+  group    Group         @relation(fields: [groupId], references: [id])
+  userId   String
+  user     User          @relation(fields: [userId], references: [id])
+  position GroupPosition @default(STAFF)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+/// A destructive action waiting for a second person (rules live in code).
+model ApprovalRequest {
+  id       String @id @default(cuid())
+  /// e.g. "event.delete"
+  action   String
+  targetId String
+  /// Snapshot of what will be affected, shown to the approver.
+  details  Json?
+
+  requestedById    String
+  requestedBy      User          @relation("ApprovalRequester", fields: [requestedById], references: [id])
+  approverPosition GroupPosition @default(PRESIDENT)
+
+  status      ApprovalStatus @default(PENDING)
+  decidedById String?
+  decidedBy   User?          @relation("ApprovalDecider", fields: [decidedById], references: [id])
+  decidedAt   DateTime?
+  note        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([action, targetId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Discussions
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Discussion {
-  id          String   @id @default(cuid())
-  eventId     String?  @unique
-  event       Event?   @relation(fields: [eventId], references: [id])
+  id          String     @id @default(cuid())
+  eventId     String?    @unique
+  event       Event?     @relation(fields: [eventId], references: [id])
   taskGroupId String?
   taskGroup   TaskGroup? @relation(fields: [taskGroupId], references: [id])
-  createdAt   DateTime @default(now())
+  /// A department's or group's discussion (one per group).
+  groupId     String?    @unique
+  group       Group?     @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  createdAt   DateTime   @default(now())
 
   comments Comment[]
 }
 
 model Comment {
-  id           String      @id @default(cuid())
+  id           String     @id @default(cuid())
   discussionId String
-  discussion   Discussion  @relation(fields: [discussionId], references: [id])
+  discussion   Discussion @relation(fields: [discussionId], references: [id])
   authorId     String?
-  author       User?       @relation(fields: [authorId], references: [id])
+  author       User?      @relation(fields: [authorId], references: [id])
   content      String
-  isAnonymous  Boolean     @default(false)
-  createdAt    DateTime    @default(now())
+  isAnonymous  Boolean    @default(false)
+  createdAt    DateTime   @default(now())
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -330,7 +723,7 @@ model TaskGroup {
   updatedAt   DateTime        @updatedAt
 
   createdById String
-  createdBy   User @relation("TaskGroupCreator", fields: [createdById], references: [id])
+  createdBy   User   @relation("TaskGroupCreator", fields: [createdById], references: [id])
 
   members     TaskGroupMember[]
   tasks       Task[]
@@ -351,15 +744,20 @@ model TaskGroupMember {
 }
 
 model Task {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   title       String
   description String?
 
-  taskGroupId String
-  taskGroup   TaskGroup @relation(fields: [taskGroupId], references: [id])
+  /// Legacy task groups (unused); tasks now belong to a department or group.
+  taskGroupId String?
+  taskGroup   TaskGroup? @relation(fields: [taskGroupId], references: [id], onDelete: Restrict)
+
+  /// The department or group the task belongs to; its people see it.
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: Restrict)
 
   assigneeId String?
-  assignee   User? @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  assignee   User?   @relation("TaskAssignee", fields: [assigneeId], references: [id])
 
   assignees TaskAssignee[]
 
@@ -398,14 +796,17 @@ model TaskView {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Vote {
-  id          String    @id @default(cuid())
+  id          String     @id @default(cuid())
   title       String
   description String?
-  taskGroupId String
-  taskGroup   TaskGroup @relation(fields: [taskGroupId], references: [id])
+  taskGroupId String?
+  taskGroup   TaskGroup? @relation(fields: [taskGroupId], references: [id], onDelete: Restrict)
+
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: Restrict)
 
   createdById String
-  createdBy   User @relation("VoteCreator", fields: [createdById], references: [id])
+  createdBy   User   @relation("VoteCreator", fields: [createdById], references: [id])
 
   closedAt  DateTime?
   createdAt DateTime  @default(now())
@@ -424,12 +825,12 @@ model VoteOption {
 }
 
 model VoteResponse {
-  id           String @id @default(cuid())
+  id           String     @id @default(cuid())
   voteOptionId String
   voteOption   VoteOption @relation(fields: [voteOptionId], references: [id])
   userId       String
-  user         User @relation(fields: [userId], references: [id])
-  createdAt    DateTime @default(now())
+  user         User       @relation(fields: [userId], references: [id])
+  createdAt    DateTime   @default(now())
 
   @@unique([voteOptionId, userId])
 }
@@ -439,13 +840,13 @@ model VoteResponse {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Sponsor {
-  id          String           @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   logoUrl     String?
   website     String?
   description String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   histories SponsorHistory[]
 }
@@ -510,10 +911,18 @@ model FinanceRecord {
   date        DateTime
 
   createdById String
-  createdBy   User @relation("FinanceRecordCreator", fields: [createdById], references: [id])
+  createdBy   User   @relation("FinanceRecordCreator", fields: [createdById], references: [id])
+
+  /// Set for an event's income and costs; null for club-wide entries.
+  eventId       String?
+  event         Event?  @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  receiptUrl    String?
+  importBatchId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([eventId])
 }
 
 model Budget {
@@ -566,7 +975,7 @@ model ROCSAUT_Membership_Info {
   member_code    String
   name           String?
   email          String?
-  personal_email  String?
+  personal_email String?
   student_number String?
   created_at     DateTime? @db.Timestamptz(6)
   year_of_study  String?

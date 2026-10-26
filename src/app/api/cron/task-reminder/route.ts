@@ -35,33 +35,44 @@ export async function GET(request: Request) {
 
   const cutoff = new Date(now.getTime() + reminderHours * 60 * 60 * 1000);
 
+  // Every assignee of an open task due soon: the single legacy assignee and
+  // the people assigned on department/group tasks.
   const tasks = await db.task.findMany({
     where: {
       dueAt: { gte: now, lte: cutoff },
       status: { not: "DONE" },
-      assigneeId: { not: null },
+      OR: [{ assigneeId: { not: null } }, { assignees: { some: {} } }],
     },
     include: {
-      assignee: { select: { email: true, name: true } },
+      assignee: { select: { email: true } },
+      assignees: { select: { user: { select: { email: true } } } },
       taskGroup: { select: { name: true } },
+      group: { select: { name: true } },
     },
   });
 
-  const results: { taskId: string; status: string }[] = [];
+  const results: { taskId: string; to: string; status: string }[] = [];
 
   for (const task of tasks) {
-    if (!task.assignee?.email || !task.dueAt) continue;
-    try {
-      await sendTaskReminderEmail({
-        to: task.assignee.email,
-        taskTitle: task.title,
-        dueAt: task.dueAt,
-        taskGroupName: task.taskGroup.name,
-      });
-      results.push({ taskId: task.id, status: "sent" });
-    } catch (err) {
-      console.error(`[cron] failed to send reminder for task ${task.id}:`, err);
-      results.push({ taskId: task.id, status: "failed" });
+    if (!task.dueAt) continue;
+    const recipients = new Set(
+      [task.assignee?.email, ...task.assignees.map((a) => a.user.email)].filter(
+        (email): email is string => Boolean(email) && !email!.endsWith(".invalid")
+      )
+    );
+    for (const to of recipients) {
+      try {
+        await sendTaskReminderEmail({
+          to,
+          taskTitle: task.title,
+          dueAt: task.dueAt,
+          taskGroupName: task.group?.name ?? task.taskGroup?.name ?? "",
+        });
+        results.push({ taskId: task.id, to, status: "sent" });
+      } catch (err) {
+        console.error(`[cron] failed to send reminder for task ${task.id}:`, err);
+        results.push({ taskId: task.id, to, status: "failed" });
+      }
     }
   }
 

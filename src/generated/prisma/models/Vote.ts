@@ -29,6 +29,7 @@ export type VoteMinAggregateOutputType = {
   title: string | null
   description: string | null
   taskGroupId: string | null
+  groupId: string | null
   createdById: string | null
   closedAt: Date | null
   createdAt: Date | null
@@ -40,6 +41,7 @@ export type VoteMaxAggregateOutputType = {
   title: string | null
   description: string | null
   taskGroupId: string | null
+  groupId: string | null
   createdById: string | null
   closedAt: Date | null
   createdAt: Date | null
@@ -51,6 +53,7 @@ export type VoteCountAggregateOutputType = {
   title: number
   description: number
   taskGroupId: number
+  groupId: number
   createdById: number
   closedAt: number
   createdAt: number
@@ -64,6 +67,7 @@ export type VoteMinAggregateInputType = {
   title?: true
   description?: true
   taskGroupId?: true
+  groupId?: true
   createdById?: true
   closedAt?: true
   createdAt?: true
@@ -75,6 +79,7 @@ export type VoteMaxAggregateInputType = {
   title?: true
   description?: true
   taskGroupId?: true
+  groupId?: true
   createdById?: true
   closedAt?: true
   createdAt?: true
@@ -86,6 +91,7 @@ export type VoteCountAggregateInputType = {
   title?: true
   description?: true
   taskGroupId?: true
+  groupId?: true
   createdById?: true
   closedAt?: true
   createdAt?: true
@@ -169,7 +175,8 @@ export type VoteGroupByOutputType = {
   id: string
   title: string
   description: string | null
-  taskGroupId: string
+  taskGroupId: string | null
+  groupId: string | null
   createdById: string
   closedAt: Date | null
   createdAt: Date
@@ -201,12 +208,14 @@ export type VoteWhereInput = {
   id?: Prisma.StringFilter<"Vote"> | string
   title?: Prisma.StringFilter<"Vote"> | string
   description?: Prisma.StringNullableFilter<"Vote"> | string | null
-  taskGroupId?: Prisma.StringFilter<"Vote"> | string
+  taskGroupId?: Prisma.StringNullableFilter<"Vote"> | string | null
+  groupId?: Prisma.StringNullableFilter<"Vote"> | string | null
   createdById?: Prisma.StringFilter<"Vote"> | string
   closedAt?: Prisma.DateTimeNullableFilter<"Vote"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Vote"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Vote"> | Date | string
-  taskGroup?: Prisma.XOR<Prisma.TaskGroupScalarRelationFilter, Prisma.TaskGroupWhereInput>
+  taskGroup?: Prisma.XOR<Prisma.TaskGroupNullableScalarRelationFilter, Prisma.TaskGroupWhereInput> | null
+  group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   options?: Prisma.VoteOptionListRelationFilter
 }
@@ -215,12 +224,14 @@ export type VoteOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  taskGroupId?: Prisma.SortOrder
+  taskGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrder
   closedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   taskGroup?: Prisma.TaskGroupOrderByWithRelationInput
+  group?: Prisma.GroupOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
   options?: Prisma.VoteOptionOrderByRelationAggregateInput
 }
@@ -232,12 +243,14 @@ export type VoteWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.VoteWhereInput | Prisma.VoteWhereInput[]
   title?: Prisma.StringFilter<"Vote"> | string
   description?: Prisma.StringNullableFilter<"Vote"> | string | null
-  taskGroupId?: Prisma.StringFilter<"Vote"> | string
+  taskGroupId?: Prisma.StringNullableFilter<"Vote"> | string | null
+  groupId?: Prisma.StringNullableFilter<"Vote"> | string | null
   createdById?: Prisma.StringFilter<"Vote"> | string
   closedAt?: Prisma.DateTimeNullableFilter<"Vote"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Vote"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Vote"> | Date | string
-  taskGroup?: Prisma.XOR<Prisma.TaskGroupScalarRelationFilter, Prisma.TaskGroupWhereInput>
+  taskGroup?: Prisma.XOR<Prisma.TaskGroupNullableScalarRelationFilter, Prisma.TaskGroupWhereInput> | null
+  group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   options?: Prisma.VoteOptionListRelationFilter
 }, "id">
@@ -246,7 +259,8 @@ export type VoteOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  taskGroupId?: Prisma.SortOrder
+  taskGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrder
   closedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -263,7 +277,8 @@ export type VoteScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Vote"> | string
   title?: Prisma.StringWithAggregatesFilter<"Vote"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Vote"> | string | null
-  taskGroupId?: Prisma.StringWithAggregatesFilter<"Vote"> | string
+  taskGroupId?: Prisma.StringNullableWithAggregatesFilter<"Vote"> | string | null
+  groupId?: Prisma.StringNullableWithAggregatesFilter<"Vote"> | string | null
   createdById?: Prisma.StringWithAggregatesFilter<"Vote"> | string
   closedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Vote"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Vote"> | Date | string
@@ -277,7 +292,8 @@ export type VoteCreateInput = {
   closedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  taskGroup: Prisma.TaskGroupCreateNestedOneWithoutVotesInput
+  taskGroup?: Prisma.TaskGroupCreateNestedOneWithoutVotesInput
+  group?: Prisma.GroupCreateNestedOneWithoutVotesInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedVotesInput
   options?: Prisma.VoteOptionCreateNestedManyWithoutVoteInput
 }
@@ -286,7 +302,8 @@ export type VoteUncheckedCreateInput = {
   id?: string
   title: string
   description?: string | null
-  taskGroupId: string
+  taskGroupId?: string | null
+  groupId?: string | null
   createdById: string
   closedAt?: Date | string | null
   createdAt?: Date | string
@@ -301,7 +318,8 @@ export type VoteUpdateInput = {
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  taskGroup?: Prisma.TaskGroupUpdateOneRequiredWithoutVotesNestedInput
+  taskGroup?: Prisma.TaskGroupUpdateOneWithoutVotesNestedInput
+  group?: Prisma.GroupUpdateOneWithoutVotesNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedVotesNestedInput
   options?: Prisma.VoteOptionUpdateManyWithoutVoteNestedInput
 }
@@ -310,7 +328,8 @@ export type VoteUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  taskGroupId?: Prisma.StringFieldUpdateOperationsInput | string
+  taskGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -322,7 +341,8 @@ export type VoteCreateManyInput = {
   id?: string
   title: string
   description?: string | null
-  taskGroupId: string
+  taskGroupId?: string | null
+  groupId?: string | null
   createdById: string
   closedAt?: Date | string | null
   createdAt?: Date | string
@@ -342,7 +362,8 @@ export type VoteUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  taskGroupId?: Prisma.StringFieldUpdateOperationsInput | string
+  taskGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -364,6 +385,7 @@ export type VoteCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   taskGroupId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   closedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -375,6 +397,7 @@ export type VoteMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   taskGroupId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   closedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -386,6 +409,7 @@ export type VoteMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   taskGroupId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   closedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -436,6 +460,48 @@ export type VoteUncheckedUpdateManyWithoutCreatedByNestedInput = {
   connect?: Prisma.VoteWhereUniqueInput | Prisma.VoteWhereUniqueInput[]
   update?: Prisma.VoteUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.VoteUpdateWithWhereUniqueWithoutCreatedByInput[]
   updateMany?: Prisma.VoteUpdateManyWithWhereWithoutCreatedByInput | Prisma.VoteUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.VoteScalarWhereInput | Prisma.VoteScalarWhereInput[]
+}
+
+export type VoteCreateNestedManyWithoutGroupInput = {
+  create?: Prisma.XOR<Prisma.VoteCreateWithoutGroupInput, Prisma.VoteUncheckedCreateWithoutGroupInput> | Prisma.VoteCreateWithoutGroupInput[] | Prisma.VoteUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.VoteCreateOrConnectWithoutGroupInput | Prisma.VoteCreateOrConnectWithoutGroupInput[]
+  createMany?: Prisma.VoteCreateManyGroupInputEnvelope
+  connect?: Prisma.VoteWhereUniqueInput | Prisma.VoteWhereUniqueInput[]
+}
+
+export type VoteUncheckedCreateNestedManyWithoutGroupInput = {
+  create?: Prisma.XOR<Prisma.VoteCreateWithoutGroupInput, Prisma.VoteUncheckedCreateWithoutGroupInput> | Prisma.VoteCreateWithoutGroupInput[] | Prisma.VoteUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.VoteCreateOrConnectWithoutGroupInput | Prisma.VoteCreateOrConnectWithoutGroupInput[]
+  createMany?: Prisma.VoteCreateManyGroupInputEnvelope
+  connect?: Prisma.VoteWhereUniqueInput | Prisma.VoteWhereUniqueInput[]
+}
+
+export type VoteUpdateManyWithoutGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.VoteCreateWithoutGroupInput, Prisma.VoteUncheckedCreateWithoutGroupInput> | Prisma.VoteCreateWithoutGroupInput[] | Prisma.VoteUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.VoteCreateOrConnectWithoutGroupInput | Prisma.VoteCreateOrConnectWithoutGroupInput[]
+  upsert?: Prisma.VoteUpsertWithWhereUniqueWithoutGroupInput | Prisma.VoteUpsertWithWhereUniqueWithoutGroupInput[]
+  createMany?: Prisma.VoteCreateManyGroupInputEnvelope
+  set?: Prisma.VoteWhereUniqueInput | Prisma.VoteWhereUniqueInput[]
+  disconnect?: Prisma.VoteWhereUniqueInput | Prisma.VoteWhereUniqueInput[]
+  delete?: Prisma.VoteWhereUniqueInput | Prisma.VoteWhereUniqueInput[]
+  connect?: Prisma.VoteWhereUniqueInput | Prisma.VoteWhereUniqueInput[]
+  update?: Prisma.VoteUpdateWithWhereUniqueWithoutGroupInput | Prisma.VoteUpdateWithWhereUniqueWithoutGroupInput[]
+  updateMany?: Prisma.VoteUpdateManyWithWhereWithoutGroupInput | Prisma.VoteUpdateManyWithWhereWithoutGroupInput[]
+  deleteMany?: Prisma.VoteScalarWhereInput | Prisma.VoteScalarWhereInput[]
+}
+
+export type VoteUncheckedUpdateManyWithoutGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.VoteCreateWithoutGroupInput, Prisma.VoteUncheckedCreateWithoutGroupInput> | Prisma.VoteCreateWithoutGroupInput[] | Prisma.VoteUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.VoteCreateOrConnectWithoutGroupInput | Prisma.VoteCreateOrConnectWithoutGroupInput[]
+  upsert?: Prisma.VoteUpsertWithWhereUniqueWithoutGroupInput | Prisma.VoteUpsertWithWhereUniqueWithoutGroupInput[]
+  createMany?: Prisma.VoteCreateManyGroupInputEnvelope
+  set?: Prisma.VoteWhereUniqueInput | Prisma.VoteWhereUniqueInput[]
+  disconnect?: Prisma.VoteWhereUniqueInput | Prisma.VoteWhereUniqueInput[]
+  delete?: Prisma.VoteWhereUniqueInput | Prisma.VoteWhereUniqueInput[]
+  connect?: Prisma.VoteWhereUniqueInput | Prisma.VoteWhereUniqueInput[]
+  update?: Prisma.VoteUpdateWithWhereUniqueWithoutGroupInput | Prisma.VoteUpdateWithWhereUniqueWithoutGroupInput[]
+  updateMany?: Prisma.VoteUpdateManyWithWhereWithoutGroupInput | Prisma.VoteUpdateManyWithWhereWithoutGroupInput[]
   deleteMany?: Prisma.VoteScalarWhereInput | Prisma.VoteScalarWhereInput[]
 }
 
@@ -502,7 +568,8 @@ export type VoteCreateWithoutCreatedByInput = {
   closedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  taskGroup: Prisma.TaskGroupCreateNestedOneWithoutVotesInput
+  taskGroup?: Prisma.TaskGroupCreateNestedOneWithoutVotesInput
+  group?: Prisma.GroupCreateNestedOneWithoutVotesInput
   options?: Prisma.VoteOptionCreateNestedManyWithoutVoteInput
 }
 
@@ -510,7 +577,8 @@ export type VoteUncheckedCreateWithoutCreatedByInput = {
   id?: string
   title: string
   description?: string | null
-  taskGroupId: string
+  taskGroupId?: string | null
+  groupId?: string | null
   closedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -550,11 +618,62 @@ export type VoteScalarWhereInput = {
   id?: Prisma.StringFilter<"Vote"> | string
   title?: Prisma.StringFilter<"Vote"> | string
   description?: Prisma.StringNullableFilter<"Vote"> | string | null
-  taskGroupId?: Prisma.StringFilter<"Vote"> | string
+  taskGroupId?: Prisma.StringNullableFilter<"Vote"> | string | null
+  groupId?: Prisma.StringNullableFilter<"Vote"> | string | null
   createdById?: Prisma.StringFilter<"Vote"> | string
   closedAt?: Prisma.DateTimeNullableFilter<"Vote"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Vote"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Vote"> | Date | string
+}
+
+export type VoteCreateWithoutGroupInput = {
+  id?: string
+  title: string
+  description?: string | null
+  closedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  taskGroup?: Prisma.TaskGroupCreateNestedOneWithoutVotesInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedVotesInput
+  options?: Prisma.VoteOptionCreateNestedManyWithoutVoteInput
+}
+
+export type VoteUncheckedCreateWithoutGroupInput = {
+  id?: string
+  title: string
+  description?: string | null
+  taskGroupId?: string | null
+  createdById: string
+  closedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  options?: Prisma.VoteOptionUncheckedCreateNestedManyWithoutVoteInput
+}
+
+export type VoteCreateOrConnectWithoutGroupInput = {
+  where: Prisma.VoteWhereUniqueInput
+  create: Prisma.XOR<Prisma.VoteCreateWithoutGroupInput, Prisma.VoteUncheckedCreateWithoutGroupInput>
+}
+
+export type VoteCreateManyGroupInputEnvelope = {
+  data: Prisma.VoteCreateManyGroupInput | Prisma.VoteCreateManyGroupInput[]
+  skipDuplicates?: boolean
+}
+
+export type VoteUpsertWithWhereUniqueWithoutGroupInput = {
+  where: Prisma.VoteWhereUniqueInput
+  update: Prisma.XOR<Prisma.VoteUpdateWithoutGroupInput, Prisma.VoteUncheckedUpdateWithoutGroupInput>
+  create: Prisma.XOR<Prisma.VoteCreateWithoutGroupInput, Prisma.VoteUncheckedCreateWithoutGroupInput>
+}
+
+export type VoteUpdateWithWhereUniqueWithoutGroupInput = {
+  where: Prisma.VoteWhereUniqueInput
+  data: Prisma.XOR<Prisma.VoteUpdateWithoutGroupInput, Prisma.VoteUncheckedUpdateWithoutGroupInput>
+}
+
+export type VoteUpdateManyWithWhereWithoutGroupInput = {
+  where: Prisma.VoteScalarWhereInput
+  data: Prisma.XOR<Prisma.VoteUpdateManyMutationInput, Prisma.VoteUncheckedUpdateManyWithoutGroupInput>
 }
 
 export type VoteCreateWithoutTaskGroupInput = {
@@ -564,6 +683,7 @@ export type VoteCreateWithoutTaskGroupInput = {
   closedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  group?: Prisma.GroupCreateNestedOneWithoutVotesInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedVotesInput
   options?: Prisma.VoteOptionCreateNestedManyWithoutVoteInput
 }
@@ -572,6 +692,7 @@ export type VoteUncheckedCreateWithoutTaskGroupInput = {
   id?: string
   title: string
   description?: string | null
+  groupId?: string | null
   createdById: string
   closedAt?: Date | string | null
   createdAt?: Date | string
@@ -612,7 +733,8 @@ export type VoteCreateWithoutOptionsInput = {
   closedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  taskGroup: Prisma.TaskGroupCreateNestedOneWithoutVotesInput
+  taskGroup?: Prisma.TaskGroupCreateNestedOneWithoutVotesInput
+  group?: Prisma.GroupCreateNestedOneWithoutVotesInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedVotesInput
 }
 
@@ -620,7 +742,8 @@ export type VoteUncheckedCreateWithoutOptionsInput = {
   id?: string
   title: string
   description?: string | null
-  taskGroupId: string
+  taskGroupId?: string | null
+  groupId?: string | null
   createdById: string
   closedAt?: Date | string | null
   createdAt?: Date | string
@@ -650,7 +773,8 @@ export type VoteUpdateWithoutOptionsInput = {
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  taskGroup?: Prisma.TaskGroupUpdateOneRequiredWithoutVotesNestedInput
+  taskGroup?: Prisma.TaskGroupUpdateOneWithoutVotesNestedInput
+  group?: Prisma.GroupUpdateOneWithoutVotesNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedVotesNestedInput
 }
 
@@ -658,7 +782,8 @@ export type VoteUncheckedUpdateWithoutOptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  taskGroupId?: Prisma.StringFieldUpdateOperationsInput | string
+  taskGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -669,7 +794,8 @@ export type VoteCreateManyCreatedByInput = {
   id?: string
   title: string
   description?: string | null
-  taskGroupId: string
+  taskGroupId?: string | null
+  groupId?: string | null
   closedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -682,7 +808,8 @@ export type VoteUpdateWithoutCreatedByInput = {
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  taskGroup?: Prisma.TaskGroupUpdateOneRequiredWithoutVotesNestedInput
+  taskGroup?: Prisma.TaskGroupUpdateOneWithoutVotesNestedInput
+  group?: Prisma.GroupUpdateOneWithoutVotesNestedInput
   options?: Prisma.VoteOptionUpdateManyWithoutVoteNestedInput
 }
 
@@ -690,7 +817,8 @@ export type VoteUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  taskGroupId?: Prisma.StringFieldUpdateOperationsInput | string
+  taskGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -701,7 +829,54 @@ export type VoteUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  taskGroupId?: Prisma.StringFieldUpdateOperationsInput | string
+  taskGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type VoteCreateManyGroupInput = {
+  id?: string
+  title: string
+  description?: string | null
+  taskGroupId?: string | null
+  createdById: string
+  closedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type VoteUpdateWithoutGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskGroup?: Prisma.TaskGroupUpdateOneWithoutVotesNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedVotesNestedInput
+  options?: Prisma.VoteOptionUpdateManyWithoutVoteNestedInput
+}
+
+export type VoteUncheckedUpdateWithoutGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  options?: Prisma.VoteOptionUncheckedUpdateManyWithoutVoteNestedInput
+}
+
+export type VoteUncheckedUpdateManyWithoutGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -711,6 +886,7 @@ export type VoteCreateManyTaskGroupInput = {
   id?: string
   title: string
   description?: string | null
+  groupId?: string | null
   createdById: string
   closedAt?: Date | string | null
   createdAt?: Date | string
@@ -724,6 +900,7 @@ export type VoteUpdateWithoutTaskGroupInput = {
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneWithoutVotesNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedVotesNestedInput
   options?: Prisma.VoteOptionUpdateManyWithoutVoteNestedInput
 }
@@ -732,6 +909,7 @@ export type VoteUncheckedUpdateWithoutTaskGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -743,6 +921,7 @@ export type VoteUncheckedUpdateManyWithoutTaskGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -785,11 +964,13 @@ export type VoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   title?: boolean
   description?: boolean
   taskGroupId?: boolean
+  groupId?: boolean
   createdById?: boolean
   closedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  taskGroup?: boolean | Prisma.TaskGroupDefaultArgs<ExtArgs>
+  taskGroup?: boolean | Prisma.Vote$taskGroupArgs<ExtArgs>
+  group?: boolean | Prisma.Vote$groupArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   options?: boolean | Prisma.Vote$optionsArgs<ExtArgs>
   _count?: boolean | Prisma.VoteCountOutputTypeDefaultArgs<ExtArgs>
@@ -800,11 +981,13 @@ export type VoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   title?: boolean
   description?: boolean
   taskGroupId?: boolean
+  groupId?: boolean
   createdById?: boolean
   closedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  taskGroup?: boolean | Prisma.TaskGroupDefaultArgs<ExtArgs>
+  taskGroup?: boolean | Prisma.Vote$taskGroupArgs<ExtArgs>
+  group?: boolean | Prisma.Vote$groupArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["vote"]>
 
@@ -813,11 +996,13 @@ export type VoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   title?: boolean
   description?: boolean
   taskGroupId?: boolean
+  groupId?: boolean
   createdById?: boolean
   closedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  taskGroup?: boolean | Prisma.TaskGroupDefaultArgs<ExtArgs>
+  taskGroup?: boolean | Prisma.Vote$taskGroupArgs<ExtArgs>
+  group?: boolean | Prisma.Vote$groupArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["vote"]>
 
@@ -826,32 +1011,37 @@ export type VoteSelectScalar = {
   title?: boolean
   description?: boolean
   taskGroupId?: boolean
+  groupId?: boolean
   createdById?: boolean
   closedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type VoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "taskGroupId" | "createdById" | "closedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["vote"]>
+export type VoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "taskGroupId" | "groupId" | "createdById" | "closedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["vote"]>
 export type VoteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  taskGroup?: boolean | Prisma.TaskGroupDefaultArgs<ExtArgs>
+  taskGroup?: boolean | Prisma.Vote$taskGroupArgs<ExtArgs>
+  group?: boolean | Prisma.Vote$groupArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   options?: boolean | Prisma.Vote$optionsArgs<ExtArgs>
   _count?: boolean | Prisma.VoteCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type VoteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  taskGroup?: boolean | Prisma.TaskGroupDefaultArgs<ExtArgs>
+  taskGroup?: boolean | Prisma.Vote$taskGroupArgs<ExtArgs>
+  group?: boolean | Prisma.Vote$groupArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type VoteIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  taskGroup?: boolean | Prisma.TaskGroupDefaultArgs<ExtArgs>
+  taskGroup?: boolean | Prisma.Vote$taskGroupArgs<ExtArgs>
+  group?: boolean | Prisma.Vote$groupArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $VotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Vote"
   objects: {
-    taskGroup: Prisma.$TaskGroupPayload<ExtArgs>
+    taskGroup: Prisma.$TaskGroupPayload<ExtArgs> | null
+    group: Prisma.$GroupPayload<ExtArgs> | null
     createdBy: Prisma.$UserPayload<ExtArgs>
     options: Prisma.$VoteOptionPayload<ExtArgs>[]
   }
@@ -859,7 +1049,8 @@ export type $VotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: string
     title: string
     description: string | null
-    taskGroupId: string
+    taskGroupId: string | null
+    groupId: string | null
     createdById: string
     closedAt: Date | null
     createdAt: Date
@@ -1258,7 +1449,8 @@ readonly fields: VoteFieldRefs;
  */
 export interface Prisma__VoteClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  taskGroup<T extends Prisma.TaskGroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskGroupDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskGroupClient<runtime.Types.Result.GetResult<Prisma.$TaskGroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  taskGroup<T extends Prisma.Vote$taskGroupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Vote$taskGroupArgs<ExtArgs>>): Prisma.Prisma__TaskGroupClient<runtime.Types.Result.GetResult<Prisma.$TaskGroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  group<T extends Prisma.Vote$groupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Vote$groupArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   options<T extends Prisma.Vote$optionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Vote$optionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VoteOptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1294,6 +1486,7 @@ export interface VoteFieldRefs {
   readonly title: Prisma.FieldRef<"Vote", 'String'>
   readonly description: Prisma.FieldRef<"Vote", 'String'>
   readonly taskGroupId: Prisma.FieldRef<"Vote", 'String'>
+  readonly groupId: Prisma.FieldRef<"Vote", 'String'>
   readonly createdById: Prisma.FieldRef<"Vote", 'String'>
   readonly closedAt: Prisma.FieldRef<"Vote", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Vote", 'DateTime'>
@@ -1696,6 +1889,44 @@ export type VoteDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Votes to delete.
    */
   limit?: number
+}
+
+/**
+ * Vote.taskGroup
+ */
+export type Vote$taskGroupArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskGroup
+   */
+  select?: Prisma.TaskGroupSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskGroup
+   */
+  omit?: Prisma.TaskGroupOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskGroupInclude<ExtArgs> | null
+  where?: Prisma.TaskGroupWhereInput
+}
+
+/**
+ * Vote.group
+ */
+export type Vote$groupArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Group
+   */
+  select?: Prisma.GroupSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Group
+   */
+  omit?: Prisma.GroupOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupInclude<ExtArgs> | null
+  where?: Prisma.GroupWhereInput
 }
 
 /**

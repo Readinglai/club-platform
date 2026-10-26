@@ -10,6 +10,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { MarkReadOnMount } from "./MarkReadOnMount";
 
 const PRIMARY = "#1a2744";
@@ -21,6 +22,8 @@ interface Props {
 
 export default async function AnnouncementDetailPage({ params }: Props) {
   const session = await auth();
+  const t = await getTranslations("portal.announcementsPage");
+  const dateLocale = (await getLocale()) === "zh" ? "zh-TW" : "en-CA";
   if (!session?.user?.id) {
     redirect("/en/login");
   }
@@ -48,7 +51,7 @@ export default async function AnnouncementDetailPage({ params }: Props) {
 
   const isRead = announcement.reads.length > 0;
 
-  const date = announcement.createdAt.toLocaleDateString("zh-TW", {
+  const date = announcement.createdAt.toLocaleDateString(dateLocale, {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -71,7 +74,7 @@ export default async function AnnouncementDetailPage({ params }: Props) {
               className="transition-opacity hover:opacity-70"
               style={{ color: `${SECONDARY}99` }}
             >
-              公告
+              {t("title")}
             </Link>
             <span style={{ color: `${SECONDARY}44` }}>/</span>
             <span
@@ -107,7 +110,7 @@ export default async function AnnouncementDetailPage({ params }: Props) {
                   : { backgroundColor: `${PRIMARY}15`, color: PRIMARY }
               }
             >
-              {isRead ? "已讀" : "未讀"}
+              {isRead ? t("read") : t("unread")}
             </span>
           </div>
 
@@ -146,7 +149,7 @@ export default async function AnnouncementDetailPage({ params }: Props) {
                   d="M15 19l-7-7 7-7"
                 />
               </svg>
-              返回公告列表
+              {t("backToList")}
             </Link>
           </div>
         </div>

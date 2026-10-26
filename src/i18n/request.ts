@@ -9,8 +9,10 @@
  */
 
 import { getRequestConfig } from "next-intl/server";
+import { cookies } from "next/headers";
 import { unstable_cache } from "next/cache";
 import { routing } from "./routing";
+import { DEFAULT_TIME_ZONE } from "./time-zone";
 import { db } from "@/lib/db";
 
 type Messages = Record<string, unknown>;
@@ -36,10 +38,18 @@ const getCachedOverrides = unstable_cache(
   { tags: ["i18n_overrides"] }
 );
 
+/** Cookie the portal's language switch sets (next-intl's standard name). */
+export const LOCALE_COOKIE = "NEXT_LOCALE";
+
+const isLocale = (v: string | undefined): v is "zh" | "en" => !!v && routing.locales.includes(v as "zh" | "en");
+
 export default getRequestConfig(async ({ requestLocale }) => {
+  // Pages under /[locale] carry the language in the address; others (the
+  // portal) use the language the visitor last chose.
   let locale = await requestLocale;
-  if (!locale || !routing.locales.includes(locale as "zh" | "en")) {
-    locale = routing.defaultLocale;
+  if (!isLocale(locale)) {
+    const chosen = (await cookies()).get(LOCALE_COOKIE)?.value;
+    locale = isLocale(chosen) ? chosen : routing.defaultLocale;
   }
 
   const messages = (await import(`../../messages/${locale}.json`)).default as Messages;
@@ -55,5 +65,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
     // DB unavailable — use file defaults
   }
 
-  return { locale, messages };
+  // Fixed so server and browser format dates the same way (club is in Toronto).
+  return { locale, messages, timeZone: DEFAULT_TIME_ZONE };
 });

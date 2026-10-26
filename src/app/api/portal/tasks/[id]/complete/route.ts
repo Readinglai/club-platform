@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { forbidUnless, requireUserJson } from "@/lib/access/require";
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const guard = await requireAuthJson(2, request);
+  const guard = await requireUserJson();
   if (guard.error) return guard.error;
+  const forbidden = await forbidUnless(guard.userId, "tasks.use");
+  if (forbidden) return forbidden;
 
   const { id } = await params;
 
@@ -20,7 +22,7 @@ export async function PATCH(
   });
   if (!task) return NextResponse.json({ error: "任務不存在" }, { status: 404 });
   const isAssignee = task.assigneeId === guard.userId || task.assignees.some((a) => a.userId === guard.userId);
-  const isGroupCreator = task.taskGroup.createdById === guard.userId;
+  const isGroupCreator = task.taskGroup?.createdById === guard.userId;
   if (!isAssignee && !isGroupCreator) {
     return NextResponse.json({ error: "您不是此任務的被指派者" }, { status: 403 });
   }

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { requireUserJson } from "@/lib/access/require";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const guard = await requireAuthJson(2, request);
+  const guard = await requireUserJson();
   if (guard.error) return guard.error;
 
   const { id } = await params;

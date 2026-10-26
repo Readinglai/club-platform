@@ -13,7 +13,8 @@ export const Role = {
   SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',
   EXEC: 'EXEC',
-  MEMBER: 'MEMBER'
+  MEMBER: 'MEMBER',
+  USER: 'USER'
 } as const
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -59,3 +60,73 @@ export const FinanceType = {
 } as const
 
 export type FinanceType = (typeof FinanceType)[keyof typeof FinanceType]
+
+
+export const OrderStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  FREE: 'FREE',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED'
+} as const
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
+
+
+export const TicketStatus = {
+  RESERVED: 'RESERVED',
+  VALID: 'VALID',
+  VOID: 'VOID'
+} as const
+
+export type TicketStatus = (typeof TicketStatus)[keyof typeof TicketStatus]
+
+
+export const FinanceReportStatus = {
+  OPEN: 'OPEN',
+  SUBMITTED: 'SUBMITTED',
+  APPROVED: 'APPROVED',
+  RETURNED: 'RETURNED'
+} as const
+
+export type FinanceReportStatus = (typeof FinanceReportStatus)[keyof typeof FinanceReportStatus]
+
+
+export const MembershipStatus = {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type MembershipStatus = (typeof MembershipStatus)[keyof typeof MembershipStatus]
+
+
+export const MembershipSource = {
+  STRIPE: 'STRIPE',
+  IMPORTED: 'IMPORTED',
+  MANUAL: 'MANUAL',
+  COMPLIMENTARY: 'COMPLIMENTARY'
+} as const
+
+export type MembershipSource = (typeof MembershipSource)[keyof typeof MembershipSource]
+
+
+export const GroupPosition = {
+  PRESIDENT: 'PRESIDENT',
+  VP: 'VP',
+  STAFF: 'STAFF'
+} as const
+
+export type GroupPosition = (typeof GroupPosition)[keyof typeof GroupPosition]
+
+
+export const ApprovalStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ApprovalStatus = (typeof ApprovalStatus)[keyof typeof ApprovalStatus]

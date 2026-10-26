@@ -11,7 +11,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { requirePermissionJson } from "@/lib/access/require";
 
 /**
  * GET /api/admin/alumni — 列出所有校友（後台用，包含隱藏記錄）
@@ -21,7 +21,7 @@ import { requireAuthJson } from "@/lib/auth/guard";
  */
 export async function GET(request: NextRequest) {
   try {
-    const guard = await requireAuthJson(4, request);
+    const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;
 
     // 可選年份篩選
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const guard = await requireAuthJson(4, request);
+    const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;
 
     const body = await request.json();

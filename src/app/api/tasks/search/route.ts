@@ -18,7 +18,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAuthJson } from "@/lib/auth/guard";
+import { forbidUnless, requireUserJson } from "@/lib/access/require";
 
 interface SearchResult {
   taskId: string;
@@ -40,8 +40,10 @@ function extractPreview(content: string, keyword: string): string {
 }
 
 export async function GET(request: NextRequest) {
-  const guard = await requireAuthJson(2, request);
+  const guard = await requireUserJson();
   if (guard.error) return guard.error;
+  const forbidden = await forbidUnless(guard.userId, "tasks.use");
+  if (forbidden) return forbidden;
 
   const q = request.nextUrl.searchParams.get("q")?.trim() ?? "";
   // 關鍵字少於 1 個字元直接回傳空陣列，避免全表掃描
@@ -72,7 +74,7 @@ export async function GET(request: NextRequest) {
     results.push({
       taskId: task.id,
       taskTitle: task.title,
-      taskGroupName: task.taskGroup.name,
+      taskGroupName: task.taskGroup?.name ?? "",
       matchType: isTitle ? "title" : "description",
       matchPreview: isTitle
         ? extractPreview(task.title, q)
@@ -128,7 +130,7 @@ export async function GET(request: NextRequest) {
   // 建立 taskGroupId → 對應任務 的 Map（每個群組取第一個被指派任務作為代表）
   const taskGroupMap = new Map<string, typeof userTasks[0]>();
   for (const task of userTasks) {
-    if (!taskGroupMap.has(task.taskGroupId)) {
+    if (task.taskGroupId && !taskGroupMap.has(task.taskGroupId)) {
       taskGroupMap.set(task.taskGroupId, task);
     }
   }
@@ -158,7 +160,7 @@ export async function GET(request: NextRequest) {
       results.push({
         taskId: representativeTask.id,
         taskTitle: representativeTask.title,
-        taskGroupName: representativeTask.taskGroup.name,
+        taskGroupName: representativeTask.taskGroup?.name ?? "",
         matchType: "discussion",
         matchPreview: extractPreview(comment.content, q),
       });

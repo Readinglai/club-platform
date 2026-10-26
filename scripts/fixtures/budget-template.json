@@ -1,0 +1,334 @@
+{
+ "_source": "Blank 'ROCSAUT Standardized Event Budget 26-27' template, cells as laid out on 2026-10-25 (row/column positions kept, merged cells at their top-left).",
+ "overview": [
+  [
+   "Finance Overview"
+  ],
+  [],
+  [
+   "Event Information",
+   null,
+   null,
+   null,
+   null,
+   "Budget v.s Current Plan Summary"
+  ],
+  [
+   "Event Name",
+   null,
+   null,
+   null,
+   null,
+   null,
+   "Budget Cap",
+   "Current Plan",
+   "Status"
+  ],
+  [
+   "Event Date",
+   null,
+   null,
+   null,
+   null,
+   "Expense",
+   null,
+   null,
+   "🔺 Over Budget"
+  ],
+  [
+   "Event Lead",
+   null,
+   null,
+   null,
+   null,
+   null,
+   "Projection",
+   "Current Plan",
+   "Status"
+  ],
+  [
+   "Prepared by",
+   null,
+   null,
+   null,
+   null,
+   "Est. Revenue",
+   null,
+   null,
+   "-"
+  ],
+  [
+   "Last Updated",
+   null,
+   null,
+   null,
+   null,
+   "Est. Expense",
+   null,
+   null,
+   "-"
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   "Est. P&L",
+   null,
+   null,
+   "✅ Good"
+  ],
+  [
+   "Budget Plan (Finance)"
+  ],
+  [
+   "Budget Cap (Total)"
+  ],
+  [
+   "Budget Allocation by Category",
+   null,
+   null,
+   "Note",
+   null,
+   "Approval"
+  ],
+  [
+   "Venue",
+   null,
+   null,
+   null,
+   null,
+   "Position",
+   "Name",
+   "Date",
+   "Approved?"
+  ],
+  [
+   "Alchohol & Beverages"
+  ],
+  [
+   "Game Incentives"
+  ],
+  [
+   "Decor",
+   null,
+   null,
+   null,
+   null,
+   "Approval Status"
+  ],
+  [
+   "Consumables"
+  ],
+  [
+   "Others"
+  ],
+  [],
+  [
+   "Projected Revenue"
+  ],
+  [
+   "Projected Expense"
+  ],
+  [
+   "Projected P&L"
+  ],
+  [
+   "Note:"
+  ],
+  [],
+  [],
+  [
+   "Summary for Master Budget"
+  ],
+  [],
+  [
+   "Event Name",
+   "Budget Cap",
+   "Projected Revenue",
+   "Actual Revenue",
+   "Projected Expense",
+   "Actual Expense",
+   "Projected P&L",
+   "Actual P&L",
+   "Variance $",
+   "Variance %",
+   "Status"
+  ]
+ ],
+ "detailed": [
+  [
+   "Event Budget",
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   "Post- Event Statements and Financial Records"
+  ],
+  [],
+  [
+   "Projected P&L",
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   "Actual P&L",
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   "Projected Balance",
+   "0.00"
+  ],
+  [
+   null,
+   "REVENUE",
+   "#",
+   "$",
+   null,
+   "Total",
+   "Notes",
+   null,
+   "REVENUE",
+   "#",
+   "$",
+   null,
+   "Total",
+   "Notes",
+   null,
+   null,
+   "Actual Balance",
+   "0.00"
+  ],
+  [
+   "Type",
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   "Difference",
+   "0.00"
+  ],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [
+   "Total projected revenue",
+   null,
+   "0",
+   null,
+   null,
+   "0",
+   null,
+   null,
+   "Total revenue",
+   "0",
+   null,
+   null,
+   "0"
+  ],
+  [],
+  [
+   null,
+   "EXPENSES",
+   "#",
+   "$",
+   "Tax (1 if has)",
+   "Total",
+   "Notes",
+   null,
+   "EXPENSES",
+   "#",
+   "$",
+   "Tax**",
+   "Total",
+   "Notes",
+   "bought online?"
+  ],
+  [
+   "Type"
+  ],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [
+   "Total projected expense",
+   null,
+   null,
+   null,
+   null,
+   "0.00",
+   null,
+   null,
+   "Total expense",
+   null,
+   null,
+   null,
+   "0"
+  ],
+  [],
+  [
+   null,
+   "NET INCOME",
+   null,
+   null,
+   null,
+   "Total",
+   "Notes",
+   null,
+   "NET INCOME",
+   "#",
+   "$",
+   null,
+   "Total",
+   "Notes"
+  ],
+  [
+   null,
+   "Total projected net income",
+   null,
+   null,
+   null,
+   "0.00",
+   null,
+   null,
+   "Total projected net income",
+   null,
+   null,
+   null,
+   "0.00"
+  ]
+ ]
+}

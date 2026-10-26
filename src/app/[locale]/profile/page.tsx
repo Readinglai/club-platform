@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
+import { can, getAccess } from "@/lib/access/can";
 import ProfileForm from "./ProfileForm";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +21,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     redirect(`/${locale}/login`);
   }
 
-  if (ROLE_LEVEL[session.user.role] < 4) {
+  // Public profiles (bio, links) are for people holding a position.
+  if (!can(await getAccess(session.user.id), "tasks.use")) {
     redirect(`/${locale}`);
   }
 

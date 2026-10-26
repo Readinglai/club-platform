@@ -21,6 +21,10 @@ import type { NextConfig } from "next";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  // The dev-only route badge sat on top of pinned controls (the ticket page's pay bar,
+  // the portal's bottom tabs). Build and runtime errors still show without it.
+  devIndicators: false,
+
   images: {
     remotePatterns: [
       {

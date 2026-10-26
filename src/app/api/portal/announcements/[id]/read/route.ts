@@ -14,30 +14,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { decode } from "@auth/core/jwt";
 
 /**
  * 嘗試取得已登入使用者的 ID
  * 先嘗試 cookie session，再嘗試 Bearer token
  */
-async function tryGetUserId(request: NextRequest): Promise<string | null> {
+async function tryGetUserId(): Promise<string | null> {
   const session = await auth();
   if (session?.user?.id) return session.user.id;
-
-  const authHeader = request.headers.get("authorization");
-  if (authHeader?.startsWith("Bearer ")) {
-    const token = authHeader.slice(7);
-    try {
-      const decoded = await decode({
-        token,
-        secret: (process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET)!,
-        salt: "authjs.session-token",
-      });
-      if (decoded?.sub) return decoded.sub;
-    } catch {
-      // token 無效，忽略
-    }
-  }
 
   return null;
 }
@@ -47,7 +31,7 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const userId = await tryGetUserId(request);
+  const userId = await tryGetUserId();
   if (!userId) {
     return NextResponse.json({ error: "未登入" }, { status: 401 });
   }

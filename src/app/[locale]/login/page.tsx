@@ -1,20 +1,17 @@
 /**
  * [locale]/login/page.tsx — 多語系登入頁面
  *
- * 社團成員登入入口，使用 Google OAuth 或 Email magic link。
- * 僅限 utoronto.ca 或 mail.utoronto.ca 信箱。
+ * 登入入口，使用 Google OAuth 或 Email magic link。任何信箱皆可註冊，
+ * 新帳號為 USER，首次登入後需完成個人資料。
  *
- * 已登入使用者：直接依角色跳轉（不經過 /api/auth/post-login），
- * 避免額外 redirect hop 造成 ERR_TOO_MANY_REDIRECTS。
+ * 已登入使用者：顯示「繼續」或「使用其他帳號登入」（先登出再回到此頁）。
  */
 
 import Image from "next/image";
-import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
-import { ROLE_LEVEL } from "@/lib/rbac";
-import type { Role } from "@/generated/prisma/client";
 import { LoginButtons } from "./LoginButtons";
+import { SignedInChoice } from "./SignedInChoice";
 
 interface LoginPageProps {
   searchParams: Promise<{ error?: string; callbackUrl?: string }>;
@@ -39,21 +36,14 @@ function getErrorKey(error: string | undefined): string | null {
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  // 已登入的使用者直接依角色導向，不顯示登入頁
-  // 注意：不再經過 /api/auth/post-login 中轉，避免多一層 redirect
-  // 造成 /zh/login → /api/auth/post-login → /zh/admin → ... 無限迴圈
+  // Someone already signed in can carry on, or sign out to use another account.
   const session = await auth();
-  if (session?.user) {
-    const role = (session.user.role as Role | undefined) ?? "MEMBER";
-    const level = ROLE_LEVEL[role] ?? ROLE_LEVEL.MEMBER;
-    if (level >= 4) redirect("/admin");
-    else if (level === 3) redirect("/exec");
-    else redirect("/portal");
-  }
 
   const params = await searchParams;
   const errorKey = getErrorKey(params.error);
   const callbackUrl = params.callbackUrl ?? "/api/auth/post-login";
+  // Only same-site paths, never another site.
+  const continueUrl = params.callbackUrl?.startsWith("/") && !params.callbackUrl.startsWith("//") ? params.callbackUrl : "/portal";
   const t = await getTranslations("auth");
 
   return (
@@ -99,7 +89,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </div>
         )}
 
-        <LoginButtons callbackUrl={callbackUrl} />
+        {session?.user ? (
+          <SignedInChoice who={session.user.name || session.user.email || ""} continueUrl={continueUrl} />
+        ) : (
+          <LoginButtons callbackUrl={callbackUrl} />
+        )}
 
         {/* Footer note */}
         <p className="text-xs text-gray-400 text-center leading-relaxed">

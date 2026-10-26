@@ -1,23 +1,20 @@
 /**
  * proxy.ts — Next.js 16 Edge Proxy
  *
- * Public visitors:
- * - Fall 2026 event page
- * - Login / unauthorized pages
- * - Ticket pages
- *
- * Everything else redirects to the Fall 2026 event page.
+ * Public visitors: the whole public website (with language routing), the
+ * Fall 2026 event page, login / unauthorized pages and ticket pages.
  *
  * Protected routes still require authentication:
  * - member
- * - admin
- * - exec
  * - portal
+ *
+ * The old /admin and /exec pages forward to the portal (legacy-paths.ts).
  */
 
 import { type NextRequest, NextResponse } from "next/server";
 import createNextIntlMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
+import { portalPathFor } from "@/lib/portal/legacy-paths";
 
 /** next-intl 語言路由 handler */
 const handleI18nRouting = createNextIntlMiddleware(routing);
@@ -25,12 +22,8 @@ const handleI18nRouting = createNextIntlMiddleware(routing);
 /** 需要登入才能訪問的路徑 */
 const protectedPatterns = [
   /^\/(zh|en)\/member(\/|$)/,
-  /^\/(zh|en)\/admin(\/|$)/,
-  /^\/(zh|en)\/exec(\/|$)/,
   /^\/(zh|en)\/portal(\/|$)/,
   /^\/member(\/|$)/,
-  /^\/admin(\/|$)/,
-  /^\/exec(\/|$)/,
   /^\/portal(\/|$)/,
 ];
 
@@ -47,23 +40,29 @@ const publicPatterns = [
 
   /^\/ticket(\/|$)/,
 
+  /^\/order(\/|$)/,
+
+  /^\/e(\/|$)/,
+
   /^\/staff(\/|$)/,
 ];
 
 /** 不需要 i18n locale 前綴的內部路徑 */
 const NO_I18N_PREFIXES = [
-  /^\/exec(\/|$)/,
   /^\/portal(\/|$)/,
   /^\/ticket(\/|$)/,
+  /^\/order(\/|$)/,
+  /^\/e(\/|$)/,
   /^\/staff(\/|$)/,
 ];
 
-/** Event landing page */
-const EVENT_PATH = "/zh/event/fall-2026";
-const EVENT_PATH_EN = "/event/fall-2026";
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Step 0: the old /admin and /exec pages moved into the portal.
+  const moved = portalPathFor(pathname);
+  if (moved) return NextResponse.redirect(new URL(moved, request.url));
 
   // Step 1：公開白名單路徑直接放行
   if (publicPatterns.some((p) => p.test(pathname))) {
@@ -74,9 +73,9 @@ export default async function proxy(request: NextRequest) {
     return handleI18nRouting(request);
   }
 
-  // Step 2：exec/portal locale prefix → 移除 locale
+  // Step 2：portal locale prefix → 移除 locale
   const localeInternalMatch = pathname.match(
-    /^\/(zh|en)\/(exec|portal)(\/.*)?$/
+    /^\/(zh|en)\/(portal)(\/.*)?$/
   );
 
   if (localeInternalMatch) {
@@ -96,7 +95,7 @@ export default async function proxy(request: NextRequest) {
   const isProtected = protectedPatterns.some((p) => p.test(pathname));
 
   if (isProtected) {
-    // exec / portal / ticket / staff are internal routes
+    // portal / ticket / staff are internal routes
     // and should not be processed by next-intl.
     if (NO_I18N_PREFIXES.some((p) => p.test(pathname))) {
       return NextResponse.next();
@@ -105,13 +104,10 @@ export default async function proxy(request: NextRequest) {
     return handleI18nRouting(request);
   }
 
-  // Step 4：所有其他一般網站頁面 → Fall 2026 Event
-  // Keep the visitor's language: an /en/... page goes to the English event page
-  // (prefix-less, since English is the default locale), everything else to Chinese.
-  const isEnglish = /^\/en(\/|$)/.test(pathname);
-  const eventUrl = new URL(isEnglish ? EVENT_PATH_EN : EVENT_PATH, request.url);
-
-  return NextResponse.redirect(eventUrl);
+  // Step 4: the public website (Home, Events, Members, Achievements, Sponsors,
+  // Alumni, Contact) — language routing only. During Halloween 2026 ticket sales
+  // these all forwarded to the Halloween page; that ended after the event.
+  return handleI18nRouting(request);
 }
 
 export const config = {

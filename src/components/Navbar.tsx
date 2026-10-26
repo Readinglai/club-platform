@@ -65,7 +65,8 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-6">
+          {/* Full menu only where it fits on one line; the ☰ menu below 1024px. */}
+          <div className="hidden lg:flex items-center gap-6">
             {NAV_LINKS.map(({ key, href }) => {
               const fullHref = localizedHref(href);
               const isActive = pathname === fullHref;
@@ -73,7 +74,7 @@ export default function Navbar() {
                 <Link
                   key={key}
                   href={fullHref}
-                  className="text-sm font-medium transition-all duration-150 hover:opacity-100 pb-0.5"
+                  className="whitespace-nowrap text-sm font-medium transition-all duration-150 hover:opacity-100 pb-0.5"
                   style={{
                     color: isActive ? SECONDARY : `${SECONDARY}bb`,
                     borderBottom: isActive ? `2px solid ${SECONDARY}` : "2px solid transparent",
@@ -92,19 +93,35 @@ export default function Navbar() {
             >
               {t("switchLang")}
             </button>
-            {/* Sign-in link hidden from the public nav; /login itself still works. */}
-            {session?.user && (
-              <button
-                onClick={() => signOut({ callbackUrl: "/" })}
+            {/* Signed out: Sign in. Signed in: the portal, and Sign out. */}
+            {session?.user ? (
+              <>
+                <Link
+                  href="/portal"
+                  className="whitespace-nowrap text-sm px-3 py-1 rounded font-semibold transition hover:opacity-90"
+                  style={{ backgroundColor: SECONDARY, color: PRIMARY }}
+                >
+                  {t("portal")}
+                </Link>
+                <button
+                  onClick={() => signOut({ callbackUrl: `/${locale}` })}
+                  className="whitespace-nowrap text-sm px-3 py-1 rounded border border-white/30 text-white hover:bg-white/10 transition"
+                >
+                  {t("signOut")}
+                </button>
+              </>
+            ) : (
+              <Link
+                href={`/${locale}/login`}
                 className="text-sm px-3 py-1 rounded border border-white/30 text-white hover:bg-white/10 transition"
               >
-                {t("signOut")}
-              </button>
+                {t("signIn")}
+              </Link>
             )}
           </div>
 
           {/* Mobile: lang + hamburger */}
-          <div className="flex md:hidden items-center gap-3">
+          <div className="flex lg:hidden items-center gap-3">
             <button
               onClick={handleLangSwitch}
               className="px-2 py-1 rounded text-xs font-semibold border"
@@ -113,14 +130,6 @@ export default function Navbar() {
             >
               {t("switchLang")}
             </button>
-            {session?.user && (
-              <button
-                onClick={() => signOut({ callbackUrl: "/" })}
-                className="text-sm px-2 py-1 rounded border border-white/30 text-white hover:bg-white/10 transition"
-              >
-                {t("signOut")}
-              </button>
-            )}
 
             <button
               type="button"
@@ -147,7 +156,7 @@ export default function Navbar() {
 
       {/* Mobile dropdown */}
       {menuOpen && (
-        <div id="mobile-menu" className="md:hidden border-t" style={{ borderColor: `${SECONDARY}33`, backgroundColor: PRIMARY }}>
+        <div id="mobile-menu" className="lg:hidden border-t" style={{ borderColor: `${SECONDARY}33`, backgroundColor: PRIMARY }}>
           <div className="px-4 py-3 flex flex-col gap-1">
             {NAV_LINKS.map(({ key, href }) => {
               const fullHref = localizedHref(href);
@@ -167,6 +176,22 @@ export default function Navbar() {
                 </Link>
               );
             })}
+            <div className="mt-2 border-t pt-3 flex flex-col gap-1" style={{ borderColor: `${SECONDARY}33` }}>
+              {session?.user ? (
+                <>
+                  <Link href="/portal" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded-md text-sm font-semibold" style={{ color: SECONDARY }}>
+                    {t("portal")}
+                  </Link>
+                  <button type="button" onClick={() => signOut({ callbackUrl: `/${locale}` })} className="block px-3 py-2 rounded-md text-left text-sm text-white/80">
+                    {t("signOut")}
+                  </button>
+                </>
+              ) : (
+                <Link href={`/${locale}/login`} onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded-md text-sm font-semibold" style={{ color: SECONDARY }}>
+                  {t("signIn")}
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       )}

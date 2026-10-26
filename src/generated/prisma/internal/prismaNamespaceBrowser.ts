@@ -57,10 +57,21 @@ export const ModelName = {
   VerificationToken: 'VerificationToken',
   Department: 'Department',
   Event: 'Event',
+  EventMemoryPhoto: 'EventMemoryPhoto',
   Registration: 'Registration',
   TicketTier: 'TicketTier',
   EventTicket: 'EventTicket',
   MemberRedemption: 'MemberRedemption',
+  EventSettings: 'EventSettings',
+  EventBudgetLine: 'EventBudgetLine',
+  TicketType: 'TicketType',
+  Order: 'Order',
+  Ticket: 'Ticket',
+  Profile: 'Profile',
+  Membership: 'Membership',
+  Group: 'Group',
+  GroupMember: 'GroupMember',
+  ApprovalRequest: 'ApprovalRequest',
   Discussion: 'Discussion',
   Comment: 'Comment',
   Announcement: 'Announcement',
@@ -188,6 +199,19 @@ export const EventScalarFieldEnum = {
 export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]
 
 
+export const EventMemoryPhotoScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  imageUrl: 'imageUrl',
+  caption: 'caption',
+  sortOrder: 'sortOrder',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type EventMemoryPhotoScalarFieldEnum = (typeof EventMemoryPhotoScalarFieldEnum)[keyof typeof EventMemoryPhotoScalarFieldEnum]
+
+
 export const RegistrationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -251,10 +275,204 @@ export const MemberRedemptionScalarFieldEnum = {
 export type MemberRedemptionScalarFieldEnum = (typeof MemberRedemptionScalarFieldEnum)[keyof typeof MemberRedemptionScalarFieldEnum]
 
 
+export const EventSettingsScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  timezone: 'timezone',
+  currency: 'currency',
+  registrationEnabled: 'registrationEnabled',
+  ticketsEnabled: 'ticketsEnabled',
+  checkInEnabled: 'checkInEnabled',
+  budgetEnabled: 'budgetEnabled',
+  dashboardEnabled: 'dashboardEnabled',
+  financeStatus: 'financeStatus',
+  financeSubmittedAt: 'financeSubmittedAt',
+  financeSubmittedById: 'financeSubmittedById',
+  financeReviewedAt: 'financeReviewedAt',
+  financeReviewedById: 'financeReviewedById',
+  financeReviewNote: 'financeReviewNote',
+  budgetSheetId: 'budgetSheetId',
+  budgetSheetConnectedBy: 'budgetSheetConnectedBy',
+  budgetSheetSyncedAt: 'budgetSheetSyncedAt',
+  budgetSheetSyncError: 'budgetSheetSyncError',
+  budgetSheetData: 'budgetSheetData',
+  memoriesRecap: 'memoriesRecap',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventSettingsScalarFieldEnum = (typeof EventSettingsScalarFieldEnum)[keyof typeof EventSettingsScalarFieldEnum]
+
+
+export const EventBudgetLineScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  category: 'category',
+  item: 'item',
+  quantity: 'quantity',
+  unitCost: 'unitCost',
+  plannedAmount: 'plannedAmount',
+  note: 'note',
+  sortOrder: 'sortOrder',
+  importBatchId: 'importBatchId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventBudgetLineScalarFieldEnum = (typeof EventBudgetLineScalarFieldEnum)[keyof typeof EventBudgetLineScalarFieldEnum]
+
+
+export const TicketTypeScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  name: 'name',
+  description: 'description',
+  price: 'price',
+  memberPrice: 'memberPrice',
+  capacity: 'capacity',
+  salesStartAt: 'salesStartAt',
+  salesEndAt: 'salesEndAt',
+  membersOnly: 'membersOnly',
+  maxPerOrder: 'maxPerOrder',
+  color: 'color',
+  perks: 'perks',
+  sortOrder: 'sortOrder',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TicketTypeScalarFieldEnum = (typeof TicketTypeScalarFieldEnum)[keyof typeof TicketTypeScalarFieldEnum]
+
+
+export const OrderScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  userId: 'userId',
+  buyerName: 'buyerName',
+  buyerEmail: 'buyerEmail',
+  buyerPhone: 'buyerPhone',
+  status: 'status',
+  totalAmount: 'totalAmount',
+  currency: 'currency',
+  stripeSessionId: 'stripeSessionId',
+  paidAt: 'paidAt',
+  waiverAcceptedAt: 'waiverAcceptedAt',
+  waiverVersion: 'waiverVersion',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+export const TicketScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  eventId: 'eventId',
+  ticketTypeId: 'ticketTypeId',
+  userId: 'userId',
+  holderName: 'holderName',
+  holderEmail: 'holderEmail',
+  token: 'token',
+  status: 'status',
+  pricePaid: 'pricePaid',
+  memberPricing: 'memberPricing',
+  checkedInAt: 'checkedInAt',
+  checkedInById: 'checkedInById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TicketScalarFieldEnum = (typeof TicketScalarFieldEnum)[keyof typeof TicketScalarFieldEnum]
+
+
+export const ProfileScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  phone: 'phone',
+  studentNumber: 'studentNumber',
+  personalEmail: 'personalEmail',
+  program: 'program',
+  yearOfStudy: 'yearOfStudy',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProfileScalarFieldEnum = (typeof ProfileScalarFieldEnum)[keyof typeof ProfileScalarFieldEnum]
+
+
+export const MembershipScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  email: 'email',
+  name: 'name',
+  memberCode: 'memberCode',
+  status: 'status',
+  source: 'source',
+  termStart: 'termStart',
+  termEnd: 'termEnd',
+  stripeSessionId: 'stripeSessionId',
+  amountPaid: 'amountPaid',
+  legacyId: 'legacyId',
+  walletPassId: 'walletPassId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MembershipScalarFieldEnum = (typeof MembershipScalarFieldEnum)[keyof typeof MembershipScalarFieldEnum]
+
+
+export const GroupScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  parentId: 'parentId',
+  eventId: 'eventId',
+  archived: 'archived',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GroupScalarFieldEnum = (typeof GroupScalarFieldEnum)[keyof typeof GroupScalarFieldEnum]
+
+
+export const GroupMemberScalarFieldEnum = {
+  id: 'id',
+  groupId: 'groupId',
+  userId: 'userId',
+  position: 'position',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GroupMemberScalarFieldEnum = (typeof GroupMemberScalarFieldEnum)[keyof typeof GroupMemberScalarFieldEnum]
+
+
+export const ApprovalRequestScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  targetId: 'targetId',
+  details: 'details',
+  requestedById: 'requestedById',
+  approverPosition: 'approverPosition',
+  status: 'status',
+  decidedById: 'decidedById',
+  decidedAt: 'decidedAt',
+  note: 'note',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ApprovalRequestScalarFieldEnum = (typeof ApprovalRequestScalarFieldEnum)[keyof typeof ApprovalRequestScalarFieldEnum]
+
+
 export const DiscussionScalarFieldEnum = {
   id: 'id',
   eventId: 'eventId',
   taskGroupId: 'taskGroupId',
+  groupId: 'groupId',
   createdAt: 'createdAt'
 } as const
 
@@ -325,6 +543,7 @@ export const TaskScalarFieldEnum = {
   title: 'title',
   description: 'description',
   taskGroupId: 'taskGroupId',
+  groupId: 'groupId',
   assigneeId: 'assigneeId',
   status: 'status',
   dueAt: 'dueAt',
@@ -359,6 +578,7 @@ export const VoteScalarFieldEnum = {
   title: 'title',
   description: 'description',
   taskGroupId: 'taskGroupId',
+  groupId: 'groupId',
   createdById: 'createdById',
   closedAt: 'closedAt',
   createdAt: 'createdAt',
@@ -460,6 +680,9 @@ export const FinanceRecordScalarFieldEnum = {
   description: 'description',
   date: 'date',
   createdById: 'createdById',
+  eventId: 'eventId',
+  receiptUrl: 'receiptUrl',
+  importBatchId: 'importBatchId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -536,6 +759,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -550,4 +781,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

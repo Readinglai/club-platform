@@ -1,9 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { ROLE_LEVEL } from "@/lib/rbac";
-import { decode } from "@auth/core/jwt";
-import type { Role } from "@/generated/prisma/client";
+import { can, getAccess } from "@/lib/access/can";
 
 const PROTECTED_EMAIL = "flyincloud2001@gmail.com";
 
@@ -24,30 +22,15 @@ const USER_SELECT = {
   },
 } as const;
 
-async function tryGetUserId(request: NextRequest): Promise<string | null> {
+async function tryGetUserId(): Promise<string | null> {
   const session = await auth();
   if (session?.user?.id) return session.user.id;
-
-  const authHeader = request.headers.get("authorization");
-  if (authHeader?.startsWith("Bearer ")) {
-    const token = authHeader.slice(7);
-    try {
-      const decoded = await decode({
-        token,
-        secret: (process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET)!,
-        salt: "authjs.session-token",
-      });
-      if (decoded?.sub) return decoded.sub;
-    } catch {
-      // invalid token
-    }
-  }
 
   return null;
 }
 
-export async function GET(request: NextRequest) {
-  const userId = await tryGetUserId(request);
+export async function GET() {
+  const userId = await tryGetUserId();
   if (!userId) {
     return NextResponse.json({ error: "æœªç™»å…¥" }, { status: 401 });
   }
@@ -65,21 +48,21 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const userId = await tryGetUserId(request);
+  const userId = await tryGetUserId();
   if (!userId) {
     return NextResponse.json({ error: "æœªç™»å…¥" }, { status: 401 });
   }
 
   const selfUser = await db.user.findUnique({
     where: { id: userId },
-    select: { email: true, role: true },
+    select: { email: true },
   });
   if (!selfUser) {
     return NextResponse.json({ error: "ä½¿ç”¨è€…ä¸å­˜åœ¨" }, { status: 404 });
   }
 
-  const currentRole = (selfUser.role as Role | undefined) ?? "MEMBER";
-  if (ROLE_LEVEL[currentRole] < 4) {
+  // Public profiles (bio, links) are for people holding a position.
+  if (!can(await getAccess(userId), "tasks.use")) {
     return NextResponse.json({ error: "æ¬Šé™ä¸è¶³" }, { status: 403 });
   }
 
