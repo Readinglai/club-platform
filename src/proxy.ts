@@ -1,12 +1,8 @@
 /**
  * proxy.ts — Next.js 16 Edge Proxy
  *
- * Public visitors:
- * - Fall 2026 event page
- * - Login / unauthorized pages
- * - Ticket pages
- *
- * Everything else redirects to the Fall 2026 event page.
+ * Public visitors: the whole public website (with language routing), the
+ * Fall 2026 event page, login / unauthorized pages and ticket pages.
  *
  * Protected routes still require authentication:
  * - member
@@ -60,9 +56,6 @@ const NO_I18N_PREFIXES = [
   /^\/staff(\/|$)/,
 ];
 
-/** Event landing page */
-const EVENT_PATH = "/zh/event/fall-2026";
-const EVENT_PATH_EN = "/event/fall-2026";
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -111,13 +104,10 @@ export default async function proxy(request: NextRequest) {
     return handleI18nRouting(request);
   }
 
-  // Step 4：所有其他一般網站頁面 → Fall 2026 Event
-  // Keep the visitor's language: an /en/... page goes to the English event page
-  // (prefix-less, since English is the default locale), everything else to Chinese.
-  const isEnglish = /^\/en(\/|$)/.test(pathname);
-  const eventUrl = new URL(isEnglish ? EVENT_PATH_EN : EVENT_PATH, request.url);
-
-  return NextResponse.redirect(eventUrl);
+  // Step 4: the public website (Home, Events, Members, Achievements, Sponsors,
+  // Alumni, Contact) — language routing only. During Halloween 2026 ticket sales
+  // these all forwarded to the Halloween page; that ended after the event.
+  return handleI18nRouting(request);
 }
 
 export const config = {

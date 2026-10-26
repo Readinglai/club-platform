@@ -100,11 +100,13 @@
     "remainingSpots": "剩餘名額：",
     "registerError": "報名失敗，請稍後再試",
     "cancelError": "取消失敗，請稍後再試",
-    "networkError": "網路錯誤，請稍後再試"
+    "networkError": "網路錯誤，請稍後再試",
+    "getTickets": "購票",
+    "signupUnavailable": "目前無法報名"
   },
   "members": {
     "title": "成員介紹",
-    "subtitle": "認識我們的執委與成員",
+    "subtitle": "認識 ROCSAUT 的幹部團隊",
     "exec": "執行委員",
     "teamLead": "Team Lead",
     "general": "一般成員",
@@ -121,9 +123,17 @@
     "roleMember": "成員",
     "roleUser": "尚未入會",
     "roleSuperAdmin": "超級管理員",
-    "noMembers": "目前沒有成員記錄",
+    "noMembers": "幹部名單即將公布。",
     "major": "主修科系",
-    "rocsautYear": "ROCSAUT 資歷"
+    "rocsautYear": "ROCSAUT 資歷",
+    "position_PRESIDENT": "會長",
+    "position_VP": "副會長",
+    "position_STAFF": "幹部",
+    "dept_executive": "會長團",
+    "dept_events": "活動部",
+    "dept_marketing": "行銷部",
+    "dept_operations": "營運部",
+    "dept_social": "公關部"
   },
   "profile": {
     "title": "個人資料",

@@ -16,9 +16,10 @@ import { Prisma, type GroupPosition } from "@/generated/prisma/client";
 import { can, getAccess, type Access } from "./can";
 import { GROUP_SLUGS } from "./groups";
 import type { Permission } from "./rules";
+import { HALLOWEEN_2026_EVENT_ID } from "@/lib/events/legacy";
 
 /** Halloween 2026 runs on the frozen ticket tables and must never be deleted here. */
-const PROTECTED_EVENT_IDS = new Set(["00b84455-309c-4dba-9722-b031f9042081"]);
+const PROTECTED_EVENT_IDS = new Set([HALLOWEEN_2026_EVENT_ID]);
 
 type ApprovalRule = {
   /** Permission needed to ask for the action. */

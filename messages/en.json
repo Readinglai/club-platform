@@ -100,11 +100,13 @@
     "remainingSpots": "Remaining spots: ",
     "registerError": "Registration failed. Please try again.",
     "cancelError": "Cancellation failed. Please try again.",
-    "networkError": "Network error. Please try again."
+    "networkError": "Network error. Please try again.",
+    "getTickets": "Get tickets",
+    "signupUnavailable": "Sign-up not available right now"
   },
   "members": {
     "title": "Members",
-    "subtitle": "Meet our executives and members",
+    "subtitle": "Meet the team that runs ROCSAUT",
     "exec": "Executive Committee",
     "teamLead": "Team Lead",
     "general": "General Members",
@@ -121,9 +123,17 @@
     "roleMember": "Member",
     "roleUser": "Not a member yet",
     "roleSuperAdmin": "Super Admin",
-    "noMembers": "No members found",
+    "noMembers": "Our team will be listed here soon.",
     "major": "Major",
-    "rocsautYear": "ROCSAUT Year"
+    "rocsautYear": "ROCSAUT Year",
+    "position_PRESIDENT": "President",
+    "position_VP": "Vice President",
+    "position_STAFF": "Team member",
+    "dept_executive": "Executive",
+    "dept_events": "Events",
+    "dept_marketing": "Marketing",
+    "dept_operations": "Operations",
+    "dept_social": "Social"
   },
   "profile": {
     "title": "Profile",
