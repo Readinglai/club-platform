@@ -154,7 +154,12 @@ welcome email and Portal → Membership simply show no "Add to Wallet" button).
 
 ## 6. Decisions parked for later
 
-- Approval of event budgets: in the sheet's approval block, or in the app?
+- **Shrink images before upload.** Uploads are stored as-is (up to 5 MB each), so event
+  memory photos (30 per event) could fill the free 1 GB file storage in about a year and
+  slow pages on phones. Resize in the browser to at most 1600 px (JPEG, good quality,
+  ~200–400 KB) in `src/components/admin/ImageUpload.tsx`, which every upload box uses.
+
+- ~~Approval of event budgets: in the sheet's approval block, or in the app?~~ Decided 2026-10-25: in the sheet; the website shows it.
 - Club-wide money (opening balance, sponsorships, fees): a master sheet later.
 - Readable event addresses (`/events/<name>-<year>`).
 - Member code scheme for future school years.
