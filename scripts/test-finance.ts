@@ -1,7 +1,7 @@
 /**
  * Checks the read-only event finance views and the club summary against the
- * [DEMO] data (scripts/seed-demo-finance.ts). Budgets are kept and approved in
- * Google Sheets, so the website has no entry or approval steps left to test.
+ * [DEMO] data (scripts/seed-demo-finance.ts). Budgets are kept in Google
+ * Sheets and nothing is approved, so the website has no entry steps to test.
  *
  *   npx tsx --env-file=.env.local scripts/test-finance.ts
  */
@@ -26,12 +26,10 @@ async function main() {
   check("ski trip totals", f.totals.planned === 10100 && f.totals.spent === 10160 && f.totals.income === 9500, JSON.stringify(f.totals));
   const lift = f.byCategory.find((c) => c.category === "Activities & Tickets");
   check("budget vs actual per category", lift?.planned === 3000 && lift?.actual === 3040);
-  check("ski trip is waiting for review", f.report.status === "SUBMITTED");
 
   const club = await getClubFinanceSummary();
-  // Confirmed: 2000 + 1500 + Halloween (3200 - 2790) + New Year (1800 - 1525); pending: ski (9500 - 10160)
-  check("confirmed balance", Math.round(club.balance.confirmed) >= 4185, String(club.balance.confirmed));
-  check("pending part is the ski trip", Math.round(club.balance.pending) === -660, String(club.balance.pending));
+  // 2000 + 1500 + Halloween (3200 - 2790) + New Year (1800 - 1525) + ski (9500 - 10160)
+  check("balance counts every record", Math.round(club.balance) >= 3525, String(club.balance));
   check("spending grouped by school year", club.spendingByYear.some((y) => y.schoolYear === "2025–26" && (y.categories["Venue"] ?? 0) >= 1800));
 
   // Who can see an event's money

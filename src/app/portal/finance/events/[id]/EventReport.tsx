@@ -4,20 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { SheetData } from "@/lib/finance/budget-sheet";
 import { sheetCategory } from "@/lib/finance/categories";
-import { BarList, cad, PlannedVsActual, StatTile, StatusBadge } from "../../charts";
+import { BarList, cad, PlannedVsActual, StatTile } from "../../charts";
 
 const PRIMARY = "#1a2744";
 
 type Finance = {
   event: { id: string; title: string; startAt: string; location: string | null };
-  report: {
-    status: "OPEN" | "SUBMITTED" | "APPROVED" | "RETURNED";
-    submittedAt: string | null;
-    submittedBy: string | null;
-    reviewedAt: string | null;
-    reviewedBy: string | null;
-    reviewNote: string | null;
-  };
   sheet: { id: string; url: string; syncedAt: string | null; error: string | null; data: SheetData | null } | null;
   totals: { planned: number; spent: number; income: number; net: number };
   byCategory: Array<{ category: string; planned: number; actual: number }>;
@@ -46,7 +38,7 @@ async function call(url: string, method: string, body?: unknown) {
   return data;
 }
 
-/** One event's money. Budgets are written and approved in the event's Google Sheet; this page reads it. */
+/** One event's money. Budgets are written in the event's Google Sheet; this page reads it. */
 export default function EventReport({ eventId }: { eventId: string }) {
   const t = useTranslations("portal.eventReport");
   const { day } = useDates();
@@ -78,12 +70,6 @@ export default function EventReport({ eventId }: { eventId: string }) {
           {day(data.event.startAt)}
           {data.event.location ? ` · ${data.event.location}` : ""}
         </p>
-        <div className="mt-3"><StatusBadge status={data.report.status} /></div>
-        {data.report.reviewNote && (
-          <p className="mt-2 rounded-lg bg-white px-3 py-2 text-sm text-gray-700 shadow-sm">
-            {data.report.reviewedBy ? `${data.report.reviewedBy}: ` : ""}“{data.report.reviewNote}”
-          </p>
-        )}
       </div>
 
       <SheetPanel finance={data} base={base} onChanged={load} />
@@ -200,7 +186,7 @@ function SheetPanel({ finance, base, onChanged }: { finance: Finance; base: stri
   );
 }
 
-/** What the last sync read: cap, plan vs actual, allocation, approval and lines. */
+/** What the last sync read: cap, plan vs actual, allocation and lines. */
 function SheetAnalytics({ data }: { data: SheetData }) {
   const t = useTranslations("portal.eventReport");
   const plannedPnl = data.planned.revenue.total - data.planned.expense.total;
@@ -262,30 +248,6 @@ function SheetAnalytics({ data }: { data: SheetData }) {
           })}
           label={t("allocation")}
         />
-      </section>
-
-      <section className="rounded-2xl bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-semibold" style={{ color: PRIMARY }}>{t("approval")}</h2>
-        <p className="mt-1 text-sm text-gray-700">
-          {t("approvalStatus")}: <span className="font-medium">{data.approval.status ?? "—"}</span>
-        </p>
-        {data.approval.lines.length > 0 ? (
-          <ul className="mt-3 divide-y divide-gray-100 text-sm">
-            {data.approval.lines.map((l, i) => (
-              <li key={i} className="flex flex-wrap justify-between gap-2 py-2">
-                <span>
-                  <span className="font-medium text-gray-900">{l.position || "—"}</span> <span className="text-gray-600">{l.name}</span>
-                </span>
-                <span className="text-gray-600">
-                  {l.date}
-                  <span className="ml-3">{l.approved === true ? `✓ ${t("approved")}` : l.approved === false ? `✗ ${t("notApproved")}` : "—"}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mt-2 text-sm text-gray-500">{t("noApprovalLines")}</p>
-        )}
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">

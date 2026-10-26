@@ -126,11 +126,6 @@ export type Group = Prisma.GroupModel
  */
 export type GroupMember = Prisma.GroupMemberModel
 /**
- * Model ApprovalRequest
- * A destructive action waiting for a second person (rules live in code).
- */
-export type ApprovalRequest = Prisma.ApprovalRequestModel
-/**
  * Model Discussion
  * 
  */

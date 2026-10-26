@@ -71,7 +71,6 @@ export const ModelName = {
   Membership: 'Membership',
   Group: 'Group',
   GroupMember: 'GroupMember',
-  ApprovalRequest: 'ApprovalRequest',
   Discussion: 'Discussion',
   Comment: 'Comment',
   Announcement: 'Announcement',
@@ -285,12 +284,6 @@ export const EventSettingsScalarFieldEnum = {
   checkInEnabled: 'checkInEnabled',
   budgetEnabled: 'budgetEnabled',
   dashboardEnabled: 'dashboardEnabled',
-  financeStatus: 'financeStatus',
-  financeSubmittedAt: 'financeSubmittedAt',
-  financeSubmittedById: 'financeSubmittedById',
-  financeReviewedAt: 'financeReviewedAt',
-  financeReviewedById: 'financeReviewedById',
-  financeReviewNote: 'financeReviewNote',
   budgetSheetId: 'budgetSheetId',
   budgetSheetConnectedBy: 'budgetSheetConnectedBy',
   budgetSheetSyncedAt: 'budgetSheetSyncedAt',
@@ -448,24 +441,6 @@ export const GroupMemberScalarFieldEnum = {
 } as const
 
 export type GroupMemberScalarFieldEnum = (typeof GroupMemberScalarFieldEnum)[keyof typeof GroupMemberScalarFieldEnum]
-
-
-export const ApprovalRequestScalarFieldEnum = {
-  id: 'id',
-  action: 'action',
-  targetId: 'targetId',
-  details: 'details',
-  requestedById: 'requestedById',
-  approverPosition: 'approverPosition',
-  status: 'status',
-  decidedById: 'decidedById',
-  decidedAt: 'decidedAt',
-  note: 'note',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ApprovalRequestScalarFieldEnum = (typeof ApprovalRequestScalarFieldEnum)[keyof typeof ApprovalRequestScalarFieldEnum]
 
 
 export const DiscussionScalarFieldEnum = {
@@ -759,14 +734,6 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-export const NullableJsonNullValueInput = {
-  DbNull: DbNull,
-  JsonNull: JsonNull
-} as const
-
-export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -781,13 +748,4 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
-export const JsonNullValueFilter = {
-  DbNull: DbNull,
-  JsonNull: JsonNull,
-  AnyNull: AnyNull
-} as const
-
-export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

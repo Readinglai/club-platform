@@ -5,12 +5,11 @@
  *   npx tsx --env-file=.env.local scripts/seed-demo-finance.ts            # create (skips what exists)
  *   npx tsx --env-file=.env.local scripts/seed-demo-finance.ts --remove   # remove all [DEMO] finance data
  *
- * Needs the test users from scripts/test-access-rules.ts (events-vp, event-staff,
- * finance-staff @test.rocsaut.invalid) as the people who entered/reviewed things.
+ * Needs the test users from scripts/test-access-rules.ts (event-staff,
+ * finance-staff @test.rocsaut.invalid) as the people who entered things.
  */
 import { db } from "../src/lib/db";
 import { eventGroupSlug, GROUP_SLUGS } from "../src/lib/access/groups";
-import type { FinanceReportStatus } from "../src/generated/prisma/client";
 
 const TAG = "[DEMO]";
 
@@ -22,7 +21,6 @@ const EVENTS: Array<{
   /** UTC instants for Toronto local times. */
   startAt: string;
   endAt: string;
-  status: FinanceReportStatus;
   income: Array<{ category: string; description: string; amount: number; date: string }>;
   lines: Line[];
 }> = [
@@ -31,7 +29,6 @@ const EVENTS: Array<{
     location: "Toronto",
     startAt: "2025-10-15T23:00:00Z", // Oct 15, 7:00 PM EDT
     endAt: "2025-10-16T03:30:00Z",
-    status: "APPROVED",
     income: [{ category: "Ticket sales", description: "Ticket sales (128 tickets)", amount: 3200, date: "2025-10-15" }],
     lines: [
       { category: "Venue", item: "Venue rental, 4.5 hours", planned: 1200, actual: 1200 },
@@ -45,7 +42,6 @@ const EVENTS: Array<{
     location: "Toronto",
     startAt: "2026-02-09T23:00:00Z", // Feb 9, 6:00 PM EST
     endAt: "2026-02-10T03:00:00Z",
-    status: "APPROVED",
     income: [{ category: "Ticket sales", description: "Ticket sales (90 tickets)", amount: 1800, date: "2026-02-09" }],
     lines: [
       { category: "Venue", item: "Hall rental", planned: 600, actual: 600 },
@@ -58,7 +54,6 @@ const EVENTS: Array<{
     location: "Blue Mountain, ON",
     startAt: "2026-02-18T12:00:00Z", // Feb 18, 7:00 AM EST
     endAt: "2026-02-21T01:00:00Z", // Feb 20, 8:00 PM EST
-    status: "SUBMITTED",
     income: [{ category: "Trip fees", description: "Trip fees (38 × $250)", amount: 9500, date: "2026-02-01" }],
     lines: [
       { category: "Transportation", item: "Coach bus, 56 seats, return", qty: 1, unit: 2400, planned: 2400, actual: 2400 },
@@ -91,7 +86,7 @@ async function remove() {
 }
 
 async function seed() {
-  const [eventsVp, eventStaff, financeStaff] = await Promise.all(["events-vp", "event-staff", "finance-staff"].map(testUser));
+  const [eventStaff, financeStaff] = await Promise.all(["event-staff", "finance-staff"].map(testUser));
   const eventsDept = await db.group.findUniqueOrThrow({ where: { slug: GROUP_SLUGS.events } });
 
   for (const c of CLUB_WIDE) {
@@ -116,21 +111,7 @@ async function seed() {
     });
     await db.groupMember.create({ data: { groupId: team.id, userId: eventStaff.id, position: "STAFF" } });
 
-    const submitted = e.status !== "OPEN";
-    const reviewed = e.status === "APPROVED" || e.status === "RETURNED";
-    const end = new Date(e.endAt);
-    await db.eventSettings.create({
-      data: {
-        eventId: event.id,
-        budgetEnabled: true,
-        financeStatus: e.status,
-        financeSubmittedAt: submitted ? new Date(end.getTime() + 5 * 864e5) : null,
-        financeSubmittedById: submitted ? eventStaff.id : null,
-        financeReviewedAt: reviewed ? new Date(end.getTime() + 9 * 864e5) : null,
-        financeReviewedById: reviewed ? eventsVp.id : null,
-        financeReviewNote: reviewed ? "Checked against receipts." : null,
-      },
-    });
+    await db.eventSettings.create({ data: { eventId: event.id, budgetEnabled: true } });
 
     await db.eventBudgetLine.createMany({
       data: e.lines.map((l, i) => ({
@@ -169,7 +150,7 @@ async function seed() {
         })),
       ],
     });
-    console.log(`created  ${e.title} (${e.status})`);
+    console.log(`created  ${e.title}`);
   }
 }
 

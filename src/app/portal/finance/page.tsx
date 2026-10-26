@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/access/current-user";
 import { can, getAccess } from "@/lib/access/can";
 import { eventFinanceAccess, getClubFinanceSummary } from "@/lib/finance/reports";
-import { BarList, cad, StatTile, StatusBadge } from "./charts";
+import { BarList, cad, StatTile } from "./charts";
 
 const PRIMARY = "#1a2744";
 
@@ -17,11 +17,11 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
 
   const canViewClub = can(await getAccess(user.id), "finance.view");
 
-  // Events whose finances this person can work on or review.
+  // Events whose finances this person can see.
   const teamEvents = await db.event.findMany({
     where: { team: { isNot: null } },
     orderBy: { startAt: "desc" },
-    select: { id: true, title: true, startAt: true, settings: { select: { financeStatus: true } } },
+    select: { id: true, title: true, startAt: true },
   });
   const myEvents = [];
   for (const e of teamEvents) if ((await eventFinanceAccess(user.id, e.id)).view) myEvents.push(e);
@@ -52,12 +52,7 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
         {summary && (
           <>
             <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <StatTile label={t("confirmed")} value={cad(summary.balance.confirmed)} hint={t("confirmedHint")} />
-              <StatTile
-                label={t("including")}
-                value={cad(summary.balance.includingPending)}
-                hint={t("notYetApproved", { amount: `${summary.balance.pending >= 0 ? "+" : ""}${cad(summary.balance.pending)}` })}
-              />
+              <StatTile label={t("balance")} value={cad(summary.balance)} hint={t("balanceHint")} />
             </section>
 
             <section className="rounded-2xl bg-white p-5 shadow-sm">
@@ -100,7 +95,6 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
                         {result && ` · ${t("result", { income: cad(result.income), spent: cad(result.spent), net: cad(result.income - result.spent) })}`}
                       </span>
                     </span>
-                    <StatusBadge status={e.settings?.financeStatus ?? "OPEN"} />
                   </Link>
                 </li>
               );

@@ -4,13 +4,11 @@
  * Nothing here is stored: budget vs actual, balances and per-year charts are
  * calculated from EventBudgetLine (planned) and FinanceRecord (actual).
  *
- * The website only shows money; budgets are kept in each event's Google
- * Sheet, which is also where they are approved. Report statuses already
- * recorded (e.g. the [DEMO] events) are shown as they are.
+ * The website only shows money; budgets are planned in each event's Google
+ * Sheet. Nothing is approved here or in the sheet.
  */
 
 import { db } from "@/lib/db";
-import type { FinanceReportStatus } from "@/generated/prisma/client";
 import { can, getAccess } from "@/lib/access/can";
 import { termFor } from "@/lib/membership/term";
 import { chartCategory } from "./categories";
@@ -32,7 +30,7 @@ export async function eventFinanceAccess(userId: string, eventId: string) {
     target
       ? can(access, permission, target)
       : access.globalGrants.has("*") || access.globalGrants.has(permission);
-  const connect = scoped("budget.edit") || scoped("expense.approve");
+  const connect = scoped("budget.edit");
   return { view: connect || can(access, "finance.view"), connect };
 }
 
@@ -50,12 +48,6 @@ export async function getEventFinance(eventId: string) {
       location: true,
       settings: {
         select: {
-          financeStatus: true,
-          financeSubmittedAt: true,
-          financeReviewedAt: true,
-          financeReviewNote: true,
-          financeSubmittedBy: { select: { name: true } },
-          financeReviewedBy: { select: { name: true } },
           budgetSheetId: true,
           budgetSheetSyncedAt: true,
           budgetSheetSyncError: true,
@@ -93,14 +85,6 @@ export async function getEventFinance(eventId: string) {
 
   return {
     event: { id: event.id, title: event.title, startAt: event.startAt, endAt: event.endAt, location: event.location },
-    report: {
-      status: event.settings?.financeStatus ?? "OPEN",
-      submittedAt: event.settings?.financeSubmittedAt ?? null,
-      submittedBy: event.settings?.financeSubmittedBy?.name ?? null,
-      reviewedAt: event.settings?.financeReviewedAt ?? null,
-      reviewedBy: event.settings?.financeReviewedBy?.name ?? null,
-      reviewNote: event.settings?.financeReviewNote ?? null,
-    },
     sheet: event.settings?.budgetSheetId
       ? {
           id: event.settings.budgetSheetId,
@@ -136,7 +120,7 @@ export async function getEventFinance(eventId: string) {
   };
 }
 
-/** Club balance and spending history. "Confirmed" = club-wide entries + approved events. */
+/** Club balance (all recorded income minus costs) and spending history. */
 export async function getClubFinanceSummary() {
   const records = await db.financeRecord.findMany({
     select: {
@@ -145,21 +129,17 @@ export async function getClubFinanceSummary() {
       category: true,
       date: true,
       eventId: true,
-      event: { select: { id: true, title: true, startAt: true, settings: { select: { financeStatus: true } } } },
+      event: { select: { id: true, title: true, startAt: true } },
     },
     orderBy: { date: "asc" },
   });
 
-  let confirmed = 0;
-  let pending = 0;
+  let balance = 0;
   const byYear = new Map<number, Map<string, number>>();
-  const byEvent = new Map<string, { id: string; title: string; startAt: Date; status: FinanceReportStatus; income: number; spent: number }>();
+  const byEvent = new Map<string, { id: string; title: string; startAt: Date; income: number; spent: number }>();
 
   for (const r of records) {
-    const signed = r.type === "INCOME" ? num(r.amount) : -num(r.amount);
-    const status = r.event ? r.event.settings?.financeStatus ?? "OPEN" : null;
-    if (status === null || status === "APPROVED") confirmed += signed;
-    else pending += signed;
+    balance += r.type === "INCOME" ? num(r.amount) : -num(r.amount);
 
     if (r.type === "EXPENSE") {
       const year = termFor(r.date).startYear;
@@ -174,7 +154,6 @@ export async function getClubFinanceSummary() {
         id: r.event.id,
         title: r.event.title,
         startAt: r.event.startAt,
-        status: status ?? "OPEN",
         income: 0,
         spent: 0,
       };
@@ -185,7 +164,7 @@ export async function getClubFinanceSummary() {
   }
 
   return {
-    balance: { confirmed, includingPending: confirmed + pending, pending },
+    balance,
     spendingByYear: [...byYear.entries()]
       .sort(([a], [b]) => a - b)
       .map(([startYear, cats]) => ({

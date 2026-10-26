@@ -46,21 +46,20 @@ async function main() {
 
   const cases: Array<[string, string, Permission, { groupId: string; label: string } | undefined, boolean]> = [
     ["president", president.id, "finance.view", undefined, true],
-    ["president", president.id, "approvals.decide", undefined, true],
+    ["president", president.id, "events.delete", { groupId: team.id, label: "event team" }, true],
     ["president", president.id, "events.manage", { groupId: team.id, label: "event team" }, true],
     ["events VP", eventsVp.id, "events.create", undefined, true],
     ["events VP", eventsVp.id, "events.manage", { groupId: team.id, label: "event team" }, true],
-    ["events VP", eventsVp.id, "expense.approve", { groupId: team.id, label: "event team" }, true],
+    ["events VP", eventsVp.id, "events.delete", { groupId: team.id, label: "event team" }, true],
     ["events VP", eventsVp.id, "finance.view", undefined, false],
     ["events VP", eventsVp.id, "groups.manage", { groupId: marketing.id, label: "Marketing" }, false],
-    ["events VP", eventsVp.id, "approvals.decide", undefined, false],
+    ["ops VP", opsVp.id, "events.delete", { groupId: team.id, label: "event team" }, false],
     ["ops VP", opsVp.id, "finance.view", undefined, true],
     ["ops VP", opsVp.id, "budget.edit", undefined, true],
     ["ops VP", opsVp.id, "groups.manage", { groupId: finance.id, label: "Finance" }, true],
     ["ops VP", opsVp.id, "events.manage", { groupId: team.id, label: "event team" }, false],
     ["finance staff", financeStaff.id, "finance.view", undefined, true],
     ["finance staff", financeStaff.id, "budget.edit", undefined, false],
-    ["event staff", eventStaff.id, "expense.submit", { groupId: team.id, label: "event team" }, true],
     ["event staff", eventStaff.id, "events.manage", { groupId: team.id, label: "event team" }, false],
     ["events VP", eventsVp.id, "members.view", undefined, false],
     ["ops VP", opsVp.id, "members.view", { groupId: marketing.id, label: "Marketing" }, true],
@@ -80,7 +79,7 @@ async function main() {
     ["ops VP", opsVp.id, "memories.manage", undefined, false],
     ["event staff", eventStaff.id, "memories.manage", undefined, false],
     ["event staff", eventStaff.id, "events.checkin", { groupId: team.id, label: "event team" }, true],
-    ["event staff", eventStaff.id, "expense.approve", { groupId: team.id, label: "event team" }, false],
+    ["event staff", eventStaff.id, "events.delete", { groupId: team.id, label: "event team" }, false],
     ["event staff", eventStaff.id, "tasks.use", undefined, true],
     ["finance staff", financeStaff.id, "tasks.use", undefined, true],
     ["event staff", eventStaff.id, "budget.edit", { groupId: team.id, label: "event team" }, true],
@@ -92,7 +91,7 @@ async function main() {
     ["member only", nobody.id, "tasks.use", undefined, false],
     ["member only", nobody.id, "uploads.create", undefined, false],
     ["member only", nobody.id, "finance.view", undefined, false],
-    ["member only", nobody.id, "expense.submit", { groupId: team.id, label: "event team" }, false],
+    ["member only", nobody.id, "events.delete", { groupId: team.id, label: "event team" }, false],
   ];
 
   let failed = 0;

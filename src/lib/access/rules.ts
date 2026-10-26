@@ -24,14 +24,12 @@ export const PERMISSIONS = [
   "finance.edit",
   /** Edit budgets (club-wide, or an event's budget and costs when scoped to its team). */
   "budget.edit",
-  /** Submit an event's finance report for review. */
-  "expense.submit",
-  /** Review (approve or return) an event's finance report. */
-  "expense.approve",
   /** Create new events. */
   "events.create",
   /** Edit an event, its tickets and settings. */
   "events.manage",
+  /** Delete an event that has no tickets, orders or money. */
+  "events.delete",
   /** See door check-in and the live dashboard. */
   "events.checkin",
   /** View member and membership records. */
@@ -50,8 +48,6 @@ export const PERMISSIONS = [
   "reports.view",
   /** Assign people to groups and positions. */
   "groups.manage",
-  /** Decide approval requests (e.g. deleting an event). */
-  "approvals.decide",
   /** Tasks, task groups, discussions and votes (staff only). */
   "tasks.use",
   /** Upload images beyond one's own profile photo. */
@@ -92,17 +88,15 @@ const RULES: Rule[] = [
     { permission: "reports.view" as const, heldIn: dept, minPosition: "VP" as const },
   ]),
 
-  // Events: the VP creates and runs events and reviews each event's finances.
+  // Events: the VP creates, runs and deletes events and sees each event's finances.
   { permission: "events.create", heldIn: G.events, minPosition: "VP" },
   { permission: "events.manage", heldIn: G.events, minPosition: "VP" },
   { permission: "budget.edit", heldIn: G.events, minPosition: "VP" },
-  { permission: "expense.approve", heldIn: G.events, minPosition: "VP" },
+  { permission: "events.delete", heldIn: G.events, minPosition: "VP" },
   { permission: "events.checkin", heldIn: G.events, minPosition: "STAFF" },
 
-  // Event teams run their own event's budget and costs, and submit the
-  // finance report once; they also work the door.
+  // Event teams connect their own event's budget sheet and work the door.
   { permission: "budget.edit", heldIn: `${G.events}/*`, minPosition: "STAFF" },
-  { permission: "expense.submit", heldIn: `${G.events}/*`, minPosition: "STAFF" },
   { permission: "events.checkin", heldIn: `${G.events}/*`, minPosition: "STAFF" },
 
   // Operations: the VP sees all members and the finances and edits budgets;

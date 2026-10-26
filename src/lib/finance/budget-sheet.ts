@@ -3,9 +3,9 @@
  * from its two tabs' cells. Sections are found by their labels, not by fixed
  * cell addresses, so teams can insert rows without breaking the sync.
  *
- * Financial Overview: event info, budget cap, allocation by category, the
- *   approval block (Position / Name / Date / Approved? … Approval Status) and
- *   the "Summary for Master Budget" row.
+ * Financial Overview: event info, budget cap, allocation by category and the
+ *   "Summary for Master Budget" row. The template's approval block is ignored:
+ *   budgets aren't approved.
  * Event Budget (Detailed): REVENUE and EXPENSES lines, planned on the left
  *   (columns A–G) and actual on the right (columns I–O).
  *
@@ -17,14 +17,11 @@ export type Grid = Cell[][];
 
 export type BudgetLine = { item: string; quantity: number | null; unitPrice: number | null; total: number; note: string | null };
 export type Section = { lines: BudgetLine[]; total: number };
-export type ApprovalLine = { position: string; name: string; date: string; approved: boolean | null };
-export type ApprovalState = "APPROVED" | "RETURNED" | "OPEN";
 
 export type ParsedBudget = {
   event: { name: string | null; date: string | null; lead: string | null; preparedBy: string | null; lastUpdated: string | null };
   cap: number | null;
   allocation: Array<{ label: string; amount: number; note: string | null }>;
-  approval: { status: string | null; state: ApprovalState; lines: ApprovalLine[] };
   planned: { revenue: Section; expense: Section };
   actual: { revenue: Section; expense: Section };
   summary: Record<string, string | number | null> | null;
@@ -79,26 +76,6 @@ function rightOf(g: Grid, at: { r: number; c: number }, span = 4): Cell {
   return null;
 }
 
-function approvedFlag(v: Cell): boolean | null {
-  if (v === true) return true;
-  if (v === false) return false;
-  const s = norm(v);
-  if (!s) return null;
-  if (/^(true|yes|y|✓|✔|✅|approved)$/.test(s) || s.includes("✅") || s.includes("✓")) return true;
-  if (/^(false|no|n|✗|✘|❌|rejected)$/.test(s) || s.includes("❌")) return false;
-  return null;
-}
-
-/** The overall state from the sheet's "Approval Status" text. */
-export function approvalState(status: string | null): ApprovalState {
-  const s = norm(status);
-  if (!s) return "OPEN";
-  if (/(not|un|pending|waiting|in progress)/.test(s)) return "OPEN";
-  if (/(reject|return|declin|denied)/.test(s)) return "RETURNED";
-  if (/approv|✅|✓/.test(s)) return "APPROVED";
-  return "OPEN";
-}
-
 function parseOverview(g: Grid, warnings: string[]) {
   const info = (label: string) => {
     const at = find(g, label);
@@ -119,6 +96,7 @@ function parseOverview(g: Grid, warnings: string[]) {
   // Allocation: the rows under "Budget Allocation by Category", until a blank label.
   const allocation: ParsedBudget["allocation"] = [];
   const allocAt = find(g, "Budget Allocation by Category");
+  // The template's approval block sits to the right of the allocation; stop before it.
   const approvalHeader = find(g, "Approval");
   const noteAt = allocAt ? find(g, "Note", allocAt) : null;
   if (allocAt) {
@@ -139,37 +117,6 @@ function parseOverview(g: Grid, warnings: string[]) {
     warnings.push('Couldn\'t find "Budget Allocation by Category" on the Financial Overview tab.');
   }
 
-  // Approval: a header row with Position / Name / Date / Approved?, lines below
-  // it, and "Approval Status" with its value after them.
-  const lines: ApprovalLine[] = [];
-  let status: string | null = null;
-  const posAt = find(g, "Position");
-  if (posAt) {
-    const col = (label: string) => {
-      for (let c = posAt.c; c < width(g); c++) if (norm(cell(g, posAt.r, c)) === norm(label)) return c;
-      return -1;
-    };
-    const nameCol = col("Name");
-    const dateCol = col("Date");
-    const approvedCol = col("Approved?");
-    const statusAt = find(g, "Approval Status", { r: posAt.r + 1, c: 0 });
-    const lastRow = statusAt ? statusAt.r : posAt.r + 6;
-    for (let r = posAt.r + 1; r < lastRow; r++) {
-      const position = text(cell(g, r, posAt.c)) ?? "";
-      const name = nameCol >= 0 ? text(cell(g, r, nameCol)) ?? "" : "";
-      if (!position && !name) continue;
-      lines.push({
-        position,
-        name,
-        date: dateCol >= 0 ? text(cell(g, r, dateCol)) ?? "" : "",
-        approved: approvedCol >= 0 ? approvedFlag(cell(g, r, approvedCol)) : null,
-      });
-    }
-    if (statusAt) status = text(rightOf(g, statusAt, 4));
-  } else {
-    warnings.push("Couldn't find the approval block (Position / Name / Date / Approved?).");
-  }
-
   // "Summary for Master Budget": a header row, then the first row with values.
   let summary: ParsedBudget["summary"] = null;
   for (let r = 0; r < g.length; r++) {
@@ -187,9 +134,7 @@ function parseOverview(g: Grid, warnings: string[]) {
     }
   }
 
-  const approvalStatus = status;
-  const state = approvalStatus ? approvalState(approvalStatus) : lines.length && lines.every((l) => l.approved === true) ? "APPROVED" : "OPEN";
-  return { event, cap, allocation, approval: { status: approvalStatus, state, lines }, summary };
+  return { event, cap, allocation, summary };
 }
 
 /** One REVENUE or EXPENSES block, starting at its header cell. */

@@ -417,7 +417,6 @@ export const ModelName = {
   Membership: 'Membership',
   Group: 'Group',
   GroupMember: 'GroupMember',
-  ApprovalRequest: 'ApprovalRequest',
   Discussion: 'Discussion',
   Comment: 'Comment',
   Announcement: 'Announcement',
@@ -456,7 +455,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "department" | "event" | "eventMemoryPhoto" | "registration" | "ticketTier" | "eventTicket" | "memberRedemption" | "eventSettings" | "eventBudgetLine" | "ticketType" | "order" | "ticket" | "profile" | "membership" | "group" | "groupMember" | "approvalRequest" | "discussion" | "comment" | "announcement" | "announcementRead" | "taskGroup" | "taskGroupMember" | "task" | "taskAssignee" | "taskView" | "vote" | "voteOption" | "voteResponse" | "sponsor" | "sponsorHistory" | "siteConfig" | "achievement" | "alumni" | "financeRecord" | "budget" | "featureFlag" | "emailTemplate" | "pushSubscription" | "rOCSAUT_Membership_Info"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "department" | "event" | "eventMemoryPhoto" | "registration" | "ticketTier" | "eventTicket" | "memberRedemption" | "eventSettings" | "eventBudgetLine" | "ticketType" | "order" | "ticket" | "profile" | "membership" | "group" | "groupMember" | "discussion" | "comment" | "announcement" | "announcementRead" | "taskGroup" | "taskGroupMember" | "task" | "taskAssignee" | "taskView" | "vote" | "voteOption" | "voteResponse" | "sponsor" | "sponsorHistory" | "siteConfig" | "achievement" | "alumni" | "financeRecord" | "budget" | "featureFlag" | "emailTemplate" | "pushSubscription" | "rOCSAUT_Membership_Info"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1937,80 +1936,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.GroupMemberCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.GroupMemberCountAggregateOutputType> | number
-        }
-      }
-    }
-    ApprovalRequest: {
-      payload: Prisma.$ApprovalRequestPayload<ExtArgs>
-      fields: Prisma.ApprovalRequestFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.ApprovalRequestFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.ApprovalRequestFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>
-        }
-        findFirst: {
-          args: Prisma.ApprovalRequestFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.ApprovalRequestFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>
-        }
-        findMany: {
-          args: Prisma.ApprovalRequestFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>[]
-        }
-        create: {
-          args: Prisma.ApprovalRequestCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>
-        }
-        createMany: {
-          args: Prisma.ApprovalRequestCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.ApprovalRequestCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>[]
-        }
-        delete: {
-          args: Prisma.ApprovalRequestDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>
-        }
-        update: {
-          args: Prisma.ApprovalRequestUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>
-        }
-        deleteMany: {
-          args: Prisma.ApprovalRequestDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.ApprovalRequestUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.ApprovalRequestUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>[]
-        }
-        upsert: {
-          args: Prisma.ApprovalRequestUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>
-        }
-        aggregate: {
-          args: Prisma.ApprovalRequestAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateApprovalRequest>
-        }
-        groupBy: {
-          args: Prisma.ApprovalRequestGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ApprovalRequestGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.ApprovalRequestCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ApprovalRequestCountAggregateOutputType> | number
         }
       }
     }
@@ -3927,12 +3852,6 @@ export const EventSettingsScalarFieldEnum = {
   checkInEnabled: 'checkInEnabled',
   budgetEnabled: 'budgetEnabled',
   dashboardEnabled: 'dashboardEnabled',
-  financeStatus: 'financeStatus',
-  financeSubmittedAt: 'financeSubmittedAt',
-  financeSubmittedById: 'financeSubmittedById',
-  financeReviewedAt: 'financeReviewedAt',
-  financeReviewedById: 'financeReviewedById',
-  financeReviewNote: 'financeReviewNote',
   budgetSheetId: 'budgetSheetId',
   budgetSheetConnectedBy: 'budgetSheetConnectedBy',
   budgetSheetSyncedAt: 'budgetSheetSyncedAt',
@@ -4090,24 +4009,6 @@ export const GroupMemberScalarFieldEnum = {
 } as const
 
 export type GroupMemberScalarFieldEnum = (typeof GroupMemberScalarFieldEnum)[keyof typeof GroupMemberScalarFieldEnum]
-
-
-export const ApprovalRequestScalarFieldEnum = {
-  id: 'id',
-  action: 'action',
-  targetId: 'targetId',
-  details: 'details',
-  requestedById: 'requestedById',
-  approverPosition: 'approverPosition',
-  status: 'status',
-  decidedById: 'decidedById',
-  decidedAt: 'decidedAt',
-  note: 'note',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ApprovalRequestScalarFieldEnum = (typeof ApprovalRequestScalarFieldEnum)[keyof typeof ApprovalRequestScalarFieldEnum]
 
 
 export const DiscussionScalarFieldEnum = {
@@ -4401,14 +4302,6 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-export const NullableJsonNullValueInput = {
-  DbNull: DbNull,
-  JsonNull: JsonNull
-} as const
-
-export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -4423,15 +4316,6 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
-export const JsonNullValueFilter = {
-  DbNull: DbNull,
-  JsonNull: JsonNull,
-  AnyNull: AnyNull
-} as const
-
-export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -4532,20 +4416,6 @@ export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMo
 
 
 /**
- * Reference to a field of type 'FinanceReportStatus'
- */
-export type EnumFinanceReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceReportStatus'>
-    
-
-
-/**
- * Reference to a field of type 'FinanceReportStatus[]'
- */
-export type ListEnumFinanceReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceReportStatus[]'>
-    
-
-
-/**
  * Reference to a field of type 'OrderStatus'
  */
 export type EnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus'>
@@ -4612,34 +4482,6 @@ export type EnumGroupPositionFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'GroupPosition[]'
  */
 export type ListEnumGroupPositionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GroupPosition[]'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-/**
- * Reference to a field of type 'ApprovalStatus'
- */
-export type EnumApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalStatus'>
-    
-
-
-/**
- * Reference to a field of type 'ApprovalStatus[]'
- */
-export type ListEnumApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalStatus[]'>
     
 
 
@@ -4883,7 +4725,6 @@ export type GlobalOmitConfig = {
   membership?: Prisma.MembershipOmit
   group?: Prisma.GroupOmit
   groupMember?: Prisma.GroupMemberOmit
-  approvalRequest?: Prisma.ApprovalRequestOmit
   discussion?: Prisma.DiscussionOmit
   comment?: Prisma.CommentOmit
   announcement?: Prisma.AnnouncementOmit

@@ -90,26 +90,6 @@ export function PlannedVsActual({ rows }: { rows: Array<{ category: string; plan
   );
 }
 
-const STATUS: Record<string, { icon: string; color: string }> = {
-  OPEN: { icon: "✎", color: "#52514e" },
-  SUBMITTED: { icon: "⏳", color: "#8a5a00" },
-  APPROVED: { icon: "✓", color: "#087208" },
-  RETURNED: { icon: "↩", color: "#b42318" },
-};
-
-/** Report status: always icon + words, never colour alone. */
-export function StatusBadge({ status }: { status: string }) {
-  const t = useTranslations("portal.financeCharts");
-  const key = STATUS[status] ? status : "OPEN";
-  const s = STATUS[key];
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium" style={{ color: s.color, borderColor: "#d6d4cc" }}>
-      <span aria-hidden="true">{s.icon}</span>
-      {t(`status${key}`)}
-    </span>
-  );
-}
-
 export function StatTile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <div className="rounded-xl bg-white p-4 shadow-sm" style={{ border: "1px solid #e5e7eb" }}>

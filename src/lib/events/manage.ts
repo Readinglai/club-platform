@@ -5,6 +5,8 @@
  *   EventSettings and its own team group under Events.
  * - Edit details, modules, publishing and tiers: events.manage on the event's
  *   team (Events VP, President). Event team staff can't change these.
+ * - Delete: events.delete (Events VP, President), only while nothing would be
+ *   lost: no tickets, orders, registrations, money or discussion.
  * Tiers are never deleted once used; they're switched off (active = false).
  */
 
@@ -12,6 +14,7 @@ import { db } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
 import { can, getAccess } from "@/lib/access/can";
 import { eventGroupSlug, GROUP_SLUGS } from "@/lib/access/groups";
+import { HALLOWEEN_2026_EVENT_ID } from "./legacy";
 import { isValidTimeZone, zonedInputToDate } from "./time";
 
 type Outcome<T = undefined> = { ok: true; value?: T } | { ok: false; status: number; message: string };
@@ -38,6 +41,13 @@ export async function canManageEvent(userId: string, eventId: string) {
   const access = await getAccess(userId);
   if (group) return can(access, "events.manage", { groupId: group.id });
   return access.globalGrants.has("*") || access.globalGrants.has("events.manage");
+}
+
+export async function canDeleteEvent(userId: string, eventId: string) {
+  const group = await db.group.findUnique({ where: { eventId }, select: { id: true } });
+  const access = await getAccess(userId);
+  if (group) return can(access, "events.delete", { groupId: group.id });
+  return access.globalGrants.has("*") || access.globalGrants.has("events.delete");
 }
 
 /** Shared validation for event details; times are local to the event's zone. */
@@ -113,6 +123,41 @@ export async function updateEvent(actorId: string, eventId: string, raw: Record<
 export async function setPublished(actorId: string, eventId: string, published: boolean): Promise<Outcome> {
   if (!(await canManageEvent(actorId, eventId))) return fail(403, "You can't edit this event.");
   await db.event.update({ where: { id: eventId }, data: { published } });
+  return { ok: true };
+}
+
+/**
+ * Delete an event that has nothing worth keeping. Its settings, ticket tiers
+ * and memories go with it; its team group is archived, not deleted.
+ * Halloween 2026 runs on the frozen ticket tables and can never be deleted.
+ */
+export async function deleteEvent(actorId: string, eventId: string): Promise<Outcome> {
+  if (!(await canDeleteEvent(actorId, eventId))) return fail(403, "Only the Events VP or President can delete events.");
+  if (eventId === HALLOWEEN_2026_EVENT_ID) return fail(400, "This event is protected and can't be deleted.");
+  const event = await db.event.findUnique({ where: { id: eventId }, select: { id: true } });
+  if (!event) return fail(404, "Event not found.");
+
+  const [tickets, orders, legacyTickets, registrations, financeRecords, budgetLines, discussions] = await Promise.all([
+    db.ticket.count({ where: { eventId } }),
+    db.order.count({ where: { eventId } }),
+    db.eventTicket.count({ where: { eventId } }),
+    db.registration.count({ where: { eventId } }),
+    db.financeRecord.count({ where: { eventId } }),
+    db.eventBudgetLine.count({ where: { eventId } }),
+    db.discussion.count({ where: { eventId } }),
+  ]);
+  if (tickets + orders + legacyTickets + registrations > 0) {
+    return fail(409, "This event has tickets, orders or registrations, so it can't be deleted.");
+  }
+  if (financeRecords + budgetLines > 0) return fail(409, "This event has a budget or finance records, so it can't be deleted.");
+  if (discussions > 0) return fail(409, "This event has a discussion, so it can't be deleted.");
+
+  await db.$transaction([
+    db.group.updateMany({ where: { eventId }, data: { eventId: null, archived: true } }),
+    db.ticketType.deleteMany({ where: { eventId } }),
+    // Settings and memory photos are removed with the event.
+    db.event.delete({ where: { id: eventId } }),
+  ]);
   return { ok: true };
 }
 

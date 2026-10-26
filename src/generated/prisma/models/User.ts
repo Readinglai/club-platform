@@ -310,10 +310,6 @@ export type UserWhereInput = {
   profile?: Prisma.XOR<Prisma.ProfileNullableScalarRelationFilter, Prisma.ProfileWhereInput> | null
   memberships?: Prisma.MembershipListRelationFilter
   groupMemberships?: Prisma.GroupMemberListRelationFilter
-  approvalRequests?: Prisma.ApprovalRequestListRelationFilter
-  approvalDecisions?: Prisma.ApprovalRequestListRelationFilter
-  financeSubmissions?: Prisma.EventSettingsListRelationFilter
-  financeReviews?: Prisma.EventSettingsListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -353,10 +349,6 @@ export type UserOrderByWithRelationInput = {
   profile?: Prisma.ProfileOrderByWithRelationInput
   memberships?: Prisma.MembershipOrderByRelationAggregateInput
   groupMemberships?: Prisma.GroupMemberOrderByRelationAggregateInput
-  approvalRequests?: Prisma.ApprovalRequestOrderByRelationAggregateInput
-  approvalDecisions?: Prisma.ApprovalRequestOrderByRelationAggregateInput
-  financeSubmissions?: Prisma.EventSettingsOrderByRelationAggregateInput
-  financeReviews?: Prisma.EventSettingsOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -399,10 +391,6 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   profile?: Prisma.XOR<Prisma.ProfileNullableScalarRelationFilter, Prisma.ProfileWhereInput> | null
   memberships?: Prisma.MembershipListRelationFilter
   groupMemberships?: Prisma.GroupMemberListRelationFilter
-  approvalRequests?: Prisma.ApprovalRequestListRelationFilter
-  approvalDecisions?: Prisma.ApprovalRequestListRelationFilter
-  financeSubmissions?: Prisma.EventSettingsListRelationFilter
-  financeReviews?: Prisma.EventSettingsListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -483,10 +471,6 @@ export type UserCreateInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -525,10 +509,6 @@ export type UserUncheckedCreateInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUpdateInput = {
@@ -567,10 +547,6 @@ export type UserUpdateInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -609,10 +585,6 @@ export type UserUncheckedUpdateInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -856,38 +828,6 @@ export type UserUpdateOneRequiredWithoutRegistrationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRegistrationsInput, Prisma.UserUpdateWithoutRegistrationsInput>, Prisma.UserUncheckedUpdateWithoutRegistrationsInput>
 }
 
-export type UserCreateNestedOneWithoutFinanceSubmissionsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutFinanceSubmissionsInput, Prisma.UserUncheckedCreateWithoutFinanceSubmissionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFinanceSubmissionsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserCreateNestedOneWithoutFinanceReviewsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutFinanceReviewsInput, Prisma.UserUncheckedCreateWithoutFinanceReviewsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFinanceReviewsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneWithoutFinanceSubmissionsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutFinanceSubmissionsInput, Prisma.UserUncheckedCreateWithoutFinanceSubmissionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFinanceSubmissionsInput
-  upsert?: Prisma.UserUpsertWithoutFinanceSubmissionsInput
-  disconnect?: Prisma.UserWhereInput | boolean
-  delete?: Prisma.UserWhereInput | boolean
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFinanceSubmissionsInput, Prisma.UserUpdateWithoutFinanceSubmissionsInput>, Prisma.UserUncheckedUpdateWithoutFinanceSubmissionsInput>
-}
-
-export type UserUpdateOneWithoutFinanceReviewsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutFinanceReviewsInput, Prisma.UserUncheckedCreateWithoutFinanceReviewsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFinanceReviewsInput
-  upsert?: Prisma.UserUpsertWithoutFinanceReviewsInput
-  disconnect?: Prisma.UserWhereInput | boolean
-  delete?: Prisma.UserWhereInput | boolean
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFinanceReviewsInput, Prisma.UserUpdateWithoutFinanceReviewsInput>, Prisma.UserUncheckedUpdateWithoutFinanceReviewsInput>
-}
-
 export type UserCreateNestedOneWithoutOrdersInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutOrdersInput, Prisma.UserUncheckedCreateWithoutOrdersInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutOrdersInput
@@ -978,36 +918,6 @@ export type UserUpdateOneRequiredWithoutGroupMembershipsNestedInput = {
   upsert?: Prisma.UserUpsertWithoutGroupMembershipsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGroupMembershipsInput, Prisma.UserUpdateWithoutGroupMembershipsInput>, Prisma.UserUncheckedUpdateWithoutGroupMembershipsInput>
-}
-
-export type UserCreateNestedOneWithoutApprovalRequestsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovalRequestsInput, Prisma.UserUncheckedCreateWithoutApprovalRequestsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovalRequestsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserCreateNestedOneWithoutApprovalDecisionsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovalDecisionsInput, Prisma.UserUncheckedCreateWithoutApprovalDecisionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovalDecisionsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutApprovalRequestsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovalRequestsInput, Prisma.UserUncheckedCreateWithoutApprovalRequestsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovalRequestsInput
-  upsert?: Prisma.UserUpsertWithoutApprovalRequestsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutApprovalRequestsInput, Prisma.UserUpdateWithoutApprovalRequestsInput>, Prisma.UserUncheckedUpdateWithoutApprovalRequestsInput>
-}
-
-export type UserUpdateOneWithoutApprovalDecisionsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovalDecisionsInput, Prisma.UserUncheckedCreateWithoutApprovalDecisionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovalDecisionsInput
-  upsert?: Prisma.UserUpsertWithoutApprovalDecisionsInput
-  disconnect?: Prisma.UserWhereInput | boolean
-  delete?: Prisma.UserWhereInput | boolean
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutApprovalDecisionsInput, Prisma.UserUpdateWithoutApprovalDecisionsInput>, Prisma.UserUncheckedUpdateWithoutApprovalDecisionsInput>
 }
 
 export type UserCreateNestedOneWithoutCommentsInput = {
@@ -1217,10 +1127,6 @@ export type UserCreateWithoutAccountsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1258,10 +1164,6 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1315,10 +1217,6 @@ export type UserUpdateWithoutAccountsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1356,10 +1254,6 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -1397,10 +1291,6 @@ export type UserCreateWithoutSessionsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1438,10 +1328,6 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1495,10 +1381,6 @@ export type UserUpdateWithoutSessionsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1536,10 +1418,6 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutDepartmentInput = {
@@ -1577,10 +1455,6 @@ export type UserCreateWithoutDepartmentInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutDepartmentInput = {
@@ -1618,10 +1492,6 @@ export type UserUncheckedCreateWithoutDepartmentInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutDepartmentInput = {
@@ -1705,10 +1575,6 @@ export type UserCreateWithoutRegistrationsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutRegistrationsInput = {
@@ -1746,10 +1612,6 @@ export type UserUncheckedCreateWithoutRegistrationsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutRegistrationsInput = {
@@ -1803,10 +1665,6 @@ export type UserUpdateWithoutRegistrationsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRegistrationsInput = {
@@ -1844,370 +1702,6 @@ export type UserUncheckedUpdateWithoutRegistrationsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
-}
-
-export type UserCreateWithoutFinanceSubmissionsInput = {
-  id?: string
-  email: string
-  name: string
-  image?: string | null
-  emailVerified?: Date | string | null
-  role?: $Enums.Role
-  bio?: string | null
-  major?: string | null
-  rocsautYear?: number | null
-  instagram?: string | null
-  linkedin?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  registrations?: Prisma.RegistrationCreateNestedManyWithoutUserInput
-  assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
-  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutUserInput
-  comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
-  announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
-  announcementReads?: Prisma.AnnouncementReadCreateNestedManyWithoutUserInput
-  taskGroups?: Prisma.TaskGroupMemberCreateNestedManyWithoutUserInput
-  createdTaskGroups?: Prisma.TaskGroupCreateNestedManyWithoutCreatedByInput
-  createdVotes?: Prisma.VoteCreateNestedManyWithoutCreatedByInput
-  voteResponses?: Prisma.VoteResponseCreateNestedManyWithoutUserInput
-  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutCreatedByInput
-  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
-  taskViews?: Prisma.TaskViewCreateNestedManyWithoutUserInput
-  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
-  heldTickets?: Prisma.TicketCreateNestedManyWithoutUserInput
-  checkedInTickets?: Prisma.TicketCreateNestedManyWithoutCheckedInByInput
-  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
-  memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
-  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
-}
-
-export type UserUncheckedCreateWithoutFinanceSubmissionsInput = {
-  id?: string
-  email: string
-  name: string
-  image?: string | null
-  emailVerified?: Date | string | null
-  role?: $Enums.Role
-  departmentId?: string | null
-  bio?: string | null
-  major?: string | null
-  rocsautYear?: number | null
-  instagram?: string | null
-  linkedin?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutUserInput
-  assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
-  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutUserInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
-  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
-  announcementReads?: Prisma.AnnouncementReadUncheckedCreateNestedManyWithoutUserInput
-  taskGroups?: Prisma.TaskGroupMemberUncheckedCreateNestedManyWithoutUserInput
-  createdTaskGroups?: Prisma.TaskGroupUncheckedCreateNestedManyWithoutCreatedByInput
-  createdVotes?: Prisma.VoteUncheckedCreateNestedManyWithoutCreatedByInput
-  voteResponses?: Prisma.VoteResponseUncheckedCreateNestedManyWithoutUserInput
-  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutCreatedByInput
-  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-  taskViews?: Prisma.TaskViewUncheckedCreateNestedManyWithoutUserInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
-  heldTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutUserInput
-  checkedInTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutCheckedInByInput
-  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
-  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
-  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
-}
-
-export type UserCreateOrConnectWithoutFinanceSubmissionsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutFinanceSubmissionsInput, Prisma.UserUncheckedCreateWithoutFinanceSubmissionsInput>
-}
-
-export type UserCreateWithoutFinanceReviewsInput = {
-  id?: string
-  email: string
-  name: string
-  image?: string | null
-  emailVerified?: Date | string | null
-  role?: $Enums.Role
-  bio?: string | null
-  major?: string | null
-  rocsautYear?: number | null
-  instagram?: string | null
-  linkedin?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  registrations?: Prisma.RegistrationCreateNestedManyWithoutUserInput
-  assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
-  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutUserInput
-  comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
-  announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
-  announcementReads?: Prisma.AnnouncementReadCreateNestedManyWithoutUserInput
-  taskGroups?: Prisma.TaskGroupMemberCreateNestedManyWithoutUserInput
-  createdTaskGroups?: Prisma.TaskGroupCreateNestedManyWithoutCreatedByInput
-  createdVotes?: Prisma.VoteCreateNestedManyWithoutCreatedByInput
-  voteResponses?: Prisma.VoteResponseCreateNestedManyWithoutUserInput
-  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutCreatedByInput
-  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
-  taskViews?: Prisma.TaskViewCreateNestedManyWithoutUserInput
-  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
-  heldTickets?: Prisma.TicketCreateNestedManyWithoutUserInput
-  checkedInTickets?: Prisma.TicketCreateNestedManyWithoutCheckedInByInput
-  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
-  memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
-  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-}
-
-export type UserUncheckedCreateWithoutFinanceReviewsInput = {
-  id?: string
-  email: string
-  name: string
-  image?: string | null
-  emailVerified?: Date | string | null
-  role?: $Enums.Role
-  departmentId?: string | null
-  bio?: string | null
-  major?: string | null
-  rocsautYear?: number | null
-  instagram?: string | null
-  linkedin?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutUserInput
-  assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
-  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutUserInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
-  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
-  announcementReads?: Prisma.AnnouncementReadUncheckedCreateNestedManyWithoutUserInput
-  taskGroups?: Prisma.TaskGroupMemberUncheckedCreateNestedManyWithoutUserInput
-  createdTaskGroups?: Prisma.TaskGroupUncheckedCreateNestedManyWithoutCreatedByInput
-  createdVotes?: Prisma.VoteUncheckedCreateNestedManyWithoutCreatedByInput
-  voteResponses?: Prisma.VoteResponseUncheckedCreateNestedManyWithoutUserInput
-  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutCreatedByInput
-  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-  taskViews?: Prisma.TaskViewUncheckedCreateNestedManyWithoutUserInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
-  heldTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutUserInput
-  checkedInTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutCheckedInByInput
-  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
-  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
-  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-}
-
-export type UserCreateOrConnectWithoutFinanceReviewsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutFinanceReviewsInput, Prisma.UserUncheckedCreateWithoutFinanceReviewsInput>
-}
-
-export type UserUpsertWithoutFinanceSubmissionsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutFinanceSubmissionsInput, Prisma.UserUncheckedUpdateWithoutFinanceSubmissionsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutFinanceSubmissionsInput, Prisma.UserUncheckedCreateWithoutFinanceSubmissionsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutFinanceSubmissionsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutFinanceSubmissionsInput, Prisma.UserUncheckedUpdateWithoutFinanceSubmissionsInput>
-}
-
-export type UserUpdateWithoutFinanceSubmissionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  registrations?: Prisma.RegistrationUpdateManyWithoutUserNestedInput
-  assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
-  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutUserNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
-  announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
-  announcementReads?: Prisma.AnnouncementReadUpdateManyWithoutUserNestedInput
-  taskGroups?: Prisma.TaskGroupMemberUpdateManyWithoutUserNestedInput
-  createdTaskGroups?: Prisma.TaskGroupUpdateManyWithoutCreatedByNestedInput
-  createdVotes?: Prisma.VoteUpdateManyWithoutCreatedByNestedInput
-  voteResponses?: Prisma.VoteResponseUpdateManyWithoutUserNestedInput
-  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutCreatedByNestedInput
-  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
-  taskViews?: Prisma.TaskViewUpdateManyWithoutUserNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
-  heldTickets?: Prisma.TicketUpdateManyWithoutUserNestedInput
-  checkedInTickets?: Prisma.TicketUpdateManyWithoutCheckedInByNestedInput
-  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
-  memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
-  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
-}
-
-export type UserUncheckedUpdateWithoutFinanceSubmissionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
-  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutUserNestedInput
-  assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
-  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutUserNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
-  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
-  announcementReads?: Prisma.AnnouncementReadUncheckedUpdateManyWithoutUserNestedInput
-  taskGroups?: Prisma.TaskGroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  createdTaskGroups?: Prisma.TaskGroupUncheckedUpdateManyWithoutCreatedByNestedInput
-  createdVotes?: Prisma.VoteUncheckedUpdateManyWithoutCreatedByNestedInput
-  voteResponses?: Prisma.VoteResponseUncheckedUpdateManyWithoutUserNestedInput
-  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutCreatedByNestedInput
-  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-  taskViews?: Prisma.TaskViewUncheckedUpdateManyWithoutUserNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
-  heldTickets?: Prisma.TicketUncheckedUpdateManyWithoutUserNestedInput
-  checkedInTickets?: Prisma.TicketUncheckedUpdateManyWithoutCheckedInByNestedInput
-  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
-  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
-  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
-}
-
-export type UserUpsertWithoutFinanceReviewsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutFinanceReviewsInput, Prisma.UserUncheckedUpdateWithoutFinanceReviewsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutFinanceReviewsInput, Prisma.UserUncheckedCreateWithoutFinanceReviewsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutFinanceReviewsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutFinanceReviewsInput, Prisma.UserUncheckedUpdateWithoutFinanceReviewsInput>
-}
-
-export type UserUpdateWithoutFinanceReviewsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  registrations?: Prisma.RegistrationUpdateManyWithoutUserNestedInput
-  assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
-  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutUserNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
-  announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
-  announcementReads?: Prisma.AnnouncementReadUpdateManyWithoutUserNestedInput
-  taskGroups?: Prisma.TaskGroupMemberUpdateManyWithoutUserNestedInput
-  createdTaskGroups?: Prisma.TaskGroupUpdateManyWithoutCreatedByNestedInput
-  createdVotes?: Prisma.VoteUpdateManyWithoutCreatedByNestedInput
-  voteResponses?: Prisma.VoteResponseUpdateManyWithoutUserNestedInput
-  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutCreatedByNestedInput
-  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
-  taskViews?: Prisma.TaskViewUpdateManyWithoutUserNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
-  heldTickets?: Prisma.TicketUpdateManyWithoutUserNestedInput
-  checkedInTickets?: Prisma.TicketUpdateManyWithoutCheckedInByNestedInput
-  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
-  memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
-  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-}
-
-export type UserUncheckedUpdateWithoutFinanceReviewsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
-  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutUserNestedInput
-  assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
-  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutUserNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
-  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
-  announcementReads?: Prisma.AnnouncementReadUncheckedUpdateManyWithoutUserNestedInput
-  taskGroups?: Prisma.TaskGroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  createdTaskGroups?: Prisma.TaskGroupUncheckedUpdateManyWithoutCreatedByNestedInput
-  createdVotes?: Prisma.VoteUncheckedUpdateManyWithoutCreatedByNestedInput
-  voteResponses?: Prisma.VoteResponseUncheckedUpdateManyWithoutUserNestedInput
-  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutCreatedByNestedInput
-  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-  taskViews?: Prisma.TaskViewUncheckedUpdateManyWithoutUserNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
-  heldTickets?: Prisma.TicketUncheckedUpdateManyWithoutUserNestedInput
-  checkedInTickets?: Prisma.TicketUncheckedUpdateManyWithoutCheckedInByNestedInput
-  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
-  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
-  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
 }
 
 export type UserCreateWithoutOrdersInput = {
@@ -2245,10 +1739,6 @@ export type UserCreateWithoutOrdersInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutOrdersInput = {
@@ -2286,10 +1776,6 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutOrdersInput = {
@@ -2343,10 +1829,6 @@ export type UserUpdateWithoutOrdersInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -2384,10 +1866,6 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutHeldTicketsInput = {
@@ -2425,10 +1903,6 @@ export type UserCreateWithoutHeldTicketsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutHeldTicketsInput = {
@@ -2466,10 +1940,6 @@ export type UserUncheckedCreateWithoutHeldTicketsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutHeldTicketsInput = {
@@ -2512,10 +1982,6 @@ export type UserCreateWithoutCheckedInTicketsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutCheckedInTicketsInput = {
@@ -2553,10 +2019,6 @@ export type UserUncheckedCreateWithoutCheckedInTicketsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutCheckedInTicketsInput = {
@@ -2610,10 +2072,6 @@ export type UserUpdateWithoutHeldTicketsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHeldTicketsInput = {
@@ -2651,10 +2109,6 @@ export type UserUncheckedUpdateWithoutHeldTicketsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUpsertWithoutCheckedInTicketsInput = {
@@ -2703,10 +2157,6 @@ export type UserUpdateWithoutCheckedInTicketsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCheckedInTicketsInput = {
@@ -2744,10 +2194,6 @@ export type UserUncheckedUpdateWithoutCheckedInTicketsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutProfileInput = {
@@ -2785,10 +2231,6 @@ export type UserCreateWithoutProfileInput = {
   checkedInTickets?: Prisma.TicketCreateNestedManyWithoutCheckedInByInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutProfileInput = {
@@ -2826,10 +2268,6 @@ export type UserUncheckedCreateWithoutProfileInput = {
   checkedInTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutCheckedInByInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutProfileInput = {
@@ -2883,10 +2321,6 @@ export type UserUpdateWithoutProfileInput = {
   checkedInTickets?: Prisma.TicketUpdateManyWithoutCheckedInByNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProfileInput = {
@@ -2924,10 +2358,6 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   checkedInTickets?: Prisma.TicketUncheckedUpdateManyWithoutCheckedInByNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutMembershipsInput = {
@@ -2965,10 +2395,6 @@ export type UserCreateWithoutMembershipsInput = {
   checkedInTickets?: Prisma.TicketCreateNestedManyWithoutCheckedInByInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutMembershipsInput = {
@@ -3006,10 +2432,6 @@ export type UserUncheckedCreateWithoutMembershipsInput = {
   checkedInTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutCheckedInByInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutMembershipsInput = {
@@ -3063,10 +2485,6 @@ export type UserUpdateWithoutMembershipsInput = {
   checkedInTickets?: Prisma.TicketUpdateManyWithoutCheckedInByNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMembershipsInput = {
@@ -3104,10 +2522,6 @@ export type UserUncheckedUpdateWithoutMembershipsInput = {
   checkedInTickets?: Prisma.TicketUncheckedUpdateManyWithoutCheckedInByNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutGroupMembershipsInput = {
@@ -3145,10 +2559,6 @@ export type UserCreateWithoutGroupMembershipsInput = {
   checkedInTickets?: Prisma.TicketCreateNestedManyWithoutCheckedInByInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutGroupMembershipsInput = {
@@ -3186,10 +2596,6 @@ export type UserUncheckedCreateWithoutGroupMembershipsInput = {
   checkedInTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutCheckedInByInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutGroupMembershipsInput = {
@@ -3243,10 +2649,6 @@ export type UserUpdateWithoutGroupMembershipsInput = {
   checkedInTickets?: Prisma.TicketUpdateManyWithoutCheckedInByNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
@@ -3284,370 +2686,6 @@ export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
   checkedInTickets?: Prisma.TicketUncheckedUpdateManyWithoutCheckedInByNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
-}
-
-export type UserCreateWithoutApprovalRequestsInput = {
-  id?: string
-  email: string
-  name: string
-  image?: string | null
-  emailVerified?: Date | string | null
-  role?: $Enums.Role
-  bio?: string | null
-  major?: string | null
-  rocsautYear?: number | null
-  instagram?: string | null
-  linkedin?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  registrations?: Prisma.RegistrationCreateNestedManyWithoutUserInput
-  assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
-  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutUserInput
-  comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
-  announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
-  announcementReads?: Prisma.AnnouncementReadCreateNestedManyWithoutUserInput
-  taskGroups?: Prisma.TaskGroupMemberCreateNestedManyWithoutUserInput
-  createdTaskGroups?: Prisma.TaskGroupCreateNestedManyWithoutCreatedByInput
-  createdVotes?: Prisma.VoteCreateNestedManyWithoutCreatedByInput
-  voteResponses?: Prisma.VoteResponseCreateNestedManyWithoutUserInput
-  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutCreatedByInput
-  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
-  taskViews?: Prisma.TaskViewCreateNestedManyWithoutUserInput
-  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
-  heldTickets?: Prisma.TicketCreateNestedManyWithoutUserInput
-  checkedInTickets?: Prisma.TicketCreateNestedManyWithoutCheckedInByInput
-  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
-  memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
-  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
-}
-
-export type UserUncheckedCreateWithoutApprovalRequestsInput = {
-  id?: string
-  email: string
-  name: string
-  image?: string | null
-  emailVerified?: Date | string | null
-  role?: $Enums.Role
-  departmentId?: string | null
-  bio?: string | null
-  major?: string | null
-  rocsautYear?: number | null
-  instagram?: string | null
-  linkedin?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutUserInput
-  assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
-  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutUserInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
-  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
-  announcementReads?: Prisma.AnnouncementReadUncheckedCreateNestedManyWithoutUserInput
-  taskGroups?: Prisma.TaskGroupMemberUncheckedCreateNestedManyWithoutUserInput
-  createdTaskGroups?: Prisma.TaskGroupUncheckedCreateNestedManyWithoutCreatedByInput
-  createdVotes?: Prisma.VoteUncheckedCreateNestedManyWithoutCreatedByInput
-  voteResponses?: Prisma.VoteResponseUncheckedCreateNestedManyWithoutUserInput
-  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutCreatedByInput
-  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-  taskViews?: Prisma.TaskViewUncheckedCreateNestedManyWithoutUserInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
-  heldTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutUserInput
-  checkedInTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutCheckedInByInput
-  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
-  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
-  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
-}
-
-export type UserCreateOrConnectWithoutApprovalRequestsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutApprovalRequestsInput, Prisma.UserUncheckedCreateWithoutApprovalRequestsInput>
-}
-
-export type UserCreateWithoutApprovalDecisionsInput = {
-  id?: string
-  email: string
-  name: string
-  image?: string | null
-  emailVerified?: Date | string | null
-  role?: $Enums.Role
-  bio?: string | null
-  major?: string | null
-  rocsautYear?: number | null
-  instagram?: string | null
-  linkedin?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  department?: Prisma.DepartmentCreateNestedOneWithoutMembersInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  registrations?: Prisma.RegistrationCreateNestedManyWithoutUserInput
-  assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
-  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutUserInput
-  comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
-  announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
-  announcementReads?: Prisma.AnnouncementReadCreateNestedManyWithoutUserInput
-  taskGroups?: Prisma.TaskGroupMemberCreateNestedManyWithoutUserInput
-  createdTaskGroups?: Prisma.TaskGroupCreateNestedManyWithoutCreatedByInput
-  createdVotes?: Prisma.VoteCreateNestedManyWithoutCreatedByInput
-  voteResponses?: Prisma.VoteResponseCreateNestedManyWithoutUserInput
-  financeRecords?: Prisma.FinanceRecordCreateNestedManyWithoutCreatedByInput
-  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
-  taskViews?: Prisma.TaskViewCreateNestedManyWithoutUserInput
-  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
-  heldTickets?: Prisma.TicketCreateNestedManyWithoutUserInput
-  checkedInTickets?: Prisma.TicketCreateNestedManyWithoutCheckedInByInput
-  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
-  memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
-  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
-}
-
-export type UserUncheckedCreateWithoutApprovalDecisionsInput = {
-  id?: string
-  email: string
-  name: string
-  image?: string | null
-  emailVerified?: Date | string | null
-  role?: $Enums.Role
-  departmentId?: string | null
-  bio?: string | null
-  major?: string | null
-  rocsautYear?: number | null
-  instagram?: string | null
-  linkedin?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutUserInput
-  assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
-  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutUserInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
-  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
-  announcementReads?: Prisma.AnnouncementReadUncheckedCreateNestedManyWithoutUserInput
-  taskGroups?: Prisma.TaskGroupMemberUncheckedCreateNestedManyWithoutUserInput
-  createdTaskGroups?: Prisma.TaskGroupUncheckedCreateNestedManyWithoutCreatedByInput
-  createdVotes?: Prisma.VoteUncheckedCreateNestedManyWithoutCreatedByInput
-  voteResponses?: Prisma.VoteResponseUncheckedCreateNestedManyWithoutUserInput
-  financeRecords?: Prisma.FinanceRecordUncheckedCreateNestedManyWithoutCreatedByInput
-  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-  taskViews?: Prisma.TaskViewUncheckedCreateNestedManyWithoutUserInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
-  heldTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutUserInput
-  checkedInTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutCheckedInByInput
-  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
-  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
-  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
-}
-
-export type UserCreateOrConnectWithoutApprovalDecisionsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutApprovalDecisionsInput, Prisma.UserUncheckedCreateWithoutApprovalDecisionsInput>
-}
-
-export type UserUpsertWithoutApprovalRequestsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutApprovalRequestsInput, Prisma.UserUncheckedUpdateWithoutApprovalRequestsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutApprovalRequestsInput, Prisma.UserUncheckedCreateWithoutApprovalRequestsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutApprovalRequestsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutApprovalRequestsInput, Prisma.UserUncheckedUpdateWithoutApprovalRequestsInput>
-}
-
-export type UserUpdateWithoutApprovalRequestsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  registrations?: Prisma.RegistrationUpdateManyWithoutUserNestedInput
-  assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
-  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutUserNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
-  announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
-  announcementReads?: Prisma.AnnouncementReadUpdateManyWithoutUserNestedInput
-  taskGroups?: Prisma.TaskGroupMemberUpdateManyWithoutUserNestedInput
-  createdTaskGroups?: Prisma.TaskGroupUpdateManyWithoutCreatedByNestedInput
-  createdVotes?: Prisma.VoteUpdateManyWithoutCreatedByNestedInput
-  voteResponses?: Prisma.VoteResponseUpdateManyWithoutUserNestedInput
-  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutCreatedByNestedInput
-  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
-  taskViews?: Prisma.TaskViewUpdateManyWithoutUserNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
-  heldTickets?: Prisma.TicketUpdateManyWithoutUserNestedInput
-  checkedInTickets?: Prisma.TicketUpdateManyWithoutCheckedInByNestedInput
-  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
-  memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
-  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
-}
-
-export type UserUncheckedUpdateWithoutApprovalRequestsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
-  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutUserNestedInput
-  assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
-  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutUserNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
-  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
-  announcementReads?: Prisma.AnnouncementReadUncheckedUpdateManyWithoutUserNestedInput
-  taskGroups?: Prisma.TaskGroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  createdTaskGroups?: Prisma.TaskGroupUncheckedUpdateManyWithoutCreatedByNestedInput
-  createdVotes?: Prisma.VoteUncheckedUpdateManyWithoutCreatedByNestedInput
-  voteResponses?: Prisma.VoteResponseUncheckedUpdateManyWithoutUserNestedInput
-  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutCreatedByNestedInput
-  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-  taskViews?: Prisma.TaskViewUncheckedUpdateManyWithoutUserNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
-  heldTickets?: Prisma.TicketUncheckedUpdateManyWithoutUserNestedInput
-  checkedInTickets?: Prisma.TicketUncheckedUpdateManyWithoutCheckedInByNestedInput
-  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
-  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
-  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
-}
-
-export type UserUpsertWithoutApprovalDecisionsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutApprovalDecisionsInput, Prisma.UserUncheckedUpdateWithoutApprovalDecisionsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutApprovalDecisionsInput, Prisma.UserUncheckedCreateWithoutApprovalDecisionsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutApprovalDecisionsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutApprovalDecisionsInput, Prisma.UserUncheckedUpdateWithoutApprovalDecisionsInput>
-}
-
-export type UserUpdateWithoutApprovalDecisionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  department?: Prisma.DepartmentUpdateOneWithoutMembersNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  registrations?: Prisma.RegistrationUpdateManyWithoutUserNestedInput
-  assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
-  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutUserNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
-  announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
-  announcementReads?: Prisma.AnnouncementReadUpdateManyWithoutUserNestedInput
-  taskGroups?: Prisma.TaskGroupMemberUpdateManyWithoutUserNestedInput
-  createdTaskGroups?: Prisma.TaskGroupUpdateManyWithoutCreatedByNestedInput
-  createdVotes?: Prisma.VoteUpdateManyWithoutCreatedByNestedInput
-  voteResponses?: Prisma.VoteResponseUpdateManyWithoutUserNestedInput
-  financeRecords?: Prisma.FinanceRecordUpdateManyWithoutCreatedByNestedInput
-  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
-  taskViews?: Prisma.TaskViewUpdateManyWithoutUserNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
-  heldTickets?: Prisma.TicketUpdateManyWithoutUserNestedInput
-  checkedInTickets?: Prisma.TicketUpdateManyWithoutCheckedInByNestedInput
-  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
-  memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
-  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
-}
-
-export type UserUncheckedUpdateWithoutApprovalDecisionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
-  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rocsautYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  instagram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutUserNestedInput
-  assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
-  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutUserNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
-  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
-  announcementReads?: Prisma.AnnouncementReadUncheckedUpdateManyWithoutUserNestedInput
-  taskGroups?: Prisma.TaskGroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  createdTaskGroups?: Prisma.TaskGroupUncheckedUpdateManyWithoutCreatedByNestedInput
-  createdVotes?: Prisma.VoteUncheckedUpdateManyWithoutCreatedByNestedInput
-  voteResponses?: Prisma.VoteResponseUncheckedUpdateManyWithoutUserNestedInput
-  financeRecords?: Prisma.FinanceRecordUncheckedUpdateManyWithoutCreatedByNestedInput
-  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-  taskViews?: Prisma.TaskViewUncheckedUpdateManyWithoutUserNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
-  heldTickets?: Prisma.TicketUncheckedUpdateManyWithoutUserNestedInput
-  checkedInTickets?: Prisma.TicketUncheckedUpdateManyWithoutCheckedInByNestedInput
-  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
-  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
-  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutCommentsInput = {
@@ -3685,10 +2723,6 @@ export type UserCreateWithoutCommentsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutCommentsInput = {
@@ -3726,10 +2760,6 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutCommentsInput = {
@@ -3783,10 +2813,6 @@ export type UserUpdateWithoutCommentsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCommentsInput = {
@@ -3824,10 +2850,6 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutAnnouncementsInput = {
@@ -3865,10 +2887,6 @@ export type UserCreateWithoutAnnouncementsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutAnnouncementsInput = {
@@ -3906,10 +2924,6 @@ export type UserUncheckedCreateWithoutAnnouncementsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutAnnouncementsInput = {
@@ -3963,10 +2977,6 @@ export type UserUpdateWithoutAnnouncementsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAnnouncementsInput = {
@@ -4004,10 +3014,6 @@ export type UserUncheckedUpdateWithoutAnnouncementsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutAnnouncementReadsInput = {
@@ -4045,10 +3051,6 @@ export type UserCreateWithoutAnnouncementReadsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutAnnouncementReadsInput = {
@@ -4086,10 +3088,6 @@ export type UserUncheckedCreateWithoutAnnouncementReadsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutAnnouncementReadsInput = {
@@ -4143,10 +3141,6 @@ export type UserUpdateWithoutAnnouncementReadsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAnnouncementReadsInput = {
@@ -4184,10 +3178,6 @@ export type UserUncheckedUpdateWithoutAnnouncementReadsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutCreatedTaskGroupsInput = {
@@ -4225,10 +3215,6 @@ export type UserCreateWithoutCreatedTaskGroupsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedTaskGroupsInput = {
@@ -4266,10 +3252,6 @@ export type UserUncheckedCreateWithoutCreatedTaskGroupsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedTaskGroupsInput = {
@@ -4323,10 +3305,6 @@ export type UserUpdateWithoutCreatedTaskGroupsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedTaskGroupsInput = {
@@ -4364,10 +3342,6 @@ export type UserUncheckedUpdateWithoutCreatedTaskGroupsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutTaskGroupsInput = {
@@ -4405,10 +3379,6 @@ export type UserCreateWithoutTaskGroupsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutTaskGroupsInput = {
@@ -4446,10 +3416,6 @@ export type UserUncheckedCreateWithoutTaskGroupsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutTaskGroupsInput = {
@@ -4503,10 +3469,6 @@ export type UserUpdateWithoutTaskGroupsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTaskGroupsInput = {
@@ -4544,10 +3506,6 @@ export type UserUncheckedUpdateWithoutTaskGroupsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutAssignedTasksInput = {
@@ -4585,10 +3543,6 @@ export type UserCreateWithoutAssignedTasksInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutAssignedTasksInput = {
@@ -4626,10 +3580,6 @@ export type UserUncheckedCreateWithoutAssignedTasksInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutAssignedTasksInput = {
@@ -4683,10 +3633,6 @@ export type UserUpdateWithoutAssignedTasksInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedTasksInput = {
@@ -4724,10 +3670,6 @@ export type UserUncheckedUpdateWithoutAssignedTasksInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutTaskAssignmentsInput = {
@@ -4765,10 +3707,6 @@ export type UserCreateWithoutTaskAssignmentsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutTaskAssignmentsInput = {
@@ -4806,10 +3744,6 @@ export type UserUncheckedCreateWithoutTaskAssignmentsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutTaskAssignmentsInput = {
@@ -4863,10 +3797,6 @@ export type UserUpdateWithoutTaskAssignmentsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTaskAssignmentsInput = {
@@ -4904,10 +3834,6 @@ export type UserUncheckedUpdateWithoutTaskAssignmentsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutTaskViewsInput = {
@@ -4945,10 +3871,6 @@ export type UserCreateWithoutTaskViewsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutTaskViewsInput = {
@@ -4986,10 +3908,6 @@ export type UserUncheckedCreateWithoutTaskViewsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutTaskViewsInput = {
@@ -5043,10 +3961,6 @@ export type UserUpdateWithoutTaskViewsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTaskViewsInput = {
@@ -5084,10 +3998,6 @@ export type UserUncheckedUpdateWithoutTaskViewsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutCreatedVotesInput = {
@@ -5125,10 +4035,6 @@ export type UserCreateWithoutCreatedVotesInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedVotesInput = {
@@ -5166,10 +4072,6 @@ export type UserUncheckedCreateWithoutCreatedVotesInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedVotesInput = {
@@ -5223,10 +4125,6 @@ export type UserUpdateWithoutCreatedVotesInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedVotesInput = {
@@ -5264,10 +4162,6 @@ export type UserUncheckedUpdateWithoutCreatedVotesInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutVoteResponsesInput = {
@@ -5305,10 +4199,6 @@ export type UserCreateWithoutVoteResponsesInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutVoteResponsesInput = {
@@ -5346,10 +4236,6 @@ export type UserUncheckedCreateWithoutVoteResponsesInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutVoteResponsesInput = {
@@ -5403,10 +4289,6 @@ export type UserUpdateWithoutVoteResponsesInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutVoteResponsesInput = {
@@ -5444,10 +4326,6 @@ export type UserUncheckedUpdateWithoutVoteResponsesInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutFinanceRecordsInput = {
@@ -5485,10 +4363,6 @@ export type UserCreateWithoutFinanceRecordsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutFinanceRecordsInput = {
@@ -5526,10 +4400,6 @@ export type UserUncheckedCreateWithoutFinanceRecordsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutFinanceRecordsInput = {
@@ -5583,10 +4453,6 @@ export type UserUpdateWithoutFinanceRecordsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFinanceRecordsInput = {
@@ -5624,10 +4490,6 @@ export type UserUncheckedUpdateWithoutFinanceRecordsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateWithoutPushSubscriptionsInput = {
@@ -5665,10 +4527,6 @@ export type UserCreateWithoutPushSubscriptionsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
@@ -5706,10 +4564,6 @@ export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutRequestedByInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedCreateNestedManyWithoutDecidedByInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceSubmittedByInput
-  financeReviews?: Prisma.EventSettingsUncheckedCreateNestedManyWithoutFinanceReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutPushSubscriptionsInput = {
@@ -5763,10 +4617,6 @@ export type UserUpdateWithoutPushSubscriptionsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
@@ -5804,10 +4654,6 @@ export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserCreateManyDepartmentInput = {
@@ -5861,10 +4707,6 @@ export type UserUpdateWithoutDepartmentInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDepartmentInput = {
@@ -5902,10 +4744,6 @@ export type UserUncheckedUpdateWithoutDepartmentInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  approvalRequests?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutRequestedByNestedInput
-  approvalDecisions?: Prisma.ApprovalRequestUncheckedUpdateManyWithoutDecidedByNestedInput
-  financeSubmissions?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceSubmittedByNestedInput
-  financeReviews?: Prisma.EventSettingsUncheckedUpdateManyWithoutFinanceReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutDepartmentInput = {
@@ -5950,10 +4788,6 @@ export type UserCountOutputType = {
   checkedInTickets: number
   memberships: number
   groupMemberships: number
-  approvalRequests: number
-  approvalDecisions: number
-  financeSubmissions: number
-  financeReviews: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -5977,10 +4811,6 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   checkedInTickets?: boolean | UserCountOutputTypeCountCheckedInTicketsArgs
   memberships?: boolean | UserCountOutputTypeCountMembershipsArgs
   groupMemberships?: boolean | UserCountOutputTypeCountGroupMembershipsArgs
-  approvalRequests?: boolean | UserCountOutputTypeCountApprovalRequestsArgs
-  approvalDecisions?: boolean | UserCountOutputTypeCountApprovalDecisionsArgs
-  financeSubmissions?: boolean | UserCountOutputTypeCountFinanceSubmissionsArgs
-  financeReviews?: boolean | UserCountOutputTypeCountFinanceReviewsArgs
 }
 
 /**
@@ -6133,34 +4963,6 @@ export type UserCountOutputTypeCountGroupMembershipsArgs<ExtArgs extends runtime
   where?: Prisma.GroupMemberWhereInput
 }
 
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountApprovalRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ApprovalRequestWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountApprovalDecisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ApprovalRequestWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountFinanceSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.EventSettingsWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountFinanceReviewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.EventSettingsWhereInput
-}
-
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -6199,10 +5001,6 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   profile?: boolean | Prisma.User$profileArgs<ExtArgs>
   memberships?: boolean | Prisma.User$membershipsArgs<ExtArgs>
   groupMemberships?: boolean | Prisma.User$groupMembershipsArgs<ExtArgs>
-  approvalRequests?: boolean | Prisma.User$approvalRequestsArgs<ExtArgs>
-  approvalDecisions?: boolean | Prisma.User$approvalDecisionsArgs<ExtArgs>
-  financeSubmissions?: boolean | Prisma.User$financeSubmissionsArgs<ExtArgs>
-  financeReviews?: boolean | Prisma.User$financeReviewsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -6283,10 +5081,6 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   profile?: boolean | Prisma.User$profileArgs<ExtArgs>
   memberships?: boolean | Prisma.User$membershipsArgs<ExtArgs>
   groupMemberships?: boolean | Prisma.User$groupMembershipsArgs<ExtArgs>
-  approvalRequests?: boolean | Prisma.User$approvalRequestsArgs<ExtArgs>
-  approvalDecisions?: boolean | Prisma.User$approvalDecisionsArgs<ExtArgs>
-  financeSubmissions?: boolean | Prisma.User$financeSubmissionsArgs<ExtArgs>
-  financeReviews?: boolean | Prisma.User$financeReviewsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -6321,10 +5115,6 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     profile: Prisma.$ProfilePayload<ExtArgs> | null
     memberships: Prisma.$MembershipPayload<ExtArgs>[]
     groupMemberships: Prisma.$GroupMemberPayload<ExtArgs>[]
-    approvalRequests: Prisma.$ApprovalRequestPayload<ExtArgs>[]
-    approvalDecisions: Prisma.$ApprovalRequestPayload<ExtArgs>[]
-    financeSubmissions: Prisma.$EventSettingsPayload<ExtArgs>[]
-    financeReviews: Prisma.$EventSettingsPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -6757,10 +5547,6 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   profile<T extends Prisma.User$profileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$profileArgs<ExtArgs>>): Prisma.Prisma__ProfileClient<runtime.Types.Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   memberships<T extends Prisma.User$membershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$membershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   groupMemberships<T extends Prisma.User$groupMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$groupMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  approvalRequests<T extends Prisma.User$approvalRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$approvalRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApprovalRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  approvalDecisions<T extends Prisma.User$approvalDecisionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$approvalDecisionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApprovalRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  financeSubmissions<T extends Prisma.User$financeSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$financeSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventSettingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  financeReviews<T extends Prisma.User$financeReviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$financeReviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventSettingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7720,102 +6506,6 @@ export type User$groupMembershipsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.GroupMemberScalarFieldEnum | Prisma.GroupMemberScalarFieldEnum[]
-}
-
-/**
- * User.approvalRequests
- */
-export type User$approvalRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ApprovalRequest
-   */
-  select?: Prisma.ApprovalRequestSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ApprovalRequest
-   */
-  omit?: Prisma.ApprovalRequestOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ApprovalRequestInclude<ExtArgs> | null
-  where?: Prisma.ApprovalRequestWhereInput
-  orderBy?: Prisma.ApprovalRequestOrderByWithRelationInput | Prisma.ApprovalRequestOrderByWithRelationInput[]
-  cursor?: Prisma.ApprovalRequestWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ApprovalRequestScalarFieldEnum | Prisma.ApprovalRequestScalarFieldEnum[]
-}
-
-/**
- * User.approvalDecisions
- */
-export type User$approvalDecisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ApprovalRequest
-   */
-  select?: Prisma.ApprovalRequestSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ApprovalRequest
-   */
-  omit?: Prisma.ApprovalRequestOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ApprovalRequestInclude<ExtArgs> | null
-  where?: Prisma.ApprovalRequestWhereInput
-  orderBy?: Prisma.ApprovalRequestOrderByWithRelationInput | Prisma.ApprovalRequestOrderByWithRelationInput[]
-  cursor?: Prisma.ApprovalRequestWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ApprovalRequestScalarFieldEnum | Prisma.ApprovalRequestScalarFieldEnum[]
-}
-
-/**
- * User.financeSubmissions
- */
-export type User$financeSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the EventSettings
-   */
-  select?: Prisma.EventSettingsSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the EventSettings
-   */
-  omit?: Prisma.EventSettingsOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.EventSettingsInclude<ExtArgs> | null
-  where?: Prisma.EventSettingsWhereInput
-  orderBy?: Prisma.EventSettingsOrderByWithRelationInput | Prisma.EventSettingsOrderByWithRelationInput[]
-  cursor?: Prisma.EventSettingsWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.EventSettingsScalarFieldEnum | Prisma.EventSettingsScalarFieldEnum[]
-}
-
-/**
- * User.financeReviews
- */
-export type User$financeReviewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the EventSettings
-   */
-  select?: Prisma.EventSettingsSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the EventSettings
-   */
-  omit?: Prisma.EventSettingsOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.EventSettingsInclude<ExtArgs> | null
-  where?: Prisma.EventSettingsWhereInput
-  orderBy?: Prisma.EventSettingsOrderByWithRelationInput | Prisma.EventSettingsOrderByWithRelationInput[]
-  cursor?: Prisma.EventSettingsWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.EventSettingsScalarFieldEnum | Prisma.EventSettingsScalarFieldEnum[]
 }
 
 /**

@@ -46,7 +46,6 @@ async function main() {
     check("sync succeeds", r.ok, r.ok ? "" : r.message);
     s = await db.eventSettings.findUniqueOrThrow({ where: { eventId: event.id } });
     check("sync clears the error and records the time", s.budgetSheetSyncError === null && s.budgetSheetSyncedAt !== null);
-    check("approval in the sheet → Approved here", s.financeStatus === "APPROVED");
 
     const lines = await db.eventBudgetLine.findMany({ where: fromSheet, orderBy: { sortOrder: "asc" } });
     check("six category budget lines", lines.length === 6, lines.map((l) => `${l.category}:${l.plannedAmount}`).join(", "));
@@ -58,15 +57,14 @@ async function main() {
     check("actual revenue and costs stored", income === 1900 && spent === 1785, `income ${income}, spent ${spent}`);
 
     const f = (await getEventFinance(event.id))!;
-    check("finance page gets the sheet data", f.sheet?.data?.cap === 3000 && f.sheet.data.title === "[TEST] Lunar budget" && f.sheet.data.approval.lines.length === 2);
+    check("finance page gets the sheet data", f.sheet?.data?.cap === 3000 && f.sheet.data.title === "[TEST] Lunar budget");
     const club = await getClubFinanceSummary();
     const inSummary = club.events.find((e) => e.id === event.id);
-    check("club overview includes the synced event as approved", inSummary?.status === "APPROVED" && inSummary.spent === 1785);
+    check("club overview includes the synced event", inSummary?.spent === 1785);
 
     // --- The team changes the sheet and syncs again
     const changed = filledBudget();
     set(changed.overview, 12, 2, 1500); // Venue 1200 → 1500
-    set(changed.overview, 15, 6, "Not approved yet");
     set(changed.detailed, 17, 8, "Lucky draw prizes"); // a new actual cost
     set(changed.detailed, 17, 12, 280);
     r = await syncBudgetSheet(event.id, changed);
@@ -75,8 +73,6 @@ async function main() {
     check("re-sync replaces lines (no duplicates)", lines2.length === 6 && Number(lines2[0].plannedAmount) === 1500);
     const spent2 = (await db.financeRecord.findMany({ where: { ...fromSheet, type: "EXPENSE" } })).reduce((a, x) => a + Number(x.amount), 0);
     check("re-sync picks up the new cost", spent2 === 1785 + 280, String(spent2));
-    s = await db.eventSettings.findUniqueOrThrow({ where: { eventId: event.id } });
-    check("approval withdrawn in the sheet → not approved here", s.financeStatus === "OPEN");
 
     // --- A broken sheet keeps the last good data
     r = await syncBudgetSheet(event.id, { overview: [["Hello"]], detailed: [["World"]] });
@@ -99,7 +95,6 @@ async function main() {
           budgetSheetSyncedAt: before.budgetSheetSyncedAt,
           budgetSheetSyncError: before.budgetSheetSyncError,
           budgetSheetData: before.budgetSheetData,
-          financeStatus: before.financeStatus,
         },
       }),
     ]);

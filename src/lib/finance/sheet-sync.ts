@@ -1,13 +1,11 @@
 /**
  * Connecting an event to its Google Sheet budget and syncing it.
  *
- * The sheet is the only place budgets are written and approved; the website
- * reads it. Each sync replaces this event's sheet-sourced rows:
+ * The sheet is the only place budgets are written; the website reads it. Each sync replaces this event's sheet-sourced rows:
  *   - allocation by category → EventBudgetLine (the event's budget)
  *   - actual revenue / expense lines → FinanceRecord (feeds the club overview)
- *   - everything else read (cap, planned lines, summary row, approval) →
+ *   - everything else read (cap, planned lines, summary row) →
  *     EventSettings.budgetSheetData as JSON
- * and the sheet's "Approval Status" sets EventSettings.financeStatus.
  */
 
 import crypto from "crypto";
@@ -132,7 +130,6 @@ export async function syncBudgetSheet(eventId: string, grids?: { overview: Grid;
         budgetSheetData: JSON.stringify(parsed),
         budgetSheetSyncedAt: new Date(),
         budgetSheetSyncError: null,
-        financeStatus: parsed.approval.state,
       },
     }),
   ]);

@@ -1,12 +1,13 @@
 /**
  * GET   /api/manage/events/[id] — details for editing (times in the event's zone) and tiers.
- * PATCH /api/manage/events/[id] — update details and modules.
+ * PATCH  /api/manage/events/[id] — update details and modules.
+ * DELETE /api/manage/events/[id] — delete the event (Events VP, President).
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/access/current-user";
-import { canManageEvent, updateEvent } from "@/lib/events/manage";
+import { canDeleteEvent, canManageEvent, deleteEvent, updateEvent } from "@/lib/events/manage";
 import { dateToZonedInput } from "@/lib/events/time";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -21,6 +22,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   });
   if (!event) return NextResponse.json({ error: "Event not found" }, { status: 404 });
 
+  const canDelete = await canDeleteEvent(user.id, id);
   const tz = event.settings?.timezone ?? "America/Toronto";
   const local = (d: Date | null) => (d ? dateToZonedInput(d, tz) : "");
   return NextResponse.json(
@@ -34,6 +36,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       endAt: local(event.endAt),
       timezone: tz,
       published: event.published,
+      canDelete,
       ticketsEnabled: Boolean(event.settings?.ticketsEnabled),
       checkInEnabled: Boolean(event.settings?.checkInEnabled),
       budgetEnabled: Boolean(event.settings?.budgetEnabled),
@@ -63,5 +66,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
   const result = await updateEvent(user.id, id, await request.json().catch(() => ({})));
+  return result.ok ? NextResponse.json({ ok: true }) : NextResponse.json({ error: result.message }, { status: result.status });
+}
+
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { id } = await params;
+  const result = await deleteEvent(user.id, id);
   return result.ok ? NextResponse.json({ ok: true }) : NextResponse.json({ error: result.message }, { status: result.status });
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { EventDetailsFields, Field, inputClass, PRIMARY, send, type EventForm } from "../EventFields";
@@ -21,7 +22,7 @@ type Tier = {
   active: boolean;
 };
 
-type Loaded = EventForm & { id: string; published: boolean; ticketTypes: Tier[] };
+type Loaded = EventForm & { id: string; published: boolean; canDelete: boolean; ticketTypes: Tier[] };
 
 /** Scanner colours that never look like an error (red/amber mean problems at the door). */
 const TIER_COLORS = ["#0b6e4f", "#1d4ed8", "#6b21a8", "#0e7490", "#334155"];
@@ -52,6 +53,7 @@ const toForm = (t: Tier): TierForm => ({
 
 export default function EventEditor({ eventId }: { eventId: string }) {
   const t = useTranslations("portal.eventEditor");
+  const router = useRouter();
   const base = `/api/manage/events/${eventId}`;
   const [data, setData] = useState<Loaded | null>(null);
   const [form, setForm] = useState<EventForm | null>(null);
@@ -182,6 +184,31 @@ export default function EventEditor({ eventId }: { eventId: string }) {
               onSave={(v) => act(() => send(`${base}/ticket-types`, "POST", { ...v, sortOrder: data.ticketTypes.length }), t("tierAdded"))}
             />
           </div>
+        </section>
+      )}
+
+      {data.canDelete && (
+        <section className="rounded-2xl border bg-white p-5 shadow-sm" style={{ borderColor: "#f3c7c3" }}>
+          <h2 className="text-lg font-semibold text-red-800">{t("deleteTitle")}</h2>
+          <p className="mt-1 text-sm text-gray-600">{t("deleteHint")}</p>
+          <button
+            type="button"
+            className="mt-3 rounded-lg border px-4 py-2 text-sm font-semibold text-red-800"
+            style={{ borderColor: "#b42318" }}
+            onClick={async () => {
+              if (!confirm(t("deleteConfirm", { title: data.title }))) return;
+              setError("");
+              setNotice("");
+              try {
+                await send(base, "DELETE");
+                router.push("/portal/events");
+              } catch (e) {
+                setError(e instanceof Error ? e.message : t("error"));
+              }
+            }}
+          >
+            {t("delete")}
+          </button>
         </section>
       )}
     </div>

@@ -6,7 +6,7 @@
  *
  *   npx tsx scripts/test-budget-sheet.ts
  */
-import { approvalState, extractSheetId, parseBudgetSheet, toNumber } from "../src/lib/finance/budget-sheet";
+import { extractSheetId, parseBudgetSheet, toNumber } from "../src/lib/finance/budget-sheet";
 import { copy, filledBudget, template } from "./fixtures/filled-budget";
 
 let failed = 0;
@@ -20,7 +20,6 @@ const blank = parseBudgetSheet(template.overview, template.detailed);
 check("blank template parses without warnings", blank.warnings.length === 0, blank.warnings.join(" | "));
 check("blank: six allocation categories found", blank.allocation.length === 6, blank.allocation.map((a) => a.label).join(", "));
 check("blank: no lines", blank.planned.expense.lines.length === 0 && blank.actual.revenue.lines.length === 0);
-check("blank: not approved", blank.approval.state === "OPEN" && blank.approval.lines.length === 0);
 
 const { overview: o, detailed: d } = filledBudget();
 const filled = parseBudgetSheet(o, d);
@@ -30,9 +29,7 @@ check("budget cap", filled.cap === 3000);
 check("allocation amounts by category", filled.allocation.map((a) => a.amount).join(",") === "1200,600,300,250,400,250");
 check("allocation note kept", filled.allocation[0].note === "Hart House deposit");
 check("approval amounts don't leak into allocation", !filled.allocation.some((a) => a.label === "Approval Status"));
-check("two approval lines read", filled.approval.lines.length === 2, JSON.stringify(filled.approval.lines));
-check("approval ticks read (TRUE and ✓)", filled.approval.lines.every((l) => l.approved === true));
-check("approval status 'Approved' → APPROVED", filled.approval.status === "Approved" && filled.approval.state === "APPROVED");
+check("approval block ignored", !("approval" in filled));
 check("planned revenue lines and total", filled.planned.revenue.lines.length === 2 && filled.planned.revenue.total === 2360);
 check("actual revenue", filled.actual.revenue.lines.length === 1 && filled.actual.revenue.total === 1900);
 check("planned expenses incl. '$550.00' text", filled.planned.expense.lines.length === 3 && filled.planned.expense.lines[1].total === 550);
@@ -52,7 +49,6 @@ check("inserted row: totals row still found", shifted.planned.expense.total === 
 check("sheet id from a share link", extractSheetId("https://docs.google.com/spreadsheets/d/1qOmpNd5xV-RhvwaBBdYXyPFX4CtIE8lbINS9nEKGTuw/edit?gid=1728473132#gid=1728473132") === "1qOmpNd5xV-RhvwaBBdYXyPFX4CtIE8lbINS9nEKGTuw");
 check("sheet id: not a sheet link", extractSheetId("https://example.com/hello") === null);
 check("numbers: $1,234.50 / (20) / -", toNumber("$1,234.50") === 1234.5 && toNumber("(20)") === -20 && toNumber("-") === null);
-check("approval wording", approvalState("Approved ✅") === "APPROVED" && approvalState("Not approved") === "OPEN" && approvalState("Rejected") === "RETURNED" && approvalState(null) === "OPEN");
 
 // --- A sheet that isn't the template
 const other = parseBudgetSheet([["Hello"]], [["World"]]);
