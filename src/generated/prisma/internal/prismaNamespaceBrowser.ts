@@ -57,6 +57,7 @@ export const ModelName = {
   VerificationToken: 'VerificationToken',
   Department: 'Department',
   Event: 'Event',
+  EventMemoryPhoto: 'EventMemoryPhoto',
   Registration: 'Registration',
   TicketTier: 'TicketTier',
   EventTicket: 'EventTicket',
@@ -198,6 +199,19 @@ export const EventScalarFieldEnum = {
 export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]
 
 
+export const EventMemoryPhotoScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  imageUrl: 'imageUrl',
+  caption: 'caption',
+  sortOrder: 'sortOrder',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type EventMemoryPhotoScalarFieldEnum = (typeof EventMemoryPhotoScalarFieldEnum)[keyof typeof EventMemoryPhotoScalarFieldEnum]
+
+
 export const RegistrationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -282,6 +296,7 @@ export const EventSettingsScalarFieldEnum = {
   budgetSheetSyncedAt: 'budgetSheetSyncedAt',
   budgetSheetSyncError: 'budgetSheetSyncError',
   budgetSheetData: 'budgetSheetData',
+  memoriesRecap: 'memoriesRecap',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

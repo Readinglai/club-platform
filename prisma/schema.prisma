@@ -185,6 +185,25 @@ model Event {
   team           Group?
   budgetLines    EventBudgetLine[]
   financeRecords FinanceRecord[]
+  memoryPhotos   EventMemoryPhoto[]
+}
+
+/// A photo in an event's "past memories" on its public detail page, added in
+/// the portal by the Events VP or the Website group. The recap text lives in
+/// EventSettings.memoriesRecap.
+model EventMemoryPhoto {
+  id      String @id @default(cuid())
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  imageUrl    String
+  caption     String?
+  sortOrder   Int     @default(0)
+  createdById String?
+
+  createdAt DateTime @default(now())
+
+  @@index([eventId])
 }
 
 model Registration {
@@ -342,6 +361,9 @@ model EventSettings {
   budgetSheetSyncedAt    DateTime?
   budgetSheetSyncError   String?
   budgetSheetData        String?
+
+  /// A few sentences about how the event went, shown with its memory photos.
+  memoriesRecap String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

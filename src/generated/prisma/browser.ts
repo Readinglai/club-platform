@@ -48,6 +48,13 @@ export type Department = Prisma.DepartmentModel
  */
 export type Event = Prisma.EventModel
 /**
+ * Model EventMemoryPhoto
+ * A photo in an event's "past memories" on its public detail page, added in
+ * the portal by the Events VP or the Website group. The recap text lives in
+ * EventSettings.memoriesRecap.
+ */
+export type EventMemoryPhoto = Prisma.EventMemoryPhotoModel
+/**
  * Model Registration
  * 
  */

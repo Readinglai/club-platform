@@ -403,6 +403,7 @@ export const ModelName = {
   VerificationToken: 'VerificationToken',
   Department: 'Department',
   Event: 'Event',
+  EventMemoryPhoto: 'EventMemoryPhoto',
   Registration: 'Registration',
   TicketTier: 'TicketTier',
   EventTicket: 'EventTicket',
@@ -455,7 +456,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "department" | "event" | "registration" | "ticketTier" | "eventTicket" | "memberRedemption" | "eventSettings" | "eventBudgetLine" | "ticketType" | "order" | "ticket" | "profile" | "membership" | "group" | "groupMember" | "approvalRequest" | "discussion" | "comment" | "announcement" | "announcementRead" | "taskGroup" | "taskGroupMember" | "task" | "taskAssignee" | "taskView" | "vote" | "voteOption" | "voteResponse" | "sponsor" | "sponsorHistory" | "siteConfig" | "achievement" | "alumni" | "financeRecord" | "budget" | "featureFlag" | "emailTemplate" | "pushSubscription" | "rOCSAUT_Membership_Info"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "department" | "event" | "eventMemoryPhoto" | "registration" | "ticketTier" | "eventTicket" | "memberRedemption" | "eventSettings" | "eventBudgetLine" | "ticketType" | "order" | "ticket" | "profile" | "membership" | "group" | "groupMember" | "approvalRequest" | "discussion" | "comment" | "announcement" | "announcementRead" | "taskGroup" | "taskGroupMember" | "task" | "taskAssignee" | "taskView" | "vote" | "voteOption" | "voteResponse" | "sponsor" | "sponsorHistory" | "siteConfig" | "achievement" | "alumni" | "financeRecord" | "budget" | "featureFlag" | "emailTemplate" | "pushSubscription" | "rOCSAUT_Membership_Info"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -900,6 +901,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.EventCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.EventCountAggregateOutputType> | number
+        }
+      }
+    }
+    EventMemoryPhoto: {
+      payload: Prisma.$EventMemoryPhotoPayload<ExtArgs>
+      fields: Prisma.EventMemoryPhotoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EventMemoryPhotoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventMemoryPhotoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EventMemoryPhotoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventMemoryPhotoPayload>
+        }
+        findFirst: {
+          args: Prisma.EventMemoryPhotoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventMemoryPhotoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EventMemoryPhotoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventMemoryPhotoPayload>
+        }
+        findMany: {
+          args: Prisma.EventMemoryPhotoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventMemoryPhotoPayload>[]
+        }
+        create: {
+          args: Prisma.EventMemoryPhotoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventMemoryPhotoPayload>
+        }
+        createMany: {
+          args: Prisma.EventMemoryPhotoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EventMemoryPhotoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventMemoryPhotoPayload>[]
+        }
+        delete: {
+          args: Prisma.EventMemoryPhotoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventMemoryPhotoPayload>
+        }
+        update: {
+          args: Prisma.EventMemoryPhotoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventMemoryPhotoPayload>
+        }
+        deleteMany: {
+          args: Prisma.EventMemoryPhotoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EventMemoryPhotoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EventMemoryPhotoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventMemoryPhotoPayload>[]
+        }
+        upsert: {
+          args: Prisma.EventMemoryPhotoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventMemoryPhotoPayload>
+        }
+        aggregate: {
+          args: Prisma.EventMemoryPhotoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEventMemoryPhoto>
+        }
+        groupBy: {
+          args: Prisma.EventMemoryPhotoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EventMemoryPhotoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EventMemoryPhotoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EventMemoryPhotoCountAggregateOutputType> | number
         }
       }
     }
@@ -3766,6 +3841,19 @@ export const EventScalarFieldEnum = {
 export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]
 
 
+export const EventMemoryPhotoScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  imageUrl: 'imageUrl',
+  caption: 'caption',
+  sortOrder: 'sortOrder',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type EventMemoryPhotoScalarFieldEnum = (typeof EventMemoryPhotoScalarFieldEnum)[keyof typeof EventMemoryPhotoScalarFieldEnum]
+
+
 export const RegistrationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -3850,6 +3938,7 @@ export const EventSettingsScalarFieldEnum = {
   budgetSheetSyncedAt: 'budgetSheetSyncedAt',
   budgetSheetSyncError: 'budgetSheetSyncError',
   budgetSheetData: 'budgetSheetData',
+  memoriesRecap: 'memoriesRecap',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -4780,6 +4869,7 @@ export type GlobalOmitConfig = {
   verificationToken?: Prisma.VerificationTokenOmit
   department?: Prisma.DepartmentOmit
   event?: Prisma.EventOmit
+  eventMemoryPhoto?: Prisma.EventMemoryPhotoOmit
   registration?: Prisma.RegistrationOmit
   ticketTier?: Prisma.TicketTierOmit
   eventTicket?: Prisma.EventTicketOmit
