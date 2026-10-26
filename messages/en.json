@@ -736,7 +736,14 @@
       "quickLinks": "Go to",
       "openTasks": "{count, plural, one {# open task} other {# open tasks}} assigned to you",
       "membersText": "Look up, add and export members",
-      "reportsText": "Event attendance and membership totals"
+      "reportsText": "Event attendance and membership totals",
+      "memberCard": "Member card",
+      "validUntil": "Valid until {date}",
+      "memberCodeQr": "QR code of member code {code}",
+      "comingUp": "Coming up",
+      "noUpcoming": "No upcoming events yet. New events will show here.",
+      "getTickets": "Get tickets",
+      "signupUnavailable": "Sign-up not available right now"
     },
     "membershipPage": {
       "title": "Membership",

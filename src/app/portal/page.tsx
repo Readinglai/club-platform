@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { QRCodeSVG } from "qrcode.react";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/access/current-user";
 import { getPortalSections } from "@/lib/access/portal-nav";
 import { isProfileComplete } from "@/lib/membership/profile";
 import { getAttention } from "@/lib/portal/attention";
+import { getUpcomingEvents } from "@/lib/events/public";
 
 const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
@@ -18,13 +20,16 @@ export default async function PortalPage() {
   // Everyone fills in their details once before using the portal.
   if (!(await isProfileComplete(user.id))) redirect("/portal/complete-profile");
 
-  const [t, nav, sections, attention, locale] = await Promise.all([
+  const [t, nav, sections, attention, locale, upcoming] = await Promise.all([
     getTranslations("portal.homePage"),
     getTranslations("portal"),
     getPortalSections(user.id),
     getAttention(user.id, user.email),
     getLocale(),
+    getUpcomingEvents(3),
   ]);
+  const membership = attention.membership.state === "active" ? attention.membership : null;
+  const eventHref = (id: string) => (locale === "en" ? `/events/${id}` : `/${locale}/events/${id}`);
   const dateLocale = locale === "zh" ? "zh-TW" : "en-CA";
 
   const needs: Card[] = [];
@@ -73,6 +78,22 @@ export default async function PortalPage() {
       </section>
 
       <div className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-8">
+        {membership && (
+          <section aria-labelledby="card-title" className="flex items-center justify-between gap-4 rounded-2xl p-5 shadow-sm" style={{ backgroundColor: PRIMARY }}>
+            <div className="min-w-0">
+              <h2 id="card-title" className="text-xs font-medium uppercase tracking-widest" style={{ color: `${SECONDARY}cc` }}>{t("memberCard")}</h2>
+              <p className="mt-1 truncate text-lg font-semibold text-white">{user.name || user.email}</p>
+              <p className="mt-2 font-mono text-xl font-bold tracking-wide" style={{ color: SECONDARY }}>{membership.code}</p>
+              <p className="mt-1 text-xs text-white/70">
+                {t("validUntil", { date: new Date(membership.termEnd).toLocaleDateString(dateLocale, { timeZone: "America/Toronto", dateStyle: "medium" }) })}
+              </p>
+            </div>
+            <div className="shrink-0 rounded-xl bg-white p-2" aria-label={t("memberCodeQr", { code: membership.code })} role="img">
+              <QRCodeSVG value={membership.code} size={96} level="M" />
+            </div>
+          </section>
+        )}
+
         <section aria-labelledby="attention-title">
           <h2 id="attention-title" className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">{t("attentionTitle")}</h2>
           {needs.length === 0 ? (
@@ -92,6 +113,36 @@ export default async function PortalPage() {
                     </span>
                     <span aria-hidden="true" className="shrink-0 text-gray-400">›</span>
                   </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section aria-labelledby="upcoming-title">
+          <h2 id="upcoming-title" className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">{t("comingUp")}</h2>
+          {upcoming.length === 0 ? (
+            <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm">{t("noUpcoming")}</p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {upcoming.map((e) => (
+                <li key={e.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm">
+                  <Link href={eventHref(e.id)} className="min-w-0">
+                    <span className="block truncate text-sm font-semibold" style={{ color: PRIMARY }}>{e.title}</span>
+                    <span className="block text-xs text-gray-600">
+                      {e.startAt.toLocaleString(dateLocale, { timeZone: e.timezone, dateStyle: "medium", timeStyle: "short" })}
+                      {e.location ? ` · ${e.location}` : ""}
+                    </span>
+                  </Link>
+                  {e.canSignUp ? (
+                    <Link href={`/e/${e.id}`} className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold" style={{ backgroundColor: SECONDARY, color: PRIMARY }}>
+                      {t("getTickets")}
+                    </Link>
+                  ) : (
+                    <span aria-disabled="true" className="shrink-0 cursor-not-allowed rounded-lg px-3 py-1.5 text-xs font-semibold" style={{ backgroundColor: "#e5e7eb", color: "#6b7280" }}>
+                      {t("signupUnavailable")}
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

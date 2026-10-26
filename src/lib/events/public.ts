@@ -102,3 +102,29 @@ export async function getPublicEvent(eventId: string, viewerId: string | null) {
     preview: !event.published,
   };
 }
+
+/** Published events that haven't ended, soonest first, with whether sign-up is open. */
+export async function getUpcomingEvents(limit = 3) {
+  const now = new Date();
+  const events = await db.event.findMany({
+    where: { published: true, OR: [{ endAt: { gte: now } }, { endAt: null, startAt: { gte: now } }] },
+    orderBy: { startAt: "asc" },
+    take: limit,
+    select: {
+      id: true,
+      title: true,
+      startAt: true,
+      location: true,
+      settings: { select: { timezone: true, ticketsEnabled: true } },
+      _count: { select: { ticketTypes: { where: { active: true } } } },
+    },
+  });
+  return events.map((e) => ({
+    id: e.id,
+    title: e.title,
+    startAt: e.startAt,
+    location: e.location,
+    timezone: e.settings?.timezone ?? "America/Toronto",
+    canSignUp: Boolean(e.settings?.ticketsEnabled) && e._count.ticketTypes > 0,
+  }));
+}

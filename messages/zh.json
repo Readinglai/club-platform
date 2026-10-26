@@ -736,7 +736,14 @@
       "quickLinks": "前往",
       "openTasks": "{count} 項任務待你處理",
       "membersText": "查詢、新增及匯出會員",
-      "reportsText": "活動出席及會籍總數"
+      "reportsText": "活動出席及會籍總數",
+      "memberCard": "會員卡",
+      "validUntil": "有效期限至 {date}",
+      "memberCodeQr": "會員編號 {code} 的 QR 碼",
+      "comingUp": "即將舉行",
+      "noUpcoming": "目前沒有即將舉行的活動，新活動會顯示在這裡。",
+      "getTickets": "購票",
+      "signupUnavailable": "目前無法報名"
     },
     "membershipPage": {
       "title": "會員資格",
