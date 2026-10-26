@@ -26,7 +26,7 @@ export function LoginButtons({ callbackUrl }: LoginButtonsProps) {
     <div className="w-full flex flex-col gap-4">
       {/* Google 登入按鈕 */}
       <button
-        onClick={() => signIn("google", { callbackUrl })}
+        onClick={() => signIn("google", { callbackUrl }, { prompt: "select_account" })}
         className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 hover:opacity-90 active:scale-95 cursor-pointer"
         style={{ backgroundColor: "#1a2744", color: "#ffffff" }}
       >

@@ -23,6 +23,7 @@ const GROUPS: Array<{ slug: string; name: string; parent?: string }> = [
   { slug: GROUP_SLUGS.sponsorship, name: "Sponsorship / Outreach", parent: GROUP_SLUGS.operations },
   { slug: GROUP_SLUGS.finance, name: "Finance", parent: GROUP_SLUGS.operations },
   { slug: GROUP_SLUGS.it, name: "IT", parent: GROUP_SLUGS.operations },
+  { slug: GROUP_SLUGS.website, name: "Website", parent: GROUP_SLUGS.operations },
 ];
 
 async function main() {

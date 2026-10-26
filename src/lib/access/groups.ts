@@ -8,6 +8,8 @@ export const GROUP_SLUGS = {
   sponsorship: "operations-sponsorship",
   finance: "operations-finance",
   it: "operations-it",
+  /** People the Operations VP delegates to edit the public Members page and Achievements. */
+  website: "operations-website",
 } as const;
 
 /** Slug for an event's own team, created under Events with the event. */

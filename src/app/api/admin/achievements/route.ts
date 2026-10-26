@@ -21,7 +21,7 @@ import { requirePermissionJson } from "@/lib/access/require";
  */
 export async function GET(request: NextRequest) {
   try {
-    const guard = await requirePermissionJson("content.manage");
+    const guard = await requirePermissionJson("showcase.manage");
     if (guard.error) return guard.error;
 
     const yearParam = new URL(request.url).searchParams.get("year");
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const guard = await requirePermissionJson("content.manage");
+    const guard = await requirePermissionJson("showcase.manage");
     if (guard.error) return guard.error;
 
     const body = await request.json();

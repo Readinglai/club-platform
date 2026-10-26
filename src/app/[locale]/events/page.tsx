@@ -26,8 +26,10 @@ type DbEvent = {
   description: string | null;
   imageUrl: string | null;
   startAt: Date;
+  endAt: Date | null;
   location: string | null;
-  capacity: number | null;
+  settings: { ticketsEnabled: boolean } | null;
+  _count: { ticketTypes: number };
 };
 
 interface EventCardProps {
@@ -41,6 +43,9 @@ function EventCard({ event, locale, t }: EventCardProps) {
   const desc = event.description ?? "";
   const shortDesc = desc.replace(/\n/g, " ").slice(0, 160);
   const isDescTruncated = desc.replace(/\n/g, " ").length > 160;
+  // Sign-up opens the ticket page only for upcoming events with tickets on.
+  const canSignUp =
+    (event.endAt ?? event.startAt) > new Date() && Boolean(event.settings?.ticketsEnabled) && event._count.ticketTypes > 0;
 
   return (
     <article
@@ -112,23 +117,27 @@ function EventCard({ event, locale, t }: EventCardProps) {
           </p>
         )}
 
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-3 mt-auto border-t" style={{ borderColor: "#f3f4f6" }}>
-          {event.capacity !== null ? (
-            <span className="text-xs text-gray-400">{t("capacity")}: {event.capacity}</span>
-          ) : (
-            <span className="text-xs text-gray-400">{t("noCapacityLimit")}</span>
-          )}
+        {/* Footer: details, and sign-up as its own button */}
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t pt-3" style={{ borderColor: "#f3f4f6" }}>
           <Link
             href={href}
             className="inline-flex items-center gap-1 text-sm font-semibold transition-opacity hover:opacity-70"
             style={{ color: PRIMARY }}
           >
             {t("readMore")}
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </Link>
+          {canSignUp ? (
+            <Link href={`/e/${event.id}`} className="rounded-lg px-4 py-2 text-sm font-semibold" style={{ backgroundColor: SECONDARY, color: PRIMARY }}>
+              {t("getTickets")}
+            </Link>
+          ) : (
+            <span aria-disabled="true" className="cursor-not-allowed rounded-lg px-4 py-2 text-sm font-semibold" style={{ backgroundColor: "#e5e7eb", color: "#6b7280" }}>
+              {t("signupUnavailable")}
+            </span>
+          )}
         </div>
       </div>
     </article>
@@ -152,8 +161,10 @@ export default async function EventsPage({ params }: EventsPageProps) {
       description: true,
       imageUrl: true,
       startAt: true,
+      endAt: true,
       location: true,
-      capacity: true,
+      settings: { select: { ticketsEnabled: true } },
+      _count: { select: { ticketTypes: { where: { active: true } } } },
     },
     orderBy: { startAt: "asc" },
   });

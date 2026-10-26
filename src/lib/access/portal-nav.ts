@@ -34,7 +34,7 @@ export async function getPortalSections(userId: string): Promise<PortalSections>
     staff: positions.length > 0,
     members: can(access, "members.view"),
     announcements: can(access, "announcements.manage"),
-    website: can(access, "content.manage"),
+    website: can(access, "content.manage") || can(access, "showcase.manage") || can(access, "memories.manage"),
     reports: can(access, "reports.view"),
   };
 }

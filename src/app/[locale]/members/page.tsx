@@ -89,10 +89,10 @@ function PersonCard({ person, locale, positionLabel, viewLabel }: { person: Team
       <div className="flex min-w-0 flex-col gap-1.5">
         <h3 className="truncate text-lg font-bold" style={{ color: PRIMARY }}>{person.name}</h3>
         <span className="self-start rounded-full px-3 py-1 text-xs font-bold" style={{ backgroundColor: SECONDARY, color: PRIMARY }}>
-          {positionLabel}
-          {person.group ? ` · ${person.group}` : ""}
+          {person.title ?? `${positionLabel}${person.group ? ` · ${person.group}` : ""}`}
         </span>
         {person.major && <span className="text-sm text-gray-600">{person.major}</span>}
+        {person.bio && <p className="line-clamp-2 text-sm text-gray-500">{person.bio}</p>}
       </div>
     </Link>
   );

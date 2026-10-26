@@ -5,7 +5,7 @@ import WebsiteFrame from "../WebsiteFrame";
 import AchievementsManager from "./AchievementsManager";
 
 export default async function AchievementsPage() {
-  await requirePagePermission("content.manage");
+  await requirePagePermission("showcase.manage");
   const t = await getTranslations("admin.achievements");
   const achievements = await db.achievement.findMany({
     orderBy: [{ year: "desc" }, { createdAt: "desc" }],

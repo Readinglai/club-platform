@@ -6,7 +6,7 @@ import WebsiteFrame from "../../WebsiteFrame";
 import AchievementEditForm from "./AchievementEditForm";
 
 export default async function AchievementPage({ params }: { params: Promise<{ id: string }> }) {
-  await requirePagePermission("content.manage");
+  await requirePagePermission("showcase.manage");
   const t = await getTranslations("admin.achievements");
   const { id } = await params;
   const achievement = await db.achievement.findUnique({ where: { id } });

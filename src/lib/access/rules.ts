@@ -40,8 +40,12 @@ export const PERMISSIONS = [
   "members.manage",
   /** Write, publish and delete announcements. */
   "announcements.manage",
-  /** Edit the public website: sponsors, achievements, alumni, settings, text. */
+  /** Edit the public website: sponsors, alumni, settings, text. */
   "content.manage",
+  /** Edit the public Members page (who shows, order, titles, bios) and Achievements. */
+  "showcase.manage",
+  /** Add an event's past memories (photos and a recap) to its public page. */
+  "memories.manage",
   /** See club-wide totals: event attendance and memberships (no personal details). */
   "reports.view",
   /** Assign people to groups and positions. */
@@ -109,6 +113,15 @@ const RULES: Rule[] = [
   { permission: "finance.view", heldIn: G.operations, minPosition: "VP" },
   { permission: "finance.edit", heldIn: G.operations, minPosition: "VP" },
   { permission: "finance.view", heldIn: G.finance, minPosition: "STAFF" },
+
+  // The public Members page and Achievements: the Operations VP, and anyone
+  // they add to the Website group under Operations.
+  { permission: "showcase.manage", heldIn: G.operations, minPosition: "VP" },
+  { permission: "showcase.manage", heldIn: G.website, minPosition: "STAFF" },
+
+  // Event memories on the public site: the Events VP and the Website group.
+  { permission: "memories.manage", heldIn: G.events, minPosition: "VP" },
+  { permission: "memories.manage", heldIn: G.website, minPosition: "STAFF" },
   { permission: "finance.edit", heldIn: G.finance, minPosition: "STAFF" },
 
 ];

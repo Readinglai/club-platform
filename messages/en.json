@@ -10,7 +10,8 @@
     "switchLang": "中文",
     "editProfile": "Profile",
     "signOut": "Sign Out",
-    "signIn": "Sign In"
+    "signIn": "Sign In",
+    "portal": "Portal"
   },
   "hero": {
     "title": "ROCSAUT",
@@ -102,7 +103,8 @@
     "cancelError": "Cancellation failed. Please try again.",
     "networkError": "Network error. Please try again.",
     "getTickets": "Get tickets",
-    "signupUnavailable": "Sign-up not available right now"
+    "signupUnavailable": "Sign-up not available right now",
+    "pastMemories": "Past memories"
   },
   "members": {
     "title": "Members",
@@ -212,7 +214,10 @@
     "sendMagicLink": "Send login link",
     "sending": "Sending...",
     "magicLinkSent": "Login link sent. Please check your inbox.",
-    "errorEmail": "Failed to send login link. Please try again later."
+    "errorEmail": "Failed to send login link. Please try again later.",
+    "signedInAs": "You're signed in as {who}.",
+    "continueSignedIn": "Continue",
+    "useDifferentAccount": "Use a different account"
   },
   "dashboard": {
     "welcomeBack": "Welcome back",
@@ -1220,7 +1225,11 @@
       "settingsTitle": "Site settings",
       "settingsText": "Home page image and sections, features, emails and contacts",
       "textTitle": "Website text",
-      "textText": "Edit the site's English and Chinese wording"
+      "textText": "Edit the site's English and Chinese wording",
+      "teamTitle": "Members page",
+      "teamText": "Who appears on the public Members page, their order, titles and bios",
+      "memoriesTitle": "Event memories",
+      "memoriesText": "Photos and a short recap on each past event's page"
     },
     "reportsPage": {
       "title": "Reports",
@@ -1242,6 +1251,45 @@
       "source_IMPORTED": "Imported",
       "byMonth": "New memberships by month",
       "byMonthNote": "Counted by the date each membership was recorded; imported members count in the month they were imported."
+    },
+    "teamPageEditor": {
+      "title": "Members page",
+      "intro": "Choose who appears on the public Members page, in what order, and the title and bio shown for each person.",
+      "show": "Show",
+      "moveUp": "Move {name} up",
+      "moveDown": "Move {name} down",
+      "publicTitle": "Public title",
+      "publicBio": "Public bio",
+      "bioPlaceholder": "Leave empty to use their own profile bio",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "saved": "Saved. The Members page is updated.",
+      "saveError": "Couldn't save. Try again.",
+      "viewPage": "View the Members page",
+      "empty": "Nobody holds a position yet, so the Members page is empty.",
+      "whoAppears": "Everyone holding a position in a department or group is listed here. Add or remove people on the Departments & groups page."
+    },
+    "memoriesEditor": {
+      "title": "Event memories",
+      "intro": "Add photos and a short recap to an event's public page after it happens.",
+      "noEvents": "No published events yet.",
+      "summary": "{photos, plural, =0 {Recap only} one {# photo} other {# photos}}",
+      "none": "Nothing yet",
+      "editorIntro": "These show in the \"Past memories\" section of the event's public page.",
+      "recap": "Recap",
+      "recapHint": "A few sentences about how it went.",
+      "photos": "Photos",
+      "photosHint": "Up to 30 photos. Use ↑ ↓ to change their order.",
+      "caption": "Caption (optional)",
+      "moveUp": "Move photo up",
+      "moveDown": "Move photo down",
+      "remove": "Remove",
+      "addPhoto": "Add a photo",
+      "save": "Save memories",
+      "saving": "Saving…",
+      "saved": "Saved. The event page is updated.",
+      "saveError": "Couldn't save. Try again.",
+      "viewPage": "View the event page"
     }
   },
   "ticketPage": {

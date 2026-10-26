@@ -10,7 +10,8 @@
     "switchLang": "EN",
     "editProfile": "個人資料",
     "signOut": "登出",
-    "signIn": "登入"
+    "signIn": "登入",
+    "portal": "會員入口"
   },
   "hero": {
     "title": "ROCSAUT",
@@ -102,7 +103,8 @@
     "cancelError": "取消失敗，請稍後再試",
     "networkError": "網路錯誤，請稍後再試",
     "getTickets": "購票",
-    "signupUnavailable": "目前無法報名"
+    "signupUnavailable": "目前無法報名",
+    "pastMemories": "過往回憶"
   },
   "members": {
     "title": "成員介紹",
@@ -212,7 +214,10 @@
     "sendMagicLink": "發送登入連結",
     "sending": "發送中...",
     "magicLinkSent": "登入連結已寄出，請查看信箱。",
-    "errorEmail": "寄送登入連結失敗，請稍後再試。"
+    "errorEmail": "寄送登入連結失敗，請稍後再試。",
+    "signedInAs": "你目前以 {who} 登入。",
+    "continueSignedIn": "繼續",
+    "useDifferentAccount": "使用其他帳號登入"
   },
   "dashboard": {
     "welcomeBack": "歡迎回來",
@@ -1220,7 +1225,11 @@
       "settingsTitle": "網站設定",
       "settingsText": "首頁圖片與區塊、功能、電郵及聯絡人",
       "textTitle": "網站文字",
-      "textText": "編輯網站的中英文文字"
+      "textText": "編輯網站的中英文文字",
+      "teamTitle": "成員頁面",
+      "teamText": "公開成員頁面顯示哪些人、排列順序、職稱與簡介",
+      "memoriesTitle": "活動回顧",
+      "memoriesText": "在每個過往活動頁面加入照片與簡短回顧"
     },
     "reportsPage": {
       "title": "報表",
@@ -1242,6 +1251,45 @@
       "source_IMPORTED": "匯入",
       "byMonth": "每月新會籍",
       "byMonthNote": "依會籍登記日期計算；匯入的會員計入匯入當月。"
+    },
+    "teamPageEditor": {
+      "title": "成員頁面",
+      "intro": "選擇公開成員頁面要顯示哪些人、排列順序，以及每個人顯示的職稱與簡介。",
+      "show": "顯示",
+      "moveUp": "將 {name} 上移",
+      "moveDown": "將 {name} 下移",
+      "publicTitle": "公開職稱",
+      "publicBio": "公開簡介",
+      "bioPlaceholder": "留空則使用本人在個人資料中的簡介",
+      "save": "儲存變更",
+      "saving": "儲存中…",
+      "saved": "已儲存，成員頁面已更新。",
+      "saveError": "無法儲存，請再試一次。",
+      "viewPage": "查看成員頁面",
+      "empty": "目前沒有人擔任職位，因此成員頁面是空的。",
+      "whoAppears": "所有在部門或小組擔任職位的人都會列在這裡。請在「部門與小組」頁面新增或移除人員。"
+    },
+    "memoriesEditor": {
+      "title": "活動回顧",
+      "intro": "在活動結束後，為活動公開頁面加入照片與簡短回顧。",
+      "noEvents": "目前沒有已公開的活動。",
+      "summary": "{photos, plural, =0 {只有回顧} other {# 張照片}}",
+      "none": "尚未加入",
+      "editorIntro": "這些內容會顯示在活動公開頁面的「過往回憶」區塊。",
+      "recap": "回顧",
+      "recapHint": "用幾句話描述活動的情況。",
+      "photos": "照片",
+      "photosHint": "最多 30 張，可用 ↑ ↓ 調整順序。",
+      "caption": "說明（選填）",
+      "moveUp": "將照片上移",
+      "moveDown": "將照片下移",
+      "remove": "移除",
+      "addPhoto": "新增照片",
+      "save": "儲存回顧",
+      "saving": "儲存中…",
+      "saved": "已儲存，活動頁面已更新。",
+      "saveError": "無法儲存，請再試一次。",
+      "viewPage": "查看活動頁面"
     }
   },
   "ticketPage": {

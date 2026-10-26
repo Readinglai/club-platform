@@ -33,9 +33,12 @@ export default async function MemberDetailPage({ params }: MemberDetailPageProps
   if (!member) notFound();
 
   const initials = getInitials(member.name);
-  const positionLabels = member.positions.map((p) =>
-    [t(`position_${p.position}`), p.group ?? (p.department ? t(`dept_${p.department}`) : null)].filter(Boolean).join(" · ")
-  );
+  const positionLabels = [
+    ...(member.title ? [member.title] : []),
+    ...member.positions.map((p) =>
+      [t(`position_${p.position}`), p.group ?? (p.department ? t(`dept_${p.department}`) : null)].filter(Boolean).join(" · ")
+    ),
+  ];
 
   const hasSocial = member.instagram || member.linkedin;
   const hasInfo = member.major || member.rocsautYear != null;
