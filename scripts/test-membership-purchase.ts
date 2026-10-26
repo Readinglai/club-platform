@@ -1,7 +1,8 @@
 /**
  * Checks membership activation and member-code numbering without Stripe,
  * using the year 2099 so no real codes are taken. Test data only
- * (@test.rocsaut.invalid, codes OTSA-2099-*), removed at the start of each run.
+ * (@test.rocsaut.invalid, codes OTSA-2099-*), removed before and after each run
+ * so other tests (e.g. test-reports.ts, which also uses 2099) don't count it.
  *
  *   npx tsx --env-file=.env.local scripts/test-membership-purchase.ts
  */
@@ -31,8 +32,11 @@ async function pending(userId: string, n: number) {
   });
 }
 
+const cleanup = () =>
+  db.membership.deleteMany({ where: { OR: [{ memberCode: { startsWith: "OTSA-2099-" } }, { memberCode: { startsWith: "PENDING-test-" } }] } });
+
 async function main() {
-  await db.membership.deleteMany({ where: { OR: [{ memberCode: { startsWith: "OTSA-2099-" } }, { memberCode: { startsWith: "PENDING-test-" } }] } });
+  await cleanup();
   const user = await db.user.upsert({
     where: { email: "buyer@test.rocsaut.invalid" },
     create: { email: "buyer@test.rocsaut.invalid", name: "[TEST] Buyer" },
@@ -72,6 +76,7 @@ async function main() {
   const re = await activateMembership(e.id, e.stripeSessionId!, 5);
   check("next code continues without gaps", re.activated && re.membership.memberCode === "OTSA-2099-0303", re.activated ? re.membership.memberCode : "");
 
+  await cleanup();
   console.log(`\n${failed ? "SOME CHECKS FAILED" : "all checks passed"}`);
   process.exitCode = failed ? 1 : 0;
 }
