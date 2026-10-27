@@ -171,5 +171,5 @@ welcome email and Portal → Membership simply show no "Add to Wallet" button).
   people by the old EXEC/MEMBER role; base it on positions instead.
 - Companion iOS app: its token sign-in was removed and the old `/api/exec/*` and
   `/api/admin/*` task, member, event and finance routes are gone; it needs a new sign-in
-  and the `/api/work/*`, `/api/club/*` and `/api/me/*` routes.
+  and the `/api/club/*` and `/api/me/*` routes.
 - Tidy the `admin.*` text keys that only the removed /admin pages used.

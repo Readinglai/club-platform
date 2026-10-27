@@ -69,60 +69,6 @@ export async function sendWelcomeEmail(opts: { to: string; name: string }) {
   });
 }
 
-export async function sendTaskStatusEmail(opts: {
-  to: string;
-  taskTitle: string;
-  newStatus: string;
-  taskGroupName: string;
-}) {
-  const statusLabel: Record<string, string> = {
-    TODO: "待辦",
-    IN_PROGRESS: "進行中",
-    DONE: "已完成",
-  };
-
-  await sendEmail({
-    to: opts.to,
-    subject: `任務狀態更新：${opts.taskTitle}`,
-    html: `
-      <p>您好，</p>
-      <p>您在任務小組「<strong>${opts.taskGroupName}</strong>」中負責的任務狀態已更新：</p>
-      <ul>
-        <li><strong>任務：</strong>${opts.taskTitle}</li>
-        <li><strong>新狀態：</strong>${statusLabel[opts.newStatus] ?? opts.newStatus}</li>
-      </ul>
-      <p>ROCSAUT 團隊</p>
-    `,
-  });
-}
-
-export async function sendTaskReminderEmail(opts: {
-  to: string;
-  taskTitle: string;
-  dueAt: Date;
-  taskGroupName: string;
-}) {
-  const due = opts.dueAt.toLocaleDateString("zh-TW");
-
-  const tpl = await getTemplate("event_reminder", {
-    subject: "任務截止提醒：{event_title}",
-    body: "您好，\n\n您在任務小組「{task_group}」中有一個即將到期的任務：\n- 任務：{event_title}\n- 截止日期：{event_date}\n\n請盡快完成，謝謝！\n\nROCSAUT 團隊",
-  });
-
-  const vars = {
-    event_title: opts.taskTitle,
-    event_date: due,
-    task_group: opts.taskGroupName,
-    name: "",
-  };
-
-  await sendEmail({
-    to: opts.to,
-    subject: interpolate(tpl.subject, vars),
-    html: interpolate(tpl.body, vars).replace(/\n/g, "<br>"),
-  });
-}
-
 export async function sendEventTicketEmail(opts: {
   to: string;
   name: string;

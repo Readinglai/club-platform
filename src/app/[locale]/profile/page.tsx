@@ -22,7 +22,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   }
 
   // Public profiles (bio, links) are for people holding a position.
-  if (!can(await getAccess(session.user.id), "tasks.use")) {
+  if (!can(await getAccess(session.user.id), "profile.public")) {
     redirect(`/${locale}`);
   }
 

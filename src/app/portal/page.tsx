@@ -33,9 +33,6 @@ export default async function PortalPage() {
   const dateLocale = locale === "zh" ? "zh-TW" : "en-CA";
 
   const needs: Card[] = [];
-  if (attention.openTasks > 0) {
-    needs.push({ href: "/portal/tasks", title: t("openTasks", { count: attention.openTasks }), tone: "action" });
-  }
   if (attention.membership.state === "none") {
     needs.push({ href: "/portal/membership", title: t("joinTitle"), text: t("joinText"), tone: "info" });
   } else if (attention.membership.endsSoon) {
@@ -53,7 +50,6 @@ export default async function PortalPage() {
 
   const links: Card[] = [
     { href: "/portal/tickets", title: nav("tickets") },
-    sections.staff && { href: "/portal/tasks", title: nav("tasks") },
     { href: "/portal/membership", title: nav("membership"), text: t("membershipText") },
     sections.events && { href: "/portal/events", title: nav("events"), text: t("eventsText") },
     sections.team && { href: "/portal/team", title: nav("team"), text: t("teamText") },

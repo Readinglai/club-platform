@@ -2,7 +2,7 @@
  * For API routes: a 403 response unless the person has the permission
  * (from their group positions, see rules.ts); null when they do.
  *
- *   const forbidden = await forbidUnless(userId, "tasks.use");
+ *   const forbidden = await forbidUnless(userId, "events.manage");
  *   if (forbidden) return forbidden;
  */
 

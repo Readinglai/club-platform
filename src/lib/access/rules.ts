@@ -48,8 +48,8 @@ export const PERMISSIONS = [
   "reports.view",
   /** Assign people to groups and positions. */
   "groups.manage",
-  /** Tasks, task groups, discussions and votes (staff only). */
-  "tasks.use",
+  /** Have a public profile (bio, links): anyone holding a position. */
+  "profile.public",
   /** Upload images beyond one's own profile photo. */
   "uploads.create",
 ] as const;
@@ -76,7 +76,7 @@ const RULES: Rule[] = [
   { permission: "*", heldIn: G.executive, minPosition: "PRESIDENT", global: true },
 
   // Anyone holding a position in any group is staff.
-  { permission: "tasks.use", heldIn: "*", minPosition: "STAFF" },
+  { permission: "profile.public", heldIn: "*", minPosition: "STAFF" },
   { permission: "uploads.create", heldIn: "*", minPosition: "STAFF" },
 
   // Every VP assigns people within their own department, and any VP may

@@ -62,7 +62,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   // Public profiles (bio, links) are for people holding a position.
-  if (!can(await getAccess(userId), "tasks.use")) {
+  if (!can(await getAccess(userId), "profile.public")) {
     return NextResponse.json({ error: "æ¬Šé™ä¸è¶³" }, { status: 403 });
   }
 

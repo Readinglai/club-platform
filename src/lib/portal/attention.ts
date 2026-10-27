@@ -9,25 +9,22 @@ import { getMyTickets, type MyTicket } from "@/lib/tickets/mine";
 const RENEW_WINDOW_DAYS = 30;
 
 export type Attention = {
-  openTasks: number;
   nextTicket: MyTicket | null;
   membership: { state: "none" } | { state: "active"; code: string; endsSoon: boolean; termEnd: string };
   unreadAnnouncements: number;
 };
 
 export async function getAttention(userId: string, email: string): Promise<Attention> {
-  const [membership, tickets, unreadAnnouncements, openTasks] = await Promise.all([
+  const [membership, tickets, unreadAnnouncements] = await Promise.all([
     getCurrentMembership(userId),
     getMyTickets(userId, email),
     db.announcement.count({ where: { published: true, reads: { none: { userId } } } }),
-    db.task.count({ where: { groupId: { not: null }, status: { not: "DONE" }, assignees: { some: { userId } } } }),
   ]);
 
   const now = Date.now();
   const nextTicket = tickets.find((t) => t.status === "valid" && new Date(t.endAt ?? t.startAt).getTime() >= now) ?? null;
 
   return {
-    openTasks,
     nextTicket,
     membership: membership
       ? {

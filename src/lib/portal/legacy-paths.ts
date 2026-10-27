@@ -16,7 +16,6 @@ const ADMIN: Array<[RegExp, string]> = [
   [/^\/events(\/|$)/, "/portal/events"],
   [/^\/finance(\/|$)/, "/portal/finance"],
   [/^\/departments(\/|$)/, "/portal/team"],
-  [/^\/task-groups(\/|$)/, "/portal/tasks"],
   [new RegExp(`^/sponsors/${ID}/?$`), "/portal/website/sponsors/$1"],
   [/^\/sponsors(\/|$)/, "/portal/website/sponsors"],
   [new RegExp(`^/achievements/${ID}/?$`), "/portal/website/achievements/$1"],
@@ -29,7 +28,6 @@ const ADMIN: Array<[RegExp, string]> = [
 
 const EXEC: Array<[RegExp, string]> = [
   [/^\/departments(\/|$)/, "/portal/team"],
-  [/^\/task-groups(\/|$)/, "/portal/tasks"],
 ];
 
 /** The portal path for an old /admin or /exec address (with or without /zh or /en), or null. */

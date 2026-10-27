@@ -30,14 +30,12 @@ interface Props {
   initialFlags: FeatureFlag[];
   initialTemplates: EmailTemplate[];
   initialSections: SectionConfig[];
-  initialReminderHours: number;
 }
 
 export default function SiteConfigManager({
   initialFlags,
   initialTemplates,
   initialSections,
-  initialReminderHours,
 }: Props) {
   const t = useTranslations("admin.siteConfig");
   const tc = useTranslations("admin.common");
@@ -150,33 +148,6 @@ export default function SiteConfigManager({
     }
   }
 
-  // ── Reminder Hours ─────────────────────────────────────────────────────────
-  const [reminderHours, setReminderHours] = useState(String(initialReminderHours));
-  const [reminderSaving, setReminderSaving] = useState(false);
-  const [reminderSuccess, setReminderSuccess] = useState(false);
-  const [reminderError, setReminderError] = useState<string | null>(null);
-
-  async function saveReminderHours() {
-    const val = parseInt(reminderHours, 10);
-    if (isNaN(val) || val <= 0) { setReminderError(t("reminderInvalid")); return; }
-    setReminderSaving(true);
-    setReminderError(null);
-    setReminderSuccess(false);
-    try {
-      const res = await fetch("/api/admin/site-config", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key: "reminder_hours_before", value: String(val) }),
-      });
-      if (res.ok) setReminderSuccess(true);
-      else { const d = await res.json(); setReminderError(d.error ?? t("saveFailed")); }
-    } catch {
-      setReminderError(t("networkError"));
-    } finally {
-      setReminderSaving(false);
-    }
-  }
-
   return (
     <div className="flex flex-col gap-5">
       {/* Feature Flags */}
@@ -269,44 +240,6 @@ export default function SiteConfigManager({
             style={{ backgroundColor: PRIMARY, color: SECONDARY }}
           >
             {sectionsSaving ? t("saving") : t("saveSections")}
-          </button>
-        </div>
-      </div>
-
-      {/* Notification Timing */}
-      <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide" style={{ color: PRIMARY }}>
-          {t("notificationTitle")}
-        </h2>
-        <div className="flex items-center gap-3">
-          <label className="text-sm text-gray-600 shrink-0">{t("reminderLabel")}</label>
-          <input
-            type="number"
-            value={reminderHours}
-            onChange={(e) => { setReminderHours(e.target.value); setReminderSuccess(false); }}
-            min={1}
-            max={168}
-            autoComplete="off"
-            className="w-24 border rounded-lg px-3 py-2 text-sm focus:outline-none"
-            style={{ borderColor: "#e5e7eb", color: PRIMARY }}
-          />
-          <span className="text-sm text-gray-500">{t("reminderUnit")}</span>
-        </div>
-        {reminderError && (
-          <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">{reminderError}</p>
-        )}
-        {reminderSuccess && (
-          <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">{t("saved")}</p>
-        )}
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={saveReminderHours}
-            disabled={reminderSaving}
-            className="px-5 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
-            style={{ backgroundColor: PRIMARY, color: SECONDARY }}
-          >
-            {reminderSaving ? t("saving") : tc("save")}
           </button>
         </div>
       </div>

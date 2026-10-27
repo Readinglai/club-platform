@@ -47,7 +47,7 @@ export async function PATCH(request: Request) {
   }
 
   // Public profiles (bio, links) are for people holding a position.
-  if (!can(await getAccess(session.user.id), "tasks.use")) {
+  if (!can(await getAccess(session.user.id), "profile.public")) {
     return NextResponse.json({ error: "權限不足" }, { status: 403 });
   }
 

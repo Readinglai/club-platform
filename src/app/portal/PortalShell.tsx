@@ -24,7 +24,6 @@ function navSections(s: PortalSections) {
     { href: "/portal/announcements", key: "announcements", icon: "✉" },
   ];
   const work: Item[] = [
-    s.staff && { href: "/portal/tasks", key: "tasks", icon: "☑" },
     s.events && { href: "/portal/events", key: "events", icon: "★" },
     s.team && { href: "/portal/team", key: "team", icon: "⚑" },
     s.finance && { href: "/portal/finance", key: "finance", icon: "$" },

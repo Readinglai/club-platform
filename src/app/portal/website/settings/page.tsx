@@ -10,12 +10,11 @@ export default async function SiteSettingsPage() {
   await requirePagePermission("content.manage");
   const t = await getTranslations("admin.siteConfig");
 
-  const [heroRecord, flags, templates, sectionsRow, reminderRow, teamContactsRow] = await Promise.all([
+  const [heroRecord, flags, templates, sectionsRow, teamContactsRow] = await Promise.all([
     db.siteConfig.findUnique({ where: { key: "heroImageUrl" } }).catch(() => null),
     db.featureFlag.findMany({ orderBy: { key: "asc" } }).catch(() => []),
     db.emailTemplate.findMany({ orderBy: { key: "asc" } }).catch(() => []),
     db.siteConfig.findUnique({ where: { key: "sections" } }).catch(() => null),
-    db.siteConfig.findUnique({ where: { key: "reminder_hours_before" } }).catch(() => null),
     db.siteConfig.findUnique({ where: { key: "teamContacts" } }).catch(() => null),
   ]);
 
@@ -40,8 +39,6 @@ export default async function SiteSettingsPage() {
     } catch { /* keep defaults */ }
   }
 
-  const reminderHours = reminderRow ? parseInt(reminderRow.value, 10) || 72 : 72;
-
   let initialTeamContacts: { title: string; name: string; email: string }[] = [];
   try {
     if (teamContactsRow?.value) {
@@ -58,7 +55,6 @@ export default async function SiteSettingsPage() {
           initialFlags={flags}
           initialTemplates={templates}
           initialSections={sections}
-          initialReminderHours={reminderHours}
         />
         <TeamContactsEditor initialContacts={initialTeamContacts} />
       </div>
