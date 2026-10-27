@@ -28,8 +28,10 @@ export const PERMISSIONS = [
   "events.create",
   /** Edit an event, its tickets and settings. */
   "events.manage",
-  /** Delete an event that has no tickets, orders or money. */
+  /** Delete an unpublished event that has no tickets, orders or money. */
   "events.delete",
+  /** Also delete a published event (still only with no tickets, orders or money). */
+  "events.deletePublished",
   /** See door check-in and the live dashboard. */
   "events.checkin",
   /** View member and membership records. */
@@ -81,6 +83,7 @@ const RULES: Rule[] = [
 
   // Every VP assigns people within their own department, and any VP may
   // post announcements, edit the website and see the club reports.
+  // (Social is switched off for now, see groups.ts; its rules stay for later.)
   ...[G.events, G.marketing, G.operations, G.social].flatMap((dept) => [
     { permission: "groups.manage" as const, heldIn: dept, minPosition: "VP" as const },
     { permission: "announcements.manage" as const, heldIn: dept, minPosition: "VP" as const },
@@ -88,36 +91,39 @@ const RULES: Rule[] = [
     { permission: "reports.view" as const, heldIn: dept, minPosition: "VP" as const },
   ]),
 
-  // Events: the VP creates, runs and deletes events and sees each event's finances.
-  { permission: "events.create", heldIn: G.events, minPosition: "VP" },
-  { permission: "events.manage", heldIn: G.events, minPosition: "VP" },
-  { permission: "budget.edit", heldIn: G.events, minPosition: "VP" },
-  { permission: "events.delete", heldIn: G.events, minPosition: "VP" },
+  // Events: all Events staff create, run and delete events, work the door,
+  // connect budget sheets and add memories; only the VP deletes published events.
+  { permission: "events.create", heldIn: G.events, minPosition: "STAFF" },
+  { permission: "events.manage", heldIn: G.events, minPosition: "STAFF" },
+  { permission: "events.delete", heldIn: G.events, minPosition: "STAFF" },
+  { permission: "events.deletePublished", heldIn: G.events, minPosition: "VP" },
   { permission: "events.checkin", heldIn: G.events, minPosition: "STAFF" },
+  { permission: "budget.edit", heldIn: G.events, minPosition: "STAFF" },
+  { permission: "memories.manage", heldIn: G.events, minPosition: "STAFF" },
 
-  // Event teams connect their own event's budget sheet and work the door.
-  { permission: "budget.edit", heldIn: `${G.events}/*`, minPosition: "STAFF" },
-  { permission: "events.checkin", heldIn: `${G.events}/*`, minPosition: "STAFF" },
+  // Marketing staff add event memories too.
+  { permission: "memories.manage", heldIn: G.marketing, minPosition: "STAFF" },
 
-  // Operations: the VP sees all members and the finances and edits budgets;
-  // the Finance subgroup sees the finances.
+  // Operations: the VP sees all members, the finances and the public Members
+  // page and Achievements, and edits budgets.
   { permission: "members.view", heldIn: G.operations, minPosition: "VP", global: true },
   { permission: "members.manage", heldIn: G.operations, minPosition: "VP", global: true },
   { permission: "budget.edit", heldIn: G.operations, minPosition: "VP" },
   { permission: "finance.view", heldIn: G.operations, minPosition: "VP" },
   { permission: "finance.edit", heldIn: G.operations, minPosition: "VP" },
-  { permission: "finance.view", heldIn: G.finance, minPosition: "STAFF" },
-
-  // The public Members page and Achievements: the Operations VP, and anyone
-  // they add to the Website group under Operations.
   { permission: "showcase.manage", heldIn: G.operations, minPosition: "VP" },
-  { permission: "showcase.manage", heldIn: G.website, minPosition: "STAFF" },
 
-  // Event memories on the public site: the Events VP and the Website group.
-  { permission: "memories.manage", heldIn: G.events, minPosition: "VP" },
-  { permission: "memories.manage", heldIn: G.website, minPosition: "STAFF" },
+  // Subgroups, switched off for now (see groups.ts): positions in them grant
+  // nothing, so these rules only apply once SUBGROUPS_ENABLED is turned on.
+  // Event teams: their own event's budget sheet and the door.
+  { permission: "budget.edit", heldIn: `${G.events}/*`, minPosition: "STAFF" },
+  { permission: "events.checkin", heldIn: `${G.events}/*`, minPosition: "STAFF" },
+  // Operations → Finance: the club finances.
+  { permission: "finance.view", heldIn: G.finance, minPosition: "STAFF" },
   { permission: "finance.edit", heldIn: G.finance, minPosition: "STAFF" },
-
+  // Operations → Website: the public Members page, Achievements and memories.
+  { permission: "showcase.manage", heldIn: G.website, minPosition: "STAFF" },
+  { permission: "memories.manage", heldIn: G.website, minPosition: "STAFF" },
 ];
 
 /** Async so the rules can later come from the database without changing callers. */

@@ -4,13 +4,14 @@
  * - President: anything, including appointing VPs and Presidents.
  * - VP: within their own department (groups.manage scope) — add/remove Staff,
  *   create subgroups, archive subgroups. VPs can't touch other VPs or the President.
- * Groups are archived, never deleted.
+ * Groups are archived, never deleted. Switched-off groups (subgroups, Social;
+ * see groups.ts) are hidden and can't be added to while they're off.
  */
 
 import { db } from "@/lib/db";
 import type { GroupPosition } from "@/generated/prisma/client";
 import { can, getAccess, type Access } from "./can";
-import { GROUP_SLUGS } from "./groups";
+import { GROUP_SLUGS, isSwitchedOff, SUBGROUPS_ENABLED } from "./groups";
 
 type Outcome<T = undefined> = { ok: true; value?: T } | { ok: false; status: number; message: string };
 
@@ -40,7 +41,7 @@ export async function listManageableGroups(access: Access) {
       },
     },
   });
-  return groups.filter((g) => can(access, "groups.manage", { groupId: g.id }));
+  return groups.filter((g) => !isSwitchedOff(g) && can(access, "groups.manage", { groupId: g.id }));
 }
 
 export async function addToGroup(input: {
@@ -55,8 +56,9 @@ export async function addToGroup(input: {
     return fail(403, "Only the President can appoint VPs or the President.");
   }
 
-  const group = await db.group.findUnique({ where: { id: input.groupId }, select: { slug: true, archived: true } });
+  const group = await db.group.findUnique({ where: { id: input.groupId }, select: { slug: true, parentId: true, archived: true } });
   if (!group || group.archived) return fail(404, "Group not found.");
+  if (isSwitchedOff(group)) return fail(400, "This group is switched off for now.");
   if (input.position === "PRESIDENT" && group.slug !== GROUP_SLUGS.executive) {
     return fail(400, "The President belongs to the Executive group.");
   }
@@ -105,6 +107,7 @@ export async function removeFromGroup(input: { actorId: string; memberId: string
 }
 
 export async function createSubgroup(input: { actorId: string; parentId: string; name: string }): Promise<Outcome<string>> {
+  if (!SUBGROUPS_ENABLED) return fail(400, "Subgroups are switched off for now.");
   const access = await getAccess(input.actorId);
   if (!can(access, "groups.manage", { groupId: input.parentId })) return fail(403, "You can't manage this group.");
 

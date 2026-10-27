@@ -12,6 +12,7 @@
 import { db } from "@/lib/db";
 import type { GroupPosition } from "@/generated/prisma/client";
 import { getRules, POSITION_RANK, type Permission, type Rule } from "./rules";
+import { isSwitchedOff } from "./groups";
 
 type GroupNode = { id: string; slug: string; parentId: string | null };
 
@@ -41,7 +42,8 @@ export async function getAccess(userId: string): Promise<Access> {
 
   for (const m of memberships) {
     const group = byId.get(m.groupId);
-    if (!group) continue;
+    // Positions in switched-off groups (see groups.ts) grant nothing.
+    if (!group || isSwitchedOff(group)) continue;
     for (const rule of rules) {
       if (!positionMeets(m.position, rule.minPosition)) continue;
       if (!heldInMatches(rule, group, byId)) continue;

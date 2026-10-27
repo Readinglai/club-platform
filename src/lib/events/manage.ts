@@ -1,11 +1,12 @@
 /**
  * Creating and editing events and their ticket tiers.
  *
- * - Create: events.create (Events VP, President). Every new event gets its
- *   EventSettings and its own team group under Events.
+ * - Create: events.create (Events staff and VP, President). Every new event
+ *   gets its EventSettings and its own team group under Events.
  * - Edit details, modules, publishing and tiers: events.manage on the event's
- *   team (Events VP, President). Event team staff can't change these.
- * - Delete: events.delete (Events VP, President), only while nothing would be
+ *   team (Events staff and VP, President).
+ * - Delete: events.delete (Events staff); a published event also needs
+ *   events.deletePublished (Events VP, President). Only while nothing would be
  *   lost: no tickets, orders, registrations, money or discussion.
  * Tiers are never deleted once used; they're switched off (active = false).
  */
@@ -47,11 +48,16 @@ export function canManageEventTeam(access: Access, teamId: string | null) {
   return access.globalGrants.has("*") || access.globalGrants.has("events.manage");
 }
 
+/** Events staff delete drafts; a published event needs events.deletePublished (Events VP, President). */
 export async function canDeleteEvent(userId: string, eventId: string) {
-  const group = await db.group.findUnique({ where: { eventId }, select: { id: true } });
-  const access = await getAccess(userId);
-  if (group) return can(access, "events.delete", { groupId: group.id });
-  return access.globalGrants.has("*") || access.globalGrants.has("events.delete");
+  const [group, event, access] = await Promise.all([
+    db.group.findUnique({ where: { eventId }, select: { id: true } }),
+    db.event.findUnique({ where: { id: eventId }, select: { published: true } }),
+    getAccess(userId),
+  ]);
+  const needed = event?.published ? (["events.delete", "events.deletePublished"] as const) : (["events.delete"] as const);
+  if (group) return needed.every((p) => can(access, p, { groupId: group.id }));
+  return access.globalGrants.has("*") || needed.every((p) => access.globalGrants.has(p));
 }
 
 /** Shared validation for event details; times are local to the event's zone. */
@@ -88,7 +94,7 @@ function parseDetails(raw: Record<string, unknown>) {
 }
 
 export async function createEvent(actorId: string, raw: Record<string, unknown>): Promise<Outcome<string>> {
-  if (!can(await getAccess(actorId), "events.create")) return fail(403, "Only the Events VP or President can create events.");
+  if (!can(await getAccess(actorId), "events.create")) return fail(403, "Only Events staff can create events.");
 
   const parsed = parseDetails(raw);
   if (!parsed.ok) return parsed;
@@ -136,7 +142,9 @@ export async function setPublished(actorId: string, eventId: string, published: 
  * Halloween 2026 runs on the frozen ticket tables and can never be deleted.
  */
 export async function deleteEvent(actorId: string, eventId: string): Promise<Outcome> {
-  if (!(await canDeleteEvent(actorId, eventId))) return fail(403, "Only the Events VP or President can delete events.");
+  if (!(await canDeleteEvent(actorId, eventId))) {
+    return fail(403, "Only Events staff can delete events, and only the Events VP or President can delete a published one.");
+  }
   if (eventId === HALLOWEEN_2026_EVENT_ID) return fail(400, "This event is protected and can't be deleted.");
   const event = await db.event.findUnique({ where: { id: eventId }, select: { id: true } });
   if (!event) return fail(404, "Event not found.");

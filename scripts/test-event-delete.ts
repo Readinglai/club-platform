@@ -1,7 +1,7 @@
 /**
- * Checks deleting events (src/lib/events/manage.ts deleteEvent): only the
- * Events VP and President, never Halloween 2026, never an event with
- * tickets or money. Creates its own [TEST] events and removes them.
+ * Checks deleting events (src/lib/events/manage.ts deleteEvent): Events staff
+ * delete drafts, only the Events VP and President delete published events,
+ * never Halloween 2026, never an event with tickets or money. Creates its own [TEST] events and removes them.
  *
  *   npx tsx --env-file=.env.local scripts/test-access-rules.ts   # creates the test users first
  *   npx tsx --env-file=.env.local scripts/test-event-delete.ts
@@ -24,7 +24,9 @@ async function newEvent(by: string, title: string) {
 }
 
 async function main() {
-  const [president, eventsVp, opsVp, eventStaff] = await Promise.all(["president", "events-vp", "ops-vp", "event-staff"].map(user));
+  const [president, eventsVp, opsVp, eventStaff, eventsStaff] = await Promise.all(
+    ["president", "events-vp", "ops-vp", "event-staff", "events-staff"].map(user)
+  );
   const created: string[] = [];
 
   try {
@@ -37,7 +39,7 @@ async function main() {
 
     // Who may delete
     let r = await deleteEvent(eventStaff.id, a);
-    check("event team staff can't delete", !r.ok && r.status === 403);
+    check("event team staff can't delete (event teams are switched off)", !r.ok && r.status === 403);
     r = await deleteEvent(opsVp.id, a);
     check("Operations VP can't delete", !r.ok && r.status === 403);
 
@@ -63,6 +65,19 @@ async function main() {
     // President deletes directly
     r = await deleteEvent(president.id, b);
     check("President deletes an empty event", r.ok, r.ok ? "" : r.message);
+
+    // Events staff: create and delete drafts, but not published events
+    const c = await newEvent(eventsStaff.id, "[TEST] Delete me C");
+    const d = await newEvent(eventsStaff.id, "[TEST] Delete me D");
+    created.push(c, d);
+    check("Events staff create events", true);
+    r = await deleteEvent(eventsStaff.id, c);
+    check("Events staff delete an unpublished event", r.ok, r.ok ? "" : r.message);
+    await db.event.update({ where: { id: d }, data: { published: true } });
+    r = await deleteEvent(eventsStaff.id, d);
+    check("Events staff can't delete a published event", !r.ok && r.status === 403);
+    r = await deleteEvent(eventsVp.id, d);
+    check("Events VP deletes a published event", r.ok, r.ok ? "" : r.message);
   } finally {
     // Anything a failed check left behind.
     for (const id of created) {

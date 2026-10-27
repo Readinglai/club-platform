@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { SUBGROUPS_ENABLED } from "@/lib/access/groups";
 
 const PRIMARY = "#1a2744";
 
@@ -202,7 +203,7 @@ function GroupCard({
         </button>
       </form>
 
-      {!group.eventId && (
+      {SUBGROUPS_ENABLED && !group.eventId && (
         <form
           className="mt-3 flex gap-2"
           onSubmit={(e) => {
