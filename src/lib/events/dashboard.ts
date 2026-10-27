@@ -4,14 +4,18 @@
  */
 
 import { db } from "@/lib/db";
-import { can, getAccess } from "@/lib/access/can";
+import { can, getAccess, type Access } from "@/lib/access/can";
 import { CHECKOUT_HOLD_MINUTES } from "@/lib/ticketing/orders";
 
 export async function canSeeDashboard(userId: string, eventId: string) {
   const group = await db.group.findUnique({ where: { eventId }, select: { id: true } });
-  const access = await getAccess(userId);
-  if (!group) return access.globalGrants.has("*");
-  return can(access, "events.checkin", { groupId: group.id }) || can(access, "events.manage", { groupId: group.id });
+  return canSeeEventTeamDashboard(await getAccess(userId), group?.id ?? null);
+}
+
+/** canSeeDashboard for an already loaded access and the event's team group id. */
+export function canSeeEventTeamDashboard(access: Access, teamId: string | null) {
+  if (!teamId) return access.globalGrants.has("*");
+  return can(access, "events.checkin", { groupId: teamId }) || can(access, "events.manage", { groupId: teamId });
 }
 
 export async function getEventDashboard(eventId: string) {

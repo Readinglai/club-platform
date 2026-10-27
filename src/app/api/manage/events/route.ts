@@ -7,28 +7,32 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/access/current-user";
 import { can, getAccess } from "@/lib/access/can";
-import { canManageEvent, createEvent } from "@/lib/events/manage";
-import { canSeeDashboard } from "@/lib/events/dashboard";
+import { canManageEventTeam, createEvent } from "@/lib/events/manage";
+import { canSeeEventTeamDashboard } from "@/lib/events/dashboard";
 
 export async function GET() {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const events = await db.event.findMany({
-    where: { team: { isNot: null } },
-    orderBy: { startAt: "desc" },
-    select: { id: true, title: true, startAt: true, published: true, settings: { select: { timezone: true } } },
-  });
+  // One access lookup for the whole list; each event is then checked in memory.
+  const [events, access] = await Promise.all([
+    db.event.findMany({
+      where: { team: { isNot: null } },
+      orderBy: { startAt: "desc" },
+      select: { id: true, title: true, startAt: true, published: true, settings: { select: { timezone: true } }, team: { select: { id: true } } },
+    }),
+    getAccess(user.id),
+  ]);
 
   const visible = [];
-  for (const e of events) {
-    const manage = await canManageEvent(user.id, e.id);
-    const dashboard = manage || (await canSeeDashboard(user.id, e.id));
-    if (manage || dashboard) visible.push({ ...e, canManage: manage });
+  for (const { team, ...e } of events) {
+    const teamId = team?.id ?? null;
+    const manage = canManageEventTeam(access, teamId);
+    if (manage || canSeeEventTeamDashboard(access, teamId)) visible.push({ ...e, canManage: manage });
   }
 
   return NextResponse.json(
-    { events: visible, canCreate: can(await getAccess(user.id), "events.create") },
+    { events: visible, canCreate: can(access, "events.create") },
     { headers: { "Cache-Control": "no-store" } }
   );
 }

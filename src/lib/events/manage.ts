@@ -12,7 +12,7 @@
 
 import { db } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
-import { can, getAccess } from "@/lib/access/can";
+import { can, getAccess, type Access } from "@/lib/access/can";
 import { eventGroupSlug, GROUP_SLUGS } from "@/lib/access/groups";
 import { HALLOWEEN_2026_EVENT_ID } from "./legacy";
 import { isValidTimeZone, zonedInputToDate } from "./time";
@@ -38,8 +38,12 @@ const wholeNumber = (v: unknown) => {
 
 export async function canManageEvent(userId: string, eventId: string) {
   const group = await db.group.findUnique({ where: { eventId }, select: { id: true } });
-  const access = await getAccess(userId);
-  if (group) return can(access, "events.manage", { groupId: group.id });
+  return canManageEventTeam(await getAccess(userId), group?.id ?? null);
+}
+
+/** canManageEvent for an already loaded access and the event's team group id. */
+export function canManageEventTeam(access: Access, teamId: string | null) {
+  if (teamId) return can(access, "events.manage", { groupId: teamId });
   return access.globalGrants.has("*") || access.globalGrants.has("events.manage");
 }
 
