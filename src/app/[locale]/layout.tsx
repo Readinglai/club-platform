@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Navbar from "@/components/Navbar";
 import Providers from "@/components/Providers";
+import HtmlLang from "@/components/HtmlLang";
 
 interface LocaleLayoutProps {
   children: React.ReactNode;
@@ -23,14 +24,12 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
 
+  // <html> and <body> come from the root layout (src/app/layout.tsx).
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body className="min-h-full flex flex-col">
-        <Providers locale={locale} messages={messages}>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-        </Providers>
-      </body>
-    </html>
+    <Providers locale={locale} messages={messages}>
+      <HtmlLang locale={locale} />
+      <Navbar />
+      <main className="flex-1">{children}</main>
+    </Providers>
   );
 }
