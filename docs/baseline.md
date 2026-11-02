@@ -62,7 +62,7 @@ This is a source-derived integration list, not a complete runtime configuration 
 4. /api/announcements and /api/portal/announcements differ in fields (createdAt versus publishedAt, content and author selection). Sharing implementation must preserve each contract.
 5. Stripe webhook first dispatches order/membership flows, then executes legacy Halloween logic. Older ticket models and current Order/Ticket models coexist. Keep historical links and callback handling operational.
 6. Existing tests can require fixture users/groups/events or mutate configuration. See [script inventory](script-inventory.md). There is no dedicated test database guard or unified test command established by this change.
-7. Three historical commit helpers were removed after checking their missing target paths or machine-specific path and fixed historical messages. Generic push helpers remain.
+7. Three historical commit helpers were removed after checking their missing target paths or machine-specific path and fixed historical messages. The remaining push helpers were also removed in the follow-up cleanup.
 
 ## Verification record
 
@@ -96,4 +96,8 @@ Removed modules after TypeScript-resolved import/export/dynamic-import scanning 
 
 Removed unused declarations and renamed unused positional request parameters with an underscore while retaining route context positions. Event responses still omit `_count` and return registeredCount as before. No lint rule is disabled globally.
 
-Retained deliberately: Next.js entry points, generated code, i18n/request.ts (loaded by next-intl configuration), API endpoints with no known local caller, operational scripts, public assets, database models, and the config.yaml/config.ts pair. The config loader has no current source importer but represents documented configuration; its removal and dependency cleanup need a separate decision. Import scanning is evidence for internal-module cleanup, not proof that all externally callable resources are unused. All 75 handlers retain their exported HTTP methods compared with HEAD. Documentation links and diff whitespace checks passed (pre-existing lockfile excluded). Runtime/browser/database verification remains outstanding.
+Retained deliberately: Next.js entry points, generated code, i18n/request.ts (loaded by next-intl configuration), API endpoints with no known local caller, application operational scripts, application-specific public assets, database models, and the config.yaml/config.ts pair. The config loader has no current source importer but represents documented configuration; its removal and dependency cleanup need a separate decision. Import scanning is evidence for internal-module cleanup, not proof that all externally callable resources are unused. All 75 handlers retain their exported HTTP methods compared with HEAD. Documentation links and diff whitespace checks passed (pre-existing lockfile excluded). Runtime/browser/database verification remains outstanding.
+
+### Follow-up repository housekeeping
+
+Removed `push_main.bat` and `push_now.bat` as requested, the unrelated Windows Monopoly clicker `自動玩monopoly的腳本.py`, and five unreferenced Next.js starter assets: `public/file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`. Repository source/configuration searches found no references to these scripts or assets. Actual club logos, application endpoints, environment files, tests, seed and maintenance utilities remain. No dependency or database changes are included. These removals do not alter active application flows; the removed starter asset URLs are no longer served.

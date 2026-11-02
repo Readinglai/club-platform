@@ -40,7 +40,7 @@ These are operational utilities, not automated tests. Classification describes i
 | [seed-test-event.ts](../scripts/seed-test-event.ts) | Seed legacy event fixture |
 | [setup-groups.ts](../scripts/setup-groups.ts) | Set up group hierarchy |
 
-Other entry points: `prisma/seed.ts` seeds database data; root `push_*.bat` perform Git operations; `自動玩monopoly的腳本.py` is a separate automation script whose removal needs a reference/purpose check. The three historical `commit_*.bat` helpers were removed during cleanup: they staged missing announcement paths or used a machine-specific path and fixed historical commit messages. The generic push helpers remain and were not executed.
+Other entry points: `prisma/seed.ts` seeds database data. All five root Git batch helpers and the unrelated Monopoly click automation script were removed during cleanup. They were not executed. Setup, maintenance and verification scripts remain.
 
 ## Known dependencies
 
