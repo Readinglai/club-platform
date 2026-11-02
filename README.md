@@ -52,3 +52,20 @@ Vercel + Supabase。
 ## API 文件
 
 見 [API_ROUTES.md](./API_ROUTES.md)。
+
+## 開發檢查與維護文件
+
+型別與程式碼風格檢查：
+
+```bash
+npm run typecheck
+npm run lint
+```
+
+專案整理與重構以維持現有行為為原則，相關文件如下：
+
+- [現況與重構基準](docs/baseline.md)：架構、環境設定差異與待驗證項目。
+- [API 路由清單](docs/api-inventory.md)：現有端點、驗證方式線索與呼叫來源。
+- [腳本清單](docs/script-inventory.md)：測試、初始化與維護腳本的用途及執行條件。
+
+部分既有說明與目前實作有差異，已知差異記錄於現況與重構基準文件。需要資料庫的測試腳本依賴預先建立的測試資料，且會使用環境變數指定的資料庫；執行前請先確認腳本清單中的條件與資料異動。
