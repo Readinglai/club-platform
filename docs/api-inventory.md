@@ -1,6 +1,6 @@
 # API baseline inventory
 
-Snapshot: 2026-11-02. Scope: `club-platform` only. This is a source inventory, not an API redesign or a verified contract specification.
+Snapshot: 2026-11-02 (updated after unused-code cleanup). Scope: `club-platform` only. This is a source inventory, not an API redesign or a verified contract specification.
 
 Each row lists exported methods and direct identity/permission-related calls found in the handler. These are navigation hints: delegated permission checks and inline credential checks require reading the linked source. “Review source” does not mean public or unprotected. Response bodies, status codes, side effects, and external callers must be characterized before changing an endpoint.
 
@@ -34,7 +34,7 @@ Local callers below are candidates found by matching the route prefix before its
 | `/api/club/members` | GET, POST | forbidUnless, getCurrentUser | `src/app/portal/members/MembersManager.tsx` | [source](../src/app/api/club/members/route.ts) |
 | `/api/club/reports` | GET | requirePermissionJson | `src/app/portal/reports/page.tsx` | [source](../src/app/api/club/reports/route.ts) |
 | `/api/club/team-page` | GET, PUT | requirePermissionJson | `src/app/portal/website/team/TeamPageEditor.tsx` | [source](../src/app/api/club/team-page/route.ts) |
-| `/api/contact` | POST | Review source / delegated or inline checks | `src/components/ContactForm.tsx` | [source](../src/app/api/contact/route.ts) |
+| `/api/contact` | POST | Review source / delegated or inline checks | Not identified by prefix scan (unused ContactForm removed) | [source](../src/app/api/contact/route.ts) |
 | `/api/cron/budget-sync` | GET | Review source / delegated or inline checks | Not identified by prefix scan | [source](../src/app/api/cron/budget-sync/route.ts) |
 | `/api/event/check-in` | POST | Review source / delegated or inline checks | `src/app/staff/check-in/page.tsx` | [source](../src/app/api/event/check-in/route.ts) |
 | `/api/event/checkout` | POST | Review source / delegated or inline checks | `src/lib/ticketing/orders.ts`<br>`src/app/[locale]/event/fall-2026/page.tsx` | [source](../src/app/api/event/checkout/route.ts) |

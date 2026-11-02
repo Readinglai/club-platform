@@ -9,7 +9,6 @@ import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { FadeIn } from "@/components/motion/FadeIn";
-import { MotionCard } from "@/components/motion/MotionCard";
 import { MotionLogo } from "@/components/motion/MotionLogo";
 import { SponsorLogoImg } from "@/components/motion/SponsorLogoImg";
 
@@ -17,7 +16,6 @@ const PRIMARY = "#1a2744";
 const SECONDARY = "#c9b99a";
 
 const TIER_ORDER = ["platinum", "gold", "silver", "bronze"] as const;
-type Tier = (typeof TIER_ORDER)[number];
 
 function getBaseUrl() {
   return (process.env.NEXTAUTH_URL ?? "http://localhost:3000").replace(/\/$/, "");

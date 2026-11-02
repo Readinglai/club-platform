@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { requireUserJson } from "@/lib/access/require";
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const guard = await requireUserJson();

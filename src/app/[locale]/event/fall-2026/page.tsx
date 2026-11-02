@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
-import { usePathname, useRouter } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 const ticketTypes = [
   {
@@ -91,7 +91,6 @@ const activities = [
 export default function Fall2026EventPage() {
   const locale = useLocale();
   const isZh = locale === "zh";
-  const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -236,13 +235,6 @@ export default function Fall2026EventPage() {
       ? "如果沒有收到確認信，請檢查垃圾郵件或促銷郵件資料夾。"
       : "If you don’t see the confirmation email, check your Spam or Junk folder.",
     backToEvent: isZh ? "返回活動頁面" : "Back to Event Page",
-  };
-
-  const switchLanguage = () => {
-    const targetLocale = isZh ? "en" : "zh";
-    const query = searchParams.toString();
-    const destination = query ? `${pathname}?${query}` : pathname;
-    router.replace(destination, { locale: targetLocale });
   };
 
   const handleMemberToggle = (checked: boolean) => {

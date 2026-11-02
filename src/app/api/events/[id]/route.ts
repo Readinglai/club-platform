@@ -38,7 +38,7 @@ async function tryGetUserId(): Promise<string | null> {
  *   （null 表示尚未報名或無記錄）
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -73,7 +73,8 @@ export async function GET(
     }
 
     // 計算剩餘名額
-    const registeredCount = event._count.registrations;
+    const { _count, ...eventData } = event;
+    const registeredCount = _count.registrations;
     const spotsLeft = event.capacity !== null ? event.capacity - registeredCount : null;
 
     // 嘗試取得當前使用者的報名狀態（選填，無需登入）
@@ -87,8 +88,6 @@ export async function GET(
       });
       registrationStatus = registration?.status ?? null;
     }
-
-    const { _count, ...eventData } = event;
 
     return NextResponse.json({
       ...eventData,

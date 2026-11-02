@@ -4,7 +4,7 @@ Recorded 2026-11-02 against commit `8c5a3e9`. Scope: club-platform only.
 
 ## Scope and preservation contract
 
-This baseline documents the application and adds a typecheck command. Runtime source, dependencies, schema, routes, response formats, UI, pricing, permissions, redirects, emails and scheduled jobs are unchanged. The pre-existing package-lock.json modification belongs to the workspace and is excluded from this work.
+The initial baseline documented the application and added a typecheck command. A subsequent cleanup removes confirmed unreferenced modules and obsolete commit helpers, and resolves lint diagnostics. No intended changes to routes, response formats, UI, pricing, permissions, redirects, emails or scheduled jobs are included; dependencies and schema are unchanged. The pre-existing package-lock.json modification belongs to the workspace and is excluded from this work.
 
 Subsequent refactors must preserve current behavior, including quirks. Bug fixes, dependency upgrades, API redesign, database deletion and visual changes require separate changes. API adapters must retain existing status codes, messages and fields. Payment checks must compare database effects and external calls, not just responses.
 
@@ -62,12 +62,13 @@ This is a source-derived integration list, not a complete runtime configuration 
 4. /api/announcements and /api/portal/announcements differ in fields (createdAt versus publishedAt, content and author selection). Sharing implementation must preserve each contract.
 5. Stripe webhook first dispatches order/membership flows, then executes legacy Halloween logic. Older ticket models and current Order/Ticket models coexist. Keep historical links and callback handling operational.
 6. Existing tests can require fixture users/groups/events or mutate configuration. See [script inventory](script-inventory.md). There is no dedicated test database guard or unified test command established by this change.
-7. Historical commit helpers reference missing target paths or machine-specific paths and fixed historical messages. Review these separately before removal.
+7. Three historical commit helpers were removed after checking their missing target paths or machine-specific path and fixed historical messages. Generic push helpers remain.
 
 ## Verification record
 
 - Before changes: tsc --noEmit --incremental false passed; eslint --quiet passed (warnings suppressed).
 - Initial baseline: npm run typecheck passed; npm run lint reported 0 errors and 8 warnings.
+- Cleanup: npm run lint -- --max-warnings=0 passed with no warnings. Removed unused bindings and an unnecessary suppression. The sponsor table retains its native img element with a scoped documented exception to preserve arbitrary URLs, intrinsic sizing, eager loading and error handling. npm run typecheck and tsc --noEmit --incremental false --noUnusedLocals --noUnusedParameters both passed.
 - All relative links in docs resolve; the API inventory contains all 75 route handlers. Diff whitespace validation passes for this change with CRLF recognized; the pre-existing lockfile is excluded.
 - Database scripts, migrations, seeds, production build, live checkout, SMTP and other external integrations were not executed. No database reproduction or runtime behavior claim is made.
 
@@ -79,3 +80,20 @@ This is a source-derived integration list, not a complete runtime configuration 
 4. Repeat by feature; leave payments until retry, concurrency and side-effect tests exist. Database changes and API redesign remain outside behavior-preserving scope.
 
 This baseline completes the source inventory and establishes static checks. It records rather than resolves the test/database bootstrap gaps; a fully reproducible environment is still outstanding.
+
+## Unused-code cleanup
+
+Branch: `chore/unused-code-cleanup`. This cleanup builds on `chore/baseline-inventory`.
+
+Removed modules after TypeScript-resolved import/export/dynamic-import scanning and repository text-reference checks:
+
+- `src/components/ContactForm.tsx`: no page renders it; the current contact page renders team contacts. The independently callable `/api/contact` endpoint is retained.
+- `src/components/motion/MotionCard.tsx`: its only importer had an unused import; no rendered instances.
+- `src/lib/data/members.ts`: unreferenced placeholder members; current pages use database-backed data.
+- `src/lib/event/capacity.ts`: unreferenced capacity query; active reservation and newer ticketing paths remain.
+- `src/lib/event/contact-validation.ts`: validators were not wired into current forms or routes; removal does not alter active validation.
+- `commit_ts_fix.bat`, `commit_backend_fix.bat`, `commit_cleanup_docs.bat`: obsolete one-off Git automation.
+
+Removed unused declarations and renamed unused positional request parameters with an underscore while retaining route context positions. Event responses still omit `_count` and return registeredCount as before. No lint rule is disabled globally.
+
+Retained deliberately: Next.js entry points, generated code, i18n/request.ts (loaded by next-intl configuration), API endpoints with no known local caller, operational scripts, public assets, database models, and the config.yaml/config.ts pair. The config loader has no current source importer but represents documented configuration; its removal and dependency cleanup need a separate decision. Import scanning is evidence for internal-module cleanup, not proof that all externally callable resources are unused. All 75 handlers retain their exported HTTP methods compared with HEAD. Documentation links and diff whitespace checks passed (pre-existing lockfile excluded). Runtime/browser/database verification remains outstanding.

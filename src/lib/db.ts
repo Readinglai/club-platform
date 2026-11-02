@@ -22,7 +22,6 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 // 在 TypeScript 全域命名空間中聲明快取變數，避免型別錯誤
 declare global {
-  // eslint-disable-next-line no-var
   var __prisma: PrismaClient | undefined;
 }
 
