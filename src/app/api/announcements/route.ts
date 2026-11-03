@@ -14,7 +14,7 @@ import { db } from "@/lib/db";
 import { createAnnouncement } from "@/lib/announcements/manage";
 
 /** GET /api/announcements — 取得已發布公告列表 */
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "未登入" }, { status: 401 });

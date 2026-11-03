@@ -28,7 +28,7 @@ async function tryGetUserId(): Promise<string | null> {
 
 /** POST /api/portal/announcements/[id]/read — 標記公告為已讀 */
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const userId = await tryGetUserId();

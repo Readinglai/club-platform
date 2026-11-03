@@ -60,7 +60,7 @@ export async function PATCH(
  * DELETE /api/admin/alumni/[id] — 刪除校友記錄
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {

@@ -173,6 +173,8 @@ export default function SponsorsTable({ sponsors: initial }: Props) {
                   <tr key={s.id} className="border-b last:border-0 hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3">
                       {s.logoUrl ? (
+                        // Preserve arbitrary logo URLs, intrinsic sizing and eager loading.
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={s.logoUrl}
                           alt={s.name}

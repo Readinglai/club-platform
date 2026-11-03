@@ -1,0 +1,105 @@
+# Behavior-preserving cleanup baseline
+
+Initial baseline: 2026-11-02 against commit `8c5a3e9`. Documentation audited 2026-11-03. Scope: club-platform only.
+
+## Scope and preservation contract
+
+The initial baseline documented the application and added a typecheck command. A subsequent cleanup removes confirmed unreferenced modules and obsolete commit helpers, and resolves lint diagnostics. No intended changes to routes, response formats, UI, pricing, permissions, redirects, emails or scheduled jobs are included; dependencies and schema are unchanged. The pre-existing package-lock.json modification belongs to the workspace and is excluded from this work.
+
+Subsequent refactors must preserve current behavior, including quirks. Bug fixes, dependency upgrades, API redesign, database deletion and visual changes require separate changes. API adapters must retain existing status codes, messages and fields. Payment checks must compare database effects and external calls, not just responses.
+
+## Architecture today
+
+- `src/app/[locale]`: public localized pages. `src/app/portal`: member/staff pages. `staff`, `e`, `order`, `ticket`: specialized entry points.
+- `src/app/api`: 75 route handlers; see [API reference](API_ROUTES.md).
+- `src/lib`: business logic plus authentication, access checks, database access and integrations. Server-rendered pages can call these directly; browser interactions use HTTP endpoints.
+- `src/components`: shared UI; page-specific components also live beside pages.
+- `src/proxy.ts`: routing, locale handling and legacy redirects. It explicitly delegates authentication to pages/routes; it does not authenticate requests itself.
+- `src/lib/access`: current identity, group-based permissions and guards. Some endpoints still call `auth()` directly.
+- `prisma`: schema, migrations and seed script. `src/generated/prisma`: generated client, not a manual-edit target.
+- `messages` and `src/i18n`: translations and language handling. `vercel.json`: hosting and budget-sync cron.
+
+## Local setup and command boundaries
+
+The existing README documents npm install, Prisma generation and npm run dev. On a clean checkout, npm ci is the intended lockfile-based install; installation and a fresh bootstrap have not been verified in this baseline. Use a disposable development database for setup validation.
+
+Next.js loads local environment files for the application. prisma.config.ts explicitly loads .env.local, then .env as fallback. Standalone scripts vary: some load dotenv themselves and others document --env-file=.env.local. Do not assume they inherit Next.js environment loading.
+
+Commands available after dependencies and generated client are present:
+
+```sh
+npm run typecheck
+npm run lint
+npm run build
+npm run dev
+```
+
+Typecheck is TypeScript static checking, not a build or a behavior test. It includes generated Next.js type files when present; a fresh-checkout check still needs verification. Build may evaluate server modules or require integrations; its success is not implied by typecheck.
+
+## Environment names, not values
+
+No private environment file was read for this baseline. Source and .env.example identify these integration settings:
+
+| Area | Names |
+|---|---|
+| Database | DATABASE_URL; DIRECT_URL is documented in .env.example but prisma.config.ts currently selects DATABASE_URL |
+| Authentication | NEXTAUTH_URL, NEXTAUTH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET |
+| Email | EMAIL_USER, EMAIL_PASSWORD, CONTACT_TO_EMAIL |
+| Stripe | STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET |
+| Storage | SUPABASE_URL, SUPABASE_ANON_KEY; .env.example also documents STORAGE_URL |
+| Sheets | GOOGLE_SHEETS_CLIENT_EMAIL, GOOGLE_SHEETS_PRIVATE_KEY |
+| Check-in / cron | STAFF_CHECKIN_CODE, CRON_SECRET |
+| Push | VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT |
+| Wallet passes | PASS2U_API_KEY, PASS2U_MODEL_ID |
+
+This is a source-derived integration list, not a complete runtime configuration schema: the retained, currently unreferenced config.yaml loader supports environment interpolation. Existing .env.example omits several source-used settings; SHOPIFY_TOKEN and SHOPIFY_DOMAIN appear in the example but their use needs confirmation. No environment behavior is changed here.
+
+## Reproducibility and compatibility findings
+
+1. TicketHold SQL is referenced in reservation/checkout/webhook code. Its CREATE TABLE lives in scripts/create-ticket-hold-table.ts, not the searched schema/migrations. A clean database reconstruction is unverified. Do not run that utility against an existing database as part of baseline checks.
+2. prisma.config.ts selects DATABASE_URL despite the example describing DIRECT_URL for migrations. Document the actual connection behavior before introducing test setup.
+3. getCurrentUser reads web sessions; historical README Bearer-token and /api/auth/token claims were corrected because that endpoint is absent. Confirm external consumers before changing authentication or CORS.
+4. /api/announcements and /api/portal/announcements differ in fields (createdAt versus publishedAt, content and author selection). Sharing implementation must preserve each contract.
+5. Stripe webhook first dispatches order/membership flows, then executes legacy Halloween logic. Older ticket models and current Order/Ticket models coexist. Keep historical links and callback handling operational.
+6. Existing tests can require fixture users/groups/events or mutate configuration. See [script inventory](script-inventory.md). There is no dedicated test database guard or unified test command established by this change.
+7. Three historical commit helpers were removed after checking their missing target paths or machine-specific path and fixed historical messages. The remaining push helpers were also removed in the follow-up cleanup.
+
+## Verification record
+
+- Before changes: tsc --noEmit --incremental false passed; eslint --quiet passed (warnings suppressed).
+- Initial baseline: npm run typecheck passed; npm run lint reported 0 errors and 8 warnings.
+- Cleanup: npm run lint -- --max-warnings=0 passed with no warnings. Removed unused bindings and an unnecessary suppression. The sponsor table retains its native img element with a scoped documented exception to preserve arbitrary URLs, intrinsic sizing, eager loading and error handling. npm run typecheck and tsc --noEmit --incremental false --noUnusedLocals --noUnusedParameters both passed.
+- All relative links in docs resolve; the API reference lists 100 HTTP operations across all 75 route handlers. Diff whitespace validation passes for this change with CRLF recognized; the pre-existing lockfile is excluded.
+- Database scripts, migrations, seeds, production build, live checkout, SMTP and other external integrations were not executed. No database reproduction or runtime behavior claim is made.
+
+## Next steps and completion gates
+
+1. Testing foundation: establish a dedicated disposable database, reconcile migration prerequisites, pin a runner, port pure tests, make fixture setup independent, and characterize existing HTTP contracts. Complete when tests reproduce from a clean environment without normal application data.
+2. Cleanup: correct documentation and remove only confirmed obsolete material. Preserve externally invoked entry points. Complete when every deletion has reference and purpose evidence.
+3. Announcements pilot: extract shared queries/operations with existing endpoint adapters. Complete when before/after permissions, visibility, fields, errors and read-tracking effects match.
+4. Repeat by feature; leave payments until retry, concurrency and side-effect tests exist. Database changes and API redesign remain outside behavior-preserving scope.
+
+This baseline completes the source inventory and establishes static checks. It records rather than resolves the test/database bootstrap gaps; a fully reproducible environment is still outstanding.
+
+## Unused-code cleanup
+
+Branch: `chore/unused-code-cleanup`. This cleanup builds on `chore/baseline-inventory`.
+
+Removed modules after TypeScript-resolved import/export/dynamic-import scanning and repository text-reference checks:
+
+- `src/components/ContactForm.tsx`: no page renders it; the current contact page renders team contacts. The independently callable `/api/contact` endpoint is retained.
+- `src/components/motion/MotionCard.tsx`: its only importer had an unused import; no rendered instances.
+- `src/lib/data/members.ts`: unreferenced placeholder members; current pages use database-backed data.
+- `src/lib/event/capacity.ts`: unreferenced capacity query; active reservation and newer ticketing paths remain.
+- `src/lib/event/contact-validation.ts`: validators were not wired into current forms or routes; removal does not alter active validation.
+- `commit_ts_fix.bat`, `commit_backend_fix.bat`, `commit_cleanup_docs.bat`: obsolete one-off Git automation.
+
+Removed unused declarations and renamed unused positional request parameters with an underscore while retaining route context positions. Event responses still omit `_count` and return registeredCount as before. No lint rule is disabled globally.
+
+Retained deliberately: Next.js entry points, generated code, i18n/request.ts (loaded by next-intl configuration), API endpoints with no known local caller, application operational scripts, application-specific public assets, database models, and the config.yaml/config.ts pair. The config loader has no current source importer but represents documented configuration; its removal and dependency cleanup need a separate decision. Import scanning is evidence for internal-module cleanup, not proof that all externally callable resources are unused. All 75 handlers retain their exported HTTP methods compared with original baseline commit `8c5a3e9`. Documentation links and diff whitespace checks passed (pre-existing lockfile excluded). Runtime/browser/database verification remains outstanding.
+
+### Follow-up repository housekeeping
+
+Removed `push_main.bat` and `push_now.bat` as requested, the unrelated Windows Monopoly clicker `自動玩monopoly的腳本.py`, and five unreferenced Next.js starter assets: `public/file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`. Repository source/configuration searches found no references to these scripts or assets. Actual club logos, application endpoints, environment files, tests, seed and maintenance utilities remain. No dependency or database changes are included. These removals do not alter active application flows; the removed starter asset URLs are no longer served.
+
+API documentation is consolidated in `docs/API_ROUTES.md` (moved from the repository root); the separate `docs/api-inventory.md` was removed to avoid maintaining competing endpoint lists. The original API document grouping and valid descriptions are retained; missing operations are appended, and absent routes and outdated global authentication/role claims are corrected. Detailed request/response contracts remain unverified.

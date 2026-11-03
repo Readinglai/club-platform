@@ -5,7 +5,7 @@ import { requirePermissionJson } from "@/lib/access/require";
 type Params = { params: Promise<{ id: string }> };
 
 /** GET /api/admin/achievements/[id] */
-export async function GET(request: NextRequest, { params }: Params) {
+export async function GET(_request: NextRequest, { params }: Params) {
   try {
     const guard = await requirePermissionJson("showcase.manage");
     if (guard.error) return guard.error;
@@ -56,7 +56,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 }
 
 /** DELETE /api/admin/achievements/[id] */
-export async function DELETE(request: NextRequest, { params }: Params) {
+export async function DELETE(_request: NextRequest, { params }: Params) {
   try {
     const guard = await requirePermissionJson("showcase.manage");
     if (guard.error) return guard.error;

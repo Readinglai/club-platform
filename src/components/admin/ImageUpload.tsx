@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import type { DragEvent } from "react";
 
 const PRIMARY = "#1a2744";
-const SECONDARY = "#c9b99a";
 
 interface Props {
   value: string;

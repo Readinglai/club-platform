@@ -9,7 +9,7 @@ const YEAR_MAX = 2100;
 type Params = { params: Promise<{ id: string }> };
 
 /** GET /api/sponsors/[id]/history — 取得某贊助商的所有歷史記錄 */
-export async function GET(req: NextRequest, { params }: Params) {
+export async function GET(_req: NextRequest, { params }: Params) {
   try {
     const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;

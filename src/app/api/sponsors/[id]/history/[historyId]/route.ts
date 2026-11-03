@@ -5,7 +5,7 @@ import { requirePermissionJson } from "@/lib/access/require";
 type Params = { params: Promise<{ id: string; historyId: string }> };
 
 /** DELETE /api/sponsors/[id]/history/[historyId] — 刪除某筆贊助歷史記錄 */
-export async function DELETE(req: NextRequest, { params }: Params) {
+export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
     const guard = await requirePermissionJson("content.manage");
     if (guard.error) return guard.error;
