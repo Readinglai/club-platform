@@ -1,6 +1,6 @@
 # Behavior-preserving cleanup baseline
 
-Recorded 2026-11-02 against commit `8c5a3e9`. Scope: club-platform only.
+Initial baseline: 2026-11-02 against commit `8c5a3e9`. Documentation audited 2026-11-03. Scope: club-platform only.
 
 ## Scope and preservation contract
 
@@ -11,7 +11,7 @@ Subsequent refactors must preserve current behavior, including quirks. Bug fixes
 ## Architecture today
 
 - `src/app/[locale]`: public localized pages. `src/app/portal`: member/staff pages. `staff`, `e`, `order`, `ticket`: specialized entry points.
-- `src/app/api`: 75 route handlers; see [route inventory](api-inventory.md).
+- `src/app/api`: 75 route handlers; see [API reference](API_ROUTES.md).
 - `src/lib`: business logic plus authentication, access checks, database access and integrations. Server-rendered pages can call these directly; browser interactions use HTTP endpoints.
 - `src/components`: shared UI; page-specific components also live beside pages.
 - `src/proxy.ts`: routing, locale handling and legacy redirects. It explicitly delegates authentication to pages/routes; it does not authenticate requests itself.
@@ -58,7 +58,7 @@ This is a source-derived integration list, not a complete runtime configuration 
 
 1. TicketHold SQL is referenced in reservation/checkout/webhook code. Its CREATE TABLE lives in scripts/create-ticket-hold-table.ts, not the searched schema/migrations. A clean database reconstruction is unverified. Do not run that utility against an existing database as part of baseline checks.
 2. prisma.config.ts selects DATABASE_URL despite the example describing DIRECT_URL for migrations. Document the actual connection behavior before introducing test setup.
-3. getCurrentUser reads web sessions; README claims Bearer token support and an /api/auth/token endpoint absent from the route inventory. Confirm external consumers before changing authentication or CORS.
+3. getCurrentUser reads web sessions; historical README Bearer-token and /api/auth/token claims were corrected because that endpoint is absent. Confirm external consumers before changing authentication or CORS.
 4. /api/announcements and /api/portal/announcements differ in fields (createdAt versus publishedAt, content and author selection). Sharing implementation must preserve each contract.
 5. Stripe webhook first dispatches order/membership flows, then executes legacy Halloween logic. Older ticket models and current Order/Ticket models coexist. Keep historical links and callback handling operational.
 6. Existing tests can require fixture users/groups/events or mutate configuration. See [script inventory](script-inventory.md). There is no dedicated test database guard or unified test command established by this change.
@@ -69,7 +69,7 @@ This is a source-derived integration list, not a complete runtime configuration 
 - Before changes: tsc --noEmit --incremental false passed; eslint --quiet passed (warnings suppressed).
 - Initial baseline: npm run typecheck passed; npm run lint reported 0 errors and 8 warnings.
 - Cleanup: npm run lint -- --max-warnings=0 passed with no warnings. Removed unused bindings and an unnecessary suppression. The sponsor table retains its native img element with a scoped documented exception to preserve arbitrary URLs, intrinsic sizing, eager loading and error handling. npm run typecheck and tsc --noEmit --incremental false --noUnusedLocals --noUnusedParameters both passed.
-- All relative links in docs resolve; the API inventory contains all 75 route handlers. Diff whitespace validation passes for this change with CRLF recognized; the pre-existing lockfile is excluded.
+- All relative links in docs resolve; the API reference lists 100 HTTP operations across all 75 route handlers. Diff whitespace validation passes for this change with CRLF recognized; the pre-existing lockfile is excluded.
 - Database scripts, migrations, seeds, production build, live checkout, SMTP and other external integrations were not executed. No database reproduction or runtime behavior claim is made.
 
 ## Next steps and completion gates
@@ -96,8 +96,10 @@ Removed modules after TypeScript-resolved import/export/dynamic-import scanning 
 
 Removed unused declarations and renamed unused positional request parameters with an underscore while retaining route context positions. Event responses still omit `_count` and return registeredCount as before. No lint rule is disabled globally.
 
-Retained deliberately: Next.js entry points, generated code, i18n/request.ts (loaded by next-intl configuration), API endpoints with no known local caller, application operational scripts, application-specific public assets, database models, and the config.yaml/config.ts pair. The config loader has no current source importer but represents documented configuration; its removal and dependency cleanup need a separate decision. Import scanning is evidence for internal-module cleanup, not proof that all externally callable resources are unused. All 75 handlers retain their exported HTTP methods compared with HEAD. Documentation links and diff whitespace checks passed (pre-existing lockfile excluded). Runtime/browser/database verification remains outstanding.
+Retained deliberately: Next.js entry points, generated code, i18n/request.ts (loaded by next-intl configuration), API endpoints with no known local caller, application operational scripts, application-specific public assets, database models, and the config.yaml/config.ts pair. The config loader has no current source importer but represents documented configuration; its removal and dependency cleanup need a separate decision. Import scanning is evidence for internal-module cleanup, not proof that all externally callable resources are unused. All 75 handlers retain their exported HTTP methods compared with original baseline commit `8c5a3e9`. Documentation links and diff whitespace checks passed (pre-existing lockfile excluded). Runtime/browser/database verification remains outstanding.
 
 ### Follow-up repository housekeeping
 
 Removed `push_main.bat` and `push_now.bat` as requested, the unrelated Windows Monopoly clicker `自動玩monopoly的腳本.py`, and five unreferenced Next.js starter assets: `public/file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`. Repository source/configuration searches found no references to these scripts or assets. Actual club logos, application endpoints, environment files, tests, seed and maintenance utilities remain. No dependency or database changes are included. These removals do not alter active application flows; the removed starter asset URLs are no longer served.
+
+API documentation is consolidated in `docs/API_ROUTES.md` (moved from the repository root); the separate `docs/api-inventory.md` was removed to avoid maintaining competing endpoint lists. The original API document grouping and valid descriptions are retained; missing operations are appended, and absent routes and outdated global authentication/role claims are corrected. Detailed request/response contracts remain unverified.

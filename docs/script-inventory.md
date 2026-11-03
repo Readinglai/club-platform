@@ -1,6 +1,6 @@
 # Script baseline inventory
 
-Snapshot: 2026-11-02. Scripts have not been executed as part of this inventory. Database scripts are not isolated from the database configured by their environment. Inspect setup, cleanup and external-service calls before running.
+Initial snapshot: 2026-11-02. Inventory audited 2026-11-03. Scripts have not been executed as part of this inventory. Database scripts are not isolated from the database configured by their environment. Inspect setup, cleanup and external-service calls before running.
 
 ## Verification scripts
 
@@ -25,7 +25,7 @@ Snapshot: 2026-11-02. Scripts have not been executed as part of this inventory. 
 
 ## Setup and maintenance
 
-These are operational utilities, not automated tests. Classification describes intended purpose; it is not authorization to execute them.
+These are operational utilities, not automated tests. Classification describes intended purpose and does not establish that a script is safe against the configured database.
 
 | Script | Purpose |
 |---|---|
@@ -51,3 +51,5 @@ Other entry points: `prisma/seed.ts` seeds database data. All five root Git batc
 - `test-team-page.ts` edits site configuration and attempts to restore it.
 - Tests are currently invoked individually with `tsx`; it is not a direct development dependency. A reproducible test runner is step two.
 - No coverage report, browser suite, or repository GitHub Actions configuration was found.
+
+`scripts/fixtures/budget-template.json` and `scripts/fixtures/filled-budget.ts` support spreadsheet tests; they are fixtures rather than runnable maintenance scripts.
