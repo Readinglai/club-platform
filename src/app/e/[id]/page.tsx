@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { hiloEventId } from "@/lib/hilo";
 import { getCurrentUser } from "@/lib/access/current-user";
 import { db } from "@/lib/db";
 import { getPublicEvent } from "@/lib/events/public";
@@ -10,6 +11,8 @@ type Props = { params: Promise<{ id: string }> };
 /** Public ticket page for events after Halloween 2026 (readable /events/<slug> URLs come later). */
 export default async function PublicEventPage({ params }: Props) {
   const { id } = await params;
+  // Hilo Party sells on its own page (phone required, guest member discount).
+  if (id === hiloEventId()) redirect("/hilo");
   const user = await getCurrentUser();
   // Rendered on the server so the tickets are on screen at first paint.
   const data = await getPublicEvent(id, user?.id ?? null);

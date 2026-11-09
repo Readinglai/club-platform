@@ -182,6 +182,8 @@ model Event {
   budgetLines    EventBudgetLine[]
   financeRecords FinanceRecord[]
   memoryPhotos   EventMemoryPhoto[]
+
+  memberRedemptionsV2 EventMemberRedemption[]
 }
 
 /// A photo in an event's "past memories" on its public detail page, added in
@@ -350,6 +352,10 @@ model EventSettings {
   /// A few sentences about how the event went, shown with its memory photos.
   memoriesRecap String?
 
+  /// Guest member discount: this much off ONE ticket per member per event,
+  /// checked by member code + card name (no login). Null means off.
+  memberDiscountAmount Decimal? @db.Decimal(10, 2)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -428,6 +434,14 @@ model Order {
 
   stripeSessionId String?   @unique
   paidAt          DateTime?
+  /// When the Stripe checkout, and with it the ticket hold, expires.
+  /// Null on free orders and on orders made before this column existed.
+  expiresAt       DateTime?
+
+  /// Set when something about a payment needs a person to look at it, e.g. a
+  /// payment that arrived after its hold lapsed while the tier was full.
+  needsReview Boolean @default(false)
+  reviewNote  String?
 
   waiverAcceptedAt DateTime?
   waiverVersion    String?
@@ -435,11 +449,46 @@ model Order {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tickets Ticket[]
+  tickets          Ticket[]
+  memberRedemption EventMemberRedemption?
 
   @@index([eventId])
   @@index([userId])
   @@index([buyerEmail])
+}
+
+enum EventMemberRedemptionStatus {
+  /// Held by an order that is waiting for payment.
+  PENDING
+  /// The order was paid (or free): the member's discount for this event is spent.
+  USED
+  /// The order expired or was cancelled; the next order may take it over.
+  RELEASED
+}
+
+/// A member's one discounted ticket at an event (EventSettings.memberDiscountAmount).
+/// One row per membership + event; a RELEASED row is re-pointed at the next
+/// order instead of inserting another.
+model EventMemberRedemption {
+  id String @id @default(cuid())
+
+  membershipId String
+  membership   Membership @relation(fields: [membershipId], references: [id], onDelete: Restrict)
+  eventId      String
+  event        Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  /// The order holding or having used the discount.
+  orderId String? @unique
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  status EventMemberRedemptionStatus @default(PENDING)
+  usedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([membershipId, eventId])
+  @@index([eventId, status])
 }
 
 /// One entry pass per attendee; token is the QR code value.
@@ -553,6 +602,8 @@ model Membership {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  eventRedemptions EventMemberRedemption[]
 
   @@index([userId])
   @@index([email])

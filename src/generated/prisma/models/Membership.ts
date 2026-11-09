@@ -297,6 +297,7 @@ export type MembershipWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Membership"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Membership"> | Date | string
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  eventRedemptions?: Prisma.EventMemberRedemptionListRelationFilter
 }
 
 export type MembershipOrderByWithRelationInput = {
@@ -316,6 +317,7 @@ export type MembershipOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  eventRedemptions?: Prisma.EventMemberRedemptionOrderByRelationAggregateInput
 }
 
 export type MembershipWhereUniqueInput = Prisma.AtLeast<{
@@ -338,6 +340,7 @@ export type MembershipWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Membership"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Membership"> | Date | string
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  eventRedemptions?: Prisma.EventMemberRedemptionListRelationFilter
 }, "id" | "memberCode" | "stripeSessionId" | "legacyId">
 
 export type MembershipOrderByWithAggregationInput = {
@@ -400,6 +403,7 @@ export type MembershipCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMembershipsInput
+  eventRedemptions?: Prisma.EventMemberRedemptionCreateNestedManyWithoutMembershipInput
 }
 
 export type MembershipUncheckedCreateInput = {
@@ -418,6 +422,7 @@ export type MembershipUncheckedCreateInput = {
   walletPassId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventRedemptions?: Prisma.EventMemberRedemptionUncheckedCreateNestedManyWithoutMembershipInput
 }
 
 export type MembershipUpdateInput = {
@@ -436,6 +441,7 @@ export type MembershipUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMembershipsNestedInput
+  eventRedemptions?: Prisma.EventMemberRedemptionUpdateManyWithoutMembershipNestedInput
 }
 
 export type MembershipUncheckedUpdateInput = {
@@ -454,6 +460,7 @@ export type MembershipUncheckedUpdateInput = {
   walletPassId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventRedemptions?: Prisma.EventMemberRedemptionUncheckedUpdateManyWithoutMembershipNestedInput
 }
 
 export type MembershipCreateManyInput = {
@@ -517,6 +524,11 @@ export type MembershipListRelationFilter = {
 
 export type MembershipOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type MembershipScalarRelationFilter = {
+  is?: Prisma.MembershipWhereInput
+  isNot?: Prisma.MembershipWhereInput
 }
 
 export type MembershipCountOrderByAggregateInput = {
@@ -623,6 +635,20 @@ export type MembershipUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.MembershipScalarWhereInput | Prisma.MembershipScalarWhereInput[]
 }
 
+export type MembershipCreateNestedOneWithoutEventRedemptionsInput = {
+  create?: Prisma.XOR<Prisma.MembershipCreateWithoutEventRedemptionsInput, Prisma.MembershipUncheckedCreateWithoutEventRedemptionsInput>
+  connectOrCreate?: Prisma.MembershipCreateOrConnectWithoutEventRedemptionsInput
+  connect?: Prisma.MembershipWhereUniqueInput
+}
+
+export type MembershipUpdateOneRequiredWithoutEventRedemptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.MembershipCreateWithoutEventRedemptionsInput, Prisma.MembershipUncheckedCreateWithoutEventRedemptionsInput>
+  connectOrCreate?: Prisma.MembershipCreateOrConnectWithoutEventRedemptionsInput
+  upsert?: Prisma.MembershipUpsertWithoutEventRedemptionsInput
+  connect?: Prisma.MembershipWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MembershipUpdateToOneWithWhereWithoutEventRedemptionsInput, Prisma.MembershipUpdateWithoutEventRedemptionsInput>, Prisma.MembershipUncheckedUpdateWithoutEventRedemptionsInput>
+}
+
 export type EnumMembershipStatusFieldUpdateOperationsInput = {
   set?: $Enums.MembershipStatus
 }
@@ -646,6 +672,7 @@ export type MembershipCreateWithoutUserInput = {
   walletPassId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventRedemptions?: Prisma.EventMemberRedemptionCreateNestedManyWithoutMembershipInput
 }
 
 export type MembershipUncheckedCreateWithoutUserInput = {
@@ -663,6 +690,7 @@ export type MembershipUncheckedCreateWithoutUserInput = {
   walletPassId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventRedemptions?: Prisma.EventMemberRedemptionUncheckedCreateNestedManyWithoutMembershipInput
 }
 
 export type MembershipCreateOrConnectWithoutUserInput = {
@@ -712,6 +740,94 @@ export type MembershipScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Membership"> | Date | string
 }
 
+export type MembershipCreateWithoutEventRedemptionsInput = {
+  id?: string
+  email?: string | null
+  name?: string | null
+  memberCode: string
+  status?: $Enums.MembershipStatus
+  source: $Enums.MembershipSource
+  termStart: Date | string
+  termEnd: Date | string
+  stripeSessionId?: string | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  legacyId?: string | null
+  walletPassId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user?: Prisma.UserCreateNestedOneWithoutMembershipsInput
+}
+
+export type MembershipUncheckedCreateWithoutEventRedemptionsInput = {
+  id?: string
+  userId?: string | null
+  email?: string | null
+  name?: string | null
+  memberCode: string
+  status?: $Enums.MembershipStatus
+  source: $Enums.MembershipSource
+  termStart: Date | string
+  termEnd: Date | string
+  stripeSessionId?: string | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  legacyId?: string | null
+  walletPassId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MembershipCreateOrConnectWithoutEventRedemptionsInput = {
+  where: Prisma.MembershipWhereUniqueInput
+  create: Prisma.XOR<Prisma.MembershipCreateWithoutEventRedemptionsInput, Prisma.MembershipUncheckedCreateWithoutEventRedemptionsInput>
+}
+
+export type MembershipUpsertWithoutEventRedemptionsInput = {
+  update: Prisma.XOR<Prisma.MembershipUpdateWithoutEventRedemptionsInput, Prisma.MembershipUncheckedUpdateWithoutEventRedemptionsInput>
+  create: Prisma.XOR<Prisma.MembershipCreateWithoutEventRedemptionsInput, Prisma.MembershipUncheckedCreateWithoutEventRedemptionsInput>
+  where?: Prisma.MembershipWhereInput
+}
+
+export type MembershipUpdateToOneWithWhereWithoutEventRedemptionsInput = {
+  where?: Prisma.MembershipWhereInput
+  data: Prisma.XOR<Prisma.MembershipUpdateWithoutEventRedemptionsInput, Prisma.MembershipUncheckedUpdateWithoutEventRedemptionsInput>
+}
+
+export type MembershipUpdateWithoutEventRedemptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumMembershipStatusFieldUpdateOperationsInput | $Enums.MembershipStatus
+  source?: Prisma.EnumMembershipSourceFieldUpdateOperationsInput | $Enums.MembershipSource
+  termStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  termEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  legacyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  walletPassId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneWithoutMembershipsNestedInput
+}
+
+export type MembershipUncheckedUpdateWithoutEventRedemptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumMembershipStatusFieldUpdateOperationsInput | $Enums.MembershipStatus
+  source?: Prisma.EnumMembershipSourceFieldUpdateOperationsInput | $Enums.MembershipSource
+  termStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  termEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  legacyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  walletPassId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type MembershipCreateManyUserInput = {
   id?: string
   email?: string | null
@@ -744,6 +860,7 @@ export type MembershipUpdateWithoutUserInput = {
   walletPassId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventRedemptions?: Prisma.EventMemberRedemptionUpdateManyWithoutMembershipNestedInput
 }
 
 export type MembershipUncheckedUpdateWithoutUserInput = {
@@ -761,6 +878,7 @@ export type MembershipUncheckedUpdateWithoutUserInput = {
   walletPassId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventRedemptions?: Prisma.EventMemberRedemptionUncheckedUpdateManyWithoutMembershipNestedInput
 }
 
 export type MembershipUncheckedUpdateManyWithoutUserInput = {
@@ -781,6 +899,35 @@ export type MembershipUncheckedUpdateManyWithoutUserInput = {
 }
 
 
+/**
+ * Count Type MembershipCountOutputType
+ */
+
+export type MembershipCountOutputType = {
+  eventRedemptions: number
+}
+
+export type MembershipCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  eventRedemptions?: boolean | MembershipCountOutputTypeCountEventRedemptionsArgs
+}
+
+/**
+ * MembershipCountOutputType without action
+ */
+export type MembershipCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MembershipCountOutputType
+   */
+  select?: Prisma.MembershipCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * MembershipCountOutputType without action
+ */
+export type MembershipCountOutputTypeCountEventRedemptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EventMemberRedemptionWhereInput
+}
+
 
 export type MembershipSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -799,6 +946,8 @@ export type MembershipSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.Membership$userArgs<ExtArgs>
+  eventRedemptions?: boolean | Prisma.Membership$eventRedemptionsArgs<ExtArgs>
+  _count?: boolean | Prisma.MembershipCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["membership"]>
 
 export type MembershipSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -860,6 +1009,8 @@ export type MembershipSelectScalar = {
 export type MembershipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "email" | "name" | "memberCode" | "status" | "source" | "termStart" | "termEnd" | "stripeSessionId" | "amountPaid" | "legacyId" | "walletPassId" | "createdAt" | "updatedAt", ExtArgs["result"]["membership"]>
 export type MembershipInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Membership$userArgs<ExtArgs>
+  eventRedemptions?: boolean | Prisma.Membership$eventRedemptionsArgs<ExtArgs>
+  _count?: boolean | Prisma.MembershipCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MembershipIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Membership$userArgs<ExtArgs>
@@ -872,6 +1023,7 @@ export type $MembershipPayload<ExtArgs extends runtime.Types.Extensions.Internal
   name: "Membership"
   objects: {
     user: Prisma.$UserPayload<ExtArgs> | null
+    eventRedemptions: Prisma.$EventMemberRedemptionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1296,6 +1448,7 @@ readonly fields: MembershipFieldRefs;
 export interface Prisma__MembershipClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.Membership$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Membership$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  eventRedemptions<T extends Prisma.Membership$eventRedemptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Membership$eventRedemptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventMemberRedemptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1757,6 +1910,30 @@ export type Membership$userArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * Membership.eventRedemptions
+ */
+export type Membership$eventRedemptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EventMemberRedemption
+   */
+  select?: Prisma.EventMemberRedemptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EventMemberRedemption
+   */
+  omit?: Prisma.EventMemberRedemptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EventMemberRedemptionInclude<ExtArgs> | null
+  where?: Prisma.EventMemberRedemptionWhereInput
+  orderBy?: Prisma.EventMemberRedemptionOrderByWithRelationInput | Prisma.EventMemberRedemptionOrderByWithRelationInput[]
+  cursor?: Prisma.EventMemberRedemptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EventMemberRedemptionScalarFieldEnum | Prisma.EventMemberRedemptionScalarFieldEnum[]
 }
 
 /**

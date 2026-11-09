@@ -20,8 +20,18 @@ export type EventSettingsModel = runtime.Types.Result.DefaultSelection<Prisma.$E
 
 export type AggregateEventSettings = {
   _count: EventSettingsCountAggregateOutputType | null
+  _avg: EventSettingsAvgAggregateOutputType | null
+  _sum: EventSettingsSumAggregateOutputType | null
   _min: EventSettingsMinAggregateOutputType | null
   _max: EventSettingsMaxAggregateOutputType | null
+}
+
+export type EventSettingsAvgAggregateOutputType = {
+  memberDiscountAmount: runtime.Decimal | null
+}
+
+export type EventSettingsSumAggregateOutputType = {
+  memberDiscountAmount: runtime.Decimal | null
 }
 
 export type EventSettingsMinAggregateOutputType = {
@@ -40,6 +50,7 @@ export type EventSettingsMinAggregateOutputType = {
   budgetSheetSyncError: string | null
   budgetSheetData: string | null
   memoriesRecap: string | null
+  memberDiscountAmount: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +71,7 @@ export type EventSettingsMaxAggregateOutputType = {
   budgetSheetSyncError: string | null
   budgetSheetData: string | null
   memoriesRecap: string | null
+  memberDiscountAmount: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -80,11 +92,20 @@ export type EventSettingsCountAggregateOutputType = {
   budgetSheetSyncError: number
   budgetSheetData: number
   memoriesRecap: number
+  memberDiscountAmount: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type EventSettingsAvgAggregateInputType = {
+  memberDiscountAmount?: true
+}
+
+export type EventSettingsSumAggregateInputType = {
+  memberDiscountAmount?: true
+}
 
 export type EventSettingsMinAggregateInputType = {
   id?: true
@@ -102,6 +123,7 @@ export type EventSettingsMinAggregateInputType = {
   budgetSheetSyncError?: true
   budgetSheetData?: true
   memoriesRecap?: true
+  memberDiscountAmount?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -122,6 +144,7 @@ export type EventSettingsMaxAggregateInputType = {
   budgetSheetSyncError?: true
   budgetSheetData?: true
   memoriesRecap?: true
+  memberDiscountAmount?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -142,6 +165,7 @@ export type EventSettingsCountAggregateInputType = {
   budgetSheetSyncError?: true
   budgetSheetData?: true
   memoriesRecap?: true
+  memberDiscountAmount?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -185,6 +209,18 @@ export type EventSettingsAggregateArgs<ExtArgs extends runtime.Types.Extensions.
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: EventSettingsAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: EventSettingsSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: EventSettingsMinAggregateInputType
@@ -215,6 +251,8 @@ export type EventSettingsGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   _count?: EventSettingsCountAggregateInputType | true
+  _avg?: EventSettingsAvgAggregateInputType
+  _sum?: EventSettingsSumAggregateInputType
   _min?: EventSettingsMinAggregateInputType
   _max?: EventSettingsMaxAggregateInputType
 }
@@ -235,9 +273,12 @@ export type EventSettingsGroupByOutputType = {
   budgetSheetSyncError: string | null
   budgetSheetData: string | null
   memoriesRecap: string | null
+  memberDiscountAmount: runtime.Decimal | null
   createdAt: Date
   updatedAt: Date
   _count: EventSettingsCountAggregateOutputType | null
+  _avg: EventSettingsAvgAggregateOutputType | null
+  _sum: EventSettingsSumAggregateOutputType | null
   _min: EventSettingsMinAggregateOutputType | null
   _max: EventSettingsMaxAggregateOutputType | null
 }
@@ -276,6 +317,7 @@ export type EventSettingsWhereInput = {
   budgetSheetSyncError?: Prisma.StringNullableFilter<"EventSettings"> | string | null
   budgetSheetData?: Prisma.StringNullableFilter<"EventSettings"> | string | null
   memoriesRecap?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  memberDiscountAmount?: Prisma.DecimalNullableFilter<"EventSettings"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
@@ -297,6 +339,7 @@ export type EventSettingsOrderByWithRelationInput = {
   budgetSheetSyncError?: Prisma.SortOrderInput | Prisma.SortOrder
   budgetSheetData?: Prisma.SortOrderInput | Prisma.SortOrder
   memoriesRecap?: Prisma.SortOrderInput | Prisma.SortOrder
+  memberDiscountAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   event?: Prisma.EventOrderByWithRelationInput
@@ -321,6 +364,7 @@ export type EventSettingsWhereUniqueInput = Prisma.AtLeast<{
   budgetSheetSyncError?: Prisma.StringNullableFilter<"EventSettings"> | string | null
   budgetSheetData?: Prisma.StringNullableFilter<"EventSettings"> | string | null
   memoriesRecap?: Prisma.StringNullableFilter<"EventSettings"> | string | null
+  memberDiscountAmount?: Prisma.DecimalNullableFilter<"EventSettings"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EventSettings"> | Date | string
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
@@ -342,11 +386,14 @@ export type EventSettingsOrderByWithAggregationInput = {
   budgetSheetSyncError?: Prisma.SortOrderInput | Prisma.SortOrder
   budgetSheetData?: Prisma.SortOrderInput | Prisma.SortOrder
   memoriesRecap?: Prisma.SortOrderInput | Prisma.SortOrder
+  memberDiscountAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.EventSettingsCountOrderByAggregateInput
+  _avg?: Prisma.EventSettingsAvgOrderByAggregateInput
   _max?: Prisma.EventSettingsMaxOrderByAggregateInput
   _min?: Prisma.EventSettingsMinOrderByAggregateInput
+  _sum?: Prisma.EventSettingsSumOrderByAggregateInput
 }
 
 export type EventSettingsScalarWhereWithAggregatesInput = {
@@ -368,6 +415,7 @@ export type EventSettingsScalarWhereWithAggregatesInput = {
   budgetSheetSyncError?: Prisma.StringNullableWithAggregatesFilter<"EventSettings"> | string | null
   budgetSheetData?: Prisma.StringNullableWithAggregatesFilter<"EventSettings"> | string | null
   memoriesRecap?: Prisma.StringNullableWithAggregatesFilter<"EventSettings"> | string | null
+  memberDiscountAmount?: Prisma.DecimalNullableWithAggregatesFilter<"EventSettings"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"EventSettings"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"EventSettings"> | Date | string
 }
@@ -387,6 +435,7 @@ export type EventSettingsCreateInput = {
   budgetSheetSyncError?: string | null
   budgetSheetData?: string | null
   memoriesRecap?: string | null
+  memberDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutSettingsInput
@@ -408,6 +457,7 @@ export type EventSettingsUncheckedCreateInput = {
   budgetSheetSyncError?: string | null
   budgetSheetData?: string | null
   memoriesRecap?: string | null
+  memberDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -427,6 +477,7 @@ export type EventSettingsUpdateInput = {
   budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memoriesRecap?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberDiscountAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutSettingsNestedInput
@@ -448,6 +499,7 @@ export type EventSettingsUncheckedUpdateInput = {
   budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memoriesRecap?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberDiscountAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -468,6 +520,7 @@ export type EventSettingsCreateManyInput = {
   budgetSheetSyncError?: string | null
   budgetSheetData?: string | null
   memoriesRecap?: string | null
+  memberDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -487,6 +540,7 @@ export type EventSettingsUpdateManyMutationInput = {
   budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memoriesRecap?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberDiscountAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -507,6 +561,7 @@ export type EventSettingsUncheckedUpdateManyInput = {
   budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memoriesRecap?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberDiscountAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -532,8 +587,13 @@ export type EventSettingsCountOrderByAggregateInput = {
   budgetSheetSyncError?: Prisma.SortOrder
   budgetSheetData?: Prisma.SortOrder
   memoriesRecap?: Prisma.SortOrder
+  memberDiscountAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type EventSettingsAvgOrderByAggregateInput = {
+  memberDiscountAmount?: Prisma.SortOrder
 }
 
 export type EventSettingsMaxOrderByAggregateInput = {
@@ -552,6 +612,7 @@ export type EventSettingsMaxOrderByAggregateInput = {
   budgetSheetSyncError?: Prisma.SortOrder
   budgetSheetData?: Prisma.SortOrder
   memoriesRecap?: Prisma.SortOrder
+  memberDiscountAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -572,8 +633,13 @@ export type EventSettingsMinOrderByAggregateInput = {
   budgetSheetSyncError?: Prisma.SortOrder
   budgetSheetData?: Prisma.SortOrder
   memoriesRecap?: Prisma.SortOrder
+  memberDiscountAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type EventSettingsSumOrderByAggregateInput = {
+  memberDiscountAmount?: Prisma.SortOrder
 }
 
 export type EventSettingsCreateNestedOneWithoutEventInput = {
@@ -608,6 +674,14 @@ export type EventSettingsUncheckedUpdateOneWithoutEventNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EventSettingsUpdateToOneWithWhereWithoutEventInput, Prisma.EventSettingsUpdateWithoutEventInput>, Prisma.EventSettingsUncheckedUpdateWithoutEventInput>
 }
 
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type EventSettingsCreateWithoutEventInput = {
   id?: string
   timezone?: string
@@ -623,6 +697,7 @@ export type EventSettingsCreateWithoutEventInput = {
   budgetSheetSyncError?: string | null
   budgetSheetData?: string | null
   memoriesRecap?: string | null
+  memberDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -642,6 +717,7 @@ export type EventSettingsUncheckedCreateWithoutEventInput = {
   budgetSheetSyncError?: string | null
   budgetSheetData?: string | null
   memoriesRecap?: string | null
+  memberDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -677,6 +753,7 @@ export type EventSettingsUpdateWithoutEventInput = {
   budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memoriesRecap?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberDiscountAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -696,6 +773,7 @@ export type EventSettingsUncheckedUpdateWithoutEventInput = {
   budgetSheetSyncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   budgetSheetData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memoriesRecap?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberDiscountAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -718,6 +796,7 @@ export type EventSettingsSelect<ExtArgs extends runtime.Types.Extensions.Interna
   budgetSheetSyncError?: boolean
   budgetSheetData?: boolean
   memoriesRecap?: boolean
+  memberDiscountAmount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
@@ -739,6 +818,7 @@ export type EventSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   budgetSheetSyncError?: boolean
   budgetSheetData?: boolean
   memoriesRecap?: boolean
+  memberDiscountAmount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
@@ -760,6 +840,7 @@ export type EventSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   budgetSheetSyncError?: boolean
   budgetSheetData?: boolean
   memoriesRecap?: boolean
+  memberDiscountAmount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
@@ -781,11 +862,12 @@ export type EventSettingsSelectScalar = {
   budgetSheetSyncError?: boolean
   budgetSheetData?: boolean
   memoriesRecap?: boolean
+  memberDiscountAmount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EventSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "timezone" | "currency" | "registrationEnabled" | "ticketsEnabled" | "checkInEnabled" | "budgetEnabled" | "dashboardEnabled" | "budgetSheetId" | "budgetSheetConnectedBy" | "budgetSheetSyncedAt" | "budgetSheetSyncError" | "budgetSheetData" | "memoriesRecap" | "createdAt" | "updatedAt", ExtArgs["result"]["eventSettings"]>
+export type EventSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "timezone" | "currency" | "registrationEnabled" | "ticketsEnabled" | "checkInEnabled" | "budgetEnabled" | "dashboardEnabled" | "budgetSheetId" | "budgetSheetConnectedBy" | "budgetSheetSyncedAt" | "budgetSheetSyncError" | "budgetSheetData" | "memoriesRecap" | "memberDiscountAmount" | "createdAt" | "updatedAt", ExtArgs["result"]["eventSettings"]>
 export type EventSettingsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
 }
@@ -829,6 +911,11 @@ export type $EventSettingsPayload<ExtArgs extends runtime.Types.Extensions.Inter
      * A few sentences about how the event went, shown with its memory photos.
      */
     memoriesRecap: string | null
+    /**
+     * Guest member discount: this much off ONE ticket per member per event,
+     * checked by member code + card name (no login). Null means off.
+     */
+    memberDiscountAmount: runtime.Decimal | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["eventSettings"]>
@@ -1270,6 +1357,7 @@ export interface EventSettingsFieldRefs {
   readonly budgetSheetSyncError: Prisma.FieldRef<"EventSettings", 'String'>
   readonly budgetSheetData: Prisma.FieldRef<"EventSettings", 'String'>
   readonly memoriesRecap: Prisma.FieldRef<"EventSettings", 'String'>
+  readonly memberDiscountAmount: Prisma.FieldRef<"EventSettings", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"EventSettings", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"EventSettings", 'DateTime'>
 }

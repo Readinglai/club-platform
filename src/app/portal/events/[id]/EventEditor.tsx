@@ -13,6 +13,7 @@ type Tier = {
   price: number;
   memberPrice: number | null;
   capacity: number | null;
+  maxPerOrder: number;
   salesStartAt: string;
   salesEndAt: string;
   membersOnly: boolean;
@@ -35,7 +36,7 @@ const COLOR_NAMES: Record<string, string> = {
   "#334155": "colorGrey",
 };
 
-const blankTier = { name: "", price: "", memberPrice: "", capacity: "", salesStartAt: "", salesEndAt: "", membersOnly: false, color: TIER_COLORS[0], perks: "", description: "" };
+const blankTier = { name: "", price: "", memberPrice: "", capacity: "", maxPerOrder: "1", salesStartAt: "", salesEndAt: "", membersOnly: false, color: TIER_COLORS[0], perks: "", description: "" };
 type TierForm = typeof blankTier;
 
 const toForm = (t: Tier): TierForm => ({
@@ -43,6 +44,7 @@ const toForm = (t: Tier): TierForm => ({
   price: String(t.price),
   memberPrice: t.memberPrice === null ? "" : String(t.memberPrice),
   capacity: t.capacity === null ? "" : String(t.capacity),
+  maxPerOrder: String(t.maxPerOrder),
   salesStartAt: t.salesStartAt,
   salesEndAt: t.salesEndAt,
   membersOnly: t.membersOnly,
@@ -74,6 +76,7 @@ export default function EventEditor({ eventId }: { eventId: string }) {
       checkInEnabled: d.checkInEnabled,
       budgetEnabled: d.budgetEnabled,
       dashboardEnabled: d.dashboardEnabled,
+      memberDiscount: d.memberDiscount,
     });
   }, []);
 
@@ -277,6 +280,7 @@ function TierEditor({
       <Field label={`${t("price")} *`}><input className={inputClass} required inputMode="decimal" value={v.price} onChange={(e) => set("price", e.target.value)} /></Field>
       <Field label={t("memberPrice")}><input className={inputClass} inputMode="decimal" placeholder={t("none")} value={v.memberPrice} onChange={(e) => set("memberPrice", e.target.value)} /></Field>
       <Field label={t("capacity")}><input className={inputClass} inputMode="numeric" placeholder={t("unlimited")} value={v.capacity} onChange={(e) => set("capacity", e.target.value)} /></Field>
+      <Field label={t("maxPerOrder")}><input className={inputClass} inputMode="numeric" value={v.maxPerOrder} onChange={(e) => set("maxPerOrder", e.target.value)} /></Field>
       <Field label={t("salesStart")}><input className={inputClass} type="datetime-local" value={v.salesStartAt} onChange={(e) => set("salesStartAt", e.target.value)} /></Field>
       <Field label={t("salesEnd")}><input className={inputClass} type="datetime-local" value={v.salesEndAt} onChange={(e) => set("salesEndAt", e.target.value)} /></Field>
       <Field label={t("scannerColour")}>

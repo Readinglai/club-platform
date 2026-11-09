@@ -307,6 +307,23 @@ export type EnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumOrderStatusFilter<$PrismaModel>
 }
 
+export type EnumEventMemberRedemptionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.EventMemberRedemptionStatus | Prisma.EnumEventMemberRedemptionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.EventMemberRedemptionStatus[] | Prisma.ListEnumEventMemberRedemptionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.EventMemberRedemptionStatus[] | Prisma.ListEnumEventMemberRedemptionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumEventMemberRedemptionStatusFilter<$PrismaModel> | $Enums.EventMemberRedemptionStatus
+}
+
+export type EnumEventMemberRedemptionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EventMemberRedemptionStatus | Prisma.EnumEventMemberRedemptionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.EventMemberRedemptionStatus[] | Prisma.ListEnumEventMemberRedemptionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.EventMemberRedemptionStatus[] | Prisma.ListEnumEventMemberRedemptionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumEventMemberRedemptionStatusWithAggregatesFilter<$PrismaModel> | $Enums.EventMemberRedemptionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEventMemberRedemptionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEventMemberRedemptionStatusFilter<$PrismaModel>
+}
+
 export type EnumTicketStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.TicketStatus | Prisma.EnumTicketStatusFieldRefInput<$PrismaModel>
   in?: $Enums.TicketStatus[] | Prisma.ListEnumTicketStatusFieldRefInput<$PrismaModel>
@@ -774,6 +791,23 @@ export type NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumOrderStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumOrderStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumEventMemberRedemptionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.EventMemberRedemptionStatus | Prisma.EnumEventMemberRedemptionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.EventMemberRedemptionStatus[] | Prisma.ListEnumEventMemberRedemptionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.EventMemberRedemptionStatus[] | Prisma.ListEnumEventMemberRedemptionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumEventMemberRedemptionStatusFilter<$PrismaModel> | $Enums.EventMemberRedemptionStatus
+}
+
+export type NestedEnumEventMemberRedemptionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EventMemberRedemptionStatus | Prisma.EnumEventMemberRedemptionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.EventMemberRedemptionStatus[] | Prisma.ListEnumEventMemberRedemptionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.EventMemberRedemptionStatus[] | Prisma.ListEnumEventMemberRedemptionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumEventMemberRedemptionStatusWithAggregatesFilter<$PrismaModel> | $Enums.EventMemberRedemptionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEventMemberRedemptionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEventMemberRedemptionStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumTicketStatusFilter<$PrismaModel = never> = {

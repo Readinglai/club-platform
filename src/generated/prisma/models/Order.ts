@@ -46,6 +46,9 @@ export type OrderMinAggregateOutputType = {
   currency: string | null
   stripeSessionId: string | null
   paidAt: Date | null
+  expiresAt: Date | null
+  needsReview: boolean | null
+  reviewNote: string | null
   waiverAcceptedAt: Date | null
   waiverVersion: string | null
   createdAt: Date | null
@@ -64,6 +67,9 @@ export type OrderMaxAggregateOutputType = {
   currency: string | null
   stripeSessionId: string | null
   paidAt: Date | null
+  expiresAt: Date | null
+  needsReview: boolean | null
+  reviewNote: string | null
   waiverAcceptedAt: Date | null
   waiverVersion: string | null
   createdAt: Date | null
@@ -82,6 +88,9 @@ export type OrderCountAggregateOutputType = {
   currency: number
   stripeSessionId: number
   paidAt: number
+  expiresAt: number
+  needsReview: number
+  reviewNote: number
   waiverAcceptedAt: number
   waiverVersion: number
   createdAt: number
@@ -110,6 +119,9 @@ export type OrderMinAggregateInputType = {
   currency?: true
   stripeSessionId?: true
   paidAt?: true
+  expiresAt?: true
+  needsReview?: true
+  reviewNote?: true
   waiverAcceptedAt?: true
   waiverVersion?: true
   createdAt?: true
@@ -128,6 +140,9 @@ export type OrderMaxAggregateInputType = {
   currency?: true
   stripeSessionId?: true
   paidAt?: true
+  expiresAt?: true
+  needsReview?: true
+  reviewNote?: true
   waiverAcceptedAt?: true
   waiverVersion?: true
   createdAt?: true
@@ -146,6 +161,9 @@ export type OrderCountAggregateInputType = {
   currency?: true
   stripeSessionId?: true
   paidAt?: true
+  expiresAt?: true
+  needsReview?: true
+  reviewNote?: true
   waiverAcceptedAt?: true
   waiverVersion?: true
   createdAt?: true
@@ -251,6 +269,9 @@ export type OrderGroupByOutputType = {
   currency: string
   stripeSessionId: string | null
   paidAt: Date | null
+  expiresAt: Date | null
+  needsReview: boolean
+  reviewNote: string | null
   waiverAcceptedAt: Date | null
   waiverVersion: string | null
   createdAt: Date
@@ -292,6 +313,9 @@ export type OrderWhereInput = {
   currency?: Prisma.StringFilter<"Order"> | string
   stripeSessionId?: Prisma.StringNullableFilter<"Order"> | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  expiresAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  needsReview?: Prisma.BoolFilter<"Order"> | boolean
+  reviewNote?: Prisma.StringNullableFilter<"Order"> | string | null
   waiverAcceptedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   waiverVersion?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
@@ -299,6 +323,7 @@ export type OrderWhereInput = {
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   tickets?: Prisma.TicketListRelationFilter
+  memberRedemption?: Prisma.XOR<Prisma.EventMemberRedemptionNullableScalarRelationFilter, Prisma.EventMemberRedemptionWhereInput> | null
 }
 
 export type OrderOrderByWithRelationInput = {
@@ -313,6 +338,9 @@ export type OrderOrderByWithRelationInput = {
   currency?: Prisma.SortOrder
   stripeSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  needsReview?: Prisma.SortOrder
+  reviewNote?: Prisma.SortOrderInput | Prisma.SortOrder
   waiverAcceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   waiverVersion?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -320,6 +348,7 @@ export type OrderOrderByWithRelationInput = {
   event?: Prisma.EventOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   tickets?: Prisma.TicketOrderByRelationAggregateInput
+  memberRedemption?: Prisma.EventMemberRedemptionOrderByWithRelationInput
 }
 
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -337,6 +366,9 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   totalAmount?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   currency?: Prisma.StringFilter<"Order"> | string
   paidAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  expiresAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  needsReview?: Prisma.BoolFilter<"Order"> | boolean
+  reviewNote?: Prisma.StringNullableFilter<"Order"> | string | null
   waiverAcceptedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   waiverVersion?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
@@ -344,6 +376,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   tickets?: Prisma.TicketListRelationFilter
+  memberRedemption?: Prisma.XOR<Prisma.EventMemberRedemptionNullableScalarRelationFilter, Prisma.EventMemberRedemptionWhereInput> | null
 }, "id" | "stripeSessionId">
 
 export type OrderOrderByWithAggregationInput = {
@@ -358,6 +391,9 @@ export type OrderOrderByWithAggregationInput = {
   currency?: Prisma.SortOrder
   stripeSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  needsReview?: Prisma.SortOrder
+  reviewNote?: Prisma.SortOrderInput | Prisma.SortOrder
   waiverAcceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   waiverVersion?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -384,6 +420,9 @@ export type OrderScalarWhereWithAggregatesInput = {
   currency?: Prisma.StringWithAggregatesFilter<"Order"> | string
   stripeSessionId?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   paidAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+  expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+  needsReview?: Prisma.BoolWithAggregatesFilter<"Order"> | boolean
+  reviewNote?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   waiverAcceptedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
   waiverVersion?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -400,6 +439,9 @@ export type OrderCreateInput = {
   currency?: string
   stripeSessionId?: string | null
   paidAt?: Date | string | null
+  expiresAt?: Date | string | null
+  needsReview?: boolean
+  reviewNote?: string | null
   waiverAcceptedAt?: Date | string | null
   waiverVersion?: string | null
   createdAt?: Date | string
@@ -407,6 +449,7 @@ export type OrderCreateInput = {
   event: Prisma.EventCreateNestedOneWithoutOrdersInput
   user?: Prisma.UserCreateNestedOneWithoutOrdersInput
   tickets?: Prisma.TicketCreateNestedManyWithoutOrderInput
+  memberRedemption?: Prisma.EventMemberRedemptionCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUncheckedCreateInput = {
@@ -421,11 +464,15 @@ export type OrderUncheckedCreateInput = {
   currency?: string
   stripeSessionId?: string | null
   paidAt?: Date | string | null
+  expiresAt?: Date | string | null
+  needsReview?: boolean
+  reviewNote?: string | null
   waiverAcceptedAt?: Date | string | null
   waiverVersion?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tickets?: Prisma.TicketUncheckedCreateNestedManyWithoutOrderInput
+  memberRedemption?: Prisma.EventMemberRedemptionUncheckedCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUpdateInput = {
@@ -438,6 +485,9 @@ export type OrderUpdateInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -445,6 +495,7 @@ export type OrderUpdateInput = {
   event?: Prisma.EventUpdateOneRequiredWithoutOrdersNestedInput
   user?: Prisma.UserUpdateOneWithoutOrdersNestedInput
   tickets?: Prisma.TicketUpdateManyWithoutOrderNestedInput
+  memberRedemption?: Prisma.EventMemberRedemptionUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateInput = {
@@ -459,11 +510,15 @@ export type OrderUncheckedUpdateInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tickets?: Prisma.TicketUncheckedUpdateManyWithoutOrderNestedInput
+  memberRedemption?: Prisma.EventMemberRedemptionUncheckedUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderCreateManyInput = {
@@ -478,6 +533,9 @@ export type OrderCreateManyInput = {
   currency?: string
   stripeSessionId?: string | null
   paidAt?: Date | string | null
+  expiresAt?: Date | string | null
+  needsReview?: boolean
+  reviewNote?: string | null
   waiverAcceptedAt?: Date | string | null
   waiverVersion?: string | null
   createdAt?: Date | string
@@ -494,6 +552,9 @@ export type OrderUpdateManyMutationInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -512,6 +573,9 @@ export type OrderUncheckedUpdateManyInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -540,6 +604,9 @@ export type OrderCountOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   stripeSessionId?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
+  needsReview?: Prisma.SortOrder
+  reviewNote?: Prisma.SortOrder
   waiverAcceptedAt?: Prisma.SortOrder
   waiverVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -562,6 +629,9 @@ export type OrderMaxOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   stripeSessionId?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
+  needsReview?: Prisma.SortOrder
+  reviewNote?: Prisma.SortOrder
   waiverAcceptedAt?: Prisma.SortOrder
   waiverVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -580,6 +650,9 @@ export type OrderMinOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   stripeSessionId?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
+  needsReview?: Prisma.SortOrder
+  reviewNote?: Prisma.SortOrder
   waiverAcceptedAt?: Prisma.SortOrder
   waiverVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -588,6 +661,11 @@ export type OrderMinOrderByAggregateInput = {
 
 export type OrderSumOrderByAggregateInput = {
   totalAmount?: Prisma.SortOrder
+}
+
+export type OrderNullableScalarRelationFilter = {
+  is?: Prisma.OrderWhereInput | null
+  isNot?: Prisma.OrderWhereInput | null
 }
 
 export type OrderScalarRelationFilter = {
@@ -683,6 +761,22 @@ export type EnumOrderStatusFieldUpdateOperationsInput = {
   set?: $Enums.OrderStatus
 }
 
+export type OrderCreateNestedOneWithoutMemberRedemptionInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutMemberRedemptionInput, Prisma.OrderUncheckedCreateWithoutMemberRedemptionInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutMemberRedemptionInput
+  connect?: Prisma.OrderWhereUniqueInput
+}
+
+export type OrderUpdateOneWithoutMemberRedemptionNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutMemberRedemptionInput, Prisma.OrderUncheckedCreateWithoutMemberRedemptionInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutMemberRedemptionInput
+  upsert?: Prisma.OrderUpsertWithoutMemberRedemptionInput
+  disconnect?: Prisma.OrderWhereInput | boolean
+  delete?: Prisma.OrderWhereInput | boolean
+  connect?: Prisma.OrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutMemberRedemptionInput, Prisma.OrderUpdateWithoutMemberRedemptionInput>, Prisma.OrderUncheckedUpdateWithoutMemberRedemptionInput>
+}
+
 export type OrderCreateNestedOneWithoutTicketsInput = {
   create?: Prisma.XOR<Prisma.OrderCreateWithoutTicketsInput, Prisma.OrderUncheckedCreateWithoutTicketsInput>
   connectOrCreate?: Prisma.OrderCreateOrConnectWithoutTicketsInput
@@ -707,12 +801,16 @@ export type OrderCreateWithoutUserInput = {
   currency?: string
   stripeSessionId?: string | null
   paidAt?: Date | string | null
+  expiresAt?: Date | string | null
+  needsReview?: boolean
+  reviewNote?: string | null
   waiverAcceptedAt?: Date | string | null
   waiverVersion?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutOrdersInput
   tickets?: Prisma.TicketCreateNestedManyWithoutOrderInput
+  memberRedemption?: Prisma.EventMemberRedemptionCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutUserInput = {
@@ -726,11 +824,15 @@ export type OrderUncheckedCreateWithoutUserInput = {
   currency?: string
   stripeSessionId?: string | null
   paidAt?: Date | string | null
+  expiresAt?: Date | string | null
+  needsReview?: boolean
+  reviewNote?: string | null
   waiverAcceptedAt?: Date | string | null
   waiverVersion?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tickets?: Prisma.TicketUncheckedCreateNestedManyWithoutOrderInput
+  memberRedemption?: Prisma.EventMemberRedemptionUncheckedCreateNestedOneWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutUserInput = {
@@ -774,6 +876,9 @@ export type OrderScalarWhereInput = {
   currency?: Prisma.StringFilter<"Order"> | string
   stripeSessionId?: Prisma.StringNullableFilter<"Order"> | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  expiresAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  needsReview?: Prisma.BoolFilter<"Order"> | boolean
+  reviewNote?: Prisma.StringNullableFilter<"Order"> | string | null
   waiverAcceptedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   waiverVersion?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
@@ -790,12 +895,16 @@ export type OrderCreateWithoutEventInput = {
   currency?: string
   stripeSessionId?: string | null
   paidAt?: Date | string | null
+  expiresAt?: Date | string | null
+  needsReview?: boolean
+  reviewNote?: string | null
   waiverAcceptedAt?: Date | string | null
   waiverVersion?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutOrdersInput
   tickets?: Prisma.TicketCreateNestedManyWithoutOrderInput
+  memberRedemption?: Prisma.EventMemberRedemptionCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutEventInput = {
@@ -809,11 +918,15 @@ export type OrderUncheckedCreateWithoutEventInput = {
   currency?: string
   stripeSessionId?: string | null
   paidAt?: Date | string | null
+  expiresAt?: Date | string | null
+  needsReview?: boolean
+  reviewNote?: string | null
   waiverAcceptedAt?: Date | string | null
   waiverVersion?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tickets?: Prisma.TicketUncheckedCreateNestedManyWithoutOrderInput
+  memberRedemption?: Prisma.EventMemberRedemptionUncheckedCreateNestedOneWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutEventInput = {
@@ -842,6 +955,110 @@ export type OrderUpdateManyWithWhereWithoutEventInput = {
   data: Prisma.XOR<Prisma.OrderUpdateManyMutationInput, Prisma.OrderUncheckedUpdateManyWithoutEventInput>
 }
 
+export type OrderCreateWithoutMemberRedemptionInput = {
+  id?: string
+  buyerName: string
+  buyerEmail: string
+  buyerPhone?: string | null
+  status?: $Enums.OrderStatus
+  totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: string
+  stripeSessionId?: string | null
+  paidAt?: Date | string | null
+  expiresAt?: Date | string | null
+  needsReview?: boolean
+  reviewNote?: string | null
+  waiverAcceptedAt?: Date | string | null
+  waiverVersion?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  event: Prisma.EventCreateNestedOneWithoutOrdersInput
+  user?: Prisma.UserCreateNestedOneWithoutOrdersInput
+  tickets?: Prisma.TicketCreateNestedManyWithoutOrderInput
+}
+
+export type OrderUncheckedCreateWithoutMemberRedemptionInput = {
+  id?: string
+  eventId: string
+  userId?: string | null
+  buyerName: string
+  buyerEmail: string
+  buyerPhone?: string | null
+  status?: $Enums.OrderStatus
+  totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: string
+  stripeSessionId?: string | null
+  paidAt?: Date | string | null
+  expiresAt?: Date | string | null
+  needsReview?: boolean
+  reviewNote?: string | null
+  waiverAcceptedAt?: Date | string | null
+  waiverVersion?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tickets?: Prisma.TicketUncheckedCreateNestedManyWithoutOrderInput
+}
+
+export type OrderCreateOrConnectWithoutMemberRedemptionInput = {
+  where: Prisma.OrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderCreateWithoutMemberRedemptionInput, Prisma.OrderUncheckedCreateWithoutMemberRedemptionInput>
+}
+
+export type OrderUpsertWithoutMemberRedemptionInput = {
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutMemberRedemptionInput, Prisma.OrderUncheckedUpdateWithoutMemberRedemptionInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutMemberRedemptionInput, Prisma.OrderUncheckedCreateWithoutMemberRedemptionInput>
+  where?: Prisma.OrderWhereInput
+}
+
+export type OrderUpdateToOneWithWhereWithoutMemberRedemptionInput = {
+  where?: Prisma.OrderWhereInput
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutMemberRedemptionInput, Prisma.OrderUncheckedUpdateWithoutMemberRedemptionInput>
+}
+
+export type OrderUpdateWithoutMemberRedemptionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  buyerName?: Prisma.StringFieldUpdateOperationsInput | string
+  buyerEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  buyerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  event?: Prisma.EventUpdateOneRequiredWithoutOrdersNestedInput
+  user?: Prisma.UserUpdateOneWithoutOrdersNestedInput
+  tickets?: Prisma.TicketUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderUncheckedUpdateWithoutMemberRedemptionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  buyerName?: Prisma.StringFieldUpdateOperationsInput | string
+  buyerEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  buyerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tickets?: Prisma.TicketUncheckedUpdateManyWithoutOrderNestedInput
+}
+
 export type OrderCreateWithoutTicketsInput = {
   id?: string
   buyerName: string
@@ -852,12 +1069,16 @@ export type OrderCreateWithoutTicketsInput = {
   currency?: string
   stripeSessionId?: string | null
   paidAt?: Date | string | null
+  expiresAt?: Date | string | null
+  needsReview?: boolean
+  reviewNote?: string | null
   waiverAcceptedAt?: Date | string | null
   waiverVersion?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutOrdersInput
   user?: Prisma.UserCreateNestedOneWithoutOrdersInput
+  memberRedemption?: Prisma.EventMemberRedemptionCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutTicketsInput = {
@@ -872,10 +1093,14 @@ export type OrderUncheckedCreateWithoutTicketsInput = {
   currency?: string
   stripeSessionId?: string | null
   paidAt?: Date | string | null
+  expiresAt?: Date | string | null
+  needsReview?: boolean
+  reviewNote?: string | null
   waiverAcceptedAt?: Date | string | null
   waiverVersion?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  memberRedemption?: Prisma.EventMemberRedemptionUncheckedCreateNestedOneWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutTicketsInput = {
@@ -904,12 +1129,16 @@ export type OrderUpdateWithoutTicketsInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutOrdersNestedInput
   user?: Prisma.UserUpdateOneWithoutOrdersNestedInput
+  memberRedemption?: Prisma.EventMemberRedemptionUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutTicketsInput = {
@@ -924,10 +1153,14 @@ export type OrderUncheckedUpdateWithoutTicketsInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberRedemption?: Prisma.EventMemberRedemptionUncheckedUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderCreateManyUserInput = {
@@ -941,6 +1174,9 @@ export type OrderCreateManyUserInput = {
   currency?: string
   stripeSessionId?: string | null
   paidAt?: Date | string | null
+  expiresAt?: Date | string | null
+  needsReview?: boolean
+  reviewNote?: string | null
   waiverAcceptedAt?: Date | string | null
   waiverVersion?: string | null
   createdAt?: Date | string
@@ -957,12 +1193,16 @@ export type OrderUpdateWithoutUserInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutOrdersNestedInput
   tickets?: Prisma.TicketUpdateManyWithoutOrderNestedInput
+  memberRedemption?: Prisma.EventMemberRedemptionUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutUserInput = {
@@ -976,11 +1216,15 @@ export type OrderUncheckedUpdateWithoutUserInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tickets?: Prisma.TicketUncheckedUpdateManyWithoutOrderNestedInput
+  memberRedemption?: Prisma.EventMemberRedemptionUncheckedUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutUserInput = {
@@ -994,6 +1238,9 @@ export type OrderUncheckedUpdateManyWithoutUserInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1011,6 +1258,9 @@ export type OrderCreateManyEventInput = {
   currency?: string
   stripeSessionId?: string | null
   paidAt?: Date | string | null
+  expiresAt?: Date | string | null
+  needsReview?: boolean
+  reviewNote?: string | null
   waiverAcceptedAt?: Date | string | null
   waiverVersion?: string | null
   createdAt?: Date | string
@@ -1027,12 +1277,16 @@ export type OrderUpdateWithoutEventInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutOrdersNestedInput
   tickets?: Prisma.TicketUpdateManyWithoutOrderNestedInput
+  memberRedemption?: Prisma.EventMemberRedemptionUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutEventInput = {
@@ -1046,11 +1300,15 @@ export type OrderUncheckedUpdateWithoutEventInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tickets?: Prisma.TicketUncheckedUpdateManyWithoutOrderNestedInput
+  memberRedemption?: Prisma.EventMemberRedemptionUncheckedUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutEventInput = {
@@ -1064,6 +1322,9 @@ export type OrderUncheckedUpdateManyWithoutEventInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needsReview?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   waiverAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   waiverVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1113,6 +1374,9 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   currency?: boolean
   stripeSessionId?: boolean
   paidAt?: boolean
+  expiresAt?: boolean
+  needsReview?: boolean
+  reviewNote?: boolean
   waiverAcceptedAt?: boolean
   waiverVersion?: boolean
   createdAt?: boolean
@@ -1120,6 +1384,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
   user?: boolean | Prisma.Order$userArgs<ExtArgs>
   tickets?: boolean | Prisma.Order$ticketsArgs<ExtArgs>
+  memberRedemption?: boolean | Prisma.Order$memberRedemptionArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
@@ -1135,6 +1400,9 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   currency?: boolean
   stripeSessionId?: boolean
   paidAt?: boolean
+  expiresAt?: boolean
+  needsReview?: boolean
+  reviewNote?: boolean
   waiverAcceptedAt?: boolean
   waiverVersion?: boolean
   createdAt?: boolean
@@ -1155,6 +1423,9 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   currency?: boolean
   stripeSessionId?: boolean
   paidAt?: boolean
+  expiresAt?: boolean
+  needsReview?: boolean
+  reviewNote?: boolean
   waiverAcceptedAt?: boolean
   waiverVersion?: boolean
   createdAt?: boolean
@@ -1175,17 +1446,21 @@ export type OrderSelectScalar = {
   currency?: boolean
   stripeSessionId?: boolean
   paidAt?: boolean
+  expiresAt?: boolean
+  needsReview?: boolean
+  reviewNote?: boolean
   waiverAcceptedAt?: boolean
   waiverVersion?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "userId" | "buyerName" | "buyerEmail" | "buyerPhone" | "status" | "totalAmount" | "currency" | "stripeSessionId" | "paidAt" | "waiverAcceptedAt" | "waiverVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "userId" | "buyerName" | "buyerEmail" | "buyerPhone" | "status" | "totalAmount" | "currency" | "stripeSessionId" | "paidAt" | "expiresAt" | "needsReview" | "reviewNote" | "waiverAcceptedAt" | "waiverVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
   user?: boolean | Prisma.Order$userArgs<ExtArgs>
   tickets?: boolean | Prisma.Order$ticketsArgs<ExtArgs>
+  memberRedemption?: boolean | Prisma.Order$memberRedemptionArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1203,6 +1478,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     event: Prisma.$EventPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs> | null
     tickets: Prisma.$TicketPayload<ExtArgs>[]
+    memberRedemption: Prisma.$EventMemberRedemptionPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1216,6 +1492,17 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     currency: string
     stripeSessionId: string | null
     paidAt: Date | null
+    /**
+     * When the Stripe checkout, and with it the ticket hold, expires.
+     * Null on free orders and on orders made before this column existed.
+     */
+    expiresAt: Date | null
+    /**
+     * Set when something about a payment needs a person to look at it, e.g. a
+     * payment that arrived after its hold lapsed while the tier was full.
+     */
+    needsReview: boolean
+    reviewNote: string | null
     waiverAcceptedAt: Date | null
     waiverVersion: string | null
     createdAt: Date
@@ -1617,6 +1904,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
   event<T extends Prisma.EventDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EventDefaultArgs<ExtArgs>>): Prisma.Prisma__EventClient<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.Order$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   tickets<T extends Prisma.Order$ticketsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$ticketsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  memberRedemption<T extends Prisma.Order$memberRedemptionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$memberRedemptionArgs<ExtArgs>>): Prisma.Prisma__EventMemberRedemptionClient<runtime.Types.Result.GetResult<Prisma.$EventMemberRedemptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1657,6 +1945,9 @@ export interface OrderFieldRefs {
   readonly currency: Prisma.FieldRef<"Order", 'String'>
   readonly stripeSessionId: Prisma.FieldRef<"Order", 'String'>
   readonly paidAt: Prisma.FieldRef<"Order", 'DateTime'>
+  readonly expiresAt: Prisma.FieldRef<"Order", 'DateTime'>
+  readonly needsReview: Prisma.FieldRef<"Order", 'Boolean'>
+  readonly reviewNote: Prisma.FieldRef<"Order", 'String'>
   readonly waiverAcceptedAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly waiverVersion: Prisma.FieldRef<"Order", 'String'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>
@@ -2102,6 +2393,25 @@ export type Order$ticketsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.TicketScalarFieldEnum | Prisma.TicketScalarFieldEnum[]
+}
+
+/**
+ * Order.memberRedemption
+ */
+export type Order$memberRedemptionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EventMemberRedemption
+   */
+  select?: Prisma.EventMemberRedemptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EventMemberRedemption
+   */
+  omit?: Prisma.EventMemberRedemptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EventMemberRedemptionInclude<ExtArgs> | null
+  where?: Prisma.EventMemberRedemptionWhereInput
 }
 
 /**

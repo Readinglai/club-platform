@@ -35,6 +35,8 @@ export type EventForm = {
   checkInEnabled: boolean;
   budgetEnabled: boolean;
   dashboardEnabled: boolean;
+  /** Guest member discount in dollars, "" for none. */
+  memberDiscount: string;
 };
 
 export const emptyEvent: EventForm = {
@@ -49,6 +51,7 @@ export const emptyEvent: EventForm = {
   checkInEnabled: true,
   budgetEnabled: true,
   dashboardEnabled: true,
+  memberDiscount: "",
 };
 
 export function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -93,6 +96,12 @@ export function EventDetailsFields({ value, onChange }: { value: EventForm; onCh
       <div className="sm:col-span-2">
         <Field label={t("imageLink")}>
           <input className={inputClass} type="url" placeholder="https://…" value={value.imageUrl} onChange={(e) => set("imageUrl", e.target.value)} />
+        </Field>
+      </div>
+      <div className="sm:col-span-2">
+        <Field label={t("memberDiscount")}>
+          <input className={inputClass} inputMode="decimal" placeholder="—" value={value.memberDiscount} onChange={(e) => set("memberDiscount", e.target.value)} />
+          <span className="text-xs text-gray-500">{t("memberDiscountHint")}</span>
         </Field>
       </div>
       <fieldset className="sm:col-span-2">

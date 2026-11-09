@@ -100,6 +100,13 @@ export type TicketType = Prisma.TicketTypeModel
  */
 export type Order = Prisma.OrderModel
 /**
+ * Model EventMemberRedemption
+ * A member's one discounted ticket at an event (EventSettings.memberDiscountAmount).
+ * One row per membership + event; a RELEASED row is re-pointed at the next
+ * order instead of inserting another.
+ */
+export type EventMemberRedemption = Prisma.EventMemberRedemptionModel
+/**
  * Model Ticket
  * One entry pass per attendee; token is the QR code value.
  */

@@ -66,6 +66,7 @@ export const ModelName = {
   EventBudgetLine: 'EventBudgetLine',
   TicketType: 'TicketType',
   Order: 'Order',
+  EventMemberRedemption: 'EventMemberRedemption',
   Ticket: 'Ticket',
   Profile: 'Profile',
   Membership: 'Membership',
@@ -290,6 +291,7 @@ export const EventSettingsScalarFieldEnum = {
   budgetSheetSyncError: 'budgetSheetSyncError',
   budgetSheetData: 'budgetSheetData',
   memoriesRecap: 'memoriesRecap',
+  memberDiscountAmount: 'memberDiscountAmount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -350,6 +352,9 @@ export const OrderScalarFieldEnum = {
   currency: 'currency',
   stripeSessionId: 'stripeSessionId',
   paidAt: 'paidAt',
+  expiresAt: 'expiresAt',
+  needsReview: 'needsReview',
+  reviewNote: 'reviewNote',
   waiverAcceptedAt: 'waiverAcceptedAt',
   waiverVersion: 'waiverVersion',
   createdAt: 'createdAt',
@@ -357,6 +362,20 @@ export const OrderScalarFieldEnum = {
 } as const
 
 export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+export const EventMemberRedemptionScalarFieldEnum = {
+  id: 'id',
+  membershipId: 'membershipId',
+  eventId: 'eventId',
+  orderId: 'orderId',
+  status: 'status',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventMemberRedemptionScalarFieldEnum = (typeof EventMemberRedemptionScalarFieldEnum)[keyof typeof EventMemberRedemptionScalarFieldEnum]
 
 
 export const TicketScalarFieldEnum = {

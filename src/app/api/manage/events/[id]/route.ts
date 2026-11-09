@@ -41,6 +41,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       checkInEnabled: Boolean(event.settings?.checkInEnabled),
       budgetEnabled: Boolean(event.settings?.budgetEnabled),
       dashboardEnabled: Boolean(event.settings?.dashboardEnabled),
+      memberDiscount: event.settings?.memberDiscountAmount?.toString() ?? "",
       ticketTypes: event.ticketTypes.map((t) => ({
         id: t.id,
         name: t.name,
@@ -48,6 +49,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         price: t.price.toNumber(),
         memberPrice: t.memberPrice?.toNumber() ?? null,
         capacity: t.capacity,
+        maxPerOrder: t.maxPerOrder,
         salesStartAt: local(t.salesStartAt),
         salesEndAt: local(t.salesEndAt),
         membersOnly: t.membersOnly,

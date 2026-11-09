@@ -45,6 +45,9 @@ const publicPatterns = [
   /^\/e(\/|$)/,
 
   /^\/staff(\/|$)/,
+
+  // Hilo Party's standalone ticket page.
+  /^\/hilo(\/|$)/,
 ];
 
 /** 不需要 i18n locale 前綴的內部路徑 */
@@ -54,6 +57,7 @@ const NO_I18N_PREFIXES = [
   /^\/order(\/|$)/,
   /^\/e(\/|$)/,
   /^\/staff(\/|$)/,
+  /^\/hilo(\/|$)/,
 ];
 
 

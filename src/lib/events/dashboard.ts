@@ -5,7 +5,7 @@
 
 import { db } from "@/lib/db";
 import { can, getAccess, type Access } from "@/lib/access/can";
-import { CHECKOUT_HOLD_MINUTES } from "@/lib/ticketing/orders";
+import { activeTicketWhere } from "@/lib/ticketing/orders";
 
 export async function canSeeDashboard(userId: string, eventId: string) {
   const group = await db.group.findUnique({ where: { eventId }, select: { id: true } });
@@ -31,12 +31,8 @@ export async function getEventDashboard(eventId: string) {
   });
   if (!event) return null;
 
-  const holdCutoff = new Date(Date.now() - CHECKOUT_HOLD_MINUTES * 60_000);
   const tickets = await db.ticket.findMany({
-    where: {
-      eventId,
-      OR: [{ status: "VALID" }, { status: "RESERVED", order: { status: "PENDING", createdAt: { gt: holdCutoff } } }],
-    },
+    where: { eventId, ...activeTicketWhere(new Date()) },
     select: { ticketTypeId: true, status: true, pricePaid: true, checkedInAt: true, holderName: true },
   });
 

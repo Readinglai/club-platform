@@ -83,6 +83,15 @@ export const TicketStatus = {
 export type TicketStatus = (typeof TicketStatus)[keyof typeof TicketStatus]
 
 
+export const EventMemberRedemptionStatus = {
+  PENDING: 'PENDING',
+  USED: 'USED',
+  RELEASED: 'RELEASED'
+} as const
+
+export type EventMemberRedemptionStatus = (typeof EventMemberRedemptionStatus)[keyof typeof EventMemberRedemptionStatus]
+
+
 export const MembershipStatus = {
   PENDING: 'PENDING',
   ACTIVE: 'ACTIVE',

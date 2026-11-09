@@ -79,6 +79,10 @@ function parseDetails(raw: Record<string, unknown>) {
 
   const modules = Object.fromEntries(MODULES.map((m) => [m, raw[m] === true])) as Record<ModuleKey, boolean>;
 
+  // Guest member discount (one ticket per member); empty or 0 means none.
+  const memberDiscount = money(raw.memberDiscount);
+  if (Number.isNaN(memberDiscount)) return fail(400, "The member discount isn't valid.");
+
   return {
     ok: true as const,
     event: {
@@ -89,7 +93,11 @@ function parseDetails(raw: Record<string, unknown>) {
       startAt,
       endAt,
     },
-    settings: { timezone, ...modules },
+    settings: {
+      timezone,
+      ...modules,
+      memberDiscountAmount: memberDiscount ? new Prisma.Decimal(memberDiscount) : null,
+    },
   };
 }
 
@@ -180,8 +188,11 @@ function parseTicketType(raw: Record<string, unknown>) {
   if (price === null || Number.isNaN(price)) return fail(400, "Enter a price (0 for free).");
   const memberPrice = money(raw.memberPrice);
   if (Number.isNaN(memberPrice)) return fail(400, "The member price isn't valid.");
+  if (memberPrice !== null && memberPrice > price) return fail(400, "The member price can't be higher than the price.");
   const capacity = wholeNumber(raw.capacity);
   if (Number.isNaN(capacity)) return fail(400, "Capacity must be a whole number (or empty for unlimited).");
+  const maxPerOrder = wholeNumber(raw.maxPerOrder) ?? 1;
+  if (Number.isNaN(maxPerOrder) || maxPerOrder < 1 || maxPerOrder > 20) return fail(400, "Max per order must be a whole number from 1 to 20.");
   const sortOrder = wholeNumber(raw.sortOrder);
 
   return {
@@ -192,6 +203,7 @@ function parseTicketType(raw: Record<string, unknown>) {
       price: new Prisma.Decimal(price),
       memberPrice: memberPrice === null ? null : new Prisma.Decimal(memberPrice),
       capacity,
+      maxPerOrder,
       membersOnly: raw.membersOnly === true,
       color: optionalText(raw.color),
       perks: optionalText(raw.perks),

@@ -6,12 +6,16 @@
 
 import { db } from "@/lib/db";
 import { getCurrentMembership } from "@/lib/membership/purchase";
-import { CHECKOUT_HOLD_MINUTES } from "@/lib/ticketing/orders";
+import { activeTicketWhere } from "@/lib/ticketing/orders";
 import { canManageEvent } from "./manage";
 
 export type TierState = "on_sale" | "sold_out" | "not_started" | "ended";
 
-export async function getPublicEvent(eventId: string, viewerId: string | null) {
+/**
+ * allowUnpublished: show a draft event to anyone (the Hilo page uses it in
+ * local development so the unpublished test event can be tried).
+ */
+export async function getPublicEvent(eventId: string, viewerId: string | null, opts: { allowUnpublished?: boolean } = {}) {
   const event = await db.event.findUnique({
     where: { id: eventId },
     select: {
@@ -23,23 +27,21 @@ export async function getPublicEvent(eventId: string, viewerId: string | null) {
       startAt: true,
       endAt: true,
       published: true,
-      settings: { select: { timezone: true, currency: true, ticketsEnabled: true } },
+      settings: { select: { timezone: true, currency: true, ticketsEnabled: true, memberDiscountAmount: true } },
       ticketTypes: { where: { active: true }, orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }] },
     },
   });
   if (!event) return null;
 
-  const manager = viewerId ? await canManageEvent(viewerId, eventId) : false;
-  if (!event.published && !manager) return null;
+  if (!event.published && !opts.allowUnpublished) {
+    const manager = viewerId ? await canManageEvent(viewerId, eventId) : false;
+    if (!manager) return null;
+  }
 
   const now = new Date();
-  const holdCutoff = new Date(now.getTime() - CHECKOUT_HOLD_MINUTES * 60_000);
   const taken = await db.ticket.groupBy({
     by: ["ticketTypeId"],
-    where: {
-      eventId,
-      OR: [{ status: "VALID" }, { status: "RESERVED", order: { status: "PENDING", createdAt: { gt: holdCutoff } } }],
-    },
+    where: { eventId, ...activeTicketWhere(now) },
     _count: true,
   });
   const takenByType = new Map(taken.map((t) => [t.ticketTypeId, t._count]));
@@ -77,6 +79,7 @@ export async function getPublicEvent(eventId: string, viewerId: string | null) {
       price: t.price.toNumber(),
       memberPrice: t.memberPrice?.toNumber() ?? null,
       membersOnly: t.membersOnly,
+      maxPerOrder: t.maxPerOrder,
       remaining,
       salesStartAt: t.salesStartAt?.toISOString() ?? null,
       state,
@@ -96,6 +99,8 @@ export async function getPublicEvent(eventId: string, viewerId: string | null) {
       currency: event.settings?.currency ?? "CAD",
       published: event.published,
       ticketsEnabled: Boolean(event.settings?.ticketsEnabled),
+      /** Guest member discount off one ticket; null when the event has none. */
+      memberDiscount: event.settings?.memberDiscountAmount?.toNumber() ?? null,
     },
     tiers,
     viewer,

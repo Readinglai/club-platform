@@ -854,7 +854,9 @@
       "ends": "Ends (local time)",
       "description": "Description",
       "imageLink": "Image link",
-      "modules": "Modules"
+      "modules": "Modules",
+      "memberDiscount": "Member discount CA$ (one ticket per member)",
+      "memberDiscountHint": "Guests enter their member ID and card name; no login. Leave empty for none."
     },
     "eventsPage": {
       "title": "Events",
@@ -938,6 +940,7 @@
       "memberPrice": "Member price",
       "none": "none",
       "capacity": "Capacity",
+      "maxPerOrder": "Max per order",
       "salesStart": "Sales start",
       "salesEnd": "Sales end",
       "scannerColour": "Scanner colour",
@@ -1200,7 +1203,175 @@
       "sold_out": "That ticket just sold out. The list below is up to date.",
       "payment_failed": "Payment couldn't be started. Try again in a moment.",
       "invalid_request": "Something went wrong sending your order. Try again.",
-      "server_error": "Something went wrong on our side. Try again in a moment."
+      "server_error": "Something went wrong on our side. Try again in a moment.",
+      "invalid_email": "Check your email address.",
+      "invalid_phone": "Check your phone number. Outside North America, start with + and the country code."
     }
+  },
+  "hiloPage": {
+    "language": "Language",
+    "previewNote": "Preview: this event isn't published. Only visible in local development.",
+    "free": "Free",
+    "soldOut": "Sold out",
+    "left": "Only {count} left",
+    "yourDetails": "Your details",
+    "name": "Full name",
+    "email": "Email",
+    "emailHint": "Your tickets are sent here.",
+    "phone": "Phone",
+    "phoneHint": "Outside North America, start with + and the country code.",
+    "memberCode": "Member ID",
+    "memberName": "Name on Member Card",
+    "verify": "Verify Membership",
+    "verifying": "Checking…",
+    "memberErrors": {
+      "member_missing": "Enter your member ID and the name on your card.",
+      "member_not_found": "We couldn't verify that membership. Check your member ID and the name on your card.",
+      "member_discount_used": "This membership has already used its discount for this event.",
+      "member_discount_pending": "This membership's discount is in a checkout that hasn't finished. Finish that payment, or try again in about 30 minutes.",
+      "member_discount_unavailable": "There's no member discount for this event.",
+      "member_rate_limited": "Too many tries. Please wait 15 minutes and try again.",
+      "connection": "Couldn't connect. Check your connection and try again."
+    },
+    "lineDiscount": "Member discount",
+    "total": "Total",
+    "waiver": "I have read and agree to the event waiver and policies.",
+    "pay": "Pay {price}",
+    "getFree": "Get free ticket",
+    "opening": "Opening payment…",
+    "payNote": "You'll pay securely with Stripe. Your tickets are emailed to you as soon as payment goes through.",
+    "notOnSaleTitle": "Tickets aren't on sale yet",
+    "notOnSaleText": "Check back soon.",
+    "opensTitle": "Tickets go on sale {when}",
+    "opensText": "Come back then to get yours.",
+    "soldOutTitle": "Sold out",
+    "soldOutText": "Unpaid checkouts are released after about 30 minutes, so a ticket may come back.",
+    "checkAgain": "Check again",
+    "endedTitle": "Ticket sales have ended",
+    "endedText": "See you at the party!",
+    "connectionError": "Couldn't connect. Check your connection and try again.",
+    "genericError": "Something went wrong. Try again.",
+    "errors": {
+      "missing_details": "Enter your name, email and phone.",
+      "invalid_email": "Check your email address.",
+      "invalid_phone": "Check your phone number. Outside North America, start with + and the country code.",
+      "waiver_required": "Tick the box to agree to the event rules and waiver.",
+      "invalid_quantity": "Choose how many tickets you want.",
+      "tickets_unavailable": "Tickets aren't available right now.",
+      "type_unavailable": "That ticket isn't available right now.",
+      "max_per_order": "You can buy up to {max} tickets per order.",
+      "not_started": "Sales haven't started yet.",
+      "ended": "Sales have ended.",
+      "member_not_found": "We couldn't verify that membership. Check your member ID and the name on your card.",
+      "member_discount_used": "This membership has already used its discount for this event.",
+      "member_discount_pending": "This membership's discount is in a checkout that hasn't finished. Finish that payment, or try again in about 30 minutes.",
+      "member_discount_unavailable": "There's no member discount for this event.",
+      "member_rate_limited": "Too many tries. Please wait 15 minutes and try again.",
+      "sold_out": "Not enough tickets left for that many. The page is now up to date.",
+      "payment_failed": "Payment couldn't be started. Try again in a moment.",
+      "invalid_request": "Something went wrong sending your order. Try again.",
+      "server_error": "Something went wrong on our side. Try again in a moment."
+    },
+    "content": {
+      "intro": "Hilo Party is here! ✨",
+      "introText": "Grab your friends, take a break from studying, and join us for a night of music, games, drinks, and new friends!",
+      "activitiesTitle": "✨ Hilo Party Activities",
+      "activities": [
+        {
+          "emoji": "🧩",
+          "title": "Human Bingo",
+          "text": "Meet new people and find someone who matches each square on your Bingo card!"
+        },
+        {
+          "emoji": "🀄",
+          "title": "Mahjong",
+          "text": "Gather around for a game of Mahjong."
+        },
+        {
+          "emoji": "🃏",
+          "title": "Card Games",
+          "text": "Enjoy card games with friends."
+        },
+        {
+          "emoji": "🍬",
+          "title": "Guess the Jar",
+          "text": "Guess how many candies are in the jar to win a prize."
+        },
+        {
+          "emoji": "📸",
+          "title": "Photo Booth",
+          "text": "Grab your friends and take home a photo strip."
+        },
+        {
+          "emoji": "🏆",
+          "title": "Best Dressed",
+          "text": "Vote for the best outfit of the night — the winner gets a special prize!"
+        }
+      ],
+      "dressCode": "✨ Party Outfit ✨",
+      "important": [
+        "All ticket sales are final. No refunds.",
+        "Spots are limited and available while supplies last.",
+        "A $200 cleaning fee will apply for vomiting on the floor or clogging toilets."
+      ],
+      "waiverTitle": "Event Waiver and Policies",
+      "waiver": [
+        {
+          "title": "1. Participation and personal responsibility",
+          "text": "Attendees are responsible for deciding whether to participate in activities and must follow reasonable instructions from organizers and venue staff."
+        },
+        {
+          "title": "2. Alcohol",
+          "text": "Please drink responsibly. Alcohol must not be provided to anyone below the legal drinking age. Organizers may refuse alcohol service where legally required or when an attendee appears intoxicated."
+        },
+        {
+          "title": "3. Venue and cleaning",
+          "text": "Please respect the venue and keep it clean. A $200 cleaning fee applies for vomiting on the floor or clogging toilets."
+        },
+        {
+          "title": "4. Refund policy",
+          "text": "All ticket sales are final. No refunds."
+        },
+        {
+          "title": "5. Event rules",
+          "text": "Organizers may ask attendees to stop unsafe, unlawful, harassing, or damaging behavior, or to leave the venue where appropriate."
+        }
+      ],
+      "activitiesIntro": "We’ve prepared lots of activities for you to enjoy throughout the night!",
+      "highlightNote": "Attendees will vote on the night — the best dressed wins a special prize!",
+      "importantTitle": "Important information"
+    },
+    "eventsLabel": "ROCSAUT Events",
+    "time": "Time",
+    "location": "Location",
+    "chooseTicket": "1. Your ticket",
+    "chooseTicketHelp": "One ticket per order.",
+    "memberPriceLabel": "ROCSAUT Member",
+    "regularPriceLabel": "Regular",
+    "yourInfo": "2. Your information",
+    "yourInfoHelp": "Enter the information that will be associated with your ticket.",
+    "namePlaceholder": "Your full name",
+    "phonePlaceholder": "Your phone number",
+    "memberSection": "3. Membership",
+    "memberDiscountText": "Verify your ROCSAUT membership to receive {amount} off your ticket.",
+    "oneMemberTicket": "⚠️ Each ROCSAUT member may purchase only one ticket at the member-discounted price.",
+    "notMemberLong": "Not a member? Sign up to enjoy member discounts at future events!",
+    "memberCheckbox": "I am a ROCSAUT member",
+    "memberHelp": "Enter your Member ID and the name on your member card to verify the member price.",
+    "memberNamePlaceholder": "Name on your member card",
+    "verified": "Membership verified",
+    "verifiedHelp": "Your member price has been applied.",
+    "agreement": "4. Policies and confirmation",
+    "viewWaiver": "Read event waiver",
+    "close": "Close",
+    "agreeButton": "I have read and agree",
+    "summary": "Order Summary",
+    "chooseFirst": "Please select a ticket",
+    "subtotal": "Ticket price",
+    "continue": "Continue to Payment",
+    "processing": "Processing…",
+    "completeFields": "Complete all fields, membership verification, and required confirmations.",
+    "paymentNote": "You will be redirected to Stripe’s secure checkout page.",
+    "signUpHere": "Sign up here"
   }
 }

@@ -854,7 +854,9 @@
       "ends": "結束（當地時間）",
       "description": "介紹",
       "imageLink": "圖片連結",
-      "modules": "功能模組"
+      "modules": "功能模組",
+      "memberDiscount": "會員折扣 CA$（每位會員限一張票）",
+      "memberDiscountHint": "購票者輸入會員編號和會員卡姓名即可，不需登入。留空代表沒有折扣。"
     },
     "eventsPage": {
       "title": "活動管理",
@@ -938,6 +940,7 @@
       "memberPrice": "會員價",
       "none": "無",
       "capacity": "名額",
+      "maxPerOrder": "每筆訂單上限",
       "salesStart": "開賣時間",
       "salesEnd": "截止時間",
       "scannerColour": "掃描顏色",
@@ -1200,7 +1203,175 @@
       "sold_out": "此票種剛剛售完，下方為最新狀態。",
       "payment_failed": "無法開始付款，請稍後再試。",
       "invalid_request": "送出訂單時發生錯誤，請再試一次。",
-      "server_error": "系統發生錯誤，請稍後再試。"
+      "server_error": "系統發生錯誤，請稍後再試。",
+      "invalid_email": "請檢查電郵地址。",
+      "invalid_phone": "請檢查電話號碼。北美以外的號碼請以 + 和國碼開頭。"
     }
+  },
+  "hiloPage": {
+    "language": "語言",
+    "previewNote": "預覽：此活動尚未發佈，只在本機開發環境可見。",
+    "free": "免費",
+    "soldOut": "已售完",
+    "left": "僅剩 {count} 張",
+    "yourDetails": "購票人資料",
+    "name": "姓名",
+    "email": "電郵",
+    "emailHint": "票券會寄到這個電郵。",
+    "phone": "電話",
+    "phoneHint": "北美以外的號碼請以 + 和國碼開頭。",
+    "memberCode": "Member ID",
+    "memberName": "會員卡上的姓名",
+    "verify": "驗證會員資格",
+    "verifying": "驗證中…",
+    "memberErrors": {
+      "member_missing": "請輸入會員編號和會員卡上的姓名。",
+      "member_not_found": "無法驗證此會員資格，請檢查會員編號和會員卡上的姓名。",
+      "member_discount_used": "此會員已使用過本活動的會員折扣。",
+      "member_discount_pending": "此會員的折扣正被一筆尚未完成的結帳使用中。請完成該筆付款，或約 30 分鐘後再試。",
+      "member_discount_unavailable": "此活動沒有會員折扣。",
+      "member_rate_limited": "嘗試次數過多，請 15 分鐘後再試。",
+      "connection": "無法連線，請檢查網路後再試一次。"
+    },
+    "lineDiscount": "會員折扣",
+    "total": "總計",
+    "waiver": "我已閱讀並同意活動條款及相關規定。",
+    "pay": "付款 {price}",
+    "getFree": "領取免費票",
+    "opening": "正在前往付款…",
+    "payNote": "將透過 Stripe 安全付款，付款完成後票券會立即寄到你的電郵。",
+    "notOnSaleTitle": "尚未開放售票",
+    "notOnSaleText": "請稍後再回來看看。",
+    "opensTitle": "{when} 開賣",
+    "opensText": "屆時再回來購票吧。",
+    "soldOutTitle": "已售完",
+    "soldOutText": "未完成付款的票約 30 分鐘後會釋出，可能會再有票。",
+    "checkAgain": "再查一次",
+    "endedTitle": "售票已結束",
+    "endedText": "派對見！",
+    "connectionError": "無法連線，請檢查網路後再試一次。",
+    "genericError": "發生錯誤，請再試一次。",
+    "errors": {
+      "missing_details": "請填寫姓名、電郵和電話。",
+      "invalid_email": "請檢查電郵地址。",
+      "invalid_phone": "請檢查電話號碼。北美以外的號碼請以 + 和國碼開頭。",
+      "waiver_required": "請勾選同意活動規範與免責聲明。",
+      "invalid_quantity": "請選擇票數。",
+      "tickets_unavailable": "目前無法購票。",
+      "type_unavailable": "此票種目前無法購買。",
+      "max_per_order": "每筆訂單最多可購買 {max} 張。",
+      "not_started": "尚未開賣。",
+      "ended": "售票已結束。",
+      "member_not_found": "無法驗證此會員資格，請檢查會員編號和會員卡上的姓名。",
+      "member_discount_used": "此會員已使用過本活動的會員折扣。",
+      "member_discount_pending": "此會員的折扣正被一筆尚未完成的結帳使用中。請完成該筆付款，或約 30 分鐘後再試。",
+      "member_discount_unavailable": "此活動沒有會員折扣。",
+      "member_rate_limited": "嘗試次數過多，請 15 分鐘後再試。",
+      "sold_out": "剩餘票數不足，頁面已更新為最新狀態。",
+      "payment_failed": "無法開始付款，請稍後再試。",
+      "invalid_request": "送出訂單時發生錯誤，請再試一次。",
+      "server_error": "系統發生錯誤，請稍後再試。"
+    },
+    "content": {
+      "intro": "Hilo Party 來啦！✨",
+      "introText": "快揪朋友一起來，暫時放下課業，享受一個有音樂、遊戲、飲料和新朋友的夜晚！",
+      "activitiesTitle": "✨ Hilo Party 活動",
+      "activities": [
+        {
+          "emoji": "🧩",
+          "title": "Human Bingo",
+          "text": "找到符合 Bingo 格子條件的人，完成挑戰、認識新朋友！"
+        },
+        {
+          "emoji": "🀄",
+          "title": "麻將 Mahjong",
+          "text": "一起打麻將！"
+        },
+        {
+          "emoji": "🃏",
+          "title": "撲克牌",
+          "text": "和朋友一起玩牌！"
+        },
+        {
+          "emoji": "🍬",
+          "title": "猜糖果數量",
+          "text": "猜猜罐子裡有多少顆糖果，猜中有獎！"
+        },
+        {
+          "emoji": "📸",
+          "title": "拍貼機",
+          "text": "和朋友一起拍張照帶回家！"
+        },
+        {
+          "emoji": "🏆",
+          "title": "最佳穿搭",
+          "text": "大家投票選出當晚最佳穿搭，贏取特別獎品！"
+        }
+      ],
+      "dressCode": "✨ 派對穿搭 ✨",
+      "important": [
+        "報名完成後恕不退費。",
+        "名額有限，額滿為止。",
+        "嘔吐落地或造成廁所馬桶堵塞，將收取 $200 清潔費。"
+      ],
+      "waiverTitle": "活動條款與報名須知",
+      "waiver": [
+        {
+          "title": "1. 參與活動與個人責任",
+          "text": "參加者應自行評估是否適合參加各項活動，並遵守主辦方及場地工作人員的合理指示。"
+        },
+        {
+          "title": "2. 酒精飲品",
+          "text": "請理性飲酒，不得向未滿法定飲酒年齡者提供酒精飲品。主辦方可拒絕向疑似未達法定年齡或明顯醉酒者提供酒精飲品。"
+        },
+        {
+          "title": "3. 場地與清潔",
+          "text": "請愛惜場地並保持環境整潔。因嘔吐落地或造成廁所馬桶堵塞而產生的清潔費為 $200。"
+        },
+        {
+          "title": "4. 退款規定",
+          "text": "報名完成後恕不退費。"
+        },
+        {
+          "title": "5. 活動規則",
+          "text": "如有不安全、違法、騷擾他人或破壞場地的行為，主辦方可要求相關參加者停止行為或離開場地。"
+        }
+      ],
+      "activitiesIntro": "我們準備了超多活動，讓大家邊玩邊認識新朋友！🎉",
+      "highlightNote": "當天將由參加者一起投票，最佳穿搭勝出者可以獲得特別獎品！",
+      "importantTitle": "重要報名須知"
+    },
+    "eventsLabel": "ROCSAUT Events",
+    "time": "時間",
+    "location": "地點",
+    "chooseTicket": "1. 門票",
+    "chooseTicketHelp": "每筆訂單限購一張。",
+    "memberPriceLabel": "ROCSAUT 會員",
+    "regularPriceLabel": "一般票價",
+    "yourInfo": "2. 個人資料",
+    "yourInfoHelp": "請填寫與你的活動門票相關的資料。",
+    "namePlaceholder": "請輸入姓名",
+    "phonePlaceholder": "請輸入電話號碼",
+    "memberSection": "3. 會員驗證",
+    "memberDiscountText": "驗證 ROCSAUT 會員身分即可享 {amount} 折扣。",
+    "oneMemberTicket": "⚠️ 每位 ROCSAUT 會員限購一張會員優惠票。",
+    "notMemberLong": "還不是會員？現在註冊，之後的活動也能享有會員優惠！",
+    "memberCheckbox": "我是 ROCSAUT 會員",
+    "memberHelp": "請輸入 Member ID 及會員卡上的姓名，以驗證會員票價。",
+    "memberNamePlaceholder": "會員卡上的姓名",
+    "verified": "會員驗證成功",
+    "verifiedHelp": "已套用會員票價。",
+    "agreement": "4. 報名須知與確認",
+    "viewWaiver": "閱讀活動條款",
+    "close": "關閉",
+    "agreeButton": "我已閱讀並同意",
+    "summary": "訂單摘要",
+    "chooseFirst": "請先選擇票種",
+    "subtotal": "票價",
+    "continue": "前往付款",
+    "processing": "處理中…",
+    "completeFields": "請完成所有欄位、會員驗證及必要確認。",
+    "paymentNote": "點擊後將前往 Stripe 安全付款頁面。",
+    "signUpHere": "立即註冊"
   }
 }
