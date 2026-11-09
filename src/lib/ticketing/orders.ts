@@ -307,7 +307,7 @@ export async function createOrder(input: {
     }
 
     return { order, prices, free, expiresAt };
-  }).catch((error: unknown) => {
+  }).catch((error: unknown): Refusal => {
     // A unique-index clash on the redemption means another order got it first.
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return "member_discount_pending" satisfies Refusal;
