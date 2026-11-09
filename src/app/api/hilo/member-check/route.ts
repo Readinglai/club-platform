@@ -7,6 +7,7 @@
 import { NextResponse } from "next/server";
 import { hiloEventId } from "@/lib/hilo";
 import { checkMemberDiscount } from "@/lib/ticketing/member-discount";
+import { reclaimMemberDiscount } from "@/lib/ticketing/orders";
 import { clientIp, recordMemberFailure, tooManyMemberFailures } from "@/lib/ticketing/request";
 
 export async function POST(request: Request) {
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
   const code = typeof body.code === "string" ? body.code : "";
   const cardName = typeof body.cardName === "string" ? body.cardName : "";
 
-  const result = await checkMemberDiscount(eventId, code, cardName);
+  const result = await checkMemberDiscount(eventId, code, cardName, (membershipId) => reclaimMemberDiscount(membershipId, eventId));
   if (!result.ok && result.code === "member_not_found") recordMemberFailure(ip);
   return NextResponse.json(result, { headers: { "Cache-Control": "no-store" } });
 }

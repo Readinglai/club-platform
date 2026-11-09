@@ -26,7 +26,8 @@ async function main() {
     throw new Error("Refusing to run: STRIPE_SECRET_KEY is not a test key.");
   }
   const { db } = await import("../src/lib/db");
-  const { createOrder, markOrderPaid, expireOrder, refundOrder } = await import("../src/lib/ticketing/orders");
+  const { createOrder, markOrderPaid, expireOrder, refundOrder, reclaimMemberDiscount } = await import("../src/lib/ticketing/orders");
+  const { stripe } = await import("../src/lib/stripe");
   const { checkMemberDiscount } = await import("../src/lib/ticketing/member-discount");
 
   const event = await db.event.findFirst({ where: { title: TITLE }, include: { ticketTypes: true } });
@@ -90,13 +91,32 @@ async function main() {
     m1?.tickets.map((t) => [t.pricePaid, t.memberPricing]));
   check("redemption PENDING", m1?.memberRedemption?.status === "PENDING", m1?.memberRedemption);
 
-  // 5. Same member again while that checkout is open
+  // 5. Same member comes back without paying (pressed back / closed the tab):
+  //    Verify closes the unpaid checkout and the discount is free again.
+  const heldCheck = await checkMemberDiscount(event.id, member.code, member.cardName);
+  check("without reclaiming, verify reports the discount as held", !heldCheck.ok && heldCheck.code === "member_discount_pending", heldCheck);
+  const again = await checkMemberDiscount(event.id, member.code, member.cardName, (id) => reclaimMemberDiscount(id, event.id));
+  check("coming back unpaid: verify succeeds", again.ok, again);
+  const abandoned = await orderOf(m1!.id);
+  check("abandoned order: CANCELLED, tickets VOID, redemption RELEASED",
+    abandoned?.status === "CANCELLED" && abandoned.tickets.every((t) => t.status === "VOID") && abandoned.memberRedemption?.status === "RELEASED",
+    { status: abandoned?.status, redemption: abandoned?.memberRedemption?.status });
+  const leftSession = await stripe.checkout.sessions.retrieve(m1!.stripeSessionId!);
+  check("abandoned Stripe checkout can no longer be paid", leftSession.status === "expired", leftSession.status);
+
+  //    Buying again straight away (without pressing Verify) also takes it over.
   r = await createOrder({ ...base, buyer: buyer(3), member });
-  check("second discount refused while first is pending", !r.ok && r.code === "member_discount_pending", r);
+  check("new order gets the discount", r.ok, r);
+  const mB = r.ok ? await orderOf(r.orderId) : null;
+  r = await createOrder({ ...base, buyer: buyer(3), member });
+  check("ordering again moves the discount to the newest order", r.ok, r);
+  const mBLeft = await orderOf(mB!.id);
+  check("previous unpaid order cancelled", mBLeft?.status === "CANCELLED", mBLeft?.status);
+  const m1b = r.ok ? await orderOf(r.orderId) : null;
 
   // 6. Checkout expires → discount released → can be used again
-  await expireOrder(m1!.id);
-  const expired = await orderOf(m1!.id);
+  await expireOrder(m1b!.id);
+  const expired = await orderOf(m1b!.id);
   check("expired order: EXPIRED, tickets VOID, redemption RELEASED",
     expired?.status === "EXPIRED" && expired.tickets.every((t) => t.status === "VOID") && expired.memberRedemption?.status === "RELEASED",
     { status: expired?.status, redemption: expired?.memberRedemption?.status });
@@ -165,7 +185,6 @@ async function main() {
   check("late payment over capacity: PAID and needsReview", late?.status === "PAID" && late.needsReview, { status: late?.status, needsReview: late?.needsReview, note: late?.reviewNote, refill: refill?.ok });
 
   // Tidy up: close the still-open test checkouts at Stripe.
-  const { stripe } = await import("../src/lib/stripe");
   const open = await db.order.findMany({ where: { eventId: event.id, status: "PENDING", stripeSessionId: { not: null } } });
   for (const o of open) {
     await stripe.checkout.sessions.expire(o.stripeSessionId!).catch(() => undefined);

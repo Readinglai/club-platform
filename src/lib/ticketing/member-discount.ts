@@ -51,7 +51,13 @@ export type MemberCheck =
  * details earn the discount at this event right now? createOrder checks again
  * (under a lock) when they actually buy, so this is only for showing the price.
  */
-export async function checkMemberDiscount(eventId: string, code: string, cardName: string): Promise<MemberCheck> {
+export async function checkMemberDiscount(
+  eventId: string,
+  code: string,
+  cardName: string,
+  /** Frees a discount held by an unpaid checkout; true if it is now free (see reclaimMemberDiscount). */
+  reclaim?: (membershipId: string) => Promise<boolean>,
+): Promise<MemberCheck> {
   const settings = await db.eventSettings.findUnique({ where: { eventId }, select: { memberDiscountAmount: true } });
   const discount = settings?.memberDiscountAmount;
   if (!discount || discount.lte(0)) return { ok: false, code: "member_discount_unavailable" };
@@ -65,7 +71,10 @@ export async function checkMemberDiscount(eventId: string, code: string, cardNam
   });
   const holder = redemption?.order?.status;
   if (redemption?.status === "USED" || holder === "PAID" || holder === "FREE") return { ok: false, code: "member_discount_used" };
-  if (redemption?.status === "PENDING" && holder === "PENDING") return { ok: false, code: "member_discount_pending" };
+  if (redemption?.status === "PENDING" && holder === "PENDING") {
+    // Held by a checkout that hasn't been paid: they came back to try again.
+    if (!reclaim || !(await reclaim(membership.id))) return { ok: false, code: "member_discount_pending" };
+  }
 
   return { ok: true, discount: discount.toNumber() };
 }

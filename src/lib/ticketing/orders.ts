@@ -189,6 +189,12 @@ export async function createOrder(input: {
     discountMembershipId = membership.id;
   }
 
+  // Their discount may still be held by a checkout they left without paying:
+  // close that checkout so it can be used here (no-op when nothing is held).
+  if (discountMembershipId) {
+    await reclaimMemberDiscount(discountMembershipId, event.id, now);
+  }
+
   // Logged-in member pricing (older events) only when no guest discount is used.
   const isMember = !discountMembershipId && input.userId ? Boolean(await getCurrentMembership(input.userId)) : false;
   if (ticketType.membersOnly && !isMember) {
@@ -366,6 +372,46 @@ export async function createOrder(input: {
     }
     await releaseOrder(created.order.id, "CANCELLED");
     return fail(502, "payment_failed", "Payment could not be started. Please try again.");
+  }
+}
+
+/**
+ * A member's discount is only "used" once a payment succeeds. If it is held by
+ * a checkout that was never paid (they went back to the event page, closed the
+ * tab, or the payment failed), this closes that Stripe checkout — after which
+ * it can no longer be paid — and releases the order, so the discount can be
+ * used again straight away instead of after the 30-minute hold.
+ *
+ * Returns true when the discount is free (or was never held), false when the
+ * old checkout can't be closed because it is being paid or was just paid.
+ */
+export async function reclaimMemberDiscount(membershipId: string, eventId: string, now = new Date()): Promise<boolean> {
+  const held = await db.eventMemberRedemption.findUnique({
+    where: { membershipId_eventId: { membershipId, eventId } },
+    select: { status: true, order: { select: { id: true, status: true, stripeSessionId: true, expiresAt: true } } },
+  });
+  const order = held?.order;
+  if (!held || held.status !== "PENDING" || !order || order.status !== "PENDING") return true;
+
+  if (order.stripeSessionId) {
+    if (!(await closeCheckout(order.stripeSessionId))) return false;
+  } else if (!order.expiresAt || order.expiresAt > now) {
+    // Its checkout is still being opened (a moment ago); leave it alone.
+    return false;
+  }
+  await releaseOrder(order.id, "CANCELLED");
+  return true;
+}
+
+/** Close a Stripe checkout so it can't be paid. False if it was completed (paid or paying). */
+async function closeCheckout(sessionId: string): Promise<boolean> {
+  try {
+    await stripe.checkout.sessions.expire(sessionId);
+    return true;
+  } catch {
+    // Expiring fails when the session is no longer open: fine if it already expired.
+    const session = await stripe.checkout.sessions.retrieve(sessionId).catch(() => null);
+    return session?.status === "expired";
   }
 }
 
