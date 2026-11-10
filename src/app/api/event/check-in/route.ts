@@ -1,6 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import crypto from "crypto";
+import { hiloEventId } from "@/lib/hilo";
+
+// The door scanner admits Hilo Party tickets only (HILO_EVENT_ID). A ticket
+// for any other event, Halloween's EventTicket included, is refused as
+// "wrong_event" and nothing is written.
+const HALLOWEEN_TITLE = "2026 ROCSAUT Halloween Party";
+
+function wrongEvent(eventTitle: string, ticket?: { name: string; tier: string }) {
+  return NextResponse.json({
+    success: false,
+    status: "wrong_event",
+    message: "WRONG EVENT",
+    eventTitle,
+    ticket,
+  });
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -37,8 +53,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const body = await req.json();
-    const token = String(body.token ?? "").trim();
+    const eventId = hiloEventId();
+
+    if (!eventId) {
+      console.error("HILO_EVENT_ID is not configured; the door scanner has no event.");
+      return NextResponse.json(
+        {
+          success: false,
+          status: "error",
+          message: "Scanner has no event set (HILO_EVENT_ID).",
+        },
+        { status: 500 }
+      );
+    }
+
+    const body = await req.json().catch(() => null);
+    const token = String(body?.token ?? "").trim();
 
     if (!token) {
       return NextResponse.json(
@@ -54,24 +84,35 @@ export async function POST(req: NextRequest) {
     // Tickets from the Order/Ticket tables first, then Halloween's EventTicket.
     const entry = await db.ticket.findUnique({
       where: { token },
-      include: { ticketType: { select: { name: true, color: true, perks: true } } },
+      include: {
+        ticketType: { select: { name: true, color: true, perks: true } },
+        event: { select: { title: true } },
+      },
     });
 
     if (entry) {
-      const ticketInfo = {
-        name: entry.holderName,
-        tier: entry.ticketType.name,
-        color: entry.ticketType.color,
-        perks: entry.ticketType.perks,
-      };
-
-      // RESERVED means the buyer never finished paying.
+      // Unpaid holds are "not found" whatever the event, so a half-finished
+      // checkout never shows up at the door.
       if (entry.status === "RESERVED") {
         return NextResponse.json(
           { success: false, status: "not_found", message: "Ticket not found" },
           { status: 404 }
         );
       }
+
+      if (entry.eventId !== eventId) {
+        return wrongEvent(entry.event.title, {
+          name: entry.holderName,
+          tier: entry.ticketType.name,
+        });
+      }
+
+      const ticketInfo = {
+        name: entry.holderName,
+        tier: entry.ticketType.name,
+        color: entry.ticketType.color,
+        perks: entry.ticketType.perks,
+      };
 
       if (entry.status === "VOID") {
         return NextResponse.json({
@@ -111,25 +152,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const tickets = await db.$queryRaw<
-      Array<{
-        id: string;
-        token: string;
-        name: string;
-        tier: string;
-        status: string;
-        checked_in: boolean;
-        checked_in_at: Date | null;
-      }>
-    >`
-      SELECT
-        id,
-        token,
-        name,
-        tier,
-        status,
-        checked_in,
-        checked_in_at
+    const tickets = await db.$queryRaw<Array<{ name: string; tier: string }>>`
+      SELECT name, tier
       FROM "EventTicket"
       WHERE token = ${token}
       LIMIT 1
@@ -146,77 +170,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Every EventTicket belongs to the Halloween party, never to this event.
     const ticket = tickets[0];
-
-    if (ticket.status === "void") {
-      return NextResponse.json({
-        success: false,
-        status: "void",
-        message: "TICKET VOID",
-        ticket: {
-          name: ticket.name,
-          tier: ticket.tier,
-        },
-      });
-    }
-
-    if (ticket.checked_in) {
-      return NextResponse.json({
-        success: false,
-        status: "already_checked_in",
-        message: "ALREADY CHECKED IN",
-        checkedInAt: ticket.checked_in_at,
-        ticket: {
-          name: ticket.name,
-          tier: ticket.tier,
-        },
-      });
-    }
-
-    const updated = await db.$queryRaw<
-      Array<{
-        name: string;
-        tier: string;
-        checked_in_at: Date;
-      }>
-    >`
-      UPDATE "EventTicket"
-      SET
-        checked_in = TRUE,
-        checked_in_at = NOW()
-      WHERE id = ${ticket.id}
-        AND status = 'valid'
-        AND checked_in = FALSE
-      RETURNING
-        name,
-        tier,
-        checked_in_at
-    `;
-
-    if (updated.length === 0) {
-      return NextResponse.json({
-        success: false,
-        status: "already_checked_in",
-        message: "ALREADY CHECKED IN",
-        ticket: {
-          name: ticket.name,
-          tier: ticket.tier,
-        },
-      });
-    }
-
-    const checkedInTicket = updated[0];
-
-    return NextResponse.json({
-      success: true,
-      status: "checked_in",
-      message: "CHECKED IN",
-      checkedInAt: checkedInTicket.checked_in_at,
-      ticket: {
-        name: checkedInTicket.name,
-        tier: checkedInTicket.tier,
-      },
-    });
+    return wrongEvent(HALLOWEEN_TITLE, { name: ticket.name, tier: ticket.tier });
   } catch (error) {
     console.error("Check-in error:", error);
 

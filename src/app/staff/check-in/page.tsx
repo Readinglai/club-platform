@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { Html5Qrcode } from "html5-qrcode";
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 import { playScanSound, unlockAudio, type ScanSound } from "@/lib/scan-sounds";
 
 type ScanResult = {
@@ -9,10 +10,11 @@ type ScanResult = {
   status: string;
   message: string;
   checkedInAt?: string;
+  // wrong_event: the event this ticket is actually for.
+  eventTitle?: string;
   ticket?: {
     name: string;
     tier: string;
-    // Set by the Order/Ticket tables; Halloween tiers use TIERS below.
     color?: string | null;
     perks?: string | null;
   };
@@ -21,58 +23,56 @@ type ScanResult = {
   httpStatus?: number;
 };
 
-type Verdict = "admit" | "duplicate" | "void" | "not_found" | "error";
+/** The one event this door admits (HILO_EVENT_ID), sent by /api/staff/check-in/verify. */
+type DoorEvent = {
+  id: string;
+  title: string;
+  startAt: string;
+  location: string | null;
+  timezone: string;
+};
 
-// Palette: warm ink + bone, one ember accent. Result floods are functional
-// state colours, always paired with a word and a shape.
-const INK = "#100e0b";
-const BONE = "#efe8da";
-const EMBER = "#ff5f1f";
+type Verdict = "admit" | "duplicate" | "void" | "not_found" | "wrong_event" | "error";
+
+// ── Lobby (staff code, choose event): ROCSAUT's own look. Navy and cream from
+// the logo, a seal red for Taiwan, a plum blossom (梅花) watermark.
+const NAVY = "#1a2744";
+const PAPER = "#faf8f3";
+const GOLD = "#c9b99a";
+const SEAL = "#c8102e";
+
+// ── Scanner: the same ROCSAUT look as the lobby for now (a party theme can
+// come later). Result floods stay plain state colours (tier colour = in,
+// amber = already in, red = no), each with a word and a mark.
+const INK = "#12060b";
+const BONE = "#f6ecdc";
 const RED = "#b3122a";
+// Floods a valid entry when the ticket type has no colour of its own.
+const DEFAULT_TIER = "#6b21a8";
+
+// Shown on every admit: the party is strictly 19+ (see HILO_EMAIL_NOTES).
+const DOOR_NOTE = "Check photo ID · 19+";
+
+// Remembers that this phone already chose the event, so a reload goes straight to the scanner.
+const DOOR_EVENT_KEY = "rocsaut_door_event";
 
 type MarkKind = "check" | "alert" | "cross" | "retry";
 
-// Valid entries flood in the TIER colour (see TIERS); amber = already in, red = fail.
 const FLOODS: Record<Verdict, { bg: string; fg: string; word: string; mark: MarkKind }> = {
-  admit: { bg: "#0a6e3c", fg: BONE, word: "ADMIT", mark: "check" },
+  admit: { bg: DEFAULT_TIER, fg: BONE, word: "ADMIT", mark: "check" },
   duplicate: { bg: "#f0a81a", fg: INK, word: "ALREADY IN", mark: "alert" },
   void: { bg: RED, fg: BONE, word: "VOID", mark: "cross" },
   not_found: { bg: RED, fg: BONE, word: "NOT FOUND", mark: "cross" },
+  wrong_event: { bg: RED, fg: BONE, word: "WRONG EVENT", mark: "cross" },
   error: { bg: RED, fg: BONE, word: "TRY AGAIN", mark: "retry" },
 };
 
-type TierStyle = {
-  label: string;
-  drinks: string; // big, for the info box
-  perk: string; // short, for "previous guest"
-  bg: string; // full-screen colour on a valid entry
-  pattern?: string; // extra cue so UNLIMITED is spotted instantly
-};
-
-// Three clearly different hues, none of them red or amber (those mean problems).
-const TIERS: Record<string, TierStyle> = {
-  LITE: { label: "LITE", drinks: "2 drinks", perk: "2 drink tickets", bg: "#0b6e4f" },
-  STANDARD: { label: "STANDARD", drinks: "4 drinks", perk: "4 drink tickets", bg: "#1d4ed8" },
-  UNLIMITED: {
-    label: "UNLIMITED",
-    drinks: "∞ drinks",
-    perk: "Unlimited drinks",
-    bg: "#6b21a8",
-    pattern: "repeating-linear-gradient(135deg, rgba(255,255,255,0.09) 0 16px, transparent 16px 32px)",
-  },
-};
-
-const getTier = (ticket?: ScanResult["ticket"]): TierStyle => {
-  const tier = ticket?.tier;
-  if (tier && TIERS[tier]) return TIERS[tier];
-  return {
-    label: tier || "UNKNOWN",
-    drinks: ticket?.perks || "Check tier",
-    perk: ticket?.perks || "",
-    bg: ticket?.color || "#334155",
-  };
-};
-
+// A ticket type's own name, perks and colour (TicketType.color floods the screen on entry).
+const getTier = (ticket?: ScanResult["ticket"]) => ({
+  label: ticket?.tier || "Ticket",
+  perks: ticket?.perks || "",
+  bg: ticket?.color || DEFAULT_TIER,
+});
 
 // What goes in the info box when a check fails.
 const failReason = (result: ScanResult): { title: string; detail: string } => {
@@ -81,6 +81,11 @@ const failReason = (result: ScanResult): { title: string; detail: string } => {
       return { title: "Ticket cancelled", detail: "Voided — not valid for entry." };
     case "not_found":
       return { title: "No matching ticket", detail: "Not a ticket for this event." };
+    case "wrong_event":
+      return {
+        title: "Other event",
+        detail: `This ticket is for ${result.eventTitle ?? "another event"}. Not valid tonight.`,
+      };
     default:
       return result.failure === "network"
         ? { title: "No connection", detail: "Check Wi-Fi or data, then scan again." }
@@ -90,10 +95,6 @@ const failReason = (result: ScanResult): { title: string; detail: string } => {
           };
   }
 };
-
-// Fine film grain so the dark booth isn't a flat fill.
-const GRAIN =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E\")";
 
 const getVerdict = (result: ScanResult): Verdict => {
   switch (result.status) {
@@ -105,6 +106,8 @@ const getVerdict = (result: ScanResult): Verdict => {
       return "void";
     case "not_found":
       return "not_found";
+    case "wrong_event":
+      return "wrong_event";
     default:
       return "error";
   }
@@ -112,6 +115,19 @@ const getVerdict = (result: ScanResult): Verdict => {
 
 const getSound = (verdict: Verdict): ScanSound =>
   verdict === "admit" ? "success" : verdict === "duplicate" ? "already" : "fail";
+
+// Ticket QRs hold the ticket link (https://<site>/ticket/<token>, any domain,
+// with or without a query or locale prefix); older passes hold the bare token.
+const tokenFromQr = (text: string) => {
+  const raw = text.trim();
+  const match = raw.match(/\/ticket\/([^/?#\s]+)/);
+  if (!match) return raw;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+};
 
 // Ignore the same code for this long after it was last read, so a QR still
 // held in frame doesn't re-trigger as "already in" while scanning continues.
@@ -127,6 +143,24 @@ const formatCheckedIn = (iso?: string) => {
   const ago = minutes === 0 ? "just now" : `${minutes} min ago`;
   return `${time} · ${ago}`;
 };
+
+const formatDoorDate = (event: DoorEvent) =>
+  new Date(event.startAt).toLocaleString("en-CA", {
+    timeZone: event.timezone,
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+// "One More Night in TAIPEI | ROCSAUT Annual Party" → name "One More Night in TAIPEI", sub "ROCSAUT Annual Party".
+const splitTitle = (title: string) => {
+  const [name, ...rest] = title.split("|").map((part) => part.trim());
+  return { name, sub: rest.join(" · ") };
+};
+
+// ── Pieces ─────────────────────────────────────────────────────────────────
 
 function Mark({ kind, color }: { kind: MarkKind; color: string }) {
   return (
@@ -157,7 +191,6 @@ function InfoBox({
   main,
   mainColor,
   side,
-  sideColor,
   detail,
 }: {
   accent: string;
@@ -165,7 +198,6 @@ function InfoBox({
   main: string;
   mainColor: string;
   side?: string;
-  sideColor?: string;
   detail?: string;
 }) {
   return (
@@ -175,16 +207,13 @@ function InfoBox({
         <p className="text-[10px] font-semibold tracking-[0.3em] opacity-60">{label}</p>
         <div className="flex items-end justify-between gap-3">
           <p
-            className="font-[family-name:var(--font-door-display)] text-[2.5rem] font-black uppercase leading-[0.95] tracking-tight"
+            className={`min-w-0 break-words font-[family-name:var(--font-door-display)] font-black uppercase leading-[0.95] tracking-tight ${main.length > 12 ? "text-[1.85rem]" : "text-[2.5rem]"}`}
             style={{ color: mainColor }}
           >
             {main}
           </p>
           {side && (
-            <p
-              className="shrink-0 pb-1 text-right font-[family-name:var(--font-door-display)] text-2xl font-black uppercase leading-none"
-              style={{ color: sideColor ?? INK }}
-            >
+            <p className="max-w-[45%] shrink-0 pb-1 text-right font-[family-name:var(--font-door-display)] text-xl font-black uppercase leading-none">
               {side}
             </p>
           )}
@@ -195,12 +224,88 @@ function InfoBox({
   );
 }
 
+// ROC national flower, drawn in one gold line: the lobby's watermark.
+function PlumBlossom({ className, color }: { className?: string; color: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="-60 -60 120 120" className={className} fill="none" stroke={color} strokeWidth="1.6">
+      {[0, 72, 144, 216, 288].map((deg) => (
+        <circle key={deg} cx="0" cy="-26" r="22" transform={`rotate(${deg})`} />
+      ))}
+      <circle cx="0" cy="0" r="7" />
+      {[18, 90, 162, 234, 306].map((deg) => (
+        <g key={deg} transform={`rotate(${deg})`}>
+          <path d="M0 -7V-17" />
+          <circle cx="0" cy="-19.5" r="2" />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+// Red seal-style stamp, like a name chop (印章).
+function Seal({ lines }: { lines: [string, string] }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-flex h-12 w-12 shrink-0 -rotate-6 flex-col items-center justify-center rounded-[3px] font-[family-name:var(--font-door-display)] text-[13px] font-black uppercase leading-[1.05] tracking-wide"
+      style={{
+        backgroundColor: SEAL,
+        color: PAPER,
+        boxShadow: `inset 0 0 0 2px ${SEAL}, inset 0 0 0 3.5px ${PAPER}`,
+      }}
+    >
+      <span>{lines[0]}</span>
+      <span>{lines[1]}</span>
+    </span>
+  );
+}
+
+// The lobby frame: logo, club name, gold rules, plum blossom.
+function Lobby({ children }: { children: React.ReactNode }) {
+  return (
+    <main
+      className="fixed inset-0 flex overflow-y-auto overflow-x-hidden px-5 py-8 font-[family-name:var(--font-door-mono)]"
+      style={{ backgroundColor: PAPER, color: NAVY }}
+    >
+      <PlumBlossom className="pointer-events-none fixed -bottom-24 -right-24 h-96 w-96 opacity-25" color={GOLD} />
+
+      <div className="relative m-auto w-full max-w-sm">
+        <header className="flex items-center gap-3">
+          <Image src="/assets/logo.png" alt="ROCSAUT" width={52} height={52} className="shrink-0 rounded-full" priority />
+          <div className="min-w-0 flex-1">
+            <p className="font-[family-name:var(--font-door-display)] text-2xl font-black leading-none tracking-wide">ROCSAUT</p>
+            <p className="mt-1 text-[10px] leading-snug tracking-[0.08em] opacity-70">
+              Taiwanese Student Association
+              <br />
+              University of Toronto
+            </p>
+          </div>
+          <Seal lines={["Door", "Check"]} />
+        </header>
+
+        <div aria-hidden="true" className="mt-5 border-y" style={{ borderColor: GOLD, height: 4 }} />
+
+        {children}
+
+        <p className="mt-10 text-center text-[10px] tracking-[0.3em] opacity-50">
+          TAIWAN <span style={{ color: SEAL }}>✿</span> TORONTO
+        </p>
+      </div>
+    </main>
+  );
+}
+
+// ── Page ───────────────────────────────────────────────────────────────────
+
 export default function CheckInPage() {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scanLockRef = useRef(false);
   const lastReadRef = useRef<{ code: string; at: number } | null>(null);
 
   const [verified, setVerified] = useState(false);
+  // The event this door admits (from the server), and whether staff have entered its scanner.
+  const [doorEvent, setDoorEvent] = useState<DoorEvent | null>(null);
+  const [entered, setEntered] = useState(false);
   const [staffCode, setStaffCode] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState("");
@@ -219,7 +324,19 @@ export default function CheckInPage() {
     const checkExistingVerification = async () => {
       try {
         const response = await fetch("/api/staff/check-in/verify");
-        if (response.ok) setVerified(true);
+        if (!response.ok) return;
+        const data = await response.json().catch(() => null);
+        const event: DoorEvent | null = data?.event ?? null;
+        setDoorEvent(event);
+        setVerified(true);
+        // Reloaded mid-shift: go straight back into the scanner.
+        let saved: string | null = null;
+        try {
+          saved = window.localStorage.getItem(DOOR_EVENT_KEY);
+        } catch {
+          // Storage blocked: staff just tap the event again.
+        }
+        if (event && saved === event.id) setEntered(true);
       } catch {
         // No existing verification.
       }
@@ -253,6 +370,7 @@ export default function CheckInPage() {
         return;
       }
 
+      setDoorEvent(data.event ?? null);
       setVerified(true);
       setStaffCode("");
     } catch (err) {
@@ -260,6 +378,31 @@ export default function CheckInPage() {
       setVerificationError("Unable to verify. Please try again.");
     } finally {
       setVerifying(false);
+    }
+  };
+
+  const enterEvent = () => {
+    if (!doorEvent) return;
+    setResult(null);
+    setError("");
+    setEntered(true);
+    try {
+      window.localStorage.setItem(DOOR_EVENT_KEY, doorEvent.id);
+    } catch {
+      // Storage blocked: the choice lasts until the page is reloaded.
+    }
+  };
+
+  // Back to the event list. The camera stops first: #qr-reader unmounts there.
+  const leaveEvent = async () => {
+    await stopScanner();
+    setEntered(false);
+    setResult(null);
+    setError("");
+    try {
+      window.localStorage.removeItem(DOOR_EVENT_KEY);
+    } catch {
+      // Storage blocked.
     }
   };
 
@@ -280,35 +423,24 @@ export default function CheckInPage() {
     try {
       setError("");
 
-      let token = decodedText.trim();
-
-      try {
-        const url = new URL(token);
-        const parts = url.pathname.split("/").filter(Boolean);
-
-        if (parts[0] === "ticket" && parts[1]) {
-          token = parts[1];
-        }
-      } catch {
-        // QR contains a plain token, so use it directly.
-      }
-
       const response = await fetch("/api/event/check-in", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
+        body: JSON.stringify({ token: tokenFromQr(decodedText) }),
       });
 
       if (response.status === 401) {
+        await stopScanner();
         setVerified(false);
+        setEntered(false);
         setResult(null);
-        setError("Staff verification expired. Please verify again.");
+        setVerificationError("Staff verification expired. Please verify again.");
         return;
       }
 
       // A server error may not even return JSON (e.g. a crashed function).
       const data: ScanResult | null = await response.json().catch(() => null);
-      const known = ["checked_in", "already_checked_in", "void", "not_found"];
+      const known = ["checked_in", "already_checked_in", "void", "not_found", "wrong_event"];
 
       if (!data || (!response.ok && !known.includes(data.status))) {
         showResult({
@@ -357,22 +489,28 @@ export default function CheckInPage() {
         scannerRef.current = null;
       }
 
-      const scanner = new Html5Qrcode("qr-reader");
+      // QR only (tickets are QR codes): fewer decoders per frame, faster reads.
+      // Uses the phone's built-in barcode detector where the browser has one.
+      const scanner = new Html5Qrcode("qr-reader", {
+        verbose: false,
+        formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
+        useBarCodeDetectorIfSupported: true,
+      });
       scannerRef.current = scanner;
 
       await scanner.start(
         { facingMode: "environment" },
         {
-          fps: 10,
+          fps: 15,
           aspectRatio: 1,
           qrbox: (viewWidth, viewHeight) => {
             const size = Math.floor(
-              Math.min(viewWidth, viewHeight) * 0.8
+              Math.min(viewWidth, viewHeight) * 0.85
             );
 
             const boundedSize = Math.max(
               120,
-              Math.min(280, size)
+              Math.min(300, size)
             );
 
             return {
@@ -416,7 +554,7 @@ export default function CheckInPage() {
     const scanner = scannerRef.current;
 
     scanLockRef.current = false;
-    // Stopping ends the result screen: back to black, last guest kept as "Previous guest".
+    // Stopping ends the result screen: back to the night, last guest kept as "Previous guest".
     endResult();
 
     if (!scanner) {
@@ -443,151 +581,242 @@ export default function CheckInPage() {
     };
   }, []);
 
+  // Step 1: staff code.
   if (!verified) {
     return (
-      <main
-        className="fixed inset-0 flex overflow-y-auto px-5 py-6 font-[family-name:var(--font-door-mono)]"
-        style={{ backgroundColor: INK, color: BONE }}
-      >
-        <div aria-hidden="true" className="pointer-events-none fixed inset-0 opacity-[0.07] mix-blend-screen" style={{ backgroundImage: GRAIN }} />
+      <Lobby>
+        <p className="mt-8 text-[11px] tracking-[0.3em]" style={{ color: SEAL }}>
+          ROCSAUT · DOOR CHECK-IN
+        </p>
+        <h1 className="mt-2 font-[family-name:var(--font-door-display)] text-[3.75rem] font-black uppercase leading-[0.85] tracking-tight">
+          Staff
+          <br />
+          sign-in
+        </h1>
 
-        <div className="relative m-auto w-full max-w-sm">
-          <p className="text-[11px] tracking-[0.35em]" style={{ color: EMBER }}>
-            ROCSAUT · HILO PARTY 2026
-          </p>
-          <h1 className="mt-2 font-[family-name:var(--font-door-display)] text-[4.5rem] font-black uppercase leading-[0.82] tracking-tight">
-            Door
-            <br />
-            Check-in
-          </h1>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            void verifyStaff();
+          }}
+          className="mt-8"
+        >
+          <label htmlFor="staff-code" className="block text-xs tracking-[0.2em] opacity-70">
+            STAFF ACCESS CODE
+          </label>
 
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              void verifyStaff();
+          <input
+            id="staff-code"
+            type="password"
+            value={staffCode}
+            onChange={(event) => {
+              setStaffCode(event.target.value);
+              setVerificationError("");
             }}
-            className="mt-10 border-t-2 border-dashed pt-6"
-            style={{ borderColor: `${BONE}55` }}
+            placeholder="••••••"
+            autoComplete="off"
+            className="mt-3 w-full border-b-2 bg-transparent pb-2 text-2xl tracking-[0.3em] outline-none placeholder:opacity-30"
+            style={{ borderColor: NAVY, color: NAVY }}
+          />
+
+          {verificationError && (
+            <p role="alert" className="mt-4 border-l-4 pl-3 text-sm" style={{ borderColor: SEAL }}>
+              {verificationError}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={verifying}
+            className="mt-8 w-full rounded-sm py-4 font-[family-name:var(--font-door-display)] text-2xl font-extrabold uppercase tracking-wider transition active:translate-y-px disabled:opacity-50"
+            style={{ backgroundColor: NAVY, color: PAPER }}
           >
-            <label htmlFor="staff-code" className="block text-xs tracking-[0.2em] opacity-70">
-              STAFF ACCESS CODE
-            </label>
-
-            <input
-              id="staff-code"
-              type="password"
-              value={staffCode}
-              onChange={(event) => {
-                setStaffCode(event.target.value);
-                setVerificationError("");
-              }}
-              placeholder="••••••"
-              autoComplete="off"
-              className="mt-3 w-full border-b-2 bg-transparent pb-2 text-2xl tracking-[0.3em] outline-none placeholder:opacity-30"
-              style={{ borderColor: BONE, color: BONE }}
-            />
-
-            {verificationError && (
-              <p className="mt-4 border-l-4 pl-3 text-sm" style={{ borderColor: EMBER, color: BONE }}>
-                {verificationError}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              disabled={verifying}
-              className="mt-8 w-full py-4 font-[family-name:var(--font-door-display)] text-2xl font-extrabold uppercase tracking-wider transition active:translate-y-px disabled:opacity-50"
-              style={{ backgroundColor: EMBER, color: INK }}
-            >
-              {verifying ? "Checking…" : "Open scanner"}
-            </button>
-          </form>
-        </div>
-      </main>
+            {verifying ? "Checking…" : "Continue"}
+          </button>
+        </form>
+      </Lobby>
     );
   }
 
+  // Step 2: choose the event (the server decides which one this door admits).
+  if (!entered || !doorEvent) {
+    const name = doorEvent ? splitTitle(doorEvent.title) : null;
+
+    return (
+      <Lobby>
+        <p className="mt-8 text-[11px] tracking-[0.3em]" style={{ color: SEAL }}>
+          STEP 2 · CHOOSE EVENT
+        </p>
+        <h1 className="mt-2 font-[family-name:var(--font-door-display)] text-[3.75rem] font-black uppercase leading-[0.85] tracking-tight">
+          Tonight&apos;s
+          <br />
+          door
+        </h1>
+        <p className="mt-3 text-xs leading-relaxed opacity-70">
+          Tickets for any other event show WRONG EVENT and aren&apos;t let in.
+        </p>
+
+        {doorEvent && name ? (
+          <button
+            type="button"
+            onClick={enterEvent}
+            className="group relative mt-7 block w-full overflow-hidden rounded-md text-left shadow-[0_10px_30px_-14px_rgba(26,39,68,0.6)] transition active:translate-y-px"
+            style={{ backgroundColor: NAVY, color: PAPER }}
+          >
+            <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5" style={{ backgroundColor: SEAL }} />
+            <span className="block px-6 py-5">
+              <span className="block text-[10px] tracking-[0.3em]" style={{ color: GOLD }}>
+                TONIGHT
+              </span>
+              <span className="mt-2 block break-words font-[family-name:var(--font-door-display)] text-[2.1rem] font-black uppercase leading-[0.9] tracking-tight">
+                {name.name}
+              </span>
+              {name.sub && <span className="mt-1 block text-[11px] tracking-[0.12em] opacity-70">{name.sub}</span>}
+              <span className="mt-4 block text-xs tracking-[0.08em]" style={{ color: GOLD }}>
+                {formatDoorDate(doorEvent)}
+              </span>
+              {doorEvent.location && (
+                <span className="mt-1 block text-[11px] leading-snug opacity-75">{doorEvent.location}</span>
+              )}
+            </span>
+            <span
+              className="flex items-center justify-between border-t border-dashed px-6 py-3 text-[11px] tracking-[0.25em]"
+              style={{ borderColor: `${PAPER}33` }}
+            >
+              OPEN SCANNER
+              <span aria-hidden="true" className="text-base transition group-hover:translate-x-1">→</span>
+            </span>
+          </button>
+        ) : (
+          <p className="mt-7 border-l-4 pl-3 text-sm leading-relaxed" style={{ borderColor: SEAL }}>
+            No event is set for this door. Tell the organizer (HILO_EVENT_ID).
+          </p>
+        )}
+      </Lobby>
+    );
+  }
+
+  // Step 3: the scanner, in ROCSAUT colours.
+  const name = splitTitle(doorEvent.title);
   const verdict = result ? getVerdict(result) : null;
   const tier = getTier(result?.ticket);
   // Valid entry: the whole screen takes the tier colour. Otherwise amber/red.
   const flood = showing && verdict
     ? verdict === "admit"
-      ? { ...FLOODS.admit, bg: tier.bg, pattern: tier.pattern }
-      : { ...FLOODS[verdict], pattern: undefined }
+      ? { ...FLOODS.admit, bg: tier.bg }
+      : FLOODS[verdict]
     : null;
-  const fg = flood?.fg ?? BONE;
+  const fg = flood?.fg ?? NAVY;
   const checkedIn = formatCheckedIn(result?.checkedInAt);
 
   return (
     <main
-      className="fixed inset-0 flex overflow-y-auto px-4 py-4 font-[family-name:var(--font-door-mono)] transition-colors duration-500"
-      style={{ backgroundColor: flood?.bg ?? INK, backgroundImage: flood?.pattern, color: fg }}
+      className="fixed inset-0 flex overflow-y-auto overflow-x-hidden px-4 py-5 font-[family-name:var(--font-door-mono)] transition-colors duration-500"
+      style={{ backgroundColor: flood?.bg ?? PAPER, color: fg }}
     >
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 opacity-[0.07] mix-blend-screen" style={{ backgroundImage: GRAIN }} />
+      {!flood && <PlumBlossom className="pointer-events-none fixed -bottom-24 -right-24 h-80 w-80 opacity-20" color={GOLD} />}
 
       {/* m-auto centers when there is room and scrolls instead of clipping on short screens */}
       <div className="relative m-auto flex w-full max-w-md flex-col gap-4">
-        {/* Masthead */}
-        <header className="flex items-end justify-between">
-          <h1 className="font-[family-name:var(--font-door-display)] text-3xl font-black uppercase leading-none tracking-tight">
-            Door
-          </h1>
-          <p className="text-[10px] tracking-[0.3em]" style={{ color: flood ? fg : EMBER }}>
-            ROCSAUT · HILO PARTY 2026
-          </p>
+        <header className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => void leaveEvent()}
+            className="-ml-1 px-1 py-1 text-[11px] tracking-[0.25em] underline-offset-4 hover:underline"
+            style={{ color: fg, opacity: 0.8 }}
+          >
+            ← EVENTS
+          </button>
+          <span className="flex items-center gap-2 text-[10px] tracking-[0.3em]">
+            ROCSAUT DOOR
+            <Image src="/assets/logo.png" alt="" width={28} height={28} className="rounded-full" />
+          </span>
         </header>
 
-        {/* Viewfinder — #qr-reader must always stay mounted for html5-qrcode */}
+        {/* The event this door admits */}
+        <div>
+          <p className="text-[10px] tracking-[0.3em]" style={{ color: flood ? fg : SEAL }}>
+            NOW SCANNING
+          </p>
+          <h1 className="mt-1 break-words font-[family-name:var(--font-door-display)] text-[2.4rem] font-black uppercase leading-[0.9] tracking-tight">
+            {name.name}
+          </h1>
+          <p className="mt-1.5 truncate text-[11px] tracking-[0.08em] opacity-70">
+            {formatDoorDate(doorEvent)}
+            {doorEvent.location ? ` · ${doorEvent.location.split(",")[0]}` : ""}
+          </p>
+          <div aria-hidden="true" className="mt-3 border-y" style={{ borderColor: flood ? `${fg}66` : GOLD, height: 4 }} />
+        </div>
+
+        {/* Viewfinder in a navy frame — #qr-reader must always stay mounted for html5-qrcode */}
         {/* Fixed size: html5-qrcode measures its scan area at start, so resizing the box stops it reading codes */}
-        <div className="relative mx-auto w-full" style={{ maxWidth: "min(100%, 34dvh, 340px)" }}>
-          <div
-            id="qr-reader"
-            className="w-full overflow-hidden bg-black [&_video]:!h-full [&_video]:!w-full [&_video]:!object-cover [&_img]:mx-auto"
-            style={{ aspectRatio: "1 / 1", minHeight: 0 }}
-          />
-
-          {/* Corner brackets */}
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-            {["left-0 top-0 border-l-4 border-t-4", "right-0 top-0 border-r-4 border-t-4", "bottom-0 left-0 border-b-4 border-l-4", "bottom-0 right-0 border-b-4 border-r-4"].map((pos) => (
-              <span key={pos} className={`absolute h-7 w-7 ${pos}`} style={{ borderColor: flood ? fg : EMBER }} />
-            ))}
-          </div>
-
-          {/* Slow check: ember beam sweeps the frame like candlelight over a guest list */}
-          {checking && scanning && (
+        <div
+          className="relative mx-auto w-full rounded-sm p-[5px]"
+          style={{ maxWidth: "min(100%, 34dvh, 340px)", backgroundColor: flood ? `${fg}33` : NAVY }}
+        >
+          <div className="relative">
             <div
-              role="status"
-              className="pointer-events-none absolute inset-0 overflow-hidden"
-              style={{ backgroundColor: "rgba(16,14,11,0.72)", color: BONE }}
-            >
-              <span
-                aria-hidden="true"
-                className="absolute inset-x-0 h-1 motion-safe:animate-[door-beam_1.1s_ease-in-out_infinite_alternate]"
-                style={{ top: "50%", backgroundColor: EMBER, boxShadow: `0 0 24px 6px ${EMBER}99` }}
-              />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <p className="font-[family-name:var(--font-door-display)] text-4xl font-black uppercase tracking-wide motion-safe:animate-[door-flicker_2.4s_steps(1)_infinite]">
-                  Checking
-                </p>
-                <p className="mt-1 text-[10px] tracking-[0.3em]" style={{ color: EMBER }}>
-                  READING THE GUEST LIST…
-                </p>
-              </div>
-            </div>
-          )}
+              id="qr-reader"
+              className="w-full overflow-hidden bg-black [&_video]:!h-full [&_video]:!w-full [&_video]:!object-cover [&_img]:mx-auto"
+              style={{ aspectRatio: "1 / 1", minHeight: 0 }}
+            />
 
-          {/* Overlay (not an extra row) so the layout height never changes */}
-          {!scanning && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-center text-[11px] tracking-[0.25em]" style={{ color: BONE }}>
-              CAMERA OFF
+            {/* Corner brackets */}
+            <div aria-hidden="true" className="pointer-events-none absolute inset-2">
+              {["left-0 top-0 border-l-4 border-t-4", "right-0 top-0 border-r-4 border-t-4", "bottom-0 left-0 border-b-4 border-l-4", "bottom-0 right-0 border-b-4 border-r-4"].map((pos) => (
+                <span key={pos} className={`absolute h-7 w-7 ${pos}`} style={{ borderColor: PAPER }} />
+              ))}
             </div>
-          )}
+
+            {/* Slow check: a red beam sweeps the frame */}
+            {checking && scanning && (
+              <div
+                role="status"
+                className="pointer-events-none absolute inset-0 overflow-hidden"
+                style={{ backgroundColor: "rgba(26,39,68,0.8)", color: PAPER }}
+              >
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-x-0 h-1 motion-safe:animate-[door-beam_1.1s_ease-in-out_infinite_alternate]"
+                  style={{ top: "50%", backgroundColor: SEAL, boxShadow: `0 0 20px 4px ${SEAL}99` }}
+                />
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <p className="font-[family-name:var(--font-door-display)] text-4xl font-black uppercase tracking-wide motion-safe:animate-[door-flicker_2.4s_steps(1)_infinite]">
+                    Checking
+                  </p>
+                  <p className="mt-1 text-[10px] tracking-[0.3em]" style={{ color: GOLD }}>
+                    READING THE GUEST LIST…
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Camera off: the whole frame is a start button (an overlay, so the layout height never changes) */}
+            {!scanning && (
+              <button
+                type="button"
+                onClick={() => void startScanner()}
+                className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center transition active:scale-[0.99]"
+                style={{ color: PAPER }}
+              >
+                <svg aria-hidden="true" viewBox="0 0 48 48" className="h-11 w-11" fill="none" stroke={PAPER} strokeWidth="3">
+                  <path d="M6 16h8l4-6h12l4 6h8v24H6z" strokeLinejoin="round" />
+                  <circle cx="24" cy="27" r="7" />
+                </svg>
+                <span className="font-[family-name:var(--font-door-display)] text-2xl font-black uppercase leading-none tracking-wide">
+                  Tap to start
+                  <br />
+                  scanning
+                </span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Ticket stub: verdict, or the previous guest while scanning */}
         <section
           aria-live="assertive"
-          className="min-h-[11.5rem] border-t-2 border-dashed pt-4"
+          className="min-h-[11rem] border-t-2 border-dashed pt-4"
           style={{ borderColor: `${fg}66` }}
         >
           {flood && result && verdict ? (
@@ -600,22 +829,22 @@ export default function CheckInPage() {
               </div>
 
               {verdict === "admit" ? (
-                <InfoBox
-                  accent={tier.bg}
-                  label="TIER"
-                  main={tier.label}
-                  mainColor={tier.bg}
-                  side={tier.drinks}
-                />
+                <>
+                  <InfoBox accent={tier.bg} label="TICKET" main={tier.label} mainColor={tier.bg} side={tier.perks} />
+                  <p
+                    className="mt-2 inline-block border-2 px-2 py-1 font-[family-name:var(--font-door-display)] text-lg font-black uppercase tracking-wide"
+                    style={{ borderColor: fg }}
+                  >
+                    {DOOR_NOTE}
+                  </p>
+                </>
               ) : verdict === "duplicate" ? (
                 <InfoBox
                   accent={tier.bg}
                   label="ALREADY SCANNED AT"
                   main={checkedIn?.split(" · ")[0] ?? "Earlier"}
                   mainColor={INK}
-                  side={tier.label}
-                  sideColor={tier.bg}
-                  detail={[checkedIn?.split(" · ")[1], tier.perk].filter(Boolean).join(" · ")}
+                  detail={[checkedIn?.split(" · ")[1], tier.label].filter(Boolean).join(" · ")}
                 />
               ) : (
                 <InfoBox
@@ -634,19 +863,19 @@ export default function CheckInPage() {
           ) : result ? (
             <div key={`previous-${resultSeq}`} className="motion-safe:animate-[door-rise_400ms_ease-out]">
               <div className="opacity-70">
-              <p className="text-[10px] tracking-[0.3em]">PREVIOUS GUEST</p>
-              <p className="mt-2 text-base">
-                {result.ticket ? `${result.ticket.name} — ` : ""}
-                {verdict ? FLOODS[verdict].word : result.message}
-              </p>
-              {result.ticket && (
-                <p className="mt-1 text-xs tracking-[0.2em]">
-                  {getTier(result.ticket).label}
-                  {checkedIn ? ` · ${checkedIn}` : ""}
+                <p className="text-[10px] tracking-[0.3em]">PREVIOUS GUEST</p>
+                <p className="mt-2 text-base">
+                  {result.ticket ? `${result.ticket.name} — ` : ""}
+                  {verdict ? FLOODS[verdict].word : result.message}
                 </p>
-              )}
+                {result.ticket && (
+                  <p className="mt-1 text-xs tracking-[0.2em]">
+                    {getTier(result.ticket).label.toUpperCase()}
+                    {checkedIn ? ` · ${checkedIn}` : ""}
+                  </p>
+                )}
               </div>
-              <p className="mt-6 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase" style={{ color: BONE }}>
+              <p className="mt-6 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase" style={{ color: fg }}>
                 {checking && scanning ? "Checking…" : scanning ? "Ready — scan next" : "Camera off"}
               </p>
             </div>
@@ -670,7 +899,7 @@ export default function CheckInPage() {
         </section>
 
         {error && (
-          <p className="border-l-4 pl-3 text-sm" style={{ borderColor: EMBER }}>
+          <p className="border-l-4 pl-3 text-sm" style={{ borderColor: SEAL }}>
             {error}
           </p>
         )}
@@ -681,14 +910,14 @@ export default function CheckInPage() {
             <button
               type="button"
               onClick={() => void startScanner()}
-              className="w-full py-4 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase tracking-wide transition active:translate-y-px"
-              style={{ backgroundColor: EMBER, color: INK }}
+              className="w-full rounded-sm py-4 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase tracking-wide transition active:translate-y-px"
+              style={{ backgroundColor: NAVY, color: PAPER }}
             >
-              Start scanner
+              Start scanning
             </button>
           ) : (
             <div
-              className="w-full py-4 text-center font-[family-name:var(--font-door-display)] text-3xl font-black uppercase tracking-wide"
+              className="w-full rounded-sm py-4 text-center font-[family-name:var(--font-door-display)] text-3xl font-black uppercase tracking-wide"
               style={{ boxShadow: `inset 0 0 0 2px ${fg}55` }}
             >
               Scanning…

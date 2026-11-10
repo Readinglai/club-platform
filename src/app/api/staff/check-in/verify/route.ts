@@ -1,8 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { db } from "@/lib/db";
+import { hiloEventId } from "@/lib/hilo";
 
 const COOKIE_NAME = "rocsaut_staff_checkin";
 const COOKIE_MAX_AGE = 60 * 60 * 12; // 12 hours
+
+// The one event the door scanner admits (see /api/event/check-in).
+async function scannerEvent() {
+  const id = hiloEventId();
+  if (!id) return null;
+  const event = await db.event.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      title: true,
+      startAt: true,
+      location: true,
+      settings: { select: { timezone: true } },
+    },
+  });
+  if (!event) return null;
+  return {
+    id: event.id,
+    title: event.title,
+    startAt: event.startAt.toISOString(),
+    location: event.location,
+    timezone: event.settings?.timezone ?? "America/Toronto",
+  };
+}
 
 function createAccessToken(code: string) {
   return crypto
@@ -48,6 +74,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      event: await scannerEvent(),
     });
   } catch (error) {
     console.error("Staff verification check error:", error);
@@ -104,6 +131,7 @@ export async function POST(req: NextRequest) {
 
     const response = NextResponse.json({
       success: true,
+      event: await scannerEvent(),
     });
 
     response.cookies.set({
