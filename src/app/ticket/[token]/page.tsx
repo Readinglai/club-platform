@@ -88,7 +88,7 @@ export default function TicketPage({
             className="rounded-2xl bg-white p-8 shadow-sm"
             style={{ border: "1px solid #e5e7eb" }}
           >
-            <div className="text-4xl mb-4">🎃</div>
+            <div className="text-4xl mb-4">🎟️</div>
 
             <h1
               className="text-xl font-bold"
@@ -164,9 +164,12 @@ export default function TicketPage({
             className="text-2xl sm:text-3xl font-bold"
             style={{ color: PRIMARY }}
           >
-            2026 ROCSAUT
-            <br />
-            Halloween Party
+            {ticket.event_title.split(" | ").map((part, i) => (
+              <span key={i}>
+                {i > 0 && <br />}
+                {part}
+              </span>
+            ))}
           </h1>
         </div>
 

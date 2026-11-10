@@ -453,7 +453,7 @@ export default function CheckInPage() {
 
         <div className="relative m-auto w-full max-w-sm">
           <p className="text-[11px] tracking-[0.35em]" style={{ color: EMBER }}>
-            ROCSAUT · HALLOWEEN 2026
+            ROCSAUT · HILO PARTY 2026
           </p>
           <h1 className="mt-2 font-[family-name:var(--font-door-display)] text-[4.5rem] font-black uppercase leading-[0.82] tracking-tight">
             Door
@@ -533,7 +533,7 @@ export default function CheckInPage() {
             Door
           </h1>
           <p className="text-[10px] tracking-[0.3em]" style={{ color: flood ? fg : EMBER }}>
-            ROCSAUT · HALLOWEEN 2026
+            ROCSAUT · HILO PARTY 2026
           </p>
         </header>
 
