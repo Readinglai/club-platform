@@ -19,7 +19,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, code: "member_rate_limited" }, { status: 429 });
   }
 
-  const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+  const parsed: unknown = await request.json().catch(() => null);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    return NextResponse.json({ ok: false, code: "invalid_request" }, { status: 400 });
+  }
+  const body = parsed as Record<string, unknown>;
   const code = typeof body.code === "string" ? body.code : "";
   const cardName = typeof body.cardName === "string" ? body.cardName : "";
 

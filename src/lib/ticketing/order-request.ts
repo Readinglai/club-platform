@@ -14,12 +14,12 @@ import { sendConfirmation } from "./webhook";
 import { clientIp, memberFromBody, recordMemberFailure, siteOrigin, tooManyMemberFailures } from "./request";
 
 export async function handleOrderRequest(request: Request, eventId: string, opts: { requirePhone?: boolean } = {}) {
-  let body: Record<string, unknown>;
-  try {
-    body = await request.json();
-  } catch {
+  // Broken JSON, or valid JSON that isn't an object (null, a number, an array), is a bad request.
+  const parsed: unknown = await request.json().catch(() => null);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
     return NextResponse.json({ code: "invalid_request", message: "Invalid request body." }, { status: 400 });
   }
+  const body = parsed as Record<string, unknown>;
 
   const ticketTypeId = typeof body.ticketTypeId === "string" ? body.ticketTypeId : "";
   if (!ticketTypeId) {

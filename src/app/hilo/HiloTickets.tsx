@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { getPublicEvent } from "@/lib/events/public";
 import { saveLocale } from "@/i18n/save-locale";
+import { isValidPhone } from "@/lib/event/contact-validation";
 
 /*
  * Hilo Party's ticket page. Laid out like the 2026 Halloween page
@@ -24,7 +25,8 @@ const MEMBER_SIGNUP_URL = "https://forms.gle/z9eU3aVh2rMCeX858";
 const QUANTITY = 1;
 
 const validEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
-const validPhone = (v: string) => /^[+()\d\s.-]{7,25}$/.test(v.trim());
+// The same rule the order API uses, so the button never lets through a phone the server refuses.
+const validPhone = isValidPhone;
 
 /** What the page can sell overall, from the tiers' own states. */
 function purchaseStatus(data: Data): { status: Status; opensAt?: string } {
@@ -62,6 +64,8 @@ export default function HiloTickets({ initial }: { initial: Data }) {
   const [error, setError] = useState("");
   // The field the checkout button just sent the user to (briefly outlined).
   const [missingField, setMissingField] = useState<string | null>(null);
+  // Bumped whenever the member details change, so a late Verify answer for old details is ignored.
+  const verifyRequest = useRef(0);
   const missingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const tz = event.timezone;
@@ -125,6 +129,7 @@ export default function HiloTickets({ initial }: { initial: Data }) {
   function toggleMember(checked: boolean) {
     setIsMember(checked);
     setMember({ code: "", cardName: "" });
+    verifyRequest.current++;
     setMemberState({ state: "idle" });
   }
 
@@ -134,6 +139,7 @@ export default function HiloTickets({ initial }: { initial: Data }) {
       setMemberState({ state: "error", code: "member_missing" });
       return;
     }
+    const request = ++verifyRequest.current;
     setMemberState({ state: "checking" });
     try {
       const res = await fetch("/api/hilo/member-check", {
@@ -142,8 +148,10 @@ export default function HiloTickets({ initial }: { initial: Data }) {
         body: JSON.stringify(member),
       });
       const body = await res.json().catch(() => ({}));
+      if (request !== verifyRequest.current) return;
       setMemberState(body.ok ? { state: "ok", discount: body.discount } : { state: "error", code: body.code ?? "genericError" });
     } catch {
+      if (request !== verifyRequest.current) return;
       setMemberState({ state: "error", code: "connection" });
     }
   }
@@ -410,6 +418,7 @@ export default function HiloTickets({ initial }: { initial: Data }) {
                                 value={member.code}
                                 onChange={(e) => {
                                   setMember({ ...member, code: e.target.value });
+                                  verifyRequest.current++;
                                   setMemberState({ state: "idle" });
                                 }}
                                 placeholder="OTSA-2026-XXXX"
@@ -423,6 +432,7 @@ export default function HiloTickets({ initial }: { initial: Data }) {
                                 value={member.cardName}
                                 onChange={(e) => {
                                   setMember({ ...member, cardName: e.target.value });
+                                  verifyRequest.current++;
                                   setMemberState({ state: "idle" });
                                 }}
                                 placeholder={t("memberNamePlaceholder")}
