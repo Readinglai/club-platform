@@ -82,6 +82,7 @@ export async function getPublicEvent(eventId: string, viewerId: string | null, o
       maxPerOrder: t.maxPerOrder,
       remaining,
       salesStartAt: t.salesStartAt?.toISOString() ?? null,
+      salesEndAt: t.salesEndAt?.toISOString() ?? null,
       state,
     };
   });

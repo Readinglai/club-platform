@@ -1,7 +1,6 @@
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import Navbar from "@/components/Navbar";
 import Providers from "@/components/Providers";
 import HtmlLang from "@/components/HtmlLang";
 
@@ -24,12 +23,12 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
 
-  // <html> and <body> come from the root layout (src/app/layout.tsx).
+  // <html> and <body> come from the root layout (src/app/layout.tsx); the
+  // navbar from (site)/layout.tsx, so pages like /hilo can go without it.
   return (
     <Providers locale={locale} messages={messages}>
       <HtmlLang locale={locale} />
-      <Navbar />
-      <main className="flex-1">{children}</main>
+      {children}
     </Providers>
   );
 }

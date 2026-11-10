@@ -1210,7 +1210,6 @@
   },
   "hiloPage": {
     "language": "Language",
-    "previewNote": "Preview: this event isn't published. Only visible in local development.",
     "free": "Free",
     "soldOut": "Sold out",
     "left": "Only {count} left",
@@ -1235,14 +1234,14 @@
     },
     "lineDiscount": "Member discount",
     "total": "Total",
-    "waiver": "I have read and agree to the event waiver and policies.",
+    "waiver": "I have read and agree to the event waiver and policies, including the 19+ age requirement and the no-refund policy.",
     "pay": "Pay {price}",
     "getFree": "Get free ticket",
     "opening": "Opening payment…",
     "payNote": "You'll pay securely with Stripe. Your tickets are emailed to you as soon as payment goes through.",
     "notOnSaleTitle": "Tickets aren't on sale yet",
     "notOnSaleText": "Check back soon.",
-    "opensTitle": "Tickets go on sale {when}",
+    "opensTitle": "Tickets go on sale {when} (Toronto time)",
     "opensText": "Come back then to get yours.",
     "soldOutTitle": "Sold out",
     "soldOutText": "Unpaid checkouts are released after about 30 minutes, so a ticket may come back.",
@@ -1273,79 +1272,83 @@
       "server_error": "Something went wrong on our side. Try again in a moment."
     },
     "content": {
-      "intro": "Hilo Party is here! ✨",
-      "introText": "Grab your friends, take a break from studying, and join us for a night of music, games, drinks, and new friends!",
-      "activitiesTitle": "✨ Hilo Party Activities",
+      "kicker": "ROCSAUT Annual Party",
+      "title": "One More Night in TAIPEI",
+      "intro": "We're bringing Taipei nightlife to Toronto for one more night. 🌃",
+      "introText": "ROCSAUT's annual flagship party, brought to you by all three University of Toronto campuses. Under the theme “One More Night in TAIPEI”, we're blending Taipei nightlife with retro party culture for an immersive club night. With 220+ guests expected, it's the biggest night of the year for Toronto's largest Taiwanese student organization.",
+      "venue": "HILO TORONTO",
+      "address": "1566 Queen St W, Toronto, ON M6R 1A6",
+      "dressCodeTheme": "One More Night in TAIPEI",
+      "dressCode": "Retro Glam · Animal Print · Y2K Night Out · 80s/90s Taipei nightlife · Retro disco",
+      "ticketName": "General Admission",
+      "ticketPerks": "Admission only. Drinks are sold separately.",
+      "activitiesTitle": "✨ What's on",
+      "activitiesIntro": "Having fun with ROCSAUT! From Mandopop sing-alongs to K-pop and Hip-Hop, we're bringing Taipei nightlife to Toronto for one more night.",
       "activities": [
         {
-          "emoji": "🧩",
-          "title": "Human Bingo",
-          "text": "Meet new people and find someone who matches each square on your Bingo card!"
+          "emoji": "🎤",
+          "title": "Mandopop sing-alongs",
+          "text": "Sing along to the Mandopop hits everyone knows."
         },
         {
-          "emoji": "🀄",
-          "title": "Mahjong",
-          "text": "Gather around for a game of Mahjong."
+          "emoji": "💃",
+          "title": "K-pop",
+          "text": "Dance to the K-pop tracks you can't stop playing."
         },
         {
-          "emoji": "🃏",
-          "title": "Card Games",
-          "text": "Enjoy card games with friends."
+          "emoji": "🎧",
+          "title": "Hip-Hop",
+          "text": "Hip-Hop to keep the dance floor going all night."
         },
         {
-          "emoji": "🍬",
-          "title": "Guess the Jar",
-          "text": "Guess how many candies are in the jar to win a prize."
-        },
-        {
-          "emoji": "📸",
-          "title": "Photo Booth",
-          "text": "Grab your friends and take home a photo strip."
-        },
-        {
-          "emoji": "🏆",
-          "title": "Best Dressed",
-          "text": "Vote for the best outfit of the night — the winner gets a special prize!"
+          "emoji": "🪩",
+          "title": "Retro disco",
+          "text": "80s/90s Taipei nightlife and retro disco vibes. Dress the part!"
         }
       ],
-      "dressCode": "✨ Party Outfit ✨",
+      "highlightNote": "🍸 Drinks: alcohol is sold at the bar and isn't included in your ticket. 19+ only, and ID will be checked.",
+      "importantTitle": "Before you arrive",
       "important": [
-        "All ticket sales are final. No refunds.",
-        "Spots are limited and available while supplies last.",
-        "A $200 cleaning fee will apply for vomiting on the floor or clogging toilets."
+        "This is a strictly 19+ event. Valid government-issued photo ID is required for entry.",
+        "Please have your ticket or confirmation QR code ready at the door.",
+        "Tickets include admission only. Drinks are available for purchase separately.",
+        "All ticket sales are final and non-refundable.",
+        "Entry is subject to venue policies and security checks.",
+        "We recommend arriving early to avoid long lines!"
       ],
       "waiverTitle": "Event Waiver and Policies",
       "waiver": [
         {
-          "title": "1. Participation and personal responsibility",
-          "text": "Attendees are responsible for deciding whether to participate in activities and must follow reasonable instructions from organizers and venue staff."
+          "title": "1. Age requirement",
+          "text": "This is a strictly 19+ event. Valid government-issued photo ID is required for entry. Guests without valid ID will be refused entry, and their ticket will not be refunded."
         },
         {
-          "title": "2. Alcohol",
-          "text": "Please drink responsibly. Alcohol must not be provided to anyone below the legal drinking age. Organizers may refuse alcohol service where legally required or when an attendee appears intoxicated."
+          "title": "2. Participation and personal responsibility",
+          "text": "Attendees are responsible for their own participation and must follow reasonable instructions from organizers, venue staff and security."
         },
         {
-          "title": "3. Venue and cleaning",
-          "text": "Please respect the venue and keep it clean. A $200 cleaning fee applies for vomiting on the floor or clogging toilets."
+          "title": "3. Alcohol",
+          "text": "Alcohol is not included in the ticket and is sold separately at the venue to guests 19 and over. Please drink responsibly. The venue may refuse service to anyone who appears intoxicated."
         },
         {
-          "title": "4. Refund policy",
-          "text": "All ticket sales are final. No refunds."
+          "title": "4. Venue rules and security",
+          "text": "Entry is subject to the venue's policies and security checks. The venue and organizers may refuse entry where these are not met."
         },
         {
-          "title": "5. Event rules",
+          "title": "5. Refund policy",
+          "text": "All ticket sales are final. Tickets are non-refundable."
+        },
+        {
+          "title": "6. Event rules",
           "text": "Organizers may ask attendees to stop unsafe, unlawful, harassing, or damaging behavior, or to leave the venue where appropriate."
         }
-      ],
-      "activitiesIntro": "We’ve prepared lots of activities for you to enjoy throughout the night!",
-      "highlightNote": "Attendees will vote on the night — the best dressed wins a special prize!",
-      "importantTitle": "Important information"
+      ]
     },
     "eventsLabel": "ROCSAUT Events",
     "time": "Time",
     "location": "Location",
     "chooseTicket": "1. Your ticket",
-    "chooseTicketHelp": "One ticket per order.",
+    "chooseTicketHelp": "Admission only. One ticket per order.",
     "memberPriceLabel": "ROCSAUT Member",
     "regularPriceLabel": "Regular",
     "yourInfo": "2. Your information",
@@ -1372,6 +1375,10 @@
     "processing": "Processing…",
     "completeFields": "Complete all fields, membership verification, and required confirmations.",
     "paymentNote": "You will be redirected to Stripe’s secure checkout page.",
-    "signUpHere": "Sign up here"
+    "signUpHere": "Sign up here",
+    "torontoTime": "Toronto time",
+    "mapLink": "Open in Google Maps",
+    "dressCodeLabel": "Dress code / Theme",
+    "salesWindow": "On sale {start} – {end} (Toronto time), or until sold out."
   }
 }

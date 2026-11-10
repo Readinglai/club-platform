@@ -1210,7 +1210,6 @@
   },
   "hiloPage": {
     "language": "語言",
-    "previewNote": "預覽：此活動尚未發佈，只在本機開發環境可見。",
     "free": "免費",
     "soldOut": "已售完",
     "left": "僅剩 {count} 張",
@@ -1220,7 +1219,7 @@
     "emailHint": "票券會寄到這個電郵。",
     "phone": "電話",
     "phoneHint": "北美以外的號碼請以 + 和國碼開頭。",
-    "memberCode": "Member ID",
+    "memberCode": "會員編號",
     "memberName": "會員卡上的姓名",
     "verify": "驗證會員資格",
     "verifying": "驗證中…",
@@ -1235,14 +1234,14 @@
     },
     "lineDiscount": "會員折扣",
     "total": "總計",
-    "waiver": "我已閱讀並同意活動條款及相關規定。",
+    "waiver": "我已閱讀並同意活動條款及相關規定，包括 19 歲以上年齡限制與不退款規定。",
     "pay": "付款 {price}",
     "getFree": "領取免費票",
     "opening": "正在前往付款…",
     "payNote": "將透過 Stripe 安全付款，付款完成後票券會立即寄到你的電郵。",
     "notOnSaleTitle": "尚未開放售票",
     "notOnSaleText": "請稍後再回來看看。",
-    "opensTitle": "{when} 開賣",
+    "opensTitle": "多倫多時間 {when} 開賣",
     "opensText": "屆時再回來購票吧。",
     "soldOutTitle": "已售完",
     "soldOutText": "未完成付款的票約 30 分鐘後會釋出，可能會再有票。",
@@ -1273,79 +1272,83 @@
       "server_error": "系統發生錯誤，請稍後再試。"
     },
     "content": {
-      "intro": "Hilo Party 來啦！✨",
-      "introText": "快揪朋友一起來，暫時放下課業，享受一個有音樂、遊戲、飲料和新朋友的夜晚！",
-      "activitiesTitle": "✨ Hilo Party 活動",
+      "kicker": "ROCSAUT 年度派對",
+      "title": "One More Night in TAIPEI",
+      "intro": "把台北的夜生活帶到多倫多，再狂歡一晚！🌃",
+      "introText": "由多倫多大學三校區 ROCSAUT 聯手打造的年度旗艦派對，以「One More Night in TAIPEI」為主題，融合台北夜生活與復古派對文化，預計吸引 220+ 人次參與，打造沉浸式夜店體驗，展現 ROCSAUT 作為多倫多最大台灣學生組織的號召力與影響力。",
+      "venue": "HILO TORONTO",
+      "address": "1566 Queen St W, Toronto, ON M6R 1A6",
+      "dressCodeTheme": "One More Night in TAIPEI",
+      "dressCode": "復古華麗 · 動物紋 · Y2K 夜店風 · 80/90 年代台北夜生活 · 復古迪斯可",
+      "ticketName": "一般入場票",
+      "ticketPerks": "僅含入場，酒水需另外購買。",
+      "activitiesTitle": "✨ 活動內容",
+      "activitiesIntro": "跟 ROCSAUT 一起嗨！從華語金曲大合唱到 K-pop 和 Hip-Hop，我們把台北的夜生活帶到多倫多，再狂歡一晚。",
       "activities": [
         {
-          "emoji": "🧩",
-          "title": "Human Bingo",
-          "text": "找到符合 Bingo 格子條件的人，完成挑戰、認識新朋友！"
+          "emoji": "🎤",
+          "title": "華語金曲大合唱",
+          "text": "跟著大家都會唱的華語金曲一起大聲唱！"
         },
         {
-          "emoji": "🀄",
-          "title": "麻將 Mahjong",
-          "text": "一起打麻將！"
+          "emoji": "💃",
+          "title": "K-pop",
+          "text": "跟著停不下來的 K-pop 熱曲一起跳舞！"
         },
         {
-          "emoji": "🃏",
-          "title": "撲克牌",
-          "text": "和朋友一起玩牌！"
+          "emoji": "🎧",
+          "title": "Hip-Hop",
+          "text": "Hip-Hop 音樂讓舞池嗨整晚！"
         },
         {
-          "emoji": "🍬",
-          "title": "猜糖果數量",
-          "text": "猜猜罐子裡有多少顆糖果，猜中有獎！"
-        },
-        {
-          "emoji": "📸",
-          "title": "拍貼機",
-          "text": "和朋友一起拍張照帶回家！"
-        },
-        {
-          "emoji": "🏆",
-          "title": "最佳穿搭",
-          "text": "大家投票選出當晚最佳穿搭，贏取特別獎品！"
+          "emoji": "🪩",
+          "title": "復古迪斯可",
+          "text": "80/90 年代台北夜生活與復古迪斯可氛圍，記得照主題打扮！"
         }
       ],
-      "dressCode": "✨ 派對穿搭 ✨",
+      "highlightNote": "🍸 酒水：吧台提供酒精飲品，需另外付費，不含在票價內。僅限 19 歲以上，現場將查驗證件。",
+      "importantTitle": "入場前須知",
       "important": [
-        "報名完成後恕不退費。",
-        "名額有限，額滿為止。",
-        "嘔吐落地或造成廁所馬桶堵塞，將收取 $200 清潔費。"
+        "本活動嚴格限 19 歲以上參加，入場須出示有效的政府核發附照片身分證件。",
+        "請在入口準備好你的票券或確認信中的 QR code。",
+        "票價僅含入場，酒水需另外購買。",
+        "所有票券一經售出，恕不退款。",
+        "入場須遵守場地規定並接受安全檢查。",
+        "建議提早到場，以免大排長龍！"
       ],
-      "waiverTitle": "活動條款與報名須知",
+      "waiverTitle": "活動條款與規定",
       "waiver": [
         {
-          "title": "1. 參與活動與個人責任",
-          "text": "參加者應自行評估是否適合參加各項活動，並遵守主辦方及場地工作人員的合理指示。"
+          "title": "1. 年齡限制",
+          "text": "本活動嚴格限 19 歲以上參加，入場須出示有效的政府核發附照片身分證件。未能出示有效證件者將被拒絕入場，票券恕不退款。"
         },
         {
-          "title": "2. 酒精飲品",
-          "text": "請理性飲酒，不得向未滿法定飲酒年齡者提供酒精飲品。主辦方可拒絕向疑似未達法定年齡或明顯醉酒者提供酒精飲品。"
+          "title": "2. 參與活動與個人責任",
+          "text": "參加者須對自身參與活動負責，並遵守主辦方、場地工作人員及保全的合理指示。"
         },
         {
-          "title": "3. 場地與清潔",
-          "text": "請愛惜場地並保持環境整潔。因嘔吐落地或造成廁所馬桶堵塞而產生的清潔費為 $200。"
+          "title": "3. 酒精飲品",
+          "text": "票價不含酒精飲品，現場僅售予 19 歲以上人士，需另外付費。請理性飲酒，場地可拒絕向明顯醉酒者提供酒精飲品。"
         },
         {
-          "title": "4. 退款規定",
-          "text": "報名完成後恕不退費。"
+          "title": "4. 場地規定與安全檢查",
+          "text": "入場須遵守場地規定並接受安全檢查，不符合規定者，場地及主辦方可拒絕其入場。"
         },
         {
-          "title": "5. 活動規則",
+          "title": "5. 退款規定",
+          "text": "所有票券一經售出，恕不退款。"
+        },
+        {
+          "title": "6. 活動規則",
           "text": "如有不安全、違法、騷擾他人或破壞場地的行為，主辦方可要求相關參加者停止行為或離開場地。"
         }
-      ],
-      "activitiesIntro": "我們準備了超多活動，讓大家邊玩邊認識新朋友！🎉",
-      "highlightNote": "當天將由參加者一起投票，最佳穿搭勝出者可以獲得特別獎品！",
-      "importantTitle": "重要報名須知"
+      ]
     },
-    "eventsLabel": "ROCSAUT Events",
+    "eventsLabel": "ROCSAUT 活動",
     "time": "時間",
     "location": "地點",
     "chooseTicket": "1. 門票",
-    "chooseTicketHelp": "每筆訂單限購一張。",
+    "chooseTicketHelp": "僅含入場。每筆訂單限購一張。",
     "memberPriceLabel": "ROCSAUT 會員",
     "regularPriceLabel": "一般票價",
     "yourInfo": "2. 個人資料",
@@ -1357,7 +1360,7 @@
     "oneMemberTicket": "⚠️ 每位 ROCSAUT 會員限購一張會員優惠票。",
     "notMemberLong": "還不是會員？現在註冊，之後的活動也能享有會員優惠！",
     "memberCheckbox": "我是 ROCSAUT 會員",
-    "memberHelp": "請輸入 Member ID 及會員卡上的姓名，以驗證會員票價。",
+    "memberHelp": "請輸入會員編號及會員卡上的姓名，以驗證會員票價。",
     "memberNamePlaceholder": "會員卡上的姓名",
     "verified": "會員驗證成功",
     "verifiedHelp": "已套用會員票價。",
@@ -1372,6 +1375,10 @@
     "processing": "處理中…",
     "completeFields": "請完成所有欄位、會員驗證及必要確認。",
     "paymentNote": "點擊後將前往 Stripe 安全付款頁面。",
-    "signUpHere": "立即註冊"
+    "signUpHere": "立即註冊",
+    "torontoTime": "多倫多時間",
+    "mapLink": "在 Google 地圖開啟",
+    "dressCodeLabel": "服裝主題",
+    "salesWindow": "售票時間：多倫多時間 {start} 至 {end}，售完為止。"
   }
 }

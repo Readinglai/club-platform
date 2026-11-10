@@ -4,6 +4,7 @@
  * can fall through to the membership and Halloween flows unchanged.
  */
 
+import { HILO_EMAIL_NOTES, hiloEventId } from "@/lib/hilo";
 import type Stripe from "stripe";
 import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
@@ -108,6 +109,7 @@ export async function sendConfirmation(orderId: string) {
         price: formatPrice(ticket.pricePaid, order.currency),
         ticketUrl: `${origin}/ticket/${ticket.token}`,
       })),
+      notes: order.eventId === hiloEventId() ? HILO_EMAIL_NOTES : undefined,
     });
   } catch (error) {
     console.error(`Failed to send ticket email for order ${orderId}:`, error);

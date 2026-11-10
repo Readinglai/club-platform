@@ -166,9 +166,15 @@ export async function sendOrderTicketEmail(opts: {
     price: string;
     ticketUrl: string;
   }>;
+  /** An extra list after the tickets, e.g. Hilo Party's "BEFORE YOU ARRIVE". */
+  notes?: { title: string; items: string[] };
 }) {
   const e = escapeHtml;
   const many = opts.tickets.length > 1;
+  const notes = opts.notes
+    ? `<h3 style="margin: 20px 0 8px;">${e(opts.notes.title)}</h3>
+        <ul style="margin: 0 0 16px; padding-left: 20px;">${opts.notes.items.map((item) => `<li>${e(item)}</li>`).join("")}</ul>`
+    : "";
 
   const ticketRows = opts.tickets
     .map(
@@ -192,7 +198,7 @@ export async function sendOrderTicketEmail(opts: {
         <p>${many ? `Your ${opts.tickets.length} tickets are confirmed. Each person needs their own ticket's QR code at the door.` : "Your ticket is confirmed."}</p>
         <p><strong>When:</strong> ${e(opts.when)}${opts.location ? `<br /><strong>Location:</strong> ${e(opts.location)}` : ""}</p>
         ${ticketRows}
-        <p>Please have your ticket ready when you arrive.</p>
+        ${notes || "<p>Please have your ticket ready when you arrive.</p>"}
         <p>ROCSAUT Team</p>
       </div>
     `,

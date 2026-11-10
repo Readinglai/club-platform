@@ -1,16 +1,19 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { getPublicEvent } from "@/lib/events/public";
-import { saveLocale } from "@/i18n/save-locale";
+import { Link } from "@/i18n/navigation";
 import { isValidPhone } from "@/lib/event/contact-validation";
 
 /*
  * Hilo Party's ticket page. Laid out like the 2026 Halloween page
  * (src/app/[locale]/event/fall-2026): navy header, numbered steps on the
- * left, order summary on the right. Text lives in messages/*.json → hiloPage.
+ * left, order summary on the right.
+ *
+ * Every word shown comes from messages/{en,zh}.json → hiloPage (event name,
+ * venue and ticket name included), so /hilo is all English and /zh/hilo all
+ * Chinese. The database supplies only dates, prices and stock.
  */
 
 type Data = NonNullable<Awaited<ReturnType<typeof getPublicEvent>>>;
@@ -21,6 +24,7 @@ type Activity = { emoji: string; title: string; text: string };
 type WaiverSection = { title: string; text: string };
 
 const MEMBER_SIGNUP_URL = "https://forms.gle/z9eU3aVh2rMCeX858";
+const MAP_URL = "https://www.google.com/maps/search/?api=1&query=HILO+TORONTO+1566+Queen+St+W+Toronto+ON+M6R+1A6";
 /** Hilo Party sells one ticket per order. */
 const QUANTITY = 1;
 
@@ -81,10 +85,19 @@ export default function HiloTickets({ initial }: { initial: Data }) {
   const money2 = (amount: number) =>
     new Intl.NumberFormat(dateLocale, { style: "currency", currency: event.currency, currencyDisplay: "narrowSymbol", minimumFractionDigits: 2 }).format(amount);
   const fmt = (iso: string, opts: Intl.DateTimeFormatOptions) => new Date(iso).toLocaleString(dateLocale, { timeZone: tz, ...opts });
-  const clock = (iso: string) => fmt(iso, { hour: "numeric", minute: "2-digit" });
+  // Chinese reads 22:00 more naturally than 下午10:00. Always the event's (Toronto) time zone.
+  const hour12 = locale !== "zh";
+  const clock = (iso: string) => fmt(iso, { hour: "numeric", minute: "2-digit", hour12 });
+  /** Sale times; the messages around them say they're Toronto time. */
+  const saleTime = (iso: string) => fmt(iso, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", hour12 });
 
   const { status, opensAt } = purchaseStatus(data);
   const forSale = tiers.filter((x) => !x.membersOnly);
+  // Hilo sells one ticket type; its name is translated rather than taken from the database.
+  const tierName = t("content.ticketName");
+  const tierPerks = t("content.ticketPerks");
+  const salesStart = forSale[0]?.salesStartAt;
+  const salesEnd = forSale[0]?.salesEndAt;
   const chosen = tiers.find((x) => x.id === tierId && sellable(x));
   const memberDiscount = event.memberDiscount;
   const verified = memberState.state === "ok";
@@ -240,32 +253,33 @@ export default function HiloTickets({ initial }: { initial: Data }) {
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#c9b99a]">{t("eventsLabel")}</p>
             <LanguageToggle />
           </div>
-          {data.preview && (
-            <p className="mb-4 inline-block rounded-lg border border-dashed border-[#c9b99a]/60 px-3 py-1.5 text-xs text-[#c9b99a]">{t("previewNote")}</p>
-          )}
-          <h1 className="max-w-3xl text-3xl font-extrabold leading-tight text-[#c9b99a] sm:text-5xl">{event.title}</h1>
+          <p className="text-sm font-semibold text-white/70">{t("content.kicker")}</p>
+          <h1 className="mt-2 max-w-3xl text-3xl font-extrabold leading-tight text-[#c9b99a] sm:text-5xl">{t("content.title")}</h1>
           <p className="mt-6 max-w-3xl text-base leading-7 text-white/85 sm:text-lg">{t("content.intro")}</p>
           <p className="mt-3 max-w-3xl leading-7 text-white/75">{t("content.introText")}</p>
-          {event.description && <p className="mt-3 max-w-3xl whitespace-pre-line text-sm leading-6 text-white/60">{event.description}</p>}
 
           <div className="mt-8 grid gap-4 border-t border-white/15 pt-6 text-sm sm:grid-cols-3">
             <div>
               <p className="text-[#c9b99a]">{t("time")}</p>
-              <p className="mt-1 font-semibold">{fmt(event.startAt, { month: "short", day: "numeric", year: "numeric" })}</p>
+              <p className="mt-1 font-semibold">{fmt(event.startAt, { weekday: "short", month: "short", day: "numeric", year: "numeric" })}</p>
               <p>
                 {clock(event.startAt)}
                 {event.endAt && ` – ${clock(event.endAt)}`}
               </p>
+              <p className="text-xs text-white/60">{t("torontoTime")}</p>
             </div>
-            {event.location && (
-              <div>
-                <p className="text-[#c9b99a]">{t("location")}</p>
-                <p className="mt-1 font-semibold">{event.location}</p>
-              </div>
-            )}
             <div>
-              <p className="text-[#c9b99a]">Dress Code</p>
-              <p className="mt-1 font-semibold">{t("content.dressCode")}</p>
+              <p className="text-[#c9b99a]">{t("location")}</p>
+              <p className="mt-1 font-semibold">{t("content.venue")}</p>
+              <p className="text-white/85">{t("content.address")}</p>
+              <a href={MAP_URL} target="_blank" rel="noopener noreferrer" className="text-xs text-white/60 underline underline-offset-4 hover:text-white">
+                {t("mapLink")}
+              </a>
+            </div>
+            <div>
+              <p className="text-[#c9b99a]">{t("dressCodeLabel")}</p>
+              <p className="mt-1 font-semibold">{t("content.dressCodeTheme")}</p>
+              <p className="text-white/85">{t("content.dressCode")}</p>
             </div>
           </div>
         </div>
@@ -278,6 +292,9 @@ export default function HiloTickets({ initial }: { initial: Data }) {
             <Card>
               <h2 className="text-lg font-bold">{t("chooseTicket")}</h2>
               <p className="mt-2 text-sm text-gray-500">{t("chooseTicketHelp")}</p>
+              {salesStart && salesEnd && (
+                <p className="mt-1 text-sm text-gray-500">{t("salesWindow", { start: saleTime(salesStart), end: saleTime(salesEnd) })}</p>
+              )}
               <div className="mt-5 space-y-3">
                 {forSale.map((tier, i) => {
                   const enabled = sellable(tier) && status === "open";
@@ -298,8 +315,8 @@ export default function HiloTickets({ initial }: { initial: Data }) {
                           {picked && <div className="h-2.5 w-2.5 rounded-full bg-[#1a2744]" />}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="font-bold">{tier.name}</p>
-                          {tier.perks && <p className="mt-1 text-sm text-gray-500">{tier.perks}</p>}
+                          <p className="font-bold">{tierName}</p>
+                          <p className="mt-1 text-sm text-gray-500">{tierPerks}</p>
                           <div className="mt-3 space-y-1 text-sm">
                             {memberDiscount !== null && (
                               <p>
@@ -338,7 +355,7 @@ export default function HiloTickets({ initial }: { initial: Data }) {
                   </div>
                 ))}
               </div>
-              <p className="mt-5 rounded-xl bg-[#faf8f3] p-4 text-sm leading-6">🌟 {t("content.highlightNote")}</p>
+              <p className="mt-5 rounded-xl bg-[#faf8f3] p-4 text-sm leading-6">{t("content.highlightNote")}</p>
             </Card>
 
             {status === "open" && (
@@ -500,7 +517,7 @@ export default function HiloTickets({ initial }: { initial: Data }) {
               {status !== "open" ? (
                 <ClosedMessage
                   status={status}
-                  opensAt={opensAt ? fmt(opensAt, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : undefined}
+                  opensAt={opensAt ? saleTime(opensAt) : undefined}
                   onCheckAgain={status === "soldout" ? checkAgain : undefined}
                   checking={checking}
                   error={error}
@@ -513,8 +530,8 @@ export default function HiloTickets({ initial }: { initial: Data }) {
                   ) : (
                     <div className="space-y-4 py-5 text-sm">
                       <div>
-                        <p className="font-semibold">{chosen.name}</p>
-                        {chosen.perks && <p className="mt-1 text-gray-500">{chosen.perks}</p>}
+                        <p className="font-semibold">{tierName}</p>
+                        <p className="mt-1 text-gray-500">{tierPerks}</p>
                       </div>
                       <div className="flex justify-between gap-4">
                         <span className="text-gray-500">{t("subtotal")}</span>
@@ -653,21 +670,17 @@ function ClosedMessage({
   );
 }
 
-/** Same switch as the Halloween page: one button naming the other language. */
+/** One button naming the other language; each language has its own address (/hilo, /zh/hilo). */
 function LanguageToggle() {
   const locale = useLocale();
-  const router = useRouter();
   const target = locale === "zh" ? "en" : "zh";
   return (
-    <button
-      type="button"
-      onClick={() => {
-        saveLocale(target);
-        router.refresh();
-      }}
+    <Link
+      href="/hilo"
+      locale={target}
       className="rounded-full border border-white/30 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-white/10"
     >
       {target === "en" ? "English" : "繁體中文"}
-    </button>
+    </Link>
   );
 }
