@@ -1269,7 +1269,8 @@
       "sold_out": "剩餘票數不足，頁面已更新為最新狀態。",
       "payment_failed": "無法開始付款，請稍後再試。",
       "invalid_request": "送出訂單時發生錯誤，請再試一次。",
-      "server_error": "系統發生錯誤，請稍後再試。"
+      "server_error": "系統發生錯誤，請稍後再試。",
+      "too_long": "有欄位內容過長，請縮短後再試。"
     },
     "content": {
       "kicker": "ROCSAUT 年度派對",

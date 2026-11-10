@@ -1269,7 +1269,8 @@
       "sold_out": "Not enough tickets left for that many. The page is now up to date.",
       "payment_failed": "Payment couldn't be started. Try again in a moment.",
       "invalid_request": "Something went wrong sending your order. Try again.",
-      "server_error": "Something went wrong on our side. Try again in a moment."
+      "server_error": "Something went wrong on our side. Try again in a moment.",
+      "too_long": "One of the details is too long."
     },
     "content": {
       "kicker": "ROCSAUT Annual Party",

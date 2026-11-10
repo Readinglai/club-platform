@@ -79,6 +79,23 @@ async function handleRefund(charge: Stripe.Charge): Promise<boolean> {
   return true;
 }
 
+/**
+ * Backup for a late or missing webhook: ask Stripe whether this order's
+ * checkout was paid and, if so, do exactly what the webhook would (the
+ * buyer's /order page calls this while it waits). markOrderPaid takes a lock
+ * and reports "updated" only once, so the webhook and this never both email.
+ */
+export async function confirmFromStripe(orderId: string, sessionId: string): Promise<void> {
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  if (session.metadata?.kind !== ORDER_CHECKOUT_KIND || session.metadata.orderId !== orderId) return;
+  if (session.status !== "complete" || session.payment_status !== "paid") return;
+  const result = await markOrderPaid(orderId, session.id);
+  if (result.updated) {
+    console.warn(`Order ${orderId} confirmed from the order page before its webhook arrived.`);
+    await sendConfirmation(orderId);
+  }
+}
+
 /** Ticket emails are best-effort: a failure is logged, the ticket stays valid. */
 export async function sendConfirmation(orderId: string) {
   const origin = siteOrigin();

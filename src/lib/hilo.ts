@@ -30,3 +30,9 @@ export const HILO_EMAIL_NOTES = {
     "We recommend arriving early to avoid long lines!",
   ],
 };
+
+/** Where "back to the event" goes for an order: Hilo's own page (in the buyer's language), or the generic event page. */
+export function eventPagePath(eventId: string, lang: "en" | "zh"): string {
+  if (eventId === hiloEventId()) return lang === "zh" ? "/zh/hilo" : "/hilo";
+  return `/e/${eventId}`;
+}

@@ -54,6 +54,7 @@ export async function handleOrderRequest(request: Request, eventId: string, opts
       member,
       requirePhone: opts.requirePhone,
       origin,
+      lang: body.lang === "zh" ? "zh" : "en",
     });
 
     if (!result.ok) {

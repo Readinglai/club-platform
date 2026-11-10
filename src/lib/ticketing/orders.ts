@@ -62,6 +62,7 @@ export type MemberInput = {
  */
 export type OrderErrorCode =
   | "missing_details"
+  | "too_long"
   | "invalid_email"
   | "invalid_phone"
   | "waiver_required"
@@ -123,6 +124,8 @@ export async function createOrder(input: {
   /** Guest member discount details, when the buyer gave them. */
   member?: MemberInput | null;
   requirePhone?: boolean;
+  /** Page language, passed to the after-payment page (/order/[id]?lang=zh). */
+  lang?: "en" | "zh";
 }): Promise<CreateOrderResult> {
   const quantity = input.quantity ?? 1;
   const buyer = {
@@ -131,6 +134,10 @@ export async function createOrder(input: {
     phone: input.buyer.phone?.trim() || null,
   };
 
+  // The page limits these too; the API checks so nobody can store huge values.
+  if (buyer.name.length > 100 || (buyer.phone?.length ?? 0) > 30 || (input.member && (input.member.code.length > 50 || input.member.cardName.length > 100))) {
+    return fail(400, "too_long", "One of the details is too long.");
+  }
   if (!buyer.name || !buyer.email || (input.requirePhone && !buyer.phone)) {
     return fail(400, "missing_details", input.requirePhone ? "Please enter your name, email and phone." : "Please enter your name and email.");
   }
@@ -338,6 +345,7 @@ export async function createOrder(input: {
     return { ok: true, orderId: created.order.id, free: true, ticketToken: created.order.tickets[0].token };
   }
 
+  const langParam = input.lang === "zh" ? "&lang=zh" : "";
   let session: Stripe.Checkout.Session | null = null;
   try {
     session = await stripe.checkout.sessions.create({
@@ -353,8 +361,8 @@ export async function createOrder(input: {
       payment_intent_data: { metadata: { kind: ORDER_CHECKOUT_KIND, orderId: created.order.id } },
       // The session id in the return URL proves to /order/[id] that the visitor
       // is the buyer, so the ticket links are only shown to them.
-      success_url: `${input.origin}/order/${created.order.id}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${input.origin}/order/${created.order.id}?session_id={CHECKOUT_SESSION_ID}&cancelled=1`,
+      success_url: `${input.origin}/order/${created.order.id}?session_id={CHECKOUT_SESSION_ID}${langParam}`,
+      cancel_url: `${input.origin}/order/${created.order.id}?session_id={CHECKOUT_SESSION_ID}&cancelled=1${langParam}`,
     });
 
     await db.order.update({
@@ -401,6 +409,20 @@ export async function reclaimMemberDiscount(membershipId: string, eventId: strin
   }
   await releaseOrder(order.id, "CANCELLED");
   return true;
+}
+
+/**
+ * The buyer left Stripe Checkout with its "back" link (cancel_url): close that
+ * checkout and free its seats and member discount now, instead of holding
+ * them until the checkout times out. The session id proves it's the buyer.
+ * Returns false when there was nothing to cancel (already paid, ended, or
+ * the session can't be closed because a payment is going through).
+ */
+export async function cancelUnpaidOrder(orderId: string, sessionId: string): Promise<boolean> {
+  const order = await db.order.findUnique({ where: { id: orderId }, select: { status: true, stripeSessionId: true } });
+  if (!order || order.status !== "PENDING" || !order.stripeSessionId || order.stripeSessionId !== sessionId) return false;
+  if (!(await closeCheckout(sessionId))) return false;
+  return (await releaseOrder(orderId, "CANCELLED")).released;
 }
 
 /** Close a Stripe checkout so it can't be paid. False if it was completed (paid or paying). */

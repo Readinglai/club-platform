@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { getPublicEvent } from "@/lib/events/public";
 import { Link } from "@/i18n/navigation";
@@ -128,6 +128,25 @@ export default function HiloTickets({ initial }: { initial: Data }) {
     setTierId((current) => (next.tiers.some((x) => x.id === current && sellable(x)) ? current : next.tiers.find(sellable)?.id ?? ""));
   }
 
+  // Waiting for sales to open: switch to the form by itself at the opening
+  // time (asking the server, so a wrong clock on the visitor's device doesn't
+  // matter), and re-check whenever they come back to the tab.
+  useEffect(() => {
+    if (status !== "opens" || !opensAt) return;
+    const wait = Math.min(Math.max(new Date(opensAt).getTime() - Date.now() + 1000, 5000), 6 * 60 * 60 * 1000);
+    const timer = setTimeout(() => void refresh().catch(() => undefined), wait);
+    const onShow = () => {
+      if (document.visibilityState === "visible") void refresh().catch(() => undefined);
+    };
+    document.addEventListener("visibilitychange", onShow);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onShow);
+    };
+    // refresh only sets state; re-run when the sale status or data changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, opensAt, data]);
+
   async function checkAgain() {
     setChecking(true);
     setError("");
@@ -217,6 +236,7 @@ export default function HiloTickets({ initial }: { initial: Data }) {
           phone: buyer.phone.trim(),
           waiverAccepted: waiver,
           member: isMember ? member : undefined,
+          lang: locale === "zh" ? "zh" : "en",
         }),
       });
       const body = await res.json().catch(() => ({}));
