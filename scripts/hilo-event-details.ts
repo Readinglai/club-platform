@@ -9,8 +9,6 @@
  * Nov 1, 2026, so each one is written with an explicit −05:00 offset; the
  * database stores the matching UTC instant and the page shows it in Toronto time.
  *
- * The title is only changed on non-test events: the "[TEST] Hilo Party" title
- * is how scripts/sql/cleanup-hilo-test.sql finds the test event.
  * The page's own wording (both languages) lives in messages/{en,zh}.json → hiloPage.
  */
 import dotenv from "dotenv";
@@ -38,12 +36,11 @@ async function main() {
   const openNow = process.argv.includes("--sales-open-now");
   if (!eventId || eventId.startsWith("--")) throw new Error("Usage: npx tsx scripts/hilo-event-details.ts <eventId> [--sales-open-now]");
 
-  const event = await db.event.findUniqueOrThrow({ where: { id: eventId }, select: { title: true } });
-  const isTest = event.title.startsWith("[TEST]");
+  await db.event.findUniqueOrThrow({ where: { id: eventId }, select: { id: true } });
 
   await db.event.update({
     where: { id: eventId },
-    data: { title: isTest ? event.title : TITLE, description: DESCRIPTION, location: LOCATION, startAt: START, endAt: END },
+    data: { title: TITLE, description: DESCRIPTION, location: LOCATION, startAt: START, endAt: END },
   });
   await db.eventSettings.update({
     where: { eventId },
@@ -57,7 +54,7 @@ async function main() {
   const toronto = (d: Date) => d.toLocaleString("en-CA", { timeZone: TIME_ZONE, dateStyle: "medium", timeStyle: "short" });
   const after = await db.ticketType.findFirst({ where: { eventId, active: true }, select: { salesStartAt: true, salesEndAt: true } });
   console.log({
-    title: isTest ? `${event.title} (test title kept)` : TITLE,
+    title: TITLE,
     event: `${toronto(START)} – ${toronto(END)} (Toronto)`,
     sales: `${toronto(after!.salesStartAt!)} – ${toronto(after!.salesEndAt!)} (Toronto)`,
     ticketTypesUpdated: tiers.count,

@@ -1,6 +1,6 @@
 /**
  * Automated checks for Hilo Party ordering and the guest member discount,
- * against the "[TEST] Hilo Party" event (run scripts/seed-hilo-test-event.ts
+ * against the Hilo test event, HILO_EVENT_ID (run scripts/seed-hilo-test-event.ts
  * first). Uses the Stripe TEST key: it opens test Checkout sessions but never
  * pays them; payment, expiry and refund are simulated by calling the same
  * functions the webhook calls.
@@ -13,7 +13,8 @@
 import { config } from "dotenv";
 config({ path: ".env.local" });
 
-const TITLE = "[TEST] Hilo Party";
+// The Hilo test event (HILO_EVENT_ID in .env.local).
+const EVENT_ID = process.env.HILO_EVENT_ID;
 let failures = 0;
 
 function check(label: string, ok: boolean, detail?: unknown) {
@@ -30,8 +31,8 @@ async function main() {
   const { stripe } = await import("../src/lib/stripe");
   const { checkMemberDiscount } = await import("../src/lib/ticketing/member-discount");
 
-  const event = await db.event.findFirst({ where: { title: TITLE }, include: { ticketTypes: true } });
-  if (!event) throw new Error(`Run scripts/seed-hilo-test-event.ts first (no "${TITLE}" event).`);
+  const event = await (EVENT_ID ? db.event.findUnique({ where: { id: EVENT_ID }, include: { ticketTypes: true } }) : null);
+  if (!event) throw new Error(`Run scripts/seed-hilo-test-event.ts first (no event for HILO_EVENT_ID).`);
   const live = event.ticketTypes[0];
   // The checks need room to test limits: 5 per order, 12 seats. The page's
   // real settings are put back at the end (see restore below).

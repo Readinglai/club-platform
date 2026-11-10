@@ -1,6 +1,10 @@
 -- Removes everything the Hilo Party tests created, before launch:
---   * the "[TEST] Hilo Party" event and its settings, ticket types, team group,
---     orders, tickets and member-discount rows
+--   * the Hilo test event (id cmw8gpe0l00006sffmq0gmzl4, now titled
+--     "One More Night in TAIPEI | ROCSAUT Annual Party") and its settings,
+--     ticket types, team group, orders, tickets and member-discount rows
+--
+-- DON'T run this if that same event is being reused as the live event:
+-- delete only its orders, tickets and member-discount rows instead.
 --   * the test memberships TEST-HILO-0001 / 0002 / 0003
 -- Nothing else is touched: every statement is limited to that event's id or
 -- to member codes starting with TEST-HILO-.
@@ -12,7 +16,7 @@
 BEGIN;
 
 CREATE TEMP TABLE hilo_test_event ON COMMIT DROP AS
-  SELECT id FROM "Event" WHERE title = '[TEST] Hilo Party';
+  SELECT id FROM "Event" WHERE id = 'cmw8gpe0l00006sffmq0gmzl4';
 
 SELECT count(*) AS test_events_found FROM hilo_test_event;  -- expect 1
 
@@ -28,7 +32,7 @@ DELETE FROM "Membership"    WHERE "memberCode" LIKE 'TEST-HILO-%';
 
 -- Should all be 0 now.
 SELECT
-  (SELECT count(*) FROM "Event" WHERE title = '[TEST] Hilo Party') AS events_left,
+  (SELECT count(*) FROM "Event" WHERE id = 'cmw8gpe0l00006sffmq0gmzl4') AS events_left,
   (SELECT count(*) FROM "Membership" WHERE "memberCode" LIKE 'TEST-HILO-%') AS test_members_left;
 
 COMMIT;

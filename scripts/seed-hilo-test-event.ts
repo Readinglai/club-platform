@@ -1,8 +1,8 @@
 /**
- * Creates (or reuses) the unpublished "[TEST] Hilo Party" event and three test
+ * Creates (or reuses, via HILO_EVENT_ID) the unpublished Hilo test event and three test
  * memberships, for trying /hilo locally against the real database.
  * Everything it makes is easy to find and delete before launch:
- *   - the event title starts with "[TEST] Hilo Party"
+ *   - the event is the one HILO_EVENT_ID points at (see scripts/sql/cleanup-hilo-test.sql)
  *   - member codes start with "TEST-HILO-", emails end in "@rocsaut.invalid"
  *
  *   npx tsx scripts/seed-hilo-test-event.ts
@@ -18,7 +18,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 const db = new PrismaClient({ adapter: new PrismaPg(process.env.DATABASE_URL!) });
 
-const TITLE = "[TEST] Hilo Party";
+const TITLE = "One More Night in TAIPEI | ROCSAUT Annual Party";
 const DAY = 24 * 60 * 60 * 1000;
 
 async function main() {
@@ -26,7 +26,7 @@ async function main() {
   startAt.setUTCHours(1, 0, 0, 0); // 8–9 PM Toronto the evening before
 
   const event =
-    (await db.event.findFirst({ where: { title: TITLE } })) ??
+    (process.env.HILO_EVENT_ID ? await db.event.findUnique({ where: { id: process.env.HILO_EVENT_ID } }) : null) ??
     (await db.event.create({
       data: {
         title: TITLE,
