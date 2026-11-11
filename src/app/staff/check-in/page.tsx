@@ -34,7 +34,7 @@ type DoorEvent = {
 
 type Verdict = "admit" | "duplicate" | "void" | "not_found" | "wrong_event" | "error";
 
-// ── Lobby (staff code, choose event): ROCSAUT's own look. Navy and cream from
+// ── Lobby (staff code): ROCSAUT's own look. Navy and cream from
 // the logo, a seal red for Taiwan, a plum blossom (梅花) watermark.
 const NAVY = "#1a2744";
 const PAPER = "#faf8f3";
@@ -53,10 +53,7 @@ const DEFAULT_TIER = "#6b21a8";
 // Shown on every admit: the party is strictly 19+ (see HILO_EMAIL_NOTES).
 const DOOR_NOTE = "Check photo ID · 19+";
 
-// Remembers that this phone already chose the event, so a reload goes straight to the scanner.
-const DOOR_EVENT_KEY = "rocsaut_door_event";
-
-type MarkKind = "check" | "alert" | "cross" | "retry";
+type MarkKind = "check" | "alert" | "cross" | "retry" | "wait";
 
 const FLOODS: Record<Verdict, { bg: string; fg: string; word: string; mark: MarkKind }> = {
   admit: { bg: DEFAULT_TIER, fg: BONE, word: "ADMIT", mark: "check" },
@@ -66,6 +63,10 @@ const FLOODS: Record<Verdict, { bg: string; fg: string; word: string; mark: Mark
   wrong_event: { bg: RED, fg: BONE, word: "WRONG EVENT", mark: "cross" },
   error: { bg: RED, fg: BONE, word: "TRY AGAIN", mark: "retry" },
 };
+
+// Floods the screen the moment a QR is read, while the server checks it.
+// Navy: not a result colour (tier purple, amber, red), so it never reads as one.
+const CHECKING_FLOOD = { bg: NAVY, fg: BONE, word: "CHECKING", mark: "wait" as MarkKind };
 
 // A ticket type's own name, perks and colour (TicketType.color floods the screen on entry).
 const getTier = (ticket?: ScanResult["ticket"]) => ({
@@ -132,8 +133,6 @@ const tokenFromQr = (text: string) => {
 // Ignore the same code for this long after it was last read, so a QR still
 // held in frame doesn't re-trigger as "already in" while scanning continues.
 const SAME_CODE_IGNORE_MS = 2000;
-// Only show "Checking…" if the API is slow, to avoid a flash on every scan.
-const CHECKING_DELAY_MS = 500;
 
 const formatCheckedIn = (iso?: string) => {
   if (!iso) return null;
@@ -164,13 +163,27 @@ const splitTitle = (title: string) => {
 
 function Mark({ kind, color }: { kind: MarkKind; color: string }) {
   return (
-    <svg aria-hidden="true" viewBox="0 0 48 48" className="h-14 w-14 shrink-0" fill="none" stroke={color} strokeWidth="5" strokeLinecap="square">
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 48 48"
+      className={`h-12 w-12 shrink-0 ${kind === "wait" ? "motion-safe:animate-spin" : ""}`}
+      fill="none"
+      stroke={color}
+      strokeWidth="5"
+      strokeLinecap="square"
+    >
       {kind === "check" && <path d="M8 25l11 11L40 13" />}
       {kind === "cross" && <path d="M11 11l26 26M37 11L11 37" />}
       {kind === "alert" && (
         <>
           <path d="M24 8v22" />
           <path d="M24 38v2" />
+        </>
+      )}
+      {kind === "wait" && (
+        <>
+          <circle cx="24" cy="24" r="15" strokeOpacity="0.3" />
+          <path d="M24 9a15 15 0 0 1 15 15" />
         </>
       )}
       {kind === "retry" && (
@@ -207,7 +220,7 @@ function InfoBox({
         <p className="text-[10px] font-semibold tracking-[0.3em] opacity-60">{label}</p>
         <div className="flex items-end justify-between gap-3">
           <p
-            className={`min-w-0 break-words font-[family-name:var(--font-door-display)] font-black uppercase leading-[0.95] tracking-tight ${main.length > 12 ? "text-[1.85rem]" : "text-[2.5rem]"}`}
+            className={`min-w-0 break-words font-[family-name:var(--font-door-display)] font-black uppercase leading-[0.95] tracking-tight ${main.length > 12 ? "text-[1.7rem]" : "text-[2.2rem]"}`}
             style={{ color: mainColor }}
           >
             {main}
@@ -301,11 +314,12 @@ export default function CheckInPage() {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scanLockRef = useRef(false);
   const lastReadRef = useRef<{ code: string; at: number } | null>(null);
+  // Set by a fresh staff sign-in: open the camera as soon as the scanner shows.
+  const autoStartRef = useRef(false);
 
   const [verified, setVerified] = useState(false);
-  // The event this door admits (from the server), and whether staff have entered its scanner.
+  // The one event this door admits (from the server); null if HILO_EVENT_ID isn't set.
   const [doorEvent, setDoorEvent] = useState<DoorEvent | null>(null);
-  const [entered, setEntered] = useState(false);
   const [staffCode, setStaffCode] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState("");
@@ -317,6 +331,7 @@ export default function CheckInPage() {
   const [result, setResult] = useState<ScanResult | null>(null);
   // Bumped per result so its entrance + countdown animations restart.
   const [resultSeq, setResultSeq] = useState(0);
+  // True from the moment a QR is read until its result is in: the screen floods navy.
   const [checking, setChecking] = useState(false);
   const [error, setError] = useState("");
 
@@ -326,17 +341,10 @@ export default function CheckInPage() {
         const response = await fetch("/api/staff/check-in/verify");
         if (!response.ok) return;
         const data = await response.json().catch(() => null);
-        const event: DoorEvent | null = data?.event ?? null;
-        setDoorEvent(event);
+        setDoorEvent(data?.event ?? null);
+        // Reloaded mid-shift: back on the scanner. The camera waits for a tap
+        // (sounds can only be unlocked from one).
         setVerified(true);
-        // Reloaded mid-shift: go straight back into the scanner.
-        let saved: string | null = null;
-        try {
-          saved = window.localStorage.getItem(DOOR_EVENT_KEY);
-        } catch {
-          // Storage blocked: staff just tap the event again.
-        }
-        if (event && saved === event.id) setEntered(true);
       } catch {
         // No existing verification.
       }
@@ -370,7 +378,12 @@ export default function CheckInPage() {
         return;
       }
 
-      setDoorEvent(data.event ?? null);
+      const event: DoorEvent | null = data.event ?? null;
+      setDoorEvent(event);
+      setResult(null);
+      setError("");
+      // Straight into scanning: the camera opens once the scanner is on screen.
+      autoStartRef.current = Boolean(event);
       setVerified(true);
       setStaffCode("");
     } catch (err) {
@@ -381,32 +394,7 @@ export default function CheckInPage() {
     }
   };
 
-  const enterEvent = () => {
-    if (!doorEvent) return;
-    setResult(null);
-    setError("");
-    setEntered(true);
-    try {
-      window.localStorage.setItem(DOOR_EVENT_KEY, doorEvent.id);
-    } catch {
-      // Storage blocked: the choice lasts until the page is reloaded.
-    }
-  };
-
-  // Back to the event list. The camera stops first: #qr-reader unmounts there.
-  const leaveEvent = async () => {
-    await stopScanner();
-    setEntered(false);
-    setResult(null);
-    setError("");
-    try {
-      window.localStorage.removeItem(DOOR_EVENT_KEY);
-    } catch {
-      // Storage blocked.
-    }
-  };
-
-  // Back to the black scanning screen; the last result stays as "Previous guest".
+  // Back to the cream scanning screen; the last result stays as "Previous guest".
   const endResult = () => setShowing(false);
 
   // Every scan outcome comes through here: sound on the RESULT, never on the camera read.
@@ -418,8 +406,6 @@ export default function CheckInPage() {
   };
 
   const checkIn = async (decodedText: string) => {
-    const checkingTimer = setTimeout(() => setChecking(true), CHECKING_DELAY_MS);
-
     try {
       setError("");
 
@@ -432,7 +418,6 @@ export default function CheckInPage() {
       if (response.status === 401) {
         await stopScanner();
         setVerified(false);
-        setEntered(false);
         setResult(null);
         setVerificationError("Staff verification expired. Please verify again.");
         return;
@@ -464,7 +449,7 @@ export default function CheckInPage() {
         message: "No connection. Check Wi-Fi or mobile data, then scan again.",
       });
     } finally {
-      clearTimeout(checkingTimer);
+      // Same render as the result, so the navy goes straight to the result colour.
       setChecking(false);
     }
   };
@@ -528,9 +513,10 @@ export default function CheckInPage() {
 
           if (scanLockRef.current) return;
 
-          // A new guest: drop the old result so the previous guest shows until this one's result is in.
-          endResult();
+          // A new guest: the screen floods navy right away, before the server is asked.
           scanLockRef.current = true;
+          endResult();
+          setChecking(true);
           await checkIn(decodedText);
           scanLockRef.current = false;
         },
@@ -554,7 +540,7 @@ export default function CheckInPage() {
     const scanner = scannerRef.current;
 
     scanLockRef.current = false;
-    // Stopping ends the result screen: back to the night, last guest kept as "Previous guest".
+    // Stopping ends the result screen: back to cream, last guest kept as "Previous guest".
     endResult();
 
     if (!scanner) {
@@ -571,6 +557,15 @@ export default function CheckInPage() {
     scannerRef.current = null;
     setScanning(false);
   };
+
+  // Fresh sign-in: open the camera now that #qr-reader is on screen.
+  useEffect(() => {
+    if (!verified || !autoStartRef.current) return;
+    autoStartRef.current = false;
+    void startScanner();
+    // startScanner only reads refs and setters; it runs once per sign-in.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verified]);
 
   useEffect(() => {
     return () => {
@@ -597,6 +592,8 @@ export default function CheckInPage() {
         <form
           onSubmit={(event) => {
             event.preventDefault();
+            // This tap is the one that opens the scanner: unlock sounds now, while it counts as a tap.
+            unlockAudio();
             void verifyStaff();
           }}
           className="mt-8"
@@ -631,128 +628,76 @@ export default function CheckInPage() {
             className="mt-8 w-full rounded-sm py-4 font-[family-name:var(--font-door-display)] text-2xl font-extrabold uppercase tracking-wider transition active:translate-y-px disabled:opacity-50"
             style={{ backgroundColor: NAVY, color: PAPER }}
           >
-            {verifying ? "Checking…" : "Continue"}
+            {verifying ? "Checking…" : "Start scanning"}
           </button>
         </form>
       </Lobby>
     );
   }
 
-  // Step 2: choose the event (the server decides which one this door admits).
-  if (!entered || !doorEvent) {
-    const name = doorEvent ? splitTitle(doorEvent.title) : null;
-
-    return (
-      <Lobby>
-        <p className="mt-8 text-[11px] tracking-[0.3em]" style={{ color: SEAL }}>
-          STEP 2 · CHOOSE EVENT
-        </p>
-        <h1 className="mt-2 font-[family-name:var(--font-door-display)] text-[3.75rem] font-black uppercase leading-[0.85] tracking-tight">
-          Tonight&apos;s
-          <br />
-          door
-        </h1>
-        <p className="mt-3 text-xs leading-relaxed opacity-70">
-          Tickets for any other event show WRONG EVENT and aren&apos;t let in.
-        </p>
-
-        {doorEvent && name ? (
-          <button
-            type="button"
-            onClick={enterEvent}
-            className="group relative mt-7 block w-full overflow-hidden rounded-md text-left shadow-[0_10px_30px_-14px_rgba(26,39,68,0.6)] transition active:translate-y-px"
-            style={{ backgroundColor: NAVY, color: PAPER }}
-          >
-            <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5" style={{ backgroundColor: SEAL }} />
-            <span className="block px-6 py-5">
-              <span className="block text-[10px] tracking-[0.3em]" style={{ color: GOLD }}>
-                TONIGHT
-              </span>
-              <span className="mt-2 block break-words font-[family-name:var(--font-door-display)] text-[2.1rem] font-black uppercase leading-[0.9] tracking-tight">
-                {name.name}
-              </span>
-              {name.sub && <span className="mt-1 block text-[11px] tracking-[0.12em] opacity-70">{name.sub}</span>}
-              <span className="mt-4 block text-xs tracking-[0.08em]" style={{ color: GOLD }}>
-                {formatDoorDate(doorEvent)}
-              </span>
-              {doorEvent.location && (
-                <span className="mt-1 block text-[11px] leading-snug opacity-75">{doorEvent.location}</span>
-              )}
-            </span>
-            <span
-              className="flex items-center justify-between border-t border-dashed px-6 py-3 text-[11px] tracking-[0.25em]"
-              style={{ borderColor: `${PAPER}33` }}
-            >
-              OPEN SCANNER
-              <span aria-hidden="true" className="text-base transition group-hover:translate-x-1">→</span>
-            </span>
-          </button>
-        ) : (
-          <p className="mt-7 border-l-4 pl-3 text-sm leading-relaxed" style={{ borderColor: SEAL }}>
-            No event is set for this door. Tell the organizer (HILO_EVENT_ID).
-          </p>
-        )}
-      </Lobby>
-    );
-  }
-
-  // Step 3: the scanner, in ROCSAUT colours.
-  const name = splitTitle(doorEvent.title);
+  // Step 2: the scanner. One screen: event, camera, result, controls.
+  const name = doorEvent ? splitTitle(doorEvent.title) : null;
   const verdict = result ? getVerdict(result) : null;
   const tier = getTier(result?.ticket);
-  // Valid entry: the whole screen takes the tier colour. Otherwise amber/red.
-  const flood = showing && verdict
-    ? verdict === "admit"
-      ? { ...FLOODS.admit, bg: tier.bg }
-      : FLOODS[verdict]
-    : null;
+  // Reading a code: navy. Valid entry: the whole screen takes the tier colour. Otherwise amber/red.
+  const flood = checking
+    ? CHECKING_FLOOD
+    : showing && verdict
+      ? verdict === "admit"
+        ? { ...FLOODS.admit, bg: tier.bg }
+        : FLOODS[verdict]
+      : null;
   const fg = flood?.fg ?? NAVY;
   const checkedIn = formatCheckedIn(result?.checkedInAt);
 
   return (
     <main
-      className="fixed inset-0 flex overflow-y-auto overflow-x-hidden px-4 py-5 font-[family-name:var(--font-door-mono)] transition-colors duration-500"
+      className="fixed inset-0 overflow-y-auto overflow-x-hidden font-[family-name:var(--font-door-mono)] transition-colors duration-150"
       style={{ backgroundColor: flood?.bg ?? PAPER, color: fg }}
     >
       {!flood && <PlumBlossom className="pointer-events-none fixed -bottom-24 -right-24 h-80 w-80 opacity-20" color={GOLD} />}
 
-      {/* m-auto centers when there is room and scrolls instead of clipping on short screens */}
-      <div className="relative m-auto flex w-full max-w-md flex-col gap-4">
-        <header className="flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => void leaveEvent()}
-            className="-ml-1 px-1 py-1 text-[11px] tracking-[0.25em] underline-offset-4 hover:underline"
-            style={{ color: fg, opacity: 0.8 }}
-          >
-            ← EVENTS
-          </button>
-          <span className="flex items-center gap-2 text-[10px] tracking-[0.3em]">
-            ROCSAUT DOOR
-            <Image src="/assets/logo.png" alt="" width={28} height={28} className="rounded-full" />
-          </span>
+      {/* Fills the screen; only scrolls on phones too short to fit it all */}
+      <div className="relative mx-auto flex min-h-full w-full max-w-md flex-col gap-3 px-4 py-4">
+        {/* The event this door admits */}
+        <header>
+          <div className="flex items-center gap-3">
+            <Image src="/assets/logo.png" alt="ROCSAUT" width={40} height={40} className="shrink-0 rounded-full" priority />
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] tracking-[0.3em]" style={{ color: flood ? fg : SEAL }}>
+                ROCSAUT DOOR · NOW SCANNING
+              </p>
+              {name && doorEvent ? (
+                <>
+                  <h1 className="mt-0.5 line-clamp-2 break-words font-[family-name:var(--font-door-display)] text-[1.65rem] font-black uppercase leading-[0.9] tracking-tight">
+                    {name.name}
+                  </h1>
+                  <p className="mt-1 truncate text-[11px] tracking-[0.08em] opacity-70">
+                    {formatDoorDate(doorEvent)}
+                    {doorEvent.location ? ` · ${doorEvent.location.split(",")[0]}` : ""}
+                  </p>
+                </>
+              ) : (
+                <h1 className="mt-0.5 font-[family-name:var(--font-door-display)] text-[1.65rem] font-black uppercase leading-[0.9] tracking-tight">
+                  No event set
+                </h1>
+              )}
+            </div>
+          </div>
+          <div aria-hidden="true" className="mt-3 border-y" style={{ borderColor: flood ? `${fg}66` : GOLD, height: 4 }} />
         </header>
 
-        {/* The event this door admits */}
-        <div>
-          <p className="text-[10px] tracking-[0.3em]" style={{ color: flood ? fg : SEAL }}>
-            NOW SCANNING
+        {!doorEvent && (
+          <p role="alert" className="border-l-4 pl-3 text-sm leading-relaxed" style={{ borderColor: SEAL }}>
+            This door has no event to admit, so nothing can be scanned. Tell the organizer (HILO_EVENT_ID).
           </p>
-          <h1 className="mt-1 break-words font-[family-name:var(--font-door-display)] text-[2.4rem] font-black uppercase leading-[0.9] tracking-tight">
-            {name.name}
-          </h1>
-          <p className="mt-1.5 truncate text-[11px] tracking-[0.08em] opacity-70">
-            {formatDoorDate(doorEvent)}
-            {doorEvent.location ? ` · ${doorEvent.location.split(",")[0]}` : ""}
-          </p>
-          <div aria-hidden="true" className="mt-3 border-y" style={{ borderColor: flood ? `${fg}66` : GOLD, height: 4 }} />
-        </div>
+        )}
 
         {/* Viewfinder in a navy frame — #qr-reader must always stay mounted for html5-qrcode */}
         {/* Fixed size: html5-qrcode measures its scan area at start, so resizing the box stops it reading codes */}
         <div
-          className="relative mx-auto w-full rounded-sm p-[5px]"
-          style={{ maxWidth: "min(100%, 34dvh, 340px)", backgroundColor: flood ? `${fg}33` : NAVY }}
+          className="relative mx-auto w-full shrink-0 rounded-sm p-[5px]"
+          style={{ maxWidth: "min(100%, 31dvh, 320px)", backgroundColor: flood ? `${fg}33` : NAVY }}
         >
           <div className="relative">
             <div
@@ -768,31 +713,22 @@ export default function CheckInPage() {
               ))}
             </div>
 
-            {/* Slow check: a red beam sweeps the frame */}
-            {checking && scanning && (
+            {/* Code read, server checking: a red beam sweeps the frame */}
+            {checking && (
               <div
-                role="status"
+                aria-hidden="true"
                 className="pointer-events-none absolute inset-0 overflow-hidden"
-                style={{ backgroundColor: "rgba(26,39,68,0.8)", color: PAPER }}
+                style={{ backgroundColor: "rgba(26,39,68,0.8)" }}
               >
                 <span
-                  aria-hidden="true"
                   className="absolute inset-x-0 h-1 motion-safe:animate-[door-beam_1.1s_ease-in-out_infinite_alternate]"
                   style={{ top: "50%", backgroundColor: SEAL, boxShadow: `0 0 20px 4px ${SEAL}99` }}
                 />
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                  <p className="font-[family-name:var(--font-door-display)] text-4xl font-black uppercase tracking-wide motion-safe:animate-[door-flicker_2.4s_steps(1)_infinite]">
-                    Checking
-                  </p>
-                  <p className="mt-1 text-[10px] tracking-[0.3em]" style={{ color: GOLD }}>
-                    READING THE GUEST LIST…
-                  </p>
-                </div>
               </div>
             )}
 
             {/* Camera off: the whole frame is a start button (an overlay, so the layout height never changes) */}
-            {!scanning && (
+            {!scanning && doorEvent && (
               <button
                 type="button"
                 onClick={() => void startScanner()}
@@ -813,17 +749,33 @@ export default function CheckInPage() {
           </div>
         </div>
 
-        {/* Ticket stub: verdict, or the previous guest while scanning */}
+        {/* Ticket stub: checking, verdict, or the previous guest while scanning */}
         <section
           aria-live="assertive"
-          className="min-h-[11rem] border-t-2 border-dashed pt-4"
+          className="min-h-[10rem] flex-1 border-t-2 border-dashed pt-3"
           style={{ borderColor: `${fg}66` }}
         >
-          {flood && result && verdict ? (
+          {checking ? (
+            <div role="status" key={`checking-${resultSeq}`} className="motion-safe:animate-[door-rise_150ms_ease-out]">
+              <div className="flex items-center gap-3">
+                <Mark kind={CHECKING_FLOOD.mark} color={fg} />
+                <p className="font-[family-name:var(--font-door-display)] text-[3.25rem] font-black uppercase leading-[0.85] tracking-tight">
+                  {CHECKING_FLOOD.word}
+                </p>
+              </div>
+              <InfoBox
+                accent={GOLD}
+                label="TICKET READ"
+                main="One moment"
+                mainColor={NAVY}
+                detail="Checking the guest list. Keep the guest here — the result shows in a second."
+              />
+            </div>
+          ) : flood && result && verdict ? (
             <div key={`result-${resultSeq}`} className="motion-safe:animate-[door-rise_250ms_ease-out]">
               <div className="flex items-center gap-3">
                 <Mark kind={flood.mark} color={fg} />
-                <p className="font-[family-name:var(--font-door-display)] text-[3.75rem] font-black uppercase leading-[0.85] tracking-tight">
+                <p className="font-[family-name:var(--font-door-display)] text-[3.25rem] font-black uppercase leading-[0.85] tracking-tight">
                   {flood.word}
                 </p>
               </div>
@@ -857,7 +809,7 @@ export default function CheckInPage() {
               )}
 
               {result.ticket && (
-                <p className="mt-3 break-words text-xl font-semibold">{result.ticket.name}</p>
+                <p className="mt-2 break-words text-xl font-semibold">{result.ticket.name}</p>
               )}
             </div>
           ) : result ? (
@@ -875,64 +827,65 @@ export default function CheckInPage() {
                   </p>
                 )}
               </div>
-              <p className="mt-6 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase" style={{ color: fg }}>
-                {checking && scanning ? "Checking…" : scanning ? "Ready — scan next" : "Camera off"}
+              <p className="mt-5 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase" style={{ color: fg }}>
+                {scanning ? "Ready — scan next" : "Camera off"}
               </p>
             </div>
           ) : (
-            <p className="font-[family-name:var(--font-door-display)] text-[3.25rem] font-black uppercase leading-[0.85] tracking-tight">
-              {scanning ? (
-                <>
-                  Point at
-                  <br />
-                  ticket QR
-                </>
-              ) : (
-                <>
-                  Ready at
-                  <br />
-                  the door
-                </>
+            <div>
+              <p className="font-[family-name:var(--font-door-display)] text-[3rem] font-black uppercase leading-[0.85] tracking-tight">
+                {scanning ? (
+                  <>
+                    Point at
+                    <br />
+                    ticket QR
+                  </>
+                ) : (
+                  <>
+                    Ready at
+                    <br />
+                    the door
+                  </>
+                )}
+              </p>
+              {doorEvent && (
+                <p className="mt-3 text-xs leading-relaxed opacity-70">
+                  Only tickets for this event get in. Any other shows WRONG EVENT.
+                </p>
               )}
-            </p>
+            </div>
           )}
         </section>
 
         {error && (
-          <p className="border-l-4 pl-3 text-sm" style={{ borderColor: SEAL }}>
+          <p role="alert" className="border-l-4 pl-3 text-sm" style={{ borderColor: SEAL }}>
             {error}
           </p>
         )}
 
-        {/* Controls: primary action + camera toggle, same footprint in every state */}
-        <div className="flex flex-col gap-2">
+        {/* Controls, same height in every state. Nothing to tap while a code is being checked. */}
+        <div className="flex h-14 shrink-0 items-center justify-center">
           {!scanning ? (
             <button
               type="button"
               onClick={() => void startScanner()}
-              className="w-full rounded-sm py-4 font-[family-name:var(--font-door-display)] text-3xl font-black uppercase tracking-wide transition active:translate-y-px"
+              disabled={!doorEvent}
+              className="h-full w-full rounded-sm font-[family-name:var(--font-door-display)] text-3xl font-black uppercase tracking-wide transition active:translate-y-px disabled:opacity-40"
               style={{ backgroundColor: NAVY, color: PAPER }}
             >
               Start scanning
             </button>
+          ) : checking ? (
+            <p className="text-xs tracking-[0.25em] opacity-80">CHECKING TICKET…</p>
           ) : (
-            <div
-              className="w-full rounded-sm py-4 text-center font-[family-name:var(--font-door-display)] text-3xl font-black uppercase tracking-wide"
-              style={{ boxShadow: `inset 0 0 0 2px ${fg}55` }}
+            <button
+              type="button"
+              onClick={() => void stopScanner()}
+              className="px-3 py-2 text-xs tracking-[0.25em] underline underline-offset-4 opacity-80"
             >
-              Scanning…
-            </div>
+              STOP CAMERA
+            </button>
           )}
-
-          {/* Only "Stop camera" is needed here; Start lives in the big button. Kept invisible (not removed) so the layout doesn't shift. */}
-          <button
-            type="button"
-            onClick={() => void stopScanner()}
-            disabled={!scanning}
-            className={`self-center px-3 py-2 text-xs tracking-[0.25em] underline underline-offset-4 opacity-80 ${scanning ? "" : "invisible"}`}
-          >
-            STOP CAMERA
-          </button>
         </div>
       </div>
     </main>
