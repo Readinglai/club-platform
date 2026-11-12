@@ -36,6 +36,7 @@ const TEXT = {
         {" "}is confirmed. We&apos;ve also emailed it to you.
       </>
     ),
+    spam: "Didn't get the email? Check your spam or junk folder. It can take a few minutes to arrive.",
     view: (type: string) => `View ${type} ticket`,
     endedTitle: "Order not completed",
     ended: "This checkout expired or was cancelled, so no ticket was issued.",
@@ -56,6 +57,7 @@ const TEXT = {
         你的 <strong>{title}</strong> 門票已確認，我們也已將票券寄到你的電郵。
       </>
     ),
+    spam: "沒收到電郵？請檢查垃圾郵件匣，郵件可能需要幾分鐘才會寄到。",
     view: () => "查看門票",
     endedTitle: "訂單未完成",
     ended: "此結帳已逾時或已取消，因此沒有開立票券。",
@@ -161,6 +163,7 @@ export default function OrderPage({ params }: { params: Promise<{ id: string }> 
             </li>
           ))}
         </ul>
+        <p className="mt-4 text-xs text-gray-500">{t.spam}</p>
       </>
     );
   } else {
